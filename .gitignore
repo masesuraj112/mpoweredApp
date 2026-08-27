@@ -30,6 +30,9 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# env file
+.env
+
 # local env files
 .env*.local
 
@@ -41,3 +44,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Supabase
+supabase/.temp/
