@@ -11,7 +11,7 @@ Mismatched versions are a common source of "it works on my machine" bugs.
 | -------- | ----------- |
 | Node.js  | v24.20.0    |
 | npm      | 11.19.0     |
-| Expo SDK | [e.g. 52.x] |
+| Expo SDK | 57.0.1 |
 
 > React Native's version is managed automatically by Expo. You don't install or track it separately.
 
