@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 // Test on http://localhost:8081/demographics
 
-export const CustomInput: React.FC<InputProps> = ({ placeholder, label, ...rest }) => {
+export function CustomInput({ placeholder, label, ...rest }: InputProps) {
   return (
     <div className="flex flex-col gap-1">
       {label && <label className="text-sm font-medium">{label}</label>}
@@ -17,4 +17,25 @@ export const CustomInput: React.FC<InputProps> = ({ placeholder, label, ...rest 
       />
     </div>
   );
-};
+}
+
+/////////////////////////////////////////////////
+
+
+
+interface PainSliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  painLevel?: string;
+  painDescription?: string;
+}
+
+
+export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
+  return (
+    <div className="w-full max-w-sm">
+      <p>Yes</p>
+
+    </div>
+
+  );
+
+}
