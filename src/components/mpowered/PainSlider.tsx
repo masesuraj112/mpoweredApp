@@ -31,8 +31,9 @@ interface PainSliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full max-w-sm bg-blue-500 text-gray-800">
       <p>Yes</p>
+      <p>No</p>
 
     </div>
 
