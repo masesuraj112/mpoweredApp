@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { useState } from 'react';
+import Slider from '@react-native-community/slider';
+
 
 interface PainSliderProps {
   painLevel?: string;
@@ -10,6 +12,8 @@ interface PainSliderProps {
 
 export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
   const [value, setValue] = useState(0);
+   const [sliderWidth, setSliderWidth] = useState(0);
+
 
   // This function prevents input from being less than 0 or greater than 10
   const changeNumber = (text: String) => {
@@ -25,6 +29,30 @@ export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>My {painLevel} pain is <TextInput style={stylesSheet.underlineText} keyboardType="number-pad" value={String(value)} onChangeText={changeNumber} /></Text>
 
+      <View
+        onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
+      >
+        <View
+          style={[
+            sliderSheet.bubble,
+            { left: (value / 10) * sliderWidth - 15 }, // rough centering, tweak offset
+          ]}
+        >
+          <Text style={sliderSheet.bubbleText}>{value}</Text>
+        </View>
+        <Slider
+          style={sliderSheet.slider}
+          minimumValue={0}
+          maximumValue={10}
+          step={1}
+          value={value}
+          onValueChange={setValue}
+          minimumTrackTintColor="#5B4A9E" // purple, matches your screenshot
+          maximumTrackTintColor="#E4DFF5" // light lavender track
+          thumbTintColor="#5B4A9E"
+        />
+      </View>
+      
     </View>
 
   );
@@ -71,3 +99,25 @@ const stylesSheet = StyleSheet.create({
   
 })
 
+
+const sliderSheet = StyleSheet.create({
+  container: {
+    padding: 15,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
+  },
+  bubble: {
+    position: 'absolute',
+    top: -30,
+    backgroundColor: '#5B4A9E',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  bubbleText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
