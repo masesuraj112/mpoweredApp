@@ -1,9 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
-
-
-
-
 interface PainSliderProps {
   painLevel?: string;
   painDescription?: string;
@@ -12,12 +8,11 @@ interface PainSliderProps {
 
 
 export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
-
   return (
     <View style={stylesSheet.container}>
       <Text style={stylesSheet.titleText}>Pain Intensity</Text>
       <Text style={stylesSheet.lineText}></Text>
-      <Text style={stylesSheet.painLevelText}>My {painLevel} pain is</Text>
+      <Text style={stylesSheet.painLevelText}>My {painLevel} pain is <TextInput style={stylesSheet.underlineText}/></Text>
 
     </View>
 
@@ -48,25 +43,20 @@ const stylesSheet = StyleSheet.create({
     alignItems: 'center',
   },
   underlineText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
+     fontSize: 20,
+  borderBottomWidth: 2,
+  width: 30,
+  borderBottomColor: 'black',
+  minWidth: 10,
+  textAlign: 'center',
+  paddingBottom: 4,
+  marginLeft: 8,
+
+    // fontSize: 20,
+    // fontWeight: 'bold',
+    // textDecorationLine: 'underline',
   }
 
   
 })
 
-
-
-
-// const stylesSheet = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center'
-//   },
-//   title: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//   },
-// });
