@@ -1,42 +1,72 @@
 import React from 'react';
-
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-}
-
-// Test on http://localhost:8081/demographics
-
-export function CustomInput({ placeholder, label, ...rest }: InputProps) {
-  return (
-    <div className="flex flex-col gap-1">
-      {label && <label className="text-sm font-medium">{label}</label>}
-      <input
-        placeholder={placeholder ?? "Type something..."}
-        className="px-3 py-2 border rounded-md"
-        {...rest}
-      />
-    </div>
-  );
-}
-
-/////////////////////////////////////////////////
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 
 
 
-interface PainSliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+
+interface PainSliderProps {
   painLevel?: string;
   painDescription?: string;
+  onValueChange?: (value: number) => void;
 }
 
 
 export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
-  return (
-    <div className="w-full max-w-sm bg-blue-500 text-gray-800">
-      <p>Yes</p>
-      <p>No</p>
 
-    </div>
+  return (
+    <View style={stylesSheet.container}>
+      <Text style={stylesSheet.titleText}>Pain Intensity</Text>
+      <Text style={stylesSheet.lineText}></Text>
+      <Text style={stylesSheet.painLevelText}>My {painLevel} pain is</Text>
+
+    </View>
 
   );
-
 }
+
+const stylesSheet = StyleSheet.create({
+  container: {
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderRadius: 15
+  },
+
+  titleText: {
+    margin: 15,
+  },
+
+  lineText: {
+    borderTopWidth: 2,
+    borderTopColor: 'gray',
+    margin: 15
+  },
+  painLevelText: {
+    margin: 15,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  underlineText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  }
+
+  
+})
+
+
+
+
+// const stylesSheet = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     alignItems: 'center',
+//     justifyContent: 'center'
+//   },
+//   title: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//   },
+// });
