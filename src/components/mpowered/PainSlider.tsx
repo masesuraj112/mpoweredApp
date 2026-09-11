@@ -29,7 +29,9 @@ export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>My {painLevel} pain is <TextInput style={stylesSheet.underlineText} keyboardType="number-pad" value={String(value)} onChangeText={changeNumber} /></Text>
 
-      <View  onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width * 0.5)}>
+      <View 
+      style={sliderSheet.container} 
+      onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width  )}>
         <View
           style={[
             sliderSheet.bubble,
@@ -63,7 +65,8 @@ const stylesSheet = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'black',
-    borderRadius: 15
+    borderRadius: 15,
+    alignItems: 'center'
   },
 
   titleText: {
@@ -82,7 +85,7 @@ const stylesSheet = StyleSheet.create({
     alignItems: 'center',
   },
   underlineText: {
-    fontSize: 20,
+  fontSize: 20,
   borderBottomWidth: 2,
   width: 30,
   borderBottomColor: 'black',
@@ -102,11 +105,10 @@ const stylesSheet = StyleSheet.create({
 
 const sliderSheet = StyleSheet.create({
   container: {
-    padding: 15,
-    alignSelf: 'center'
+    width: '30%'
   },
   slider: {
-    width: "50%",
+    width: "100%",
     height: 40,
     display: 'flex',
     justifyContent: 'center',
