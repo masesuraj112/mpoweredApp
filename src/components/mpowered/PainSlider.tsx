@@ -54,6 +54,7 @@ export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
           thumbTintColor="#5B4A9E"
         />
       </View>
+      <Text>The pain is {painDescription}</Text>
       
     </View>
 
@@ -66,17 +67,23 @@ const stylesSheet = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: 'black',
     borderRadius: 15,
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingTop: 20,        // ← space between the card's top border and its content
+  paddingHorizontal: 15, // keeps left/right inset consistent
+  paddingBottom: 15,
   },
 
   titleText: {
-    margin: 15,
+    marginBottom: 15,
+    alignSelf: 'flex-start'
   },
 
   lineText: {
-    borderTopWidth: 2,
+    borderTopWidth: 1,
     borderTopColor: 'gray',
-    margin: 15
+    width: '100%',
+    marginBottom: 15,
+    
   },
   painLevelText: {
     margin: 15,
@@ -93,6 +100,7 @@ const stylesSheet = StyleSheet.create({
   textAlign: 'center',
   paddingBottom: 4,
   marginLeft: 8,
+
 
     // fontSize: 20,
     // fontWeight: 'bold',
