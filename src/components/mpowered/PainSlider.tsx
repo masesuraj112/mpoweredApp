@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native';
-import { useState } from 'react';
 import Slider from '@react-native-community/slider';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 
 interface PainSliderProps {
@@ -12,7 +12,7 @@ interface PainSliderProps {
 
 export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
   const [value, setValue] = useState(0);
-   const [sliderWidth, setSliderWidth] = useState(0);
+  const [sliderWidth, setSliderWidth] = useState(0);
 
 
   // This function prevents input from being less than 0 or greater than 10
@@ -29,19 +29,19 @@ export function PainSliderInput({painLevel, painDescription}: PainSliderProps) {
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>My {painLevel} pain is <TextInput style={stylesSheet.underlineText} keyboardType="number-pad" value={String(value)} onChangeText={changeNumber} /></Text>
 
-      <View
-        onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
-      >
+      <View  onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width * 0.5)}>
         <View
           style={[
             sliderSheet.bubble,
             { left: (value / 10) * sliderWidth - 15 }, // rough centering, tweak offset
           ]}
+         
         >
           <Text style={sliderSheet.bubbleText}>{value}</Text>
         </View>
         <Slider
           style={sliderSheet.slider}
+          
           minimumValue={0}
           maximumValue={10}
           step={1}
@@ -82,7 +82,7 @@ const stylesSheet = StyleSheet.create({
     alignItems: 'center',
   },
   underlineText: {
-     fontSize: 20,
+    fontSize: 20,
   borderBottomWidth: 2,
   width: 30,
   borderBottomColor: 'black',
@@ -103,16 +103,21 @@ const stylesSheet = StyleSheet.create({
 const sliderSheet = StyleSheet.create({
   container: {
     padding: 15,
+    alignSelf: 'center'
   },
   slider: {
-    width: '100%',
+    width: "50%",
     height: 40,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
   },
   bubble: {
     position: 'absolute',
     top: -30,
     backgroundColor: '#5B4A9E',
-    borderRadius: 8,
+    borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
