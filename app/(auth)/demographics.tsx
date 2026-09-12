@@ -8,7 +8,7 @@ import { PainSliderInput } from '@/components/mpowered/PainSlider';
 export default function Demographics() {
   return (
     <View>
-      <PainSliderInput painLevel={'worst'} painDescription={'fairly severe'}/> 
+      <PainSliderInput painLevel={'worst'} painDescription={'fairly severe'} questionNumber={3}/> 
     </View>
   )
 }

@@ -1,12 +1,15 @@
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 
 interface PainSliderProps {
   painLevel?: string;
   painDescription?: string;
+  questionNumber?: number;
+  totalQuestions?: number;
   onValueChange?: (value: number) => void;
+  onRecord?: () => void;
 }
 
 const ROW_HEIGHT = 56;      // height of the interactive row (increased for taller thumb)
@@ -14,7 +17,13 @@ const TRACK_HEIGHT = 20;    // thickness of the visible track
 const THUMB_WIDTH = 14;     // width of the pill-shaped thumb
 const THUMB_HEIGHT = 44;    // height of the pill-shaped thumb
 
-export function PainSliderInput({ painLevel, painDescription, onValueChange }: PainSliderProps) {
+export function PainSliderInput({
+  painLevel,
+  painDescription,
+  questionNumber,
+  onValueChange,
+  onRecord,
+}: PainSliderProps) {
   const [value, setValue] = useState(0);
   const [sliderWidth, setSliderWidth] = useState(0);
 
@@ -90,7 +99,28 @@ export function PainSliderInput({ painLevel, painDescription, onValueChange }: P
           thumbTintColor="#E4DFF5" // blends native thumb into the light track color instead of a stray dot
         />
       </View>
-      <Text>The pain is {painDescription}</Text>
+      <Text style={stylesSheet.descriptionText}>The pain is {painDescription}</Text>
+
+      {/* Footer: page indicator + Record button */}
+      <View style={footerStyles.row}>
+        <View style={footerStyles.pill}>
+          <Text style={footerStyles.pillText}>
+            {questionNumber ?? 1}/{6}
+          </Text>
+        </View>
+
+        <Pressable
+          onPress={onRecord}
+          style={({ pressed }) => [
+            footerStyles.pill,
+            footerStyles.recordButton,
+            pressed && footerStyles.recordButtonPressed,
+          ]}
+        >
+          <Text style={footerStyles.pillText}>Record</Text>
+          <Text style={footerStyles.arrow}>→</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -134,6 +164,9 @@ const stylesSheet = StyleSheet.create({
     textAlign: 'center',
     paddingBottom: 4,
     marginLeft: 8,
+  },
+  descriptionText: {
+    marginTop: 10,
   },
 });
 
@@ -187,7 +220,43 @@ const sliderSheet = StyleSheet.create({
     width: THUMB_WIDTH,
     height: THUMB_HEIGHT,
     backgroundColor: '#5B4A9E',
-    borderRadius: 0, // fully rounded ends, pill-shaped
+    borderRadius: 0, // sharp corners
     zIndex: 2,
+  },
+});
+
+const footerStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 20,
+  },
+  pill: {
+    borderWidth: 1,
+    borderColor: '#B9B9C6',
+    borderRadius: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recordButton: {
+    gap: 8,
+  },
+  recordButtonPressed: {
+    backgroundColor: '#F2F2F5',
+  },
+  pillText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#3A3A3A',
+  },
+  arrow: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#3A3A3A',
   },
 });
