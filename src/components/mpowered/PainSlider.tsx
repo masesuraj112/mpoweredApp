@@ -7,15 +7,14 @@ interface PainSliderProps {
   painLevel?: string;
   painDescription?: string;
   questionNumber?: number;
-  totalQuestions?: number;
   onValueChange?: (value: number) => void;
   onRecord?: () => void;
 }
 
 const ROW_HEIGHT = 56;      // height of the interactive row (increased for taller thumb)
 const TRACK_HEIGHT = 20;    // thickness of the visible track
-const THUMB_WIDTH = 14;     // width of the pill-shaped thumb
-const THUMB_HEIGHT = 44;    // height of the pill-shaped thumb
+const THUMB_WIDTH = 14;     // width of the thumb
+const THUMB_HEIGHT = 44;    // height of the thumb
 
 export function PainSliderInput({
   painLevel,
@@ -77,7 +76,7 @@ export function PainSliderInput({
         {/* Custom track — filled portion */}
         <View style={[sliderSheet.trackFill, { width: fillWidth }]} />
 
-        {/* Custom pill-shaped thumb */}
+        {/* Custom thumb — sharp-cornered rectangle */}
         <View
           pointerEvents="none"
           style={[
@@ -99,6 +98,7 @@ export function PainSliderInput({
           thumbTintColor="#E4DFF5" // blends native thumb into the light track color instead of a stray dot
         />
       </View>
+
       <Text style={stylesSheet.descriptionText}>The pain is {painDescription}</Text>
 
       {/* Footer: page indicator + Record button */}
@@ -130,33 +130,38 @@ const stylesSheet = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'black',
-    borderRadius: 15,
+    borderRadius: 20,
     alignItems: 'center',
-    paddingTop: 20,        // ← space between the card's top border and its content
-    paddingHorizontal: 15, // keeps left/right inset consistent
-    paddingBottom: 15,
+    paddingTop: 24,        // ← space between the card's top border and its content
+    paddingHorizontal: 20, // keeps left/right inset consistent
+    paddingBottom: 20,
   },
 
   titleText: {
+    fontSize: 28,
+    fontWeight: '500',
     marginBottom: 15,
     alignSelf: 'flex-start',
   },
 
   lineText: {
     borderTopWidth: 1,
-    borderTopColor: 'gray',
+    borderTopColor: 'black',
     width: '100%',
     marginBottom: 15,
   },
   painLevelText: {
     margin: 15,
     marginBottom: 35, // extra room so the value bubble doesn't overlap this text
+    fontSize: 20,
+    fontWeight: '700',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   underlineText: {
     fontSize: 20,
+    fontWeight: '700',
     borderBottomWidth: 2,
     width: 30,
     borderBottomColor: 'black',
@@ -167,6 +172,9 @@ const stylesSheet = StyleSheet.create({
   },
   descriptionText: {
     marginTop: 10,
+    fontSize: 17,
+    fontWeight: '700',
+    fontStyle: 'italic',
   },
 });
 
@@ -235,7 +243,7 @@ const footerStyles = StyleSheet.create({
   },
   pill: {
     borderWidth: 1,
-    borderColor: '#B9B9C6',
+    borderColor: 'black',
     borderRadius: 24,
     paddingVertical: 10,
     paddingHorizontal: 22,
@@ -250,13 +258,13 @@ const footerStyles = StyleSheet.create({
     backgroundColor: '#F2F2F5',
   },
   pillText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3A3A3A',
+    fontSize: 18,
+    fontWeight: '400',
+    color: 'black', 
   },
   arrow: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3A3A3A',
+    fontSize: 18,
+    fontWeight: '400',
+    color: 'black',
   },
 });
