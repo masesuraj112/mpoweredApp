@@ -4,11 +4,13 @@
 
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { PainSliderInput } from '@/components/mpowered/PainSlider';
+import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
 
 export default function Demographics() {
   return (
     <View>
-      <PainSliderInput painLevel={'worst'} painDescription={'fairly severe'} questionNumber={3}/> 
+      {/* <PainSliderInput painLevel={'worst'} painDescription={'fairly severe'} questionNumber={3}/>  */}
+      <SingleChoiceInput questionNumber={3}/>
     </View>
   )
 }
