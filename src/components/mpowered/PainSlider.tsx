@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 
 interface PainSliderProps {
-  painLevel?: string;
-  painDescription?: string;
+  topDescription?: string;
+  bottomDescription?: string;
   questionNumber?: number;
   onValueChange?: (value: number) => void;
   onRecord?: () => void;
@@ -17,8 +17,8 @@ const THUMB_WIDTH = 14;     // width of the thumb
 const THUMB_HEIGHT = 44;    // height of the thumb
 
 export function PainSliderInput({
-  painLevel,
-  painDescription,
+  topDescription,
+  bottomDescription,
   questionNumber,
   onValueChange,
   onRecord,
@@ -47,7 +47,7 @@ export function PainSliderInput({
       <Text style={stylesSheet.titleText}>Pain Intensity</Text>
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>
-        My {painLevel} pain is{' '}
+        {topDescription}
         <TextInput
           style={stylesSheet.underlineText}
           keyboardType="number-pad"
@@ -99,7 +99,7 @@ export function PainSliderInput({
         />
       </View>
 
-      <Text style={stylesSheet.descriptionText}>The pain is {painDescription}</Text>
+      <Text style={stylesSheet.descriptionText}>{bottomDescription}</Text>
 
       {/* Footer: page indicator + Record button */}
       <View style={footerStyles.row}>
