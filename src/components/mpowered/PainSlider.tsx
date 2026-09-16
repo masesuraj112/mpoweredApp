@@ -1,7 +1,8 @@
 import Slider from '@react-native-community/slider';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-
+import { scaleWidth, scaleFont, scaleHeight } from '@/services/scale';
 
 interface PainSliderProps {
   underLinedText?: string;
@@ -11,10 +12,36 @@ interface PainSliderProps {
   onRecord?: () => void;
 }
 
-const ROW_HEIGHT = 56;      // height of the interactive row (increased for taller thumb)
-const TRACK_HEIGHT = 20;    // thickness of the visible track
-const THUMB_WIDTH = 14;     // width of the thumb
-const THUMB_HEIGHT = 44;    // height of the thumb
+const ROW_HEIGHT = scaleHeight(90);
+const TRACK_HEIGHT = scaleHeight(32);
+const THUMB_HEIGHT = scaleHeight(70);
+
+// Thumb width is derived as a ratio of the slider's own width (30% of the 412px
+// Figma base), not the full screen — stays proportional to the slider itself
+// regardless of how much of the screen the slider occupies.
+const THUMB_WIDTH_RATIO = 9.5 / (412 * 0.9);
+
+// Interpolates from a lighter purple to near-black as value increases (0–10)
+function hexToRgb(hex: string) {
+  const bigint = parseInt(hex.replace('#', ''), 16);
+  return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+}
+
+function interpolateColor(from: string, to: string, t: number): string {
+  const f = hexToRgb(from);
+  const tRgb = hexToRgb(to);
+  const r = Math.round(f.r + (tRgb.r - f.r) * t);
+  const g = Math.round(f.g + (tRgb.g - f.g) * t);
+  const b = Math.round(f.b + (tRgb.b - f.b) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function getGradientColors(value: number): [string, string] {
+  const t = value / 10;
+  const startColor = '#8B7BC7';
+  const endColor = interpolateColor('#8B7BC7', '#1A1330', t);
+  return [startColor, endColor];
+}
 
 export function PainSliderInput({
   underLinedText,
@@ -40,7 +67,8 @@ export function PainSliderInput({
     onValueChange?.(val);
   };
 
-  const THUMB_GAP = 15;
+  const thumbWidth = sliderWidth ? sliderWidth * THUMB_WIDTH_RATIO : scaleWidth(9.5);
+  const thumbGap = thumbWidth / 2; // gap is half the thumb's own width — keeps it small and proportional
   const fillWidth = (value / 10) * sliderWidth;
 
   return (
@@ -48,14 +76,14 @@ export function PainSliderInput({
       <Text style={stylesSheet.titleText}>Pain Intensity</Text>
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>
-  My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> thumbTintColor="transparent"is
-  <TextInput
-    style={stylesSheet.underlineText}
-    keyboardType="number-pad"
-    value={String(value)}
-    onChangeText={changeNumber}
-  />
-</Text>
+        My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
+        <TextInput
+          style={stylesSheet.underlineText}
+          keyboardType="number-pad"
+          value={String(value)}
+          onChangeText={changeNumber}
+        />
+      </Text>
 
       <View
         style={sliderSheet.container}
@@ -65,7 +93,7 @@ export function PainSliderInput({
         <View
           style={[
             sliderSheet.bubble,
-            { left: (value / 10) * sliderWidth - 15 },
+            { left: (value / 10) * sliderWidth - scaleWidth(15) },
           ]}
         >
           <Text style={sliderSheet.bubbleText}>{value}</Text>
@@ -74,15 +102,23 @@ export function PainSliderInput({
         {/* Custom track — background */}
         <View style={sliderSheet.trackBackground} />
 
-        {/* Custom track — filled portion */}
-        <View style={[sliderSheet.trackFill, { width: Math.max(0, fillWidth - THUMB_GAP) }]} />
+        {/* Custom track — filled portion, gradient darkens as value increases */}
+        <LinearGradient
+          colors={getGradientColors(value)}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[
+            sliderSheet.trackFill,
+            { width: Math.max(0, fillWidth - thumbGap) },
+          ]}
+        />
 
         {/* Custom thumb — sharp-cornered rectangle */}
         <View
           pointerEvents="none"
           style={[
             sliderSheet.rectThumb,
-            { left: fillWidth - THUMB_WIDTH / 2 },
+            { left: fillWidth - thumbWidth / 2, width: thumbWidth },
           ]}
         />
 
@@ -96,7 +132,7 @@ export function PainSliderInput({
           onValueChange={handleSliderChange}
           minimumTrackTintColor="transparent"
           maximumTrackTintColor="transparent"
-          thumbTintColor="transprent" // blends native thumb into the light track color instead of a stray dot
+          thumbTintColor="transparent"
         />
       </View>
 
@@ -130,59 +166,58 @@ const stylesSheet = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: 'black',
-    borderRadius: 20,
+    borderColor: '#B0B0B0',
+    borderRadius: scaleWidth(16),
     alignItems: 'center',
-    paddingTop: 24,        // ← space between the card's top border and its content
-    paddingHorizontal: 20, // keeps left/right inset consistent
-    paddingBottom: 20,
+    paddingTop: scaleHeight(16),
+    paddingHorizontal: scaleWidth(8),
+    paddingBottom: scaleHeight(16),
   },
 
   titleText: {
-    fontSize: 28,
+    fontSize: scaleFont(28),
     fontWeight: '500',
-    marginBottom: 15,
+    marginBottom: scaleHeight(15),
     alignSelf: 'flex-start',
   },
 
   lineText: {
     borderTopWidth: 1,
-    borderTopColor: 'black',
+    borderTopColor: '#B0B0B0',
     width: '100%',
-    marginBottom: 15,
+    marginBottom: scaleHeight(15),
   },
   painLevelText: {
-    margin: 15,
-    marginBottom: 35, // extra room so the value bubble doesn't overlap this text
-    fontSize: 20,
+    margin: scaleWidth(15),
+    marginBottom: scaleHeight(35),
+    fontSize: scaleFont(20),
     fontWeight: '700',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   underlineText: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: '700',
     borderBottomWidth: 2,
-    width: 30,
+    width: scaleWidth(30),
     borderBottomColor: 'black',
-    minWidth: 10,
+    minWidth: scaleWidth(10),
     textAlign: 'center',
-    paddingBottom: 4,
-    marginLeft: 8,
+    paddingBottom: scaleHeight(4),
+    marginLeft: scaleWidth(8),
   },
   descriptionText: {
-    marginTop: 10,
-    fontSize: 17,
+    marginTop: scaleHeight(10),
+    fontSize: scaleFont(17),
     fontWeight: '700',
     fontStyle: 'italic',
   },
 });
 
-
 const sliderSheet = StyleSheet.create({
   container: {
-    width: '30%',
+    width: '90%',
     height: ROW_HEIGHT,
     justifyContent: 'center',
   },
@@ -207,16 +242,16 @@ const sliderSheet = StyleSheet.create({
     top: (ROW_HEIGHT - TRACK_HEIGHT) / 2,
     left: 0,
     height: TRACK_HEIGHT,
-    backgroundColor: '#5B4A9E',
     borderRadius: TRACK_HEIGHT / 2,
+    // backgroundColor removed — LinearGradient now supplies the fill color
   },
   bubble: {
     position: 'absolute',
-    top: -30,
+    top: scaleHeight(-30),
     backgroundColor: '#5B4A9E',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: scaleWidth(10),
+    paddingHorizontal: scaleWidth(10),
+    paddingVertical: scaleHeight(4),
     zIndex: 3,
   },
   bubbleText: {
@@ -226,10 +261,9 @@ const sliderSheet = StyleSheet.create({
   rectThumb: {
     position: 'absolute',
     top: (ROW_HEIGHT - THUMB_HEIGHT) / 2,
-    width: THUMB_WIDTH,
     height: THUMB_HEIGHT,
     backgroundColor: '#5B4A9E',
-    borderRadius: 0, // sharp corners
+    borderRadius: 0,
     zIndex: 2,
   },
 });
@@ -240,31 +274,31 @@ const footerStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: 20,
+    marginTop: scaleHeight(20),
   },
   pill: {
     borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
+    borderColor: '#B0B0B0',
+    borderRadius: scaleWidth(24),
+    paddingVertical: scaleHeight(10),
+    paddingHorizontal: scaleWidth(22),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   recordButton: {
-    gap: 8,
+    gap: scaleWidth(8),
   },
   recordButtonPressed: {
     backgroundColor: '#F2F2F5',
   },
   pillText: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '400',
-    color: 'black', 
+    color: 'black',
   },
   arrow: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '400',
     color: 'black',
   },

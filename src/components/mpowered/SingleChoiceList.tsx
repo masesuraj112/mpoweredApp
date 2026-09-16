@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-
+import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
 interface SingleChoiceProps {
   questionNumber?: number;
@@ -95,17 +95,17 @@ const stylesSheet = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'black',
-    borderRadius: 20,
+    borderRadius: scaleWidth(20),
     alignItems: 'stretch', // changed from 'center' so option rows and text can go full-width
-    paddingTop: 24,        // ← space between the card's top border and its content
-    paddingHorizontal: 20, // keeps left/right inset consistent
-    paddingBottom: 20,
+    paddingTop: scaleHeight(24),        // ← space between the card's top border and its content
+    paddingHorizontal: scaleWidth(20),  // keeps left/right inset consistent
+    paddingBottom: scaleHeight(20),
   },
 
   titleText: {
-    fontSize: 28,
+    fontSize: scaleFont(28),
     fontWeight: '500',
-    marginBottom: 15,
+    marginBottom: scaleHeight(15),
     alignSelf: 'flex-start',
   },
 
@@ -113,13 +113,13 @@ const stylesSheet = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'black',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: scaleHeight(20),
   },
 
   promptText: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: scaleHeight(10),
   },
   promptUnderline: {
     textDecorationLine: 'underline',
@@ -134,34 +134,34 @@ const optionStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: scaleHeight(16),
   },
   rowDivider: {
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
   circle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: scaleWidth(22),
+    height: scaleWidth(22),
+    borderRadius: scaleWidth(11),
     borderWidth: 2,
     borderColor: '#3A3A3A',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: scaleWidth(16),
     flexShrink: 0,
   },
   circleSelected: {
     borderColor: '#5B4A9E',
   },
   circleDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: scaleWidth(10),
+    height: scaleWidth(10),
+    borderRadius: scaleWidth(5),
     backgroundColor: '#5B4A9E',
   },
   label: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     fontWeight: '600',
     color: '#1A1A1A',
     flex: 1,
@@ -175,31 +175,31 @@ const footerStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: 20,
+    marginTop: scaleHeight(20),
   },
   pill: {
     borderWidth: 1,
     borderColor: 'black',
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
+    borderRadius: scaleWidth(24),
+    paddingVertical: scaleHeight(10),
+    paddingHorizontal: scaleWidth(22),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   recordButton: {
-    gap: 8,
+    gap: scaleWidth(8),
   },
   recordButtonPressed: {
     backgroundColor: '#F2F2F5',
   },
   pillText: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '400',
     color: 'black',
   },
   arrow: {
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '400',
     color: 'black',
   },

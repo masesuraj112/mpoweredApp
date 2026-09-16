@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
 // Fake data for now — replace with real assessment state once the shape is confirmed
 const fakeSummary = {
@@ -69,23 +70,23 @@ function IntensityRow({ label, value, description }: { label: string; value: num
 
 const styles = StyleSheet.create({
   screen: {
-    padding: 20,
+    padding: scaleWidth(20),
   },
   heading: {
-    fontSize: 26,
+    fontSize: scaleFont(26),
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: scaleHeight(8),
   },
   subheading: {
-    fontSize: 15,
+    fontSize: scaleFont(15),
     color: '#333',
-    marginBottom: 20,
+    marginBottom: scaleHeight(20),
   },
   card: {
     borderWidth: 1,
     borderColor: '#D0D0D0',
-    borderRadius: 15,
-    padding: 20,
+    borderRadius: scaleWidth(15),
+    padding: scaleWidth(20),
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -93,50 +94,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(20),
     fontWeight: 'bold',
   },
   periodText: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     fontWeight: '600',
   },
   divider: {
     borderTopWidth: 1,
     borderTopColor: '#D0D0D0',
-    marginVertical: 15,
+    marginVertical: scaleHeight(15),
   },
   sectionTitle: {
-    fontSize: 20,
-    marginTop: 15,
-    marginBottom: 8,
+    fontSize: scaleFont(20),
+    marginTop: scaleHeight(15),
+    marginBottom: scaleHeight(8),
   },
   bodyText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     color: '#333',
   },
   bulletText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: 'bold',
-    marginLeft: 10,
-    marginTop: 4,
+    marginLeft: scaleWidth(10),
+    marginTop: scaleHeight(4),
   },
   boldInline: {
     fontWeight: 'bold',
   },
   intensityRow: {
-    marginTop: 12,
+    marginTop: scaleHeight(12),
   },
   intensityLabel: {
-    fontSize: 13,
+    fontSize: scaleFont(13),
     fontWeight: '600',
     color: '#555',
-    marginBottom: 2,
+    marginBottom: scaleHeight(2),
   },
   footerDivider: {
     borderTopWidth: 1,
     borderTopColor: '#D0D0D0',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: scaleHeight(20),
+    marginBottom: scaleHeight(15),
   },
   footerRow: {
     flexDirection: 'row',
@@ -145,17 +146,17 @@ const styles = StyleSheet.create({
   },
   savedText: {
     color: '#888',
-    fontSize: 14,
+    fontSize: scaleFont(14),
   },
   closeButton: {
     borderWidth: 1,
     borderColor: '#333',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    borderRadius: scaleWidth(20),
+    paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(8),
   },
   closeButtonText: {
-    fontSize: 14,
+    fontSize: scaleFont(14),
     fontWeight: '600',
   },
 });
