@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 
 interface PainSliderProps {
-  topDescription?: string;
+  underLinedText?: string;
   bottomDescription?: string;
   questionNumber?: number;
   onValueChange?: (value: number) => void;
@@ -17,7 +17,7 @@ const THUMB_WIDTH = 14;     // width of the thumb
 const THUMB_HEIGHT = 44;    // height of the thumb
 
 export function PainSliderInput({
-  topDescription,
+  underLinedText,
   bottomDescription,
   questionNumber,
   onValueChange,
@@ -40,6 +40,7 @@ export function PainSliderInput({
     onValueChange?.(val);
   };
 
+  const THUMB_GAP = 15;
   const fillWidth = (value / 10) * sliderWidth;
 
   return (
@@ -47,14 +48,14 @@ export function PainSliderInput({
       <Text style={stylesSheet.titleText}>Pain Intensity</Text>
       <Text style={stylesSheet.lineText}></Text>
       <Text style={stylesSheet.painLevelText}>
-        {topDescription}
-        <TextInput
-          style={stylesSheet.underlineText}
-          keyboardType="number-pad"
-          value={String(value)}
-          onChangeText={changeNumber}
-        />
-      </Text>
+  My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> thumbTintColor="transparent"is
+  <TextInput
+    style={stylesSheet.underlineText}
+    keyboardType="number-pad"
+    value={String(value)}
+    onChangeText={changeNumber}
+  />
+</Text>
 
       <View
         style={sliderSheet.container}
@@ -74,7 +75,7 @@ export function PainSliderInput({
         <View style={sliderSheet.trackBackground} />
 
         {/* Custom track — filled portion */}
-        <View style={[sliderSheet.trackFill, { width: fillWidth }]} />
+        <View style={[sliderSheet.trackFill, { width: Math.max(0, fillWidth - THUMB_GAP) }]} />
 
         {/* Custom thumb — sharp-cornered rectangle */}
         <View
@@ -95,7 +96,7 @@ export function PainSliderInput({
           onValueChange={handleSliderChange}
           minimumTrackTintColor="transparent"
           maximumTrackTintColor="transparent"
-          thumbTintColor="#E4DFF5" // blends native thumb into the light track color instead of a stray dot
+          thumbTintColor="transprent" // blends native thumb into the light track color instead of a stray dot
         />
       </View>
 

@@ -10,8 +10,8 @@ import { PainSummary } from '@/components/mpowered/PainSummary';
 export default function Demographics() {
   return (
     <View>
-      <PainSummary/>
-      {/* <PainSliderInput topDescription={'My worst pain is'} bottomDescription={'The pain is fairly severe'} questionNumber={3}/>  */}
+      {/* <PainSummary/> */}
+      <PainSliderInput underLinedText={'worst pain'} bottomDescription={'The pain is fairly severe'} questionNumber={3}/> 
       {/* <SingleChoiceInput questionNumber={3}/> */}
     </View>
   )
