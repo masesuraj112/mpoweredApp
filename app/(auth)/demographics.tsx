@@ -12,9 +12,9 @@ import { scaleWidth, scaleHeight } from '@/services/scale';
 export default function Demographics() {
   return (
     <View style={styles.screen}>
-      {/* <PainSummary/> */}
+      <PainSummary/>
       {/* <PainSliderInput underLinedText={'worst pain'} bottomDescription={'The pain was fairly severe'} questionNumber={3}/>  */}
-      <SingleChoiceInput questionNumber={3} />
+      {/* <SingleChoiceInput questionNumber={3} /> */}
     </View>
   );
 }

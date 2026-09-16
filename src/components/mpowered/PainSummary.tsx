@@ -75,18 +75,18 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: scaleFont(26),
     fontWeight: 'bold',
-    marginBottom: scaleHeight(8),
+    marginBottom: scaleHeight(10),
   },
   subheading: {
     fontSize: scaleFont(15),
     color: '#333',
-    marginBottom: scaleHeight(20),
+    marginBottom: scaleHeight(28),
   },
   card: {
     borderWidth: 1,
     borderColor: '#D0D0D0',
     borderRadius: scaleWidth(15),
-    padding: scaleWidth(20),
+    padding: scaleWidth(28),
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -104,40 +104,41 @@ const styles = StyleSheet.create({
   divider: {
     borderTopWidth: 1,
     borderTopColor: '#D0D0D0',
-    marginVertical: scaleHeight(15),
+    marginVertical: scaleHeight(22),
   },
   sectionTitle: {
     fontSize: scaleFont(20),
-    marginTop: scaleHeight(15),
-    marginBottom: scaleHeight(8),
+    marginTop: scaleHeight(26),
+    marginBottom: scaleHeight(14),
   },
   bodyText: {
     fontSize: scaleFont(14),
     color: '#333',
+    lineHeight: scaleFont(20),
   },
   bulletText: {
     fontSize: scaleFont(14),
     fontWeight: 'bold',
     marginLeft: scaleWidth(10),
-    marginTop: scaleHeight(4),
+    marginTop: scaleHeight(8),
   },
   boldInline: {
     fontWeight: 'bold',
   },
   intensityRow: {
-    marginTop: scaleHeight(12),
+    marginTop: scaleHeight(20),
   },
   intensityLabel: {
     fontSize: scaleFont(13),
     fontWeight: '600',
     color: '#555',
-    marginBottom: scaleHeight(2),
+    marginBottom: scaleHeight(6),
   },
   footerDivider: {
     borderTopWidth: 1,
     borderTopColor: '#D0D0D0',
-    marginTop: scaleHeight(20),
-    marginBottom: scaleHeight(15),
+    marginTop: scaleHeight(30),
+    marginBottom: scaleHeight(20),
   },
   footerRow: {
     flexDirection: 'row',
