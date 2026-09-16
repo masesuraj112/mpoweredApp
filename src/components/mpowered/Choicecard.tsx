@@ -1,13 +1,13 @@
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import {
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   View,
-  StyleProp,
   ViewStyle,
 } from 'react-native';
-import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
 interface ChoiceCardProps {
   title: string;
