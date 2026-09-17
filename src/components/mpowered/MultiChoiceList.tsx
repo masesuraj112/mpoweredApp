@@ -1,4 +1,4 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { scaleFont, scaleHeight, scaleWidth} from '@/services/scale';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: scaleHeight(18),
     paddingHorizontal: scaleWidth(18),
+    minWidth: 0
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -152,5 +153,6 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     flex: 1,
     flexShrink: 1,
+    minWidth: 0
   },
 });
