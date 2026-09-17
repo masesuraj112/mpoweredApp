@@ -1,20 +1,29 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
-// Fake data for now — replace with real assessment state once the shape is confirmed
-const fakeSummary = {
-  period: '18-24 May',
-  locations: ['Lower back', 'Other: Knee'],
-  characteristics: ['aching', 'throbbing'],
-  intensity: {
-    current: { value: 0, description: 'I do not experience pain at the moment.' },
-    mildest: { value: 2, description: 'I have experienced mild pain.' },
-    worst: { value: 9, description: 'My worst pain was very severe.' },
-    average: { value: 7, description: 'I have experienced severe pain.' },
-  },
-};
+interface PainIntensityEntry {
+  value: number;
+  description: string;
+}
 
-export function PainSummary() {
+interface PainSummaryData {
+  period: string;
+  locations: string[];
+  characteristics: string[];
+  intensity: {
+    current: PainIntensityEntry;
+    mildest: PainIntensityEntry;
+    worst: PainIntensityEntry;
+    average: PainIntensityEntry;
+  };
+}
+
+interface PainSummaryProps {
+  summary: PainSummaryData;
+  onClose?: () => void;
+}
+
+export function PainSummary({ summary, onClose }: PainSummaryProps) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -25,32 +34,32 @@ export function PainSummary() {
       <View style={styles.card}>
         <View style={styles.cardHeaderRow}>
           <Text style={styles.cardTitle}>My Pain</Text>
-          <Text style={styles.periodText}>Period: {fakeSummary.period}</Text>
+          <Text style={styles.periodText}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
 
         <Text style={styles.sectionTitle}>Pain location</Text>
         <Text style={styles.bodyText}>I have pain in the following areas:</Text>
-        {fakeSummary.locations.map((loc) => (
+        {summary.locations.map((loc) => (
           <Text key={loc} style={styles.bulletText}>• {loc}</Text>
         ))}
 
         <Text style={styles.sectionTitle}>Pain characteristics</Text>
         <Text style={styles.bodyText}>
-          My pain were: <Text style={styles.boldInline}>{fakeSummary.characteristics.join(', ')}</Text>
+          My pain were: <Text style={styles.boldInline}>{summary.characteristics.join(', ')}</Text>
         </Text>
 
         <Text style={styles.sectionTitle}>Pain intensity</Text>
 
-        <IntensityRow label="Current Pain" value={fakeSummary.intensity.current.value} description={fakeSummary.intensity.current.description} />
-        <IntensityRow label="Mildest pain" value={fakeSummary.intensity.mildest.value} description={fakeSummary.intensity.mildest.description} />
-        <IntensityRow label="Worst pain" value={fakeSummary.intensity.worst.value} description={fakeSummary.intensity.worst.description} />
-        <IntensityRow label="Average pain" value={fakeSummary.intensity.average.value} description={fakeSummary.intensity.average.description} />
+        <IntensityRow label="Current Pain" value={summary.intensity.current.value} description={summary.intensity.current.description} />
+        <IntensityRow label="Mildest pain" value={summary.intensity.mildest.value} description={summary.intensity.mildest.description} />
+        <IntensityRow label="Worst pain" value={summary.intensity.worst.value} description={summary.intensity.worst.description} />
+        <IntensityRow label="Average pain" value={summary.intensity.average.value} description={summary.intensity.average.description} />
 
         <View style={styles.footerDivider} />
         <View style={styles.footerRow}>
           <Text style={styles.savedText}>Saved to My Health</Text>
-          <TouchableOpacity style={styles.closeButton}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -84,9 +93,11 @@ const styles = StyleSheet.create({
   },
   card: {
     borderWidth: 1,
-    borderColor: '#D0D0D0',
-    borderRadius: scaleWidth(15),
-    padding: scaleWidth(28),
+    borderColor: 'black',
+    borderRadius: scaleWidth(20),
+    paddingTop: scaleHeight(24),
+    paddingHorizontal: scaleWidth(20),
+    paddingBottom: scaleHeight(20),
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -94,8 +105,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: scaleFont(20),
-    fontWeight: 'bold',
+    fontSize: scaleFont(28),
+    fontWeight: '500',
   },
   periodText: {
     fontSize: scaleFont(13),
@@ -103,8 +114,8 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderTopWidth: 1,
-    borderTopColor: '#D0D0D0',
-    marginVertical: scaleHeight(22),
+    borderTopColor: 'black',
+    marginBottom: scaleHeight(20),
   },
   sectionTitle: {
     fontSize: scaleFont(20),
@@ -151,13 +162,13 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: scaleWidth(20),
-    paddingHorizontal: scaleWidth(20),
-    paddingVertical: scaleHeight(8),
+    borderColor: 'black',
+    borderRadius: scaleWidth(24),
+    paddingHorizontal: scaleWidth(22),
+    paddingVertical: scaleHeight(10),
   },
   closeButtonText: {
-    fontSize: scaleFont(14),
-    fontWeight: '600',
+    fontSize: scaleFont(18),
+    fontWeight: '400',
   },
 });

@@ -1,13 +1,15 @@
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { scaleWidth, scaleFont, scaleHeight } from '@/services/scale';
+import { ChoiceCard } from './ChoiceCard';
 
 interface PainSliderProps {
   underLinedText?: string;
   bottomDescription?: string;
   questionNumber?: number;
+  totalQuestions?: number;
   onValueChange?: (value: number) => void;
   onRecord?: () => void;
 }
@@ -16,7 +18,7 @@ const ROW_HEIGHT = scaleHeight(90);
 const TRACK_HEIGHT = scaleHeight(32);
 const THUMB_HEIGHT = scaleHeight(70);
 
-// Thumb width is derived as a ratio of the slider's own width (30% of the 412px
+// Thumb width is derived as a ratio of the slider's own width (90% of the 412px
 // Figma base), not the full screen — stays proportional to the slider itself
 // regardless of how much of the screen the slider occupies.
 const THUMB_WIDTH_RATIO = 9.5 / (412 * 0.9);
@@ -47,6 +49,7 @@ export function PainSliderInput({
   underLinedText,
   bottomDescription,
   questionNumber,
+  totalQuestions,
   onValueChange,
   onRecord,
 }: PainSliderProps) {
@@ -68,23 +71,29 @@ export function PainSliderInput({
   };
 
   const thumbWidth = sliderWidth ? sliderWidth * THUMB_WIDTH_RATIO : scaleWidth(9.5);
-  const thumbGap = thumbWidth / 2; // gap is half the thumb's own width — keeps it small and proportional
+  const thumbGap = thumbWidth / 2;
   const fillWidth = (value / 10) * sliderWidth;
 
-  return (
-    <View style={stylesSheet.container}>
-      <Text style={stylesSheet.titleText}>Pain Intensity</Text>
-      <Text style={stylesSheet.lineText}></Text>
-      <Text style={stylesSheet.painLevelText}>
-        My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
-        <TextInput
-          style={stylesSheet.underlineText}
-          keyboardType="number-pad"
-          value={String(value)}
-          onChangeText={changeNumber}
-        />
-      </Text>
+  const prompt = (
+    <Text style={stylesSheet.painLevelText}>
+      My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
+      <TextInput
+        style={stylesSheet.underlineText}
+        keyboardType="number-pad"
+        value={String(value)}
+        onChangeText={changeNumber}
+      />
+    </Text>
+  );
 
+  return (
+    <ChoiceCard
+      title="Pain Intensity"
+      prompt={prompt}
+      questionNumber={questionNumber}
+      totalQuestions={totalQuestions}
+      onRecord={onRecord}
+    >
       <View
         style={sliderSheet.container}
         onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
@@ -137,64 +146,14 @@ export function PainSliderInput({
       </View>
 
       <Text style={stylesSheet.descriptionText}>{bottomDescription}</Text>
-
-      {/* Footer: page indicator + Record button */}
-      <View style={footerStyles.row}>
-        <View style={footerStyles.pill}>
-          <Text style={footerStyles.pillText}>
-            {questionNumber ?? 1}/{6}
-          </Text>
-        </View>
-
-        <Pressable
-          onPress={onRecord}
-          style={({ pressed }) => [
-            footerStyles.pill,
-            footerStyles.recordButton,
-            pressed && footerStyles.recordButtonPressed,
-          ]}
-        >
-          <Text style={footerStyles.pillText}>Record</Text>
-          <Text style={footerStyles.arrow}>→</Text>
-        </Pressable>
-      </View>
-    </View>
+    </ChoiceCard>
   );
 }
 
 const stylesSheet = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#B0B0B0',
-    borderRadius: scaleWidth(16),
-    alignItems: 'center',
-    paddingTop: scaleHeight(16),
-    paddingHorizontal: scaleWidth(8),
-    paddingBottom: scaleHeight(16),
-  },
-
-  titleText: {
-    fontSize: scaleFont(28),
-    fontWeight: '500',
-    marginBottom: scaleHeight(15),
-    alignSelf: 'flex-start',
-  },
-
-  lineText: {
-    borderTopWidth: 1,
-    borderTopColor: '#B0B0B0',
-    width: '100%',
-    marginBottom: scaleHeight(15),
-  },
   painLevelText: {
-    margin: scaleWidth(15),
-    marginBottom: scaleHeight(35),
     fontSize: scaleFont(20),
     fontWeight: '700',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   underlineText: {
     fontSize: scaleFont(20),
@@ -220,6 +179,8 @@ const sliderSheet = StyleSheet.create({
     width: '90%',
     height: ROW_HEIGHT,
     justifyContent: 'center',
+    alignSelf: 'center',
+    minWidth: 0,
   },
   slider: {
     width: '100%',
@@ -243,7 +204,6 @@ const sliderSheet = StyleSheet.create({
     left: 0,
     height: TRACK_HEIGHT,
     borderRadius: TRACK_HEIGHT / 2,
-    // backgroundColor removed — LinearGradient now supplies the fill color
   },
   bubble: {
     position: 'absolute',
@@ -265,41 +225,5 @@ const sliderSheet = StyleSheet.create({
     backgroundColor: '#5B4A9E',
     borderRadius: 0,
     zIndex: 2,
-  },
-});
-
-const footerStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: scaleHeight(20),
-  },
-  pill: {
-    borderWidth: 1,
-    borderColor: '#B0B0B0',
-    borderRadius: scaleWidth(24),
-    paddingVertical: scaleHeight(10),
-    paddingHorizontal: scaleWidth(22),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recordButton: {
-    gap: scaleWidth(8),
-  },
-  recordButtonPressed: {
-    backgroundColor: '#F2F2F5',
-  },
-  pillText: {
-    fontSize: scaleFont(18),
-    fontWeight: '400',
-    color: 'black',
-  },
-  arrow: {
-    fontSize: scaleFont(18),
-    fontWeight: '400',
-    color: 'black',
   },
 });

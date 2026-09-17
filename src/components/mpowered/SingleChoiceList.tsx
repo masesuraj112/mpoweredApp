@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
+import { ChoiceCard } from './ChoiceCard';
 
 interface SingleChoiceProps {
   questionNumber?: number;
@@ -33,100 +34,51 @@ export function SingleChoiceInput({
     onSelectionChange?.(index);
   };
 
+  const prompt = (
+    <Text style={stylesSheet.promptText}>
+      Select the <Text style={stylesSheet.promptUnderline}>MOST</Text> relevant statement:
+    </Text>
+  );
+
   return (
-    <View style={stylesSheet.container}>
-      <Text style={stylesSheet.titleText}>Walking Impacts</Text>
-      <Text style={stylesSheet.lineText}></Text>
+    <ChoiceCard
+      title="Walking Impacts"
+      prompt={prompt}
+      questionNumber={questionNumber}
+      totalQuestions={totalQuestions}
+      onRecord={onRecord}
+    >
+      {options.map((option, index) => {
+        const isSelected = index === selectedIndex;
+        const isLast = index === options.length - 1;
 
-      <Text style={stylesSheet.promptText}>
-        Select the <Text style={stylesSheet.promptUnderline}>MOST</Text> relevant statement:
-      </Text>
-
-      {/* Radio list */}
-      <View style={stylesSheet.optionsList}>
-        {options.map((option, index) => {
-          const isSelected = index === selectedIndex;
-          const isLast = index === options.length - 1;
-
-          return (
-            <Pressable
-              key={index}
-              onPress={() => handleSelect(index)}
-              style={[
-                optionStyles.row,
-                !isLast && optionStyles.rowDivider,
-              ]}
-            >
-              <View style={[optionStyles.circle, isSelected && optionStyles.circleSelected]}>
-                {isSelected && <View style={optionStyles.circleDot} />}
-              </View>
-              <Text style={optionStyles.label}>{option}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      {/* Footer: page indicator + Record button */}
-      <View style={footerStyles.row}>
-        <View style={footerStyles.pill}>
-          <Text style={footerStyles.pillText}>
-            {questionNumber ?? 1}/{totalQuestions ?? 7}
-          </Text>
-        </View>
-
-        <Pressable
-          onPress={onRecord}
-          style={({ pressed }) => [
-            footerStyles.pill,
-            footerStyles.recordButton,
-            pressed && footerStyles.recordButtonPressed,
-          ]}
-        >
-          <Text style={footerStyles.pillText}>Record</Text>
-          <Text style={footerStyles.arrow}>→</Text>
-        </Pressable>
-      </View>
-    </View>
+        return (
+          <Pressable
+            key={index}
+            onPress={() => handleSelect(index)}
+            style={[
+              optionStyles.row,
+              !isLast && optionStyles.rowDivider,
+            ]}
+          >
+            <View style={[optionStyles.circle, isSelected && optionStyles.circleSelected]}>
+              {isSelected && <View style={optionStyles.circleDot} />}
+            </View>
+            <Text style={optionStyles.label}>{option}</Text>
+          </Pressable>
+        );
+      })}
+    </ChoiceCard>
   );
 }
 
 const stylesSheet = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderRadius: scaleWidth(20),
-    alignItems: 'stretch', // changed from 'center' so option rows and text can go full-width
-    paddingTop: scaleHeight(24),        // ← space between the card's top border and its content
-    paddingHorizontal: scaleWidth(20),  // keeps left/right inset consistent
-    paddingBottom: scaleHeight(20),
-  },
-
-  titleText: {
-    fontSize: scaleFont(28),
-    fontWeight: '500',
-    marginBottom: scaleHeight(15),
-    alignSelf: 'flex-start',
-  },
-
-  lineText: {
-    borderTopWidth: 1,
-    borderTopColor: 'black',
-    width: '100%',
-    marginBottom: scaleHeight(20),
-  },
-
   promptText: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    marginBottom: scaleHeight(10),
   },
   promptUnderline: {
     textDecorationLine: 'underline',
-  },
-
-  optionsList: {
-    width: '100%',
   },
 });
 
@@ -135,6 +87,7 @@ const optionStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: scaleHeight(16),
+    minWidth: 0,
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -166,41 +119,6 @@ const optionStyles = StyleSheet.create({
     color: '#1A1A1A',
     flex: 1,
     flexShrink: 1,
-  },
-});
-
-const footerStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: scaleHeight(20),
-  },
-  pill: {
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: scaleWidth(24),
-    paddingVertical: scaleHeight(10),
-    paddingHorizontal: scaleWidth(22),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recordButton: {
-    gap: scaleWidth(8),
-  },
-  recordButtonPressed: {
-    backgroundColor: '#F2F2F5',
-  },
-  pillText: {
-    fontSize: scaleFont(18),
-    fontWeight: '400',
-    color: 'black',
-  },
-  arrow: {
-    fontSize: scaleFont(18),
-    fontWeight: '400',
-    color: 'black',
+    minWidth: 0,
   },
 });
