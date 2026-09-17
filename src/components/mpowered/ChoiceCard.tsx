@@ -43,7 +43,13 @@ export function ChoiceCard({
       <View style={styles.divider} />
 
       {typeof prompt === 'string' ? (
-        <Text style={styles.promptText}>{prompt}</Text>
+        <View style={styles.promptWrapper}>
+          {typeof prompt === 'string' ? (
+           <Text style={styles.promptText}>{prompt}</Text>
+          ) : (
+            prompt
+          )}
+       </View>
       ) : (
         <View style={styles.promptContainer}>{prompt}</View>
       )}
@@ -116,10 +122,12 @@ const styles = StyleSheet.create({
   promptContainer: {
     marginBottom: scaleHeight(10),
   },
+  promptWrapper: {
+    marginBottom: scaleHeight(10),
+  },
   promptText: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    marginBottom: scaleHeight(10),
   },
   optionsList: {
     width: '100%',
