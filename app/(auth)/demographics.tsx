@@ -4,7 +4,7 @@
 
 import { PainSliderInput } from '@/components/mpowered/PainSlider';
 import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
-import { PainSummary } from '@/components/mpowered/PainSummary';
+
 
 import { StyleSheet, View } from 'react-native';
 import { scaleWidth, scaleHeight } from '@/services/scale';
