@@ -4,14 +4,25 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { scaleWidth, scaleFont, scaleHeight } from '@/services/scale';
 import { ChoiceCard } from './ChoiceCard';
+import { ScoreThresholds } from '@/constants/scoring-thresholds';
 
-interface PainSliderProps {
+interface ScaleSliderProps {
+  titleText: string;
   underLinedText?: string;
   bottomDescription?: string;
   questionNumber?: number;
   totalQuestions?: number;
+  assessmentType?: string;
   onValueChange?: (value: number) => void;
   onRecord?: () => void;
+}
+
+function getScoreDescription(assessmentType: string | undefined, value: number): string | undefined {
+  if (!assessmentType || !(assessmentType in ScoreThresholds)) {
+    return undefined;
+  }
+  const thresholds = ScoreThresholds[assessmentType as keyof typeof ScoreThresholds];
+  return thresholds[value as keyof typeof thresholds];
 }
 
 const ROW_HEIGHT = scaleHeight(90);
@@ -45,14 +56,17 @@ function getGradientColors(value: number): [string, string] {
   return [startColor, endColor];
 }
 
-export function PainSliderInput({
+export function ScaleSliderInput({
+  titleText,
   underLinedText,
   bottomDescription,
   questionNumber,
   totalQuestions,
+  assessmentType,
   onValueChange,
   onRecord,
-}: PainSliderProps) {
+
+}: ScaleSliderProps) {
   const [value, setValue] = useState(0);
   const [sliderWidth, setSliderWidth] = useState(0);
 
@@ -88,7 +102,7 @@ export function PainSliderInput({
 
   return (
     <ChoiceCard
-      title="Pain Intensity"
+      title={titleText}
       prompt={prompt}
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
@@ -145,7 +159,7 @@ export function PainSliderInput({
         />
       </View>
 
-      <Text style={stylesSheet.descriptionText}>{bottomDescription}</Text>
+      <Text style={stylesSheet.descriptionText}>{getScoreDescription(assessmentType, value)}</Text>
     </ChoiceCard>
   );
 }
