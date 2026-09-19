@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
 interface PainIntensityEntry {
@@ -45,37 +45,49 @@ export default function PainSummary({ summary = MOCK_SUMMARY, onClose }: PainSum
       </Text>
 
       <View style={styles.card}>
-        <View style={styles.cardHeaderRow}>
-          <Text style={styles.cardTitle}>My Pain</Text>
-          <Text style={styles.periodText}>Period: {summary.period}</Text>
-        </View>
-        <View style={styles.divider} />
+        <ScrollView
+          contentContainerStyle={styles.cardScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.cardTitle}>My Pain</Text>
+              <Text style={styles.periodText}>Period: {summary.period}</Text>
+            </View>
+            <View style={styles.divider} />
 
-        <Text style={styles.sectionTitle}>Pain location</Text>
-        <Text style={styles.bodyText}>I have pain in the following areas:</Text>
-        {summary.locations.map((loc) => (
-          <Text key={loc} style={styles.bulletText}>• {loc}</Text>
-        ))}
+            <Text style={styles.sectionTitle}>Pain location</Text>
+            <Text style={styles.bodyText}>I have pain in the following areas:</Text>
+            <View style={styles.bulletRow}>
+              {summary.locations.map((loc) => (
+                <Text key={loc} style={styles.bulletText}>• {loc}</Text>
+              ))}
+            </View>
 
-        <Text style={styles.sectionTitle}>Pain characteristics</Text>
-        <Text style={styles.bodyText}>
-          My pain were: <Text style={styles.boldInline}>{summary.characteristics.join(', ')}</Text>
-        </Text>
+            <Text style={styles.sectionTitle}>Pain characteristics</Text>
+            <Text style={styles.bodyText}>
+              My pain were: <Text style={styles.boldInline}>{summary.characteristics.join(', ')}</Text>
+            </Text>
 
-        <Text style={styles.sectionTitle}>Pain intensity</Text>
+            <Text style={styles.sectionTitle}>Pain intensity</Text>
+            <View style={styles.intensityGrid}>
+              <IntensityRow label="Current Pain" value={summary.intensity.current.value} description={summary.intensity.current.description} />
+              <IntensityRow label="Mildest pain" value={summary.intensity.mildest.value} description={summary.intensity.mildest.description} />
+              <IntensityRow label="Worst pain" value={summary.intensity.worst.value} description={summary.intensity.worst.description} />
+              <IntensityRow label="Average pain" value={summary.intensity.average.value} description={summary.intensity.average.description} />
+            </View>
+          </View>
 
-        <IntensityRow label="Current Pain" value={summary.intensity.current.value} description={summary.intensity.current.description} />
-        <IntensityRow label="Mildest pain" value={summary.intensity.mildest.value} description={summary.intensity.mildest.description} />
-        <IntensityRow label="Worst pain" value={summary.intensity.worst.value} description={summary.intensity.worst.description} />
-        <IntensityRow label="Average pain" value={summary.intensity.average.value} description={summary.intensity.average.description} />
-
-        <View style={styles.footerDivider} />
-        <View style={styles.footerRow}>
-          <Text style={styles.savedText}>Saved to My Health</Text>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.footerContainer}>
+            <View style={styles.footerDivider} />
+            <View style={styles.footerRow}>
+              <Text style={styles.savedText}>Saved to My Health</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -92,25 +104,32 @@ function IntensityRow({ label, value, description }: { label: string; value: num
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
     padding: scaleWidth(20),
   },
   heading: {
-    fontSize: scaleFont(26),
+    fontSize: scaleFont(24),
     fontWeight: 'bold',
-    marginBottom: scaleHeight(10),
+    marginBottom: scaleHeight(6),
   },
   subheading: {
-    fontSize: scaleFont(15),
+    fontSize: scaleFont(14),
     color: '#333',
-    marginBottom: scaleHeight(28),
+    marginBottom: scaleHeight(18),
   },
   card: {
+    flex: 1,
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: scaleWidth(20),
-    paddingTop: scaleHeight(24),
-    paddingHorizontal: scaleWidth(20),
+    paddingHorizontal: scaleWidth(22),
+    paddingTop: scaleHeight(20),
     paddingBottom: scaleHeight(20),
+    overflow: 'hidden',
+  },
+  cardScrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -118,7 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: scaleFont(28),
+    fontSize: scaleFont(26),
     fontWeight: '500',
   },
   periodText: {
@@ -128,41 +147,55 @@ const styles = StyleSheet.create({
   divider: {
     borderTopWidth: 1,
     borderTopColor: 'black',
-    marginBottom: scaleHeight(20),
+    marginBottom: scaleHeight(16),
   },
   sectionTitle: {
-    fontSize: scaleFont(20),
-    marginTop: scaleHeight(26),
-    marginBottom: scaleHeight(14),
+    fontSize: scaleFont(18),
+    marginTop: scaleHeight(16),
+    marginBottom: scaleHeight(8),
   },
   bodyText: {
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(13),
     color: '#333',
-    lineHeight: scaleFont(20),
+    lineHeight: scaleFont(18),
+  },
+  bulletRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: scaleWidth(16),
+    marginTop: scaleHeight(6),
   },
   bulletText: {
     fontSize: scaleFont(14),
     fontWeight: 'bold',
-    marginLeft: scaleWidth(10),
-    marginTop: scaleHeight(8),
+    marginTop: scaleHeight(4),
   },
   boldInline: {
     fontWeight: 'bold',
   },
+  intensityGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: scaleHeight(8),
+  },
   intensityRow: {
-    marginTop: scaleHeight(20),
+    width: '48%',
+    marginTop: scaleHeight(14),
   },
   intensityLabel: {
     fontSize: scaleFont(13),
     fontWeight: '600',
     color: '#555',
-    marginBottom: scaleHeight(6),
+    marginBottom: scaleHeight(4),
+  },
+  footerContainer: {
+    marginTop: scaleHeight(16),
   },
   footerDivider: {
     borderTopWidth: 1,
     borderTopColor: '#D0D0D0',
-    marginTop: scaleHeight(30),
-    marginBottom: scaleHeight(20),
+    marginBottom: scaleHeight(16),
   },
   footerRow: {
     flexDirection: 'row',
@@ -171,17 +204,17 @@ const styles = StyleSheet.create({
   },
   savedText: {
     color: '#888',
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(13),
   },
   closeButton: {
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: scaleWidth(24),
-    paddingHorizontal: scaleWidth(22),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(9),
   },
   closeButtonText: {
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(16),
     fontWeight: '400',
   },
 });
