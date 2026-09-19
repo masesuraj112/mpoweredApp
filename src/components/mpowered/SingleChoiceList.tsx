@@ -4,6 +4,7 @@ import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 import { ChoiceCard } from './ChoiceCard';
 
 interface SingleChoiceProps {
+  titleText: string,
   questionNumber?: number;
   totalQuestions?: number;
   options?: string[];
@@ -11,19 +12,13 @@ interface SingleChoiceProps {
   onSelectionChange?: (selectedIndex: number) => void;
 }
 
-const DEFAULT_OPTIONS = [
-  'Pain does not prevent me walking any distance',
-  'Pain prevents me from walking more than 2 kilometres',
-  'Pain prevents me from walking more than 1 kilometres',
-  'Pain prevents me from walking more than 500 metres',
-  'I can only walk using a stick or crutches',
-  'I am in bed most of the time',
-];
+
 
 export function SingleChoiceInput({
+  titleText,
   questionNumber,
   totalQuestions,
-  options = DEFAULT_OPTIONS,
+  options,
   onRecord,
   onSelectionChange,
 }: SingleChoiceProps) {
@@ -42,13 +37,13 @@ export function SingleChoiceInput({
 
   return (
     <ChoiceCard
-      title="Walking Impacts"
+      title={titleText}
       prompt={prompt}
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
       onRecord={onRecord}
     >
-      {options.map((option, index) => {
+      {options?.map((option, index) => {
         const isSelected = index === selectedIndex;
         const isLast = index === options.length - 1;
 

@@ -9,12 +9,22 @@ import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
 import { StyleSheet, View } from 'react-native';
 import { scaleWidth, scaleHeight } from '@/services/scale';
 
+
+const DEFAULT_OPTIONS = [
+  'Pain does not prevent me walking any distance',
+  'Pain prevents me from walking more than 2 kilometres',
+  'Pain prevents me from walking more than 1 kilometres',
+  'Pain prevents me from walking more than 500 metres',
+  'I can only walk using a stick or crutches',
+  'I am in bed most of the time',
+];
+
 export default function Demographics() {
   return (
     <View style={styles.screen}>
       
-      <ScaleSliderInput underLinedText={'worst pain'} titleText={'Pain Intensity'} bottomDescription={'The pain was fairly severe'} assessmentType={'pain'} questionNumber={3}/> 
-      {/* <SingleChoiceInput /> */}
+      {/* <ScaleSliderInput underLinedText={'worst pain'} titleText={'Pain In'} bottomDescription={'The pain was fairly severe'} assessmentType={'pain'} questionNumber={3}/>  */}
+      <SingleChoiceInput titleText={'Walking Impacts'} options={DEFAULT_OPTIONS} />
     </View>
   );
 }
