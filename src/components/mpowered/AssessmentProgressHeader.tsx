@@ -15,9 +15,6 @@ export function AssessmentProgressHeader({ steps, title }: Props) {
 
   return (
     <View>
-      <Text>{title}</Text>
-      <Text>{isSummary ? 'Review' : `Step ${currentIndex + 1} of ${steps.length}`}</Text>
-      {/* progress bar/dots here */}
     </View>
   );
 }

@@ -59,7 +59,6 @@ function getGradientColors(value: number): [string, string] {
 export function ScaleSliderInput({
   titleText,
   underLinedText,
-  bottomDescription,
   questionNumber,
   totalQuestions,
   assessmentType,
