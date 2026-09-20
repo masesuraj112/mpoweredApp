@@ -14,9 +14,8 @@ export default function CurrePainLevel() {
       {/* input component goes here */}
       <Text style={styles.cardTitle}>My Pain</Text>
       
-      <ScaleSliderInput underLinedText={'mildest pain'} titleText={'Pain Intensity'} assessmentType={'pain'} questionNumber={3}/> 
+      <ScaleSliderInput underLinedText={'mildest pain'} titleText={'Pain Intensity'} assessmentType={'pain'} questionNumber={4} totalQuestions={6} onRecord={() => router.push('/tracker/pain/worst')}/> 
 
-      <Button title="Next" onPress={() => router.push('/tracker/pain/worst')} />
     </View>
   );
 }
