@@ -19,6 +19,7 @@ interface ChoiceCardProps {
   onRecord?: () => void;
   onPrevious?: () => void;
   previousDisabled?: boolean;
+  validationMessage?: string;
   isRecording?: boolean;
   disabled?: boolean;
   variant?: 'default' | 'painTracker';
@@ -34,6 +35,7 @@ export function ChoiceCard({
   onRecord,
   onPrevious,
   previousDisabled = false,
+  validationMessage,
   isRecording = false,
   disabled = false,
   variant = 'default',
@@ -64,6 +66,10 @@ export function ChoiceCard({
       <View style={[styles.optionsList, variant === 'painTracker' && styles.painTrackerOptionsList]}>
         {children}
       </View>
+
+      {validationMessage && (
+        <Text style={styles.validationMessage}>{validationMessage}</Text>
+      )}
 
       {showFooter && (
         <View
@@ -175,6 +181,13 @@ const styles = StyleSheet.create({
   promptText: {
     fontSize: scaleFont(15),
     fontWeight: '600',
+  },
+  validationMessage: {
+    color: '#B3261E',
+    fontSize: scaleFont(12),
+    lineHeight: scaleHeight(16),
+    textAlign: 'right',
+    marginTop: scaleHeight(10),
   },
   optionsList: {
     width: '100%',

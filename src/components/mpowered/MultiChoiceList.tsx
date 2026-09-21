@@ -21,12 +21,14 @@ interface MultiChoiceListProps {
   onRecord?: () => void;
   onPrevious?: () => void;
   previousDisabled?: boolean;
+  validationMessage?: string;
   disabled?: boolean;
   variant?: 'default' | 'painTracker';
   searchEnabled?: boolean;
   searchPlaceholder?: string;
   scrollable?: boolean;
   listHeight?: number;
+  selectedChipsEnabled?: boolean;
 }
 
 export function MultiChoiceList({
@@ -42,12 +44,14 @@ export function MultiChoiceList({
   onRecord,
   onPrevious,
   previousDisabled = false,
+  validationMessage,
   disabled = false,
   variant = 'default',
   searchEnabled,
   searchPlaceholder = 'Search',
   scrollable,
   listHeight,
+  selectedChipsEnabled,
 }: MultiChoiceListProps) {
   const [internalSelected, setInternalSelected] = useState<number[]>([]);
   const isControlled = selectedIndices !== undefined;
@@ -55,6 +59,7 @@ export function MultiChoiceList({
   const [searchText, setSearchText] = useState('');
   const showSearch = searchEnabled ?? variant === 'painTracker';
   const showScrollable = scrollable ?? variant === 'painTracker';
+  const showSelectedChips = selectedChipsEnabled ?? variant === 'painTracker';
   const filteredOptions = options
     .map((option, originalIndex) => ({ option, originalIndex }))
     .filter(({ option }) => option.toLowerCase().includes(searchText.trim().toLowerCase()));
@@ -93,6 +98,7 @@ export function MultiChoiceList({
       onRecord={onRecord}
       onPrevious={onPrevious}
       previousDisabled={previousDisabled}
+      validationMessage={validationMessage}
       disabled={disabled}
       variant={variant}
     >
@@ -104,7 +110,7 @@ export function MultiChoiceList({
           style={styles.searchInput}
         />
       )}
-      {variant === 'painTracker' && selected.length > 0 && (
+      {showSelectedChips && selected.length > 0 && (
         <View style={styles.selectedChips}>
           {selected.map(index => (
             <Pressable
