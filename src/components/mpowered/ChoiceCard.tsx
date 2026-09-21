@@ -20,6 +20,7 @@ interface ChoiceCardProps {
   onPrevious?: () => void;
   previousDisabled?: boolean;
   validationMessage?: string;
+  cardHeight?: number;
   isRecording?: boolean;
   disabled?: boolean;
   variant?: 'default' | 'painTracker';
@@ -36,6 +37,7 @@ export function ChoiceCard({
   onPrevious,
   previousDisabled = false,
   validationMessage,
+  cardHeight,
   isRecording = false,
   disabled = false,
   variant = 'default',
@@ -47,7 +49,14 @@ export function ChoiceCard({
   const showFooter = showPager || showRecord || showNavigation;
 
   return (
-    <View style={[styles.container, variant === 'painTracker' && styles.painTrackerContainer, style]}>
+    <View
+      style={[
+        styles.container,
+        variant === 'painTracker' && styles.painTrackerContainer,
+        cardHeight !== undefined && { height: cardHeight },
+        style,
+      ]}
+    >
       <Text style={[styles.titleText, variant === 'painTracker' && styles.painTrackerTitle]}>{title}</Text>
       <View style={[styles.divider, variant === 'painTracker' && styles.painTrackerDivider]} />
 
@@ -113,9 +122,19 @@ export function ChoiceCard({
                 accessibilityRole="button"
                 accessibilityLabel="Next"
                 accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
-                style={[footerStyles.navigationButton, (disabled || isRecording || !onRecord) && footerStyles.buttonDisabled]}
+                style={[
+                  footerStyles.navigationButton,
+                  (disabled || isRecording || !onRecord) && footerStyles.disabledNavigationButton,
+                ]}
               >
-                <Text style={footerStyles.nextButtonText}>Next →</Text>
+                <Text
+                  style={[
+                    footerStyles.nextButtonText,
+                    (disabled || isRecording || !onRecord) && footerStyles.disabledNavigationButtonText,
+                  ]}
+                >
+                  Next →
+                </Text>
               </Pressable>
             </View>
           )}
@@ -215,8 +234,8 @@ const styles = StyleSheet.create({
     marginBottom: scaleHeight(14),
   },
   painTrackerPrompt: {
-    height: scaleHeight(60),
-    marginBottom: 0,
+    height: scaleHeight(68),
+    marginBottom: scaleHeight(4),
   },
 });
 
@@ -310,6 +329,12 @@ const footerStyles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
+  },
+  disabledNavigationButton: {
+    backgroundColor: '#E8DEF8',
+  },
+  disabledNavigationButtonText: {
+    color: '#49454F',
   },
   pillText: {
     fontSize: scaleFont(18),

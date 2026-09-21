@@ -12,6 +12,7 @@ export const PAIN_CHARACTERISTICS_OPTIONS = [
   'Sharp',
   'Tender',
   'Burning',
+  'Exhausting',
 ] as const;
 
 export default function PainCharacteristicsScreen() {
@@ -68,12 +69,13 @@ export default function PainCharacteristicsScreen() {
           questionNumber={2}
           totalQuestions={6}
           onRecord={handleNext}
-          onPrevious={() => router.back()}
+          onPrevious={() => router.push('/tracker/pain/location')}
           disabled={selected.length === 0}
           validationMessage="This question is mandatory and requires a response"
+          cardHeight={scaleHeight(599)}
           variant="painTracker"
           searchEnabled
-          scrollable={false}
+          scrollable
           selectedChipsEnabled={false}
         />
       </View>

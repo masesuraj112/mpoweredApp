@@ -1,10 +1,10 @@
+import { ScoreThresholds } from '@/constants/scoring-thresholds';
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { scaleWidth, scaleFont, scaleHeight } from '@/services/scale';
 import { ChoiceCard } from './ChoiceCard';
-import { ScoreThresholds } from '@/constants/scoring-thresholds';
 
 interface ScaleSliderProps {
   titleText: string;
@@ -15,6 +15,11 @@ interface ScaleSliderProps {
   assessmentType?: string;
   onValueChange?: (value: number) => void;
   onRecord?: () => void;
+  onPrevious?: () => void;
+  previousDisabled?: boolean;
+  disabled?: boolean;
+  initialValue?: number;
+  variant?: 'default' | 'painTracker';
 }
 
 function getScoreDescription(assessmentType: string | undefined, value: number): string | undefined {
@@ -64,9 +69,14 @@ export function ScaleSliderInput({
   assessmentType,
   onValueChange,
   onRecord,
+  onPrevious,
+  previousDisabled = false,
+  disabled = false,
+  initialValue = 0,
+  variant = 'default',
 
 }: ScaleSliderProps) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(initialValue);
   const [sliderWidth, setSliderWidth] = useState(0);
 
   // This function prevents input from being less than 0 or greater than 10
@@ -106,6 +116,10 @@ export function ScaleSliderInput({
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
       onRecord={onRecord}
+      onPrevious={onPrevious}
+      previousDisabled={previousDisabled}
+      disabled={disabled}
+      variant={variant}
     >
       <View
         style={sliderSheet.container}

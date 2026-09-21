@@ -22,6 +22,7 @@ interface MultiChoiceListProps {
   onPrevious?: () => void;
   previousDisabled?: boolean;
   validationMessage?: string;
+  cardHeight?: number;
   disabled?: boolean;
   variant?: 'default' | 'painTracker';
   searchEnabled?: boolean;
@@ -45,6 +46,7 @@ export function MultiChoiceList({
   onPrevious,
   previousDisabled = false,
   validationMessage,
+  cardHeight,
   disabled = false,
   variant = 'default',
   searchEnabled,
@@ -99,6 +101,7 @@ export function MultiChoiceList({
       onPrevious={onPrevious}
       previousDisabled={previousDisabled}
       validationMessage={validationMessage}
+      cardHeight={cardHeight}
       disabled={disabled}
       variant={variant}
     >
