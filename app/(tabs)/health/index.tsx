@@ -2,10 +2,18 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { PainTrendChart, type PainTrendPoint } from '@/components/mpowered/PainTrendChart';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
-const painTrendChart = require('../../../assets/images/health/pain-trend-chart.png');
+
+// TODO: replace with a Supabase query once tracking data is wired up, e.g.
+// supabase.from('pain_assessment').select('date, average_pain_level').eq('users_id', userId).order('date')
+const FAKE_PAIN_TREND: PainTrendPoint[] = [
+  { label: '25/05', value: 5 },
+  { label: '01/06', value: 5 },
+  { label: '08/06', value: 7 },
+];
 
 export default function HealthScreen() {
   return (
@@ -38,7 +46,7 @@ export default function HealthScreen() {
         <View style={styles.shortcutRow}>
           <Pressable
             style={styles.shortcutCard}
-            onPress={() => router.push('/health/tracking/history')}
+            onPress={() => router.push('/health/tracking/chart')}
           >
             <Text style={styles.shortcutText}>Check my health tracking records</Text>
           </Pressable>
@@ -57,7 +65,9 @@ export default function HealthScreen() {
           </Text>
           <Text style={styles.trendSubtitle}>Your average pain increased</Text>
 
-          <Image source={painTrendChart} style={styles.trendChart} contentFit="contain" />
+          <View style={styles.trendChart}>
+            <PainTrendChart data={FAKE_PAIN_TREND} height={styles.trendChart.height} />
+          </View>
 
           <View style={styles.actionRow}>
             <Pressable
