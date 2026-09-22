@@ -8,11 +8,13 @@ type AuthContextType = {
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
-  loading: true,
-});
+// const AuthContext = createContext<AuthContextType>({
+//   user: null,
+//   session: null,
+//   loading: true,
+// });
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [session, setSession] = useState<Session | null>(null);
