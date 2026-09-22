@@ -48,5 +48,6 @@
     "lint": "expo lint",
     "format": "prettier --write ."
   },
-  "private": true
+  "private": true,
+  "typecheck": "tsc --noEmit"
 }
