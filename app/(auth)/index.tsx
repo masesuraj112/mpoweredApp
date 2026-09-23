@@ -6,14 +6,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const HAS_ONBOARDED_KEY = 'mpowered:hasOnboarded';
 
-// export default function AuthPlaceholder() {
-//   return (
-//     <View>
-//       <Text>Auth screen placeholder</Text>
-//     </View>
-//   );
-// }
-
 export default function SplashScreen() {
   useEffect(() => {
     const decideRoute = async () => {

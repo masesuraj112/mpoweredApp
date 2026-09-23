@@ -3,12 +3,19 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+// An attempt to invalidate names that are clearly not real names, but this is not foolproof. 
+// We will need to do more research on how to validate names properly.
+const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
 export default function NameScreen() {
   const { data, updateData } = useOnboarding();
   const [name, setName] = useState(data.name);
 
+  const trimmed = name.trim();
+  const isValid = trimmed.length > 0 && NAME_REGEX.test(trimmed);
+
   const handleContinue = () => {
-    updateData({ name: name.trim() });
+    updateData({ name: trimmed });
     router.push('/(auth)/consent');
   };
 

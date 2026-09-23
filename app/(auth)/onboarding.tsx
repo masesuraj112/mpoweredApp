@@ -11,10 +11,6 @@ const SLIDES = [
     'Get tailored questions to assist your medical consultation',
 ];
 
-
-
-
-
 export default function OnboardingCarouesel() {
     const [index, setIndex] = useState(0);
     const scrollRef = useRef<ScrollView>(null);
