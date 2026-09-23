@@ -59,10 +59,11 @@ export default function HealthScreen() {
         </View>
 
         <View style={styles.trendSection}>
-          <Text style={styles.trendInsight}>
-            New insights for your{' '}
-            <Text style={styles.trendInsightSuperscript}>Powered</Text> plan.
-          </Text>
+          <View style={styles.trendInsightRow}>
+            <Text style={styles.trendInsight}>New insights for your m</Text>
+            <Text style={[styles.trendInsight, styles.trendInsightSuperscript]}>powered</Text>
+            <Text style={styles.trendInsight}> plan.</Text>
+          </View>
           <Text style={styles.trendSubtitle}>Your average pain increased</Text>
 
           <View style={styles.trendChart}>
@@ -82,7 +83,10 @@ export default function HealthScreen() {
             >
               <Text style={styles.actionButtonText}>Plan Appointment</Text>
             </Pressable>
-            <Pressable style={[styles.actionButton, styles.actionButtonRight]}>
+            <Pressable
+              style={[styles.actionButton, styles.actionButtonRight]}
+              onPress={() => router.push('/health/pain-guide')}
+            >
               <Text style={styles.actionButtonText}>Pain Guide</Text>
             </Pressable>
           </View>
@@ -203,8 +207,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: 'black',
   },
+  trendInsightRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+  },
   trendInsightSuperscript: {
     fontSize: scaleFont(10),
+    lineHeight: scaleFont(12),
   },
   trendSubtitle: {
     fontSize: scaleFont(14),
