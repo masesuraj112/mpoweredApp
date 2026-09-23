@@ -10,7 +10,7 @@ export default function DemographicsScreen() {
   const handleContinue = () => {
     const parsed = yearOfBirth.trim() ? parseInt(yearOfBirth, 10) : null;
     updateData({ yearOfBirth: parsed });
-    // TODO: point at /(auth)/health-conditions once that screen exists
+    // This just navigate to the start of onboarding, will be changed in future branches
     router.push('/(auth)/onboarding');
   };
 
