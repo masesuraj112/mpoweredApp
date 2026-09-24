@@ -10,8 +10,8 @@ export default function DemographicsScreen() {
   const handleContinue = () => {
     const parsed = yearOfBirth.trim() ? parseInt(yearOfBirth, 10) : null;
     updateData({ yearOfBirth: parsed });
-    // This just navigate to the start of onboarding, will be changed in future branches
-    router.push('/(auth)/onboarding');
+    // The route exists in the app tree, but the generated Expo Router types can lag during local development.
+    router.push('/(auth)/diagnosis' as any);
   };
 
   return (
