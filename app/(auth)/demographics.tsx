@@ -1,69 +1,81 @@
+import { useOnboarding } from '@/context/Onboarding-Context';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+export default function DemographicsScreen() {
+  const { data, updateData } = useOnboarding();
+  const [yearOfBirth, setYearOfBirth] = useState(data.yearOfBirth?.toString() ?? '');
 
+  const handleContinue = () => {
+    const parsed = yearOfBirth.trim() ? parseInt(yearOfBirth, 10) : null;
+    updateData({ yearOfBirth: parsed });
+    // The route exists in the app tree, but the generated Expo Router types can lag during local development.
+    router.push('/(auth)/diagnosis' as any);
+  };
 
-
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
-
-
-import { StyleSheet, View } from 'react-native';
-import { scaleWidth, scaleHeight } from '@/services/scale';
-
-
-const DEFAULT_OPTIONS = [
-  'Pain does not prevent me walking any distance',
-  'Pain prevents me from walking more than 2 kilometres',
-  'Pain prevents me from walking more than 1 kilometres',
-  'Pain prevents me from walking more than 500 metres',
-  'I can only walk using a stick or crutches',
-  'I am in bed most of the time',
-];
-
-export default function Demographics() {
   return (
-    <View style={styles.screen}>
-      
-      {/* <ScaleSliderInput underLinedText={'worst pain'} titleText={'Pain In'} bottomDescription={'The pain was fairly severe'} assessmentType={'pain'} questionNumber={3}/>  */}
-      <SingleChoiceInput titleText={'Walking Impacts'} options={DEFAULT_OPTIONS} />
-    </View>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <Text style={styles.title}>Your year of birth</Text>
+      <Text style={styles.optional}>This question is optional</Text>
+      <TextInput
+        value={yearOfBirth}
+        onChangeText={setYearOfBirth}
+        placeholder="YYYY"
+        keyboardType="number-pad"
+        maxLength={4}
+        style={styles.input}
+      />
+      <Pressable style={styles.continueButton} onPress={handleContinue}>
+        <Text style={styles.continueText}>Continue</Text>
+      </Pressable>
+      <Text style={styles.tip}>💡 Research shows that people can feel pain differently depending on their age</Text>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    paddingHorizontal: 10,
-    paddingTop: 20, // extra top space to clear the status bar/notch area
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 100,
+    alignItems: 'center'
   },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 8
+  },
+  optional: {
+    color: '#8A8590', marginBottom: 24 
+  },
+  input: {
+    width: '100%',
+    backgroundColor: '#EDE9F5',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 40
+  },
+  continueButton: {
+    backgroundColor: '#5B3FA5',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 24,
+    alignItems: 'center'
+  },
+  continueText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16
+  },
+  tip: {
+    textAlign: 'center',
+    color: '#8A8590',
+    marginTop: 24,
+    fontSize: 13,
+    paddingHorizontal: 16
+},
 });
-
-// export default function Demographics() {
-//   return (
-//     <View>
-//       {/* <PainSummary/> */}
-//       {/* <PainSliderInput underLinedText={'worst pain'} bottomDescription={'The pain was fairly severe'} questionNumber={3}/>  */}
-//       <SingleChoiceInput questionNumber={3}/>
-//     </View>
-//   )
-// }
-// // export default function Demographics() {
-// //   return (
-// //     <View style={stylesSheet.container}>
-// //     <Text style={stylesSheet.title} >Demographics — TODO</Text>
-// //     </View>
-// //   );
-// // }
-// // const stylesSheet = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //     alignItems: 'center',
-// //     justifyContent: 'center',
-// //     borderWidth: 2,
-// //     display: 'flex'
-
-
-// //   },
-// //   title: {
-// //     fontSize: 20,
-// //     fontWeight: 'bold',
-// //   },
-// // });
