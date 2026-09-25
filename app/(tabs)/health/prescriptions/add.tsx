@@ -1,22 +1,66 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Dropdown } from '@/components/mpowered/Dropdown';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+const STRENGTH_UNITS = ['mg', 'g', '%', 'iu', 'ug'] as const;
+type StrengthUnit = (typeof STRENGTH_UNITS)[number];
+
+// Plural value -> singular label, used when the quantity is exactly 1
+const FORMS = {
+  tablets: 'tablet',
+  capsules: 'capsule',
+  liquids: 'liquid',
+  drops: 'drop',
+  injections: 'injection',
+  sprays: 'spray',
+  ml: 'ml',
+  patches: 'patch',
+} as const;
+type Form = keyof typeof FORMS;
+
+const UNITS_OF_TIME = {
+  hours: 'hour',
+  days: 'day',
+  weeks: 'week',
+  months: 'month',
+} as const;
+type UnitOfTime = keyof typeof UNITS_OF_TIME;
+
+function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
+  const isSingular = Number(quantity) === 1;
+  return (Object.keys(singulars) as T[]).map((value) => ({
+    value,
+    label: isSingular ? singulars[value] : value,
+  }));
+}
+
 export default function AddPrescriptionScreen() {
+  // Present when opened from the edit button on the prescriptions list
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditing = !!id;
+
   const [medicationName, setMedicationName] = useState('');
   const [strength, setStrength] = useState('');
   const [dosage, setDosage] = useState('');
   const [repeatEvery, setRepeatEvery] = useState('1');
 
-  // TODO: wire these to a real dropdown/picker once one is added to the project
-  const strengthUnit = 'mg';
-  const form = 'tablets';
-  const unitOfTime = 'day';
+  const [strengthUnit, setStrengthUnit] = useState<StrengthUnit>('mg');
+  const [form, setForm] = useState<Form>('tablets');
+  const [unitOfTime, setUnitOfTime] = useState<UnitOfTime>('days');
+
+  const strengthUnitOptions = STRENGTH_UNITS.map((unit) => ({ value: unit, label: unit }));
+  const formOptions = pluralOptions(FORMS, dosage);
+  const unitOfTimeOptions = pluralOptions(UNITS_OF_TIME, repeatEvery);
+
+  // TODO: when editing, load the existing prescription from Supabase and prefill the fields above, e.g.
+  // supabase.from('prescriptions').select('*').eq('id', id).single()
 
   const handleSave = () => {
+    // TODO: update the existing row when isEditing instead of inserting
     // TODO: persist to Supabase once prescriptions are wired up, e.g.
     // supabase.from('prescriptions').insert({ medicationName, strength, strengthUnit, form, dosage, repeatEvery, unitOfTime, users_id: userId })
     router.back();
@@ -25,7 +69,7 @@ export default function AddPrescriptionScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <PrescriptionsHeader title="Add prescription" />
+        <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
 
         <Text style={styles.helperText}>Type the name of your medication</Text>
 
@@ -52,19 +96,23 @@ export default function AddPrescriptionScreen() {
           </View>
           <View style={[styles.field, styles.fieldFixed]}>
             <Text style={styles.label}>Strength unit</Text>
-            <Pressable style={styles.dropdown}>
-              <Text style={styles.dropdownText}>{strengthUnit}</Text>
-              <Text style={styles.dropdownChevron}>⌄</Text>
-            </Pressable>
+            <Dropdown
+              value={strengthUnit}
+              options={strengthUnitOptions}
+              onChange={setStrengthUnit}
+              accessibilityLabel="Strength unit"
+            />
           </View>
         </View>
 
         <View style={styles.field}>
           <Text style={styles.label}>Form</Text>
-          <Pressable style={[styles.dropdown, styles.dropdownFull]}>
-            <Text style={styles.dropdownText}>{form}</Text>
-            <Text style={styles.dropdownChevron}>⌄</Text>
-          </Pressable>
+          <Dropdown
+            value={form}
+            options={formOptions}
+            onChange={setForm}
+            accessibilityLabel="Form"
+          />
         </View>
 
         <Text style={styles.helperText}>Dosage</Text>
@@ -92,15 +140,17 @@ export default function AddPrescriptionScreen() {
           </View>
           <View style={[styles.field, styles.fieldFixed]}>
             <Text style={styles.label}>Unit of time</Text>
-            <Pressable style={styles.dropdown}>
-              <Text style={styles.dropdownText}>{unitOfTime}</Text>
-              <Text style={styles.dropdownChevron}>⌄</Text>
-            </Pressable>
+            <Dropdown
+              value={unitOfTime}
+              options={unitOfTimeOptions}
+              onChange={setUnitOfTime}
+              accessibilityLabel="Unit of time"
+            />
           </View>
         </View>
 
         <Pressable style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Save medication</Text>
+          <Text style={styles.saveButtonText}>{isEditing ? 'Save changes' : 'Save medication'}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -152,28 +202,6 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(4),
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
-    fontSize: scaleFont(16),
-    color: 'black',
-  },
-  dropdown: {
-    backgroundColor: SURFACE,
-    borderWidth: 1,
-    borderColor: OUTLINE,
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  dropdownFull: {
-    width: '100%',
-  },
-  dropdownText: {
-    fontSize: scaleFont(16),
-    color: 'black',
-  },
-  dropdownChevron: {
     fontSize: scaleFont(16),
     color: 'black',
   },

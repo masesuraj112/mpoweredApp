@@ -18,6 +18,7 @@ interface PainTrendChartProps {
 const PAIN_SCALE_MAX = 10;
 const LINE_COLOR = '#6750A4';
 const LINE_COLOR_LIGHT = '#B9AAE0';
+const DATE_LABEL_COLOR = '#79747E';
 
 export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendChartProps) {
   const [width, setWidth] = useState(0);
@@ -86,8 +87,10 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                 <SvgText
                   x={point.x}
                   y={height - scaleHeight(4)}
-                  fontSize={scaleFont(10)}
-                  fill="rgba(60,60,67,0.6)"
+                  fontSize={scaleFont(12)}
+                  fontWeight="500"
+                  letterSpacing={0.5}
+                  fill={DATE_LABEL_COLOR}
                   textAnchor={index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'}
                 >
                   {point.label}

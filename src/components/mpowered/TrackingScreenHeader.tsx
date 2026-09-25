@@ -17,10 +17,11 @@ export function TrackingScreenHeader({ activeTab }: TrackingScreenHeaderProps) {
   return (
     <View>
       <View style={styles.topBar}>
+        {/* Back always returns to the start of My Health, however deep in the stack we are */}
         <Pressable
           style={styles.backRow}
           hitSlop={8}
-          onPress={() => router.back()}
+          onPress={() => router.dismissTo('/health')}
         >
           <Text style={styles.backChevron}>‹</Text>
           <Text style={styles.backText}>Back</Text>

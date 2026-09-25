@@ -1,19 +1,19 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
+const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
+const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
 
 interface Prescription {
   id: string;
-  overline: string;
   name: string;
   frequency: string;
-  supportingText: string;
-  badge?: string;
 }
 
 // TODO: replace with a Supabase query once prescriptions are wired up, e.g.
@@ -21,48 +21,59 @@ interface Prescription {
 const FAKE_PRESCRIPTIONS: Prescription[] = [
   {
     id: 'perindopril',
-    overline: 'Overline',
     name: 'Perindopril arginine 5 mg',
     frequency: 'Once daily',
-    supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
   },
   {
     id: 'candesartan',
-    overline: 'Overline',
     name: 'Candesartan 16 mg',
     frequency: 'Once daily',
-    supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
   },
   {
     id: 'amlodipine',
-    overline: 'Overline',
     name: 'Amlodipine 5 mg',
     frequency: 'Once daily',
-    supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
   },
   {
     id: 'vitamin-d3',
-    overline: 'Overline',
     name: 'Vitamin D3 1000 IU',
     frequency: 'Once daily',
-    badge: '100+',
-    supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
   },
   {
     id: 'raloxifene',
-    overline: 'Overline',
     name: 'Raloxifene 60 mg',
     frequency: 'Once daily',
-    badge: '100+',
-    supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
   },
 ];
 
-const BLANK  = [];
-
 export default function PrescriptionsScreen() {
-  const prescriptions = FAKE_PRESCRIPTIONS;
+  const [prescriptions, setPrescriptions] = useState(FAKE_PRESCRIPTIONS);
   const isEmpty = prescriptions.length === 0;
+
+  const handleEdit = (prescription: Prescription) => {
+    router.push({ pathname: '/health/prescriptions/add', params: { id: prescription.id } });
+  };
+
+  const removePrescription = (id: string) => {
+    // TODO: also delete from Supabase once prescriptions are wired up, e.g.
+    // supabase.from('prescriptions').delete().eq('id', id)
+    setPrescriptions((current) => current.filter((prescription) => prescription.id !== id));
+  };
+
+  const handleDelete = (prescription: Prescription) => {
+    const message = `Remove ${prescription.name} from your prescriptions?`;
+
+    // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
+    if (Platform.OS === 'web') {
+      if (window.confirm(message)) removePrescription(prescription.id);
+      return;
+    }
+
+    Alert.alert('Delete prescription', message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => removePrescription(prescription.id) },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -84,25 +95,35 @@ export default function PrescriptionsScreen() {
           </View>
         ) : (
           <>
-            <View style={styles.list}>
-              {prescriptions.map((prescription, index) => (
-                <View
-                  key={prescription.id}
-                  style={[styles.listItem, index === prescriptions.length - 1 && styles.listItemLast]}
-                >
-                  <View style={styles.listItemTextColumn}>
-                    <Text style={styles.overline}>{prescription.overline}</Text>
-                    <Text style={styles.name}>{prescription.name}</Text>
-                    <Text style={styles.frequency}>{prescription.frequency}</Text>
-                    <Text style={styles.supportingText}>{prescription.supportingText}</Text>
-                  </View>
-                  {prescription.badge && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{prescription.badge}</Text>
+            <View style={styles.listFrame}>
+              <View style={styles.list}>
+                {prescriptions.map((prescription) => (
+                  <View key={prescription.id} style={styles.listItem}>
+                    <View style={styles.listItemTextColumn}>
+                      <Text style={styles.name}>{prescription.name}</Text>
+                      <Text style={styles.frequency}>{prescription.frequency}</Text>
                     </View>
-                  )}
-                </View>
-              ))}
+                    <Pressable
+                      style={styles.iconButton}
+                      onPress={() => handleEdit(prescription)}
+                      hitSlop={scaleWidth(8)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Edit ${prescription.name}`}
+                    >
+                      <Image source={editIcon} style={styles.icon} contentFit="contain" />
+                    </Pressable>
+                    <Pressable
+                      style={styles.iconButton}
+                      onPress={() => handleDelete(prescription)}
+                      hitSlop={scaleWidth(8)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Delete ${prescription.name}`}
+                    >
+                      <Image source={deleteIcon} style={styles.icon} contentFit="contain" />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
             </View>
 
             <Pressable
@@ -121,6 +142,8 @@ export default function PrescriptionsScreen() {
 const GROUPED_BACKGROUND = '#F2F2F7';
 const OUTLINE_VARIANT = '#CAC4D0';
 const PRIMARY_PURPLE = '#6750A4';
+const GRAY_2 = '#AEAEB2';
+const ON_SURFACE = '#1D1B20';
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -171,62 +194,52 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
     color: '#1D1B20',
   },
-  list: {
+  listFrame: {
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(24),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: OUTLINE_VARIANT,
-    borderRadius: scaleWidth(8),
+    borderWidth: 1,
+    borderColor: GRAY_2,
+    borderRadius: scaleWidth(12),
+    padding: scaleWidth(12),
+  },
+  list: {
+    backgroundColor: 'white',
+    borderRadius: scaleWidth(12),
+    overflow: 'hidden',
   },
   listItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: scaleWidth(16),
+    minHeight: scaleHeight(56),
     paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(14),
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingVertical: scaleHeight(8),
+    borderBottomWidth: 1,
     borderBottomColor: OUTLINE_VARIANT,
-  },
-  listItemLast: {
-    borderBottomWidth: 0,
   },
   listItemTextColumn: {
     flex: 1,
-    paddingRight: scaleWidth(12),
-  },
-  overline: {
-    fontSize: scaleFont(11),
-    fontWeight: '600',
-    color: '#79747E',
-    textTransform: 'uppercase',
   },
   name: {
-    fontSize: scaleFont(16),
-    fontWeight: '600',
-    color: 'black',
-    marginTop: scaleHeight(4),
+    fontSize: scaleFont(14),
+    lineHeight: scaleFont(20),
+    fontWeight: '500',
+    letterSpacing: 0.25,
+    color: ON_SURFACE,
   },
   frequency: {
-    fontSize: scaleFont(13),
-    fontWeight: '500',
-    color: '#49454F',
-    marginTop: scaleHeight(2),
-  },
-  supportingText: {
     fontSize: scaleFont(12),
-    color: '#79747E',
-    marginTop: scaleHeight(4),
+    lineHeight: scaleFont(16),
+    letterSpacing: 0.4,
+    color: ON_SURFACE,
   },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: GROUPED_BACKGROUND,
-    borderRadius: scaleWidth(10),
-    paddingHorizontal: scaleWidth(8),
-    paddingVertical: scaleHeight(2),
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  badgeText: {
-    fontSize: scaleFont(11),
-    fontWeight: '600',
-    color: '#49454F',
+  icon: {
+    width: scaleWidth(24),
+    height: scaleWidth(24),
   },
   addPrescriptionsButton: {
     marginHorizontal: scaleWidth(24),
