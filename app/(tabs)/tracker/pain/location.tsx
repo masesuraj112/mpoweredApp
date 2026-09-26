@@ -89,19 +89,6 @@ export default function PainLocationScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.topBar}>
-        <Pressable
-          onPress={handlePrevious}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={styles.backButton}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-          <Text style={styles.backText}>Back</Text>
-        </Pressable>
-        <Text style={styles.topBarTitle}>Pain Tracker</Text>
-      </View>
-
       <View style={styles.container}>
         <Text style={styles.pageTitle}>My Pain</Text>
       <MultiChoiceList
@@ -186,35 +173,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  topBar: {
-    height: scaleHeight(109),
-    backgroundColor: '#E8DEF8',
-    paddingTop: scaleHeight(52),
-    paddingHorizontal: scaleWidth(24),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: scaleHeight(40),
-  },
-  backArrow: {
-    fontSize: scaleFont(28),
-    lineHeight: scaleFont(28),
-    color: '#49454F',
-    marginRight: scaleWidth(8),
-  },
-  backText: {
-    fontSize: scaleFont(16),
-    color: '#49454F',
-  },
-  topBarTitle: {
-    fontSize: scaleFont(16),
-    fontWeight: '600',
-    color: '#000000',
   },
   container: {
     flex: 1,
