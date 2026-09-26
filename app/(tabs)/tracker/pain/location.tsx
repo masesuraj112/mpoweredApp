@@ -18,59 +18,55 @@ export const PAIN_LOCATION_OPTIONS = [
   'Other',
 ] as const;
 
-const OTHER_INDEX = PAIN_LOCATION_OPTIONS.length - 1;
+const PRESET_OPTIONS = PAIN_LOCATION_OPTIONS.slice(0, -1);
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
 export default function PainLocationScreen() {
   const { answers, updateAnswer } = usePainAssessment();
   const savedLocations = answers.painLocations ?? [];
-  const savedOtherLocation = savedLocations.find(
-    location => !PAIN_LOCATION_OPTIONS.slice(0, OTHER_INDEX).includes(location as never),
-  );
-  const [selected, setSelected] = useState<number[]>(() =>
-    PAIN_LOCATION_OPTIONS.reduce<number[]>((indices, option, index) => {
-      if (savedLocations.includes(option) || (index === OTHER_INDEX && savedOtherLocation)) {
+  const [selectedPresets, setSelectedPresets] = useState<number[]>(() =>
+    PRESET_OPTIONS.reduce<number[]>((indices, option, index) => {
+      if (savedLocations.includes(option)) {
         indices.push(index);
       }
       return indices;
     }, []),
   );
-  const [otherLocationText, setOtherLocationText] = useState(savedOtherLocation ?? '');
+  // Custom "Other" entries: each becomes its own selected option above the final "Other" row.
+  const [customLocations, setCustomLocations] = useState<string[]>(() =>
+    savedLocations.filter(location => !PRESET_OPTIONS.includes(location as never)),
+  );
   const [isOtherModalVisible, setIsOtherModalVisible] = useState(false);
-  const [draftOtherLocation, setDraftOtherLocation] = useState(savedOtherLocation ?? '');
+  const [draftOtherLocation, setDraftOtherLocation] = useState('');
 
-  const displayOptions: string[] = [...PAIN_LOCATION_OPTIONS];
-  if (otherLocationText) {
-    displayOptions[OTHER_INDEX] = `Other: ${otherLocationText}`;
-  }
+  const otherIndex = PRESET_OPTIONS.length + customLocations.length;
+  const displayOptions: string[] = [...PRESET_OPTIONS, ...customLocations, 'Other'];
+  const customIndices = customLocations.map((_, i) => PRESET_OPTIONS.length + i);
+  // "Other" is an action row and is never shown as checked.
+  const selected = [...selectedPresets, ...customIndices];
 
   const handleSelectionChange = (nextSelected: number[]) => {
-    if (!nextSelected.includes(OTHER_INDEX)) {
-      setOtherLocationText('');
-    }
-    setSelected(nextSelected);
+    setSelectedPresets(nextSelected.filter(index => index < PRESET_OPTIONS.length));
+    setCustomLocations(current =>
+      current.filter((_, i) => nextSelected.includes(PRESET_OPTIONS.length + i)),
+    );
   };
 
-  const handleOptionPress = (index: number, currentSelected: number[]) => {
-    if (index !== OTHER_INDEX) {
+  const handleOptionPress = (index: number) => {
+    if (index !== otherIndex) {
       return;
     }
 
-    if (currentSelected.includes(OTHER_INDEX)) {
-      handleSelectionChange(currentSelected.filter(selectedIndex => selectedIndex !== OTHER_INDEX));
-      return true;
-    }
-
-    setDraftOtherLocation(otherLocationText);
+    setDraftOtherLocation('');
     setIsOtherModalVisible(true);
     return true;
   };
 
   const saveSelection = () => {
-    const painLocations = selected.map(index =>
-      index === OTHER_INDEX ? otherLocationText : PAIN_LOCATION_OPTIONS[index],
-    );
-    updateAnswer('painLocations', painLocations);
+    updateAnswer('painLocations', [
+      ...selectedPresets.map(index => PRESET_OPTIONS[index]),
+      ...customLocations,
+    ]);
   };
 
   const handleRecord = () => {
@@ -151,8 +147,11 @@ export default function PainLocationScreen() {
                   if (!value) {
                     return;
                   }
-                  setOtherLocationText(value);
-                  setSelected(current => [...current.filter(index => index !== OTHER_INDEX), OTHER_INDEX]);
+                  setCustomLocations(current =>
+                    current.includes(value) || PRESET_OPTIONS.includes(value as never)
+                      ? current
+                      : [...current, value],
+                  );
                   setIsOtherModalVisible(false);
                 }}
                 accessibilityRole="button"
