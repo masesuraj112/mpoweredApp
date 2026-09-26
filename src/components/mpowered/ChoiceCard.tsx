@@ -46,6 +46,7 @@ export function ChoiceCard({
   const showPager = questionNumber !== undefined && totalQuestions !== undefined;
   const showNavigation = variant === 'painTracker' && (onPrevious || onRecord);
   const showRecord = !!onRecord && !showNavigation;
+  const isLastQuestion = showPager && questionNumber === totalQuestions;
   const showFooter = showPager || showRecord || showNavigation;
 
   return (
@@ -120,7 +121,7 @@ export function ChoiceCard({
                 onPress={onRecord}
                 disabled={disabled || isRecording || !onRecord}
                 accessibilityRole="button"
-                accessibilityLabel="Next"
+                accessibilityLabel={isLastQuestion ? 'Finish' : 'Next'}
                 accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
                 style={[
                   footerStyles.navigationButton,
@@ -133,7 +134,7 @@ export function ChoiceCard({
                     (disabled || isRecording || !onRecord) && footerStyles.disabledNavigationButtonText,
                   ]}
                 >
-                  Next →
+                  {isLastQuestion ? 'Finish' : 'Next →'}
                 </Text>
               </Pressable>
             </View>
