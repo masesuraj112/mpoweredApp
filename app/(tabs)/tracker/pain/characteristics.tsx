@@ -30,23 +30,32 @@ export default function PainCharacteristicsScreen() {
     setSelected(nextSelected);
   };
 
+  const saveSelection = () => {
+    updateAnswer(
+      'characteristics',
+      selected.map(index => PAIN_CHARACTERISTICS_OPTIONS[index]),
+    );
+  };
+
   const handleNext = () => {
     if (selected.length === 0) {
       return;
     }
 
-    updateAnswer(
-      'characteristics',
-      selected.map(index => PAIN_CHARACTERISTICS_OPTIONS[index]),
-    );
+    saveSelection();
     router.push('/tracker/pain/current');
+  };
+
+  const handlePrevious = () => {
+    saveSelection();
+    router.push('/tracker/pain/location');
   };
 
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={handlePrevious}
           accessibilityRole="button"
           accessibilityLabel="Back"
           style={styles.backButton}
@@ -69,7 +78,7 @@ export default function PainCharacteristicsScreen() {
           questionNumber={2}
           totalQuestions={6}
           onRecord={handleNext}
-          onPrevious={() => router.push('/tracker/pain/location')}
+          onPrevious={handlePrevious}
           disabled={selected.length === 0}
           validationMessage="This question is mandatory and requires a response"
           cardHeight={scaleHeight(599)}

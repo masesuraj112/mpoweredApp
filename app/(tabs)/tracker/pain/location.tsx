@@ -66,23 +66,32 @@ export default function PainLocationScreen() {
     return true;
   };
 
+  const saveSelection = () => {
+    const painLocations = selected.map(index =>
+      index === OTHER_INDEX ? otherLocationText : PAIN_LOCATION_OPTIONS[index],
+    );
+    updateAnswer('painLocations', painLocations);
+  };
+
   const handleRecord = () => {
     if (selected.length === 0) {
       return;
     }
 
-    const painLocations = selected.map(index =>
-      index === OTHER_INDEX ? otherLocationText : PAIN_LOCATION_OPTIONS[index],
-    );
-    updateAnswer('painLocations', painLocations);
+    saveSelection();
     router.push('/tracker/pain/characteristics');
+  };
+
+  const handlePrevious = () => {
+    saveSelection();
+    router.back();
   };
 
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={handlePrevious}
           accessibilityRole="button"
           accessibilityLabel="Back"
           style={styles.backButton}
@@ -106,7 +115,7 @@ export default function PainLocationScreen() {
         questionNumber={1}
         totalQuestions={6}
         onRecord={handleRecord}
-        onPrevious={() => router.back()}
+        onPrevious={handlePrevious}
         disabled={selected.length === 0}
         variant="painTracker"
         scrollable
