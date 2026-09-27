@@ -1,6 +1,6 @@
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 import { ChoiceCard } from './ChoiceCard';
 
 interface SingleChoiceProps {
@@ -10,6 +10,10 @@ interface SingleChoiceProps {
   options?: string[];
   onRecord?: () => void;
   onSelectionChange?: (selectedIndex: number) => void;
+  onPrevious?: () => void;
+  previousDisabled?: boolean;
+  variant?: 'default' | 'painTracker';
+  selectedIndex?: number | null;
 }
 
 
@@ -21,8 +25,13 @@ export function SingleChoiceInput({
   options,
   onRecord,
   onSelectionChange,
+  onPrevious,
+  previousDisabled = false,
+  variant = 'default',
+  selectedIndex: controlledSelectedIndex,
 }: SingleChoiceProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const currentSelectedIndex = controlledSelectedIndex ?? selectedIndex;
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
@@ -42,9 +51,13 @@ export function SingleChoiceInput({
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
       onRecord={onRecord}
+      onPrevious={onPrevious}
+      previousDisabled={previousDisabled}
+      disabled={currentSelectedIndex === null}
+      variant={variant}
     >
       {options?.map((option, index) => {
-        const isSelected = index === selectedIndex;
+        const isSelected = index === currentSelectedIndex;
         const isLast = index === options.length - 1;
 
         return (

@@ -1,5 +1,5 @@
 export type PainAssessmentAnswers = {
-  location?: string[];
+  painLocations?: string[];
   characteristics?: string[];
   currentPain?: number;
   mildestPain?: number;
