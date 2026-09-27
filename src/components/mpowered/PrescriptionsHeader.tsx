@@ -19,9 +19,15 @@ export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: Pres
     <View>
       <View style={styles.topBar}>
         {/* Back always returns to the start of My Health, however deep in the stack we are */}
-        <Pressable style={styles.backRow} hitSlop={8} onPress={() => router.dismissTo('/health')}>
+        <Pressable
+          style={styles.backRow}
+          hitSlop={8}
+          onPress={() => router.dismissTo('/health')}
+          accessibilityRole="button"
+          accessibilityLabel="Back to My Health"
+        >
           <Text style={styles.backChevron}>‹</Text>
-          <Text style={styles.backText}>Back</Text>
+          <Text style={styles.backText}>Back to My Health</Text>
         </Pressable>
         {topBarLabel && <Text style={styles.topBarLabel}>{topBarLabel}</Text>}
       </View>
