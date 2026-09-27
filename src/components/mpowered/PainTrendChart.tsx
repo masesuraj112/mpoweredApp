@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
-import { scaleFont, scaleHeight } from '@/services/scale';
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 export interface PainTrendPoint {
   /** Short label shown under the point, e.g. "25/05" */
@@ -19,6 +19,8 @@ const PAIN_SCALE_MAX = 10;
 const LINE_COLOR = '#6750A4';
 const LINE_COLOR_LIGHT = '#B9AAE0';
 const DATE_LABEL_COLOR = '#79747E';
+// Keeps the edge dots and their centred date labels inside the SVG
+const HORIZONTAL_INSET = scaleWidth(20);
 
 export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendChartProps) {
   const [width, setWidth] = useState(0);
@@ -31,10 +33,11 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
   const bottomPadding = scaleHeight(16);
   const plotHeight = height - topPadding - bottomPadding;
 
-  const stepX = data.length > 1 ? width / (data.length - 1) : 0;
+  const plotWidth = Math.max(width - HORIZONTAL_INSET * 2, 0);
+  const stepX = data.length > 1 ? plotWidth / (data.length - 1) : 0;
   const points = data.map((point, index) => ({
     ...point,
-    x: data.length > 1 ? index * stepX : width / 2,
+    x: HORIZONTAL_INSET + (data.length > 1 ? index * stepX : plotWidth / 2),
     y: topPadding + plotHeight - (point.value / PAIN_SCALE_MAX) * plotHeight,
   }));
 
@@ -72,7 +75,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   fontSize={scaleFont(11)}
                   fontWeight="700"
                   fill="#1A1A1A"
-                  textAnchor={index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'}
+                  textAnchor="middle"
                 >
                   {isEndpoint ? point.value : ''}
                 </SvgText>
@@ -91,7 +94,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   fontWeight="500"
                   letterSpacing={0.5}
                   fill={DATE_LABEL_COLOR}
-                  textAnchor={index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'}
+                  textAnchor="middle"
                 >
                   {point.label}
                 </SvgText>

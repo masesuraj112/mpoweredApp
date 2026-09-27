@@ -20,11 +20,13 @@ const LINE_COLOR = '#6750A4';
 const GRID_COLOR = '#E0E0E0';
 const AXIS_TEXT_COLOR = '#525252';
 const Y_AXIS_WIDTH = 18;
+// Keeps the edge dots and their centred date labels inside the plot area
+const HORIZONTAL_INSET = scaleWidth(16);
 
 export function PainIntensityChart({ data, height = 270 }: PainIntensityChartProps) {
   const [width, setWidth] = useState(0);
 
-  const plotWidth = Math.max(width - Y_AXIS_WIDTH, 0);
+  const plotWidth = Math.max(width - Y_AXIS_WIDTH - HORIZONTAL_INSET * 2, 0);
   const topPadding = 10;
   const bottomPadding = 24;
   const plotHeight = height - topPadding - bottomPadding;
@@ -32,7 +34,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
   const stepX = data.length > 1 ? plotWidth / (data.length - 1) : 0;
   const points = data.map((point, index) => ({
     ...point,
-    x: Y_AXIS_WIDTH + (data.length > 1 ? index * stepX : plotWidth / 2),
+    x: Y_AXIS_WIDTH + HORIZONTAL_INSET + (data.length > 1 ? index * stepX : plotWidth / 2),
     y: topPadding + plotHeight - (point.value / PAIN_SCALE_MAX) * plotHeight,
   }));
 
@@ -99,14 +101,14 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
             <Circle key={point.label} cx={point.x} cy={point.y} r={4} fill={LINE_COLOR} />
           ))}
 
-          {points.map((point, index) => (
+          {points.map((point) => (
             <SvgText
               key={`xlabel-${point.label}`}
               x={point.x}
               y={height - 4}
               fontSize={scaleFont(10)}
               fill={AXIS_TEXT_COLOR}
-              textAnchor={index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'}
+              textAnchor="middle"
             >
               {point.label}
             </SvgText>

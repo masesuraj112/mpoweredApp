@@ -60,7 +60,7 @@ export default function HealthScreen() {
 
         <View style={styles.trendSection}>
           <View style={styles.trendInsightRow}>
-            <Text style={styles.trendInsight}>New insights for your m</Text>
+            <Text style={styles.trendInsight}>New insights for your M</Text>
             <Text style={[styles.trendInsight, styles.trendInsightSuperscript]}>powered</Text>
             <Text style={styles.trendInsight}> plan.</Text>
           </View>
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     borderColor: '#D9D9D9',
     borderWidth: 0.5,
     paddingVertical: scaleHeight(14),
+    paddingHorizontal: scaleWidth(8),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: scaleWidth(10),
   },
   actionButtonText: {
-    fontSize: scaleFont(12),
+    fontSize: scaleFont(11),
     fontWeight: '500',
     color: 'white',
     textAlign: 'center',
