@@ -126,6 +126,7 @@ export function ChoiceCard({
 
           {showNavigation && (
             <View style={footerStyles.navigationGroup}>
+              {/* The first Personal Care step has no Previous action. */}
               {(!isPersonalCare || onPrevious) && (
                 <Pressable
                   onPress={onPrevious}
