@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
   reflectionSection: {
     gap: scaleHeight(8),
     marginTop: scaleHeight(18),
-    paddingHorizontal: scaleWidth(14),
   },
   reflectionHeading: {
     color: '#1D1B20',
