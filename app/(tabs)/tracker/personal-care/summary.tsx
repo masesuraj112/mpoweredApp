@@ -62,7 +62,9 @@ export default function SummaryScreen() {
 
           <View style={styles.reflectionSection}>
             <Text style={styles.reflectionHeading}>My reflections:</Text>
-            <Text style={styles.resultText}>{answers.reflection || 'No reflections added.'}</Text>
+            <Text style={[styles.resultText, styles.reflectionText]}>
+              {answers.reflection || 'No reflections added.'}
+            </Text>
           </View>
         </ScrollView>
 
@@ -242,6 +244,9 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(12),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
+  },
+  reflectionText: {
+    paddingLeft: scaleWidth(14),
   },
   footer: {
     flexShrink: 0,
