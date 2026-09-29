@@ -28,9 +28,7 @@ export default function PersonalCareLayout() {
 					headerShown: true,
 					header: ({ navigation }) => <PersonalCareHeader navigation={navigation} />,
 				}}
-			>
-				<Stack.Screen name="summary" options={{ headerShown: false }} />
-			</Stack>
+			/>
 		</PersonalCareAssessmentProvider>
 	);
 }

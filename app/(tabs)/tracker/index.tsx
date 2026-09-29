@@ -9,6 +9,12 @@ export default function TrackerScreen() {
 				title="Start pain assessment"
 				onPress={() => router.push('/tracker/pain/location')}
 			/>
+			<View style={{ marginTop: 12 }}>
+				<Button
+					title="Start personal care assessment"
+					onPress={() => router.push('/tracker/personal-care/general')}
+				/>
+			</View>
 		</View>
 	);
 }
