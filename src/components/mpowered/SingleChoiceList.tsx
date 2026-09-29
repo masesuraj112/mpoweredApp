@@ -12,8 +12,9 @@ interface SingleChoiceProps {
   onSelectionChange?: (selectedIndex: number) => void;
   onPrevious?: () => void;
   previousDisabled?: boolean;
-  variant?: 'default' | 'painTracker';
+  variant?: 'default' | 'painTracker' | 'personalCare';
   selectedIndex?: number | null;
+  cardHeight?: number;
 }
 
 
@@ -29,9 +30,10 @@ export function SingleChoiceInput({
   previousDisabled = false,
   variant = 'default',
   selectedIndex: controlledSelectedIndex,
+  cardHeight,
 }: SingleChoiceProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const currentSelectedIndex = controlledSelectedIndex ?? selectedIndex;
+  const currentSelectedIndex = controlledSelectedIndex !== undefined ? controlledSelectedIndex : selectedIndex;
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
@@ -39,7 +41,7 @@ export function SingleChoiceInput({
   };
 
   const prompt = (
-    <Text style={stylesSheet.promptText}>
+    <Text style={[stylesSheet.promptText, variant === 'personalCare' && stylesSheet.personalCarePromptText]}>
       Select the <Text style={stylesSheet.promptUnderline}>MOST</Text> relevant statement:
     </Text>
   );
@@ -54,8 +56,10 @@ export function SingleChoiceInput({
       onPrevious={onPrevious}
       previousDisabled={previousDisabled}
       disabled={currentSelectedIndex === null}
+      cardHeight={cardHeight}
       variant={variant}
     >
+      <View style={variant === 'personalCare' && optionStyles.personalCareList}>
       {options?.map((option, index) => {
         const isSelected = index === currentSelectedIndex;
         const isLast = index === options.length - 1;
@@ -64,18 +68,31 @@ export function SingleChoiceInput({
           <Pressable
             key={index}
             onPress={() => handleSelect(index)}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: isSelected }}
+            accessibilityLabel={option}
             style={[
               optionStyles.row,
-              !isLast && optionStyles.rowDivider,
+              variant === 'personalCare' && optionStyles.personalCareRow,
+              !isLast && (variant === 'personalCare' ? optionStyles.personalCareRowDivider : optionStyles.rowDivider),
             ]}
           >
-            <View style={[optionStyles.circle, isSelected && optionStyles.circleSelected]}>
+            <View
+              style={[
+                optionStyles.circle,
+                variant === 'personalCare' && optionStyles.personalCareCircle,
+                isSelected && optionStyles.circleSelected,
+              ]}
+            >
               {isSelected && <View style={optionStyles.circleDot} />}
             </View>
-            <Text style={optionStyles.label}>{option}</Text>
+            <Text style={[optionStyles.label, variant === 'personalCare' && optionStyles.personalCareLabel]}>
+              {option}
+            </Text>
           </Pressable>
         );
       })}
+      </View>
     </ChoiceCard>
   );
 }
@@ -87,6 +104,13 @@ const stylesSheet = StyleSheet.create({
   },
   promptUnderline: {
     textDecorationLine: 'underline',
+  },
+  personalCarePromptText: {
+    fontSize: scaleFont(12),
+    fontWeight: '500',
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.5,
+    color: '#1D1B20',
   },
 });
 
@@ -101,6 +125,26 @@ const optionStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
+  personalCareList: {
+    width: '96%',
+    height: scaleHeight(340),
+    marginLeft: scaleWidth(4),
+    borderWidth: 1,
+    borderColor: '#E7E0EC',
+    borderRadius: scaleWidth(12),
+    backgroundColor: '#FEF7FF',
+    overflow: 'hidden',
+  },
+  personalCareRow: {
+    height: scaleHeight(56),
+    paddingVertical: scaleHeight(8),
+    paddingHorizontal: scaleWidth(16),
+    gap: scaleWidth(16),
+  },
+  personalCareRowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CAC4D0',
+  },
   circle: {
     width: scaleWidth(22),
     height: scaleWidth(22),
@@ -111,6 +155,13 @@ const optionStyles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: scaleWidth(16),
     flexShrink: 0,
+  },
+  personalCareCircle: {
+    width: scaleWidth(20),
+    height: scaleWidth(20),
+    borderRadius: scaleWidth(10),
+    borderColor: '#49454F',
+    marginRight: 0,
   },
   circleSelected: {
     borderColor: '#5B4A9E',
@@ -128,5 +179,12 @@ const optionStyles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     minWidth: 0,
+  },
+  personalCareLabel: {
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    lineHeight: scaleHeight(20),
+    letterSpacing: 0.25,
+    color: '#1D1B20',
   },
 });
