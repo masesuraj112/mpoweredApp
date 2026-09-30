@@ -13,7 +13,7 @@ const SOCIAL_HEALTH_OPTIONS = [
   'I have no social life because of pain',
 ];
 
-export default function CareScreen() {
+export default function SocialLifeScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const savedIndex = SOCIAL_HEALTH_OPTIONS.indexOf(answers.socialLife ?? '');
   const selectedIndex = savedIndex >= 0 ? savedIndex : null;
