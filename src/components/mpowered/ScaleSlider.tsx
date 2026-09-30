@@ -9,6 +9,8 @@ import { ChoiceCard } from './ChoiceCard';
 interface ScaleSliderProps {
   titleText: string;
   underLinedText?: string;
+  /** Question shown above the score input (personalCare variant). */
+  questionText?: string;
   bottomDescription?: string;
   questionNumber?: number;
   totalQuestions?: number;
@@ -18,8 +20,10 @@ interface ScaleSliderProps {
   onPrevious?: () => void;
   previousDisabled?: boolean;
   disabled?: boolean;
+  /** Leave undefined to show the "0 to 10" placeholder until the user answers. */
   initialValue?: number;
-  variant?: 'default' | 'painTracker';
+  cardHeight?: number;
+  variant?: 'default' | 'painTracker' | 'personalCare';
 }
 
 function getScoreDescription(assessmentType: string | undefined, value: number): string | undefined {
@@ -27,7 +31,7 @@ function getScoreDescription(assessmentType: string | undefined, value: number):
     return undefined;
   }
   const thresholds = ScoreThresholds[assessmentType as keyof typeof ScoreThresholds];
-  return thresholds[value as keyof typeof thresholds];
+  return thresholds[value as keyof typeof thresholds] as string | undefined;
 }
 
 const ROW_HEIGHT = scaleHeight(90);
@@ -64,6 +68,7 @@ function getGradientColors(value: number): [string, string] {
 export function ScaleSliderInput({
   titleText,
   underLinedText,
+  questionText,
   questionNumber,
   totalQuestions,
   assessmentType,
@@ -72,24 +77,34 @@ export function ScaleSliderInput({
   onPrevious,
   previousDisabled = false,
   disabled = false,
-  initialValue = 0,
+  initialValue,
+  cardHeight,
   variant = 'default',
 
 }: ScaleSliderProps) {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue ?? 0);
+  // Tracks whether a score has been entered so the input can show its placeholder.
+  const [hasValue, setHasValue] = useState(initialValue !== undefined);
+  const isPersonalCare = variant === 'personalCare';
   const [sliderWidth, setSliderWidth] = useState(0);
 
   // This function prevents input from being less than 0 or greater than 10
   const changeNumber = (text: string) => {
+    if (text === '') {
+      setHasValue(false);
+      return;
+    }
     const num = Number(text);
     if (isNaN(num)) return;
     const clamped = Math.min(10, Math.max(0, num));
     setValue(clamped);
+    setHasValue(true);
     onValueChange?.(clamped);
   };
 
   const handleSliderChange = (val: number) => {
     setValue(val);
+    setHasValue(true);
     onValueChange?.(val);
   };
 
@@ -97,13 +112,28 @@ export function ScaleSliderInput({
   const thumbGap = thumbWidth / 2;
   const fillWidth = (value / 10) * sliderWidth;
 
-  const prompt = (
+  const prompt = isPersonalCare ? (
+    <View>
+      {questionText && <Text style={personalCareSheet.questionText}>{questionText}</Text>}
+      <View style={personalCareSheet.scoreRow}>
+        <Text style={personalCareSheet.scoreLabel}>My score is</Text>
+        <TextInput
+          style={personalCareSheet.scoreInput}
+          keyboardType="number-pad"
+          placeholder="0 to 10"
+          placeholderTextColor="rgba(0, 0, 0, 0.19)"
+          value={hasValue ? String(value) : ''}
+          onChangeText={changeNumber}
+        />
+      </View>
+    </View>
+  ) : (
     <Text style={stylesSheet.painLevelText}>
       My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
       <TextInput
         style={stylesSheet.underlineText}
         keyboardType="number-pad"
-        value={String(value)}
+        value={hasValue ? String(value) : ''}
         onChangeText={changeNumber}
       />
     </Text>
@@ -119,6 +149,7 @@ export function ScaleSliderInput({
       onPrevious={onPrevious}
       previousDisabled={previousDisabled}
       disabled={disabled}
+      cardHeight={cardHeight}
       variant={variant}
     >
       <View
@@ -172,7 +203,9 @@ export function ScaleSliderInput({
         />
       </View>
 
-      <Text style={stylesSheet.descriptionText}>{getScoreDescription(assessmentType, value)}</Text>
+      <Text style={isPersonalCare ? personalCareSheet.descriptionText : stylesSheet.descriptionText}>
+        {getScoreDescription(assessmentType, value)}
+      </Text>
     </ChoiceCard>
   );
 }
@@ -198,6 +231,51 @@ const stylesSheet = StyleSheet.create({
     fontSize: scaleFont(17),
     fontWeight: '700',
     fontStyle: 'italic',
+  },
+});
+
+const personalCareSheet = StyleSheet.create({
+  questionText: {
+    fontSize: scaleFont(12),
+    fontWeight: '500',
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.5,
+    color: '#000000',
+    marginBottom: scaleHeight(14),
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scaleWidth(13),
+  },
+  scoreLabel: {
+    fontSize: scaleFont(14),
+    fontWeight: '600',
+    lineHeight: scaleHeight(20),
+    letterSpacing: 0.1,
+    color: '#1D1B20',
+  },
+  scoreInput: {
+    width: scaleWidth(64),
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    letterSpacing: 0.1,
+    textAlign: 'center',
+    color: '#1D1B20',
+    borderBottomWidth: 2,
+    borderBottomColor: '#49454F',
+    paddingVertical: scaleHeight(2),
+  },
+  descriptionText: {
+    marginTop: scaleHeight(4),
+    fontSize: scaleFont(13),
+    fontWeight: '600',
+    fontStyle: 'italic',
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    color: '#000000',
   },
 });
 
