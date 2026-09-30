@@ -1,4 +1,5 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { ReactNode } from 'react';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
@@ -8,7 +9,7 @@ interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
   /** Bold instruction line, e.g. "I have had pain in these areas last week." */
-  prompt: string;
+  prompt: ReactNode;
   /** Optional italic sub-line under the prompt, e.g. "(scroll down for more options)" */
   subPrompt?: string;
   options: string[];
@@ -24,7 +25,7 @@ interface MultiChoiceListProps {
   validationMessage?: string;
   cardHeight?: number;
   disabled?: boolean;
-  variant?: 'default' | 'painTracker';
+  variant?: 'default' | 'painTracker' | 'personalCare';
   searchEnabled?: boolean;
   searchPlaceholder?: string;
   scrollable?: boolean;
@@ -60,7 +61,7 @@ export function MultiChoiceList({
   const selected = isControlled ? selectedIndices : internalSelected;
   const [searchText, setSearchText] = useState('');
   const showSearch = searchEnabled ?? variant === 'painTracker';
-  const showScrollable = scrollable ?? variant === 'painTracker';
+  const showScrollable = scrollable ?? variant !== 'default';
   const showSelectedChips = selectedChipsEnabled ?? variant === 'painTracker';
   const filteredOptions = options
     .map((option, originalIndex) => ({ option, originalIndex }))
@@ -133,7 +134,8 @@ export function MultiChoiceList({
         style={[
           styles.optionsBox,
           showScrollable && styles.scrollableOptionsBox,
-          variant === 'painTracker' && styles.painTrackerOptionsBox,
+          variant !== 'default' && styles.painTrackerOptionsBox,
+          variant === 'personalCare' && styles.personalCareOptionsBox,
         ]}
       >
         {showScrollable ? (
@@ -190,8 +192,10 @@ function OptionRow({
   isSelected: boolean;
   isLast: boolean;
   onPress: (index: number) => void;
-  variant: 'default' | 'painTracker';
+  variant: 'default' | 'painTracker' | 'personalCare';
 }) {
+  const isAssessment = variant !== 'default';
+  const isPersonalCare = variant === 'personalCare';
   return (
     <Pressable
       onPress={() => onPress(index)}
@@ -200,12 +204,25 @@ function OptionRow({
       accessibilityLabel={option}
       style={[
         styles.row,
-        variant === 'painTracker' && styles.painTrackerRow,
-        !isLast && (variant === 'painTracker' ? styles.painTrackerRowDivider : styles.rowDivider),
+        isAssessment && styles.painTrackerRow,
+        !isLast &&
+          (isPersonalCare
+            ? styles.personalCareRowDivider
+            : variant === 'painTracker'
+              ? styles.painTrackerRowDivider
+              : styles.rowDivider),
       ]}
     >
-      <Text style={[styles.label, variant === 'painTracker' && styles.painTrackerLabel]}>{option}</Text>
-      <View style={[styles.box, variant === 'painTracker' && styles.painTrackerBox, isSelected && styles.boxSelected]}>
+      <Text
+        style={[
+          styles.label,
+          isAssessment && styles.painTrackerLabel,
+          isPersonalCare && styles.personalCareLabel,
+        ]}
+      >
+        {option}
+      </Text>
+      <View style={[styles.box, isAssessment && styles.painTrackerBox, isSelected && styles.boxSelected]}>
         {isSelected && <Text style={styles.checkmark}>✓</Text>}
       </View>
     </Pressable>
@@ -279,6 +296,15 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(5),
     backgroundColor: '#FEF7FF',
   },
+  personalCareOptionsBox: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    height: scaleHeight(283),
+    width: '96%',
+    marginLeft: scaleWidth(4),
+    borderRadius: scaleWidth(12),
+  },
   scrollList: {
     flex: 1,
   },
@@ -304,6 +330,10 @@ const styles = StyleSheet.create({
   },
   painTrackerRowDivider: {
     borderBottomWidth: 0,
+  },
+  personalCareRowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CAC4D0',
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -348,5 +378,9 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(14),
     fontWeight: '500',
     color: '#1D1B20',
+  },
+  personalCareLabel: {
+    lineHeight: scaleHeight(20),
+    letterSpacing: 0.25,
   },
 });

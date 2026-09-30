@@ -23,7 +23,7 @@ interface ChoiceCardProps {
   cardHeight?: number;
   isRecording?: boolean;
   disabled?: boolean;
-  variant?: 'default' | 'painTracker';
+  variant?: 'default' | 'painTracker' | 'personalCare';
   style?: StyleProp<ViewStyle>;
 }
 
@@ -43,8 +43,11 @@ export function ChoiceCard({
   variant = 'default',
   style,
 }: ChoiceCardProps) {
+  const isPainTracker = variant === 'painTracker';
+  const isPersonalCare = variant === 'personalCare';
+  const isAssessment = isPainTracker || isPersonalCare;
   const showPager = questionNumber !== undefined && totalQuestions !== undefined;
-  const showNavigation = variant === 'painTracker' && (onPrevious || onRecord);
+  const showNavigation = isPainTracker && (onPrevious || onRecord) || isPersonalCare && !!onRecord;
   const showRecord = !!onRecord && !showNavigation;
   const isLastQuestion = showPager && questionNumber === totalQuestions;
   const showFooter = showPager || showRecord || showNavigation;
@@ -53,27 +56,43 @@ export function ChoiceCard({
     <View
       style={[
         styles.container,
-        variant === 'painTracker' && styles.painTrackerContainer,
+        isAssessment && styles.painTrackerContainer,
         cardHeight !== undefined && { height: cardHeight },
         style,
       ]}
     >
-      <Text style={[styles.titleText, variant === 'painTracker' && styles.painTrackerTitle]}>{title}</Text>
-      <View style={[styles.divider, variant === 'painTracker' && styles.painTrackerDivider]} />
+      <Text
+        style={[
+          styles.titleText,
+          isPainTracker && styles.painTrackerTitle,
+          isPersonalCare && styles.personalCareTitle,
+        ]}
+      >
+        {title}
+      </Text>
+      <View style={[styles.divider, isAssessment && styles.painTrackerDivider]} />
 
       {typeof prompt === 'string' ? (
-        <View style={styles.promptWrapper}>
+        <View style={[styles.promptWrapper, isPersonalCare && styles.personalCarePromptWrapper]}>
           {typeof prompt === 'string' ? (
-           <Text style={styles.promptText}>{prompt}</Text>
+           <Text style={[styles.promptText, isPersonalCare && styles.personalCarePromptText]}>{prompt}</Text>
           ) : (
             prompt
           )}
        </View>
       ) : (
-        <View style={[styles.promptContainer, variant === 'painTracker' && styles.painTrackerPrompt]}>{prompt}</View>
+        <View
+          style={[
+            styles.promptContainer,
+            isPainTracker && styles.painTrackerPrompt,
+            isPersonalCare && styles.personalCarePromptContainer,
+          ]}
+        >
+          {prompt}
+        </View>
       )}
 
-      <View style={[styles.optionsList, variant === 'painTracker' && styles.painTrackerOptionsList]}>
+      <View style={[styles.optionsList, isAssessment && styles.painTrackerOptionsList]}>
         {children}
       </View>
 
@@ -95,11 +114,11 @@ export function ChoiceCard({
             <View
               style={[
                 footerStyles.pill,
-                variant === 'painTracker' && footerStyles.painTrackerPager,
+                isAssessment && footerStyles.painTrackerPager,
               ]}
               accessibilityRole="text"
             >
-              <Text style={footerStyles.pillText}>
+              <Text style={[footerStyles.pillText, isPersonalCare && footerStyles.personalCarePagerText]}>
                 {questionNumber}/{totalQuestions}
               </Text>
             </View>
@@ -107,34 +126,39 @@ export function ChoiceCard({
 
           {showNavigation && (
             <View style={footerStyles.navigationGroup}>
-              <Pressable
-                onPress={onPrevious}
-                disabled={previousDisabled || !onPrevious}
-                accessibilityRole="button"
-                accessibilityLabel="Previous"
-                accessibilityState={{ disabled: previousDisabled || !onPrevious }}
-                style={[footerStyles.navigationButton, (previousDisabled || !onPrevious) && footerStyles.buttonDisabled]}
-              >
-                <Text style={footerStyles.navigationButtonText}>← Prev</Text>
-              </Pressable>
+              {/* The first Personal Care step has no Previous action. */}
+              {(!isPersonalCare || onPrevious) && (
+                <Pressable
+                  onPress={onPrevious}
+                  disabled={previousDisabled || !onPrevious}
+                  accessibilityRole="button"
+                  accessibilityLabel="Previous"
+                  accessibilityState={{ disabled: previousDisabled || !onPrevious }}
+                  style={[footerStyles.navigationButton, (previousDisabled || !onPrevious) && footerStyles.buttonDisabled]}
+                >
+                  <Text style={footerStyles.navigationButtonText}>← Prev</Text>
+                </Pressable>
+              )}
               <Pressable
                 onPress={onRecord}
                 disabled={disabled || isRecording || !onRecord}
                 accessibilityRole="button"
-                accessibilityLabel={isLastQuestion ? 'Finish' : 'Next'}
+                accessibilityLabel={isPersonalCare && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
                 accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
                 style={[
                   footerStyles.navigationButton,
-                  (disabled || isRecording || !onRecord) && footerStyles.disabledNavigationButton,
+                  (disabled || isRecording || !onRecord) &&
+                    footerStyles.disabledNavigationButton,
                 ]}
               >
                 <Text
                   style={[
                     footerStyles.nextButtonText,
-                    (disabled || isRecording || !onRecord) && footerStyles.disabledNavigationButtonText,
+                    (disabled || isRecording || !onRecord) &&
+                      footerStyles.disabledNavigationButtonText,
                   ]}
                 >
-                  {isLastQuestion ? 'Finish' : 'Next →'}
+                  {isPersonalCare && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
                 </Text>
               </Pressable>
             </View>
@@ -151,16 +175,16 @@ export function ChoiceCard({
               style={({ pressed }) => [
                 footerStyles.pill,
                 footerStyles.recordButton,
-                variant === 'painTracker' && footerStyles.painTrackerRecordButton,
+                isAssessment && footerStyles.painTrackerRecordButton,
                 pressed && footerStyles.recordButtonPressed,
                 (disabled || isRecording) && footerStyles.buttonDisabled,
               ]}
             >
-              <Text style={[footerStyles.pillText, variant === 'painTracker' && footerStyles.painTrackerRecordText]}>
+              <Text style={[footerStyles.pillText, isAssessment && footerStyles.painTrackerRecordText]}>
                 {isRecording ? 'Recording...' : 'Record'}
               </Text>
               {!isRecording && (
-                <Text style={[footerStyles.arrow, variant === 'painTracker' && footerStyles.painTrackerRecordText]}>
+                <Text style={[footerStyles.arrow, isAssessment && footerStyles.painTrackerRecordText]}>
                   →
                 </Text>
               )}
@@ -230,6 +254,14 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginBottom: scaleHeight(10),
   },
+  personalCareTitle: {
+    fontSize: scaleFont(16),
+    fontWeight: '500',
+    lineHeight: scaleHeight(24),
+    letterSpacing: 0.15,
+    marginBottom: scaleHeight(10),
+    color: '#1D1B20',
+  },
   painTrackerDivider: {
     borderTopColor: '#CAC4D0',
     marginBottom: scaleHeight(14),
@@ -237,6 +269,19 @@ const styles = StyleSheet.create({
   painTrackerPrompt: {
     height: scaleHeight(68),
     marginBottom: scaleHeight(4),
+  },
+  personalCarePromptContainer: {
+    marginBottom: scaleHeight(14),
+  },
+  personalCarePromptWrapper: {
+    marginBottom: scaleHeight(14),
+  },
+  personalCarePromptText: {
+    fontSize: scaleFont(12),
+    fontWeight: '500',
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.5,
+    color: '#1D1B20',
   },
 });
 
@@ -327,6 +372,11 @@ const footerStyles = StyleSheet.create({
     fontSize: scaleFont(14),
     fontWeight: '500',
     color: '#FEF7FF',
+  },
+  personalCarePagerText: {
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    color: '#49454F',
   },
   buttonDisabled: {
     opacity: 0.5,
