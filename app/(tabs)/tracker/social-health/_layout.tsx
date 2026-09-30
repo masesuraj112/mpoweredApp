@@ -1,5 +1,11 @@
+import { SocialHealthAssessmentProvider } from '@/features/assessments/social-health/context';
 import { Stack } from 'expo-router';
 
 export default function SocialHealthLayout() {
-	return <Stack screenOptions={{ headerShown: false }} />;
+	return (
+		// Keep assessment answers alive while navigating between these routes.
+		<SocialHealthAssessmentProvider>
+			<Stack screenOptions={{ headerShown: false }} />
+		</SocialHealthAssessmentProvider>
+	);
 }

@@ -15,6 +15,12 @@ export default function TrackerScreen() {
 					onPress={() => router.push('/tracker/personal-care/general')}
 				/>
 			</View>
+			<View style={{ marginTop: 12 }}>
+				<Button
+					title="Start social health assessment"
+					onPress={() => router.push('/tracker/social-health/social-life')}
+				/>
+			</View>
 		</View>
 	);
 }
