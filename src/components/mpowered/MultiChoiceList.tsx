@@ -1,22 +1,36 @@
-import { scaleFont, scaleHeight, scaleWidth} from '@/services/scale';
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { ReactNode } from 'react';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
+import { SearchBar } from './SearchBar';
 
 interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
   /** Bold instruction line, e.g. "I have had pain in these areas last week." */
-  prompt: string;
+  prompt: ReactNode;
   /** Optional italic sub-line under the prompt, e.g. "(scroll down for more options)" */
   subPrompt?: string;
   options: string[];
   /** Pass to control selection from the parent (e.g. restoring a saved answer). Omit to let the component manage its own state. */
   selectedIndices?: number[];
   onSelectionChange?: (selectedIndices: number[]) => void;
+  onOptionPress?: (index: number, selectedIndices: number[]) => boolean | void;
   questionNumber?: number;
   totalQuestions?: number;
   onRecord?: () => void;
+  onPrevious?: () => void;
+  previousDisabled?: boolean;
+  validationMessage?: string;
+  cardHeight?: number;
+  disabled?: boolean;
+  variant?: 'default' | 'painTracker' | 'personalCare';
+  searchEnabled?: boolean;
+  searchPlaceholder?: string;
+  scrollable?: boolean;
+  listHeight?: number;
+  selectedChipsEnabled?: boolean;
 }
 
 export function MultiChoiceList({
@@ -26,15 +40,38 @@ export function MultiChoiceList({
   options,
   selectedIndices,
   onSelectionChange,
+  onOptionPress,
   questionNumber,
   totalQuestions,
   onRecord,
+  onPrevious,
+  previousDisabled = false,
+  validationMessage,
+  cardHeight,
+  disabled = false,
+  variant = 'default',
+  searchEnabled,
+  searchPlaceholder = 'Search',
+  scrollable,
+  listHeight,
+  selectedChipsEnabled,
 }: MultiChoiceListProps) {
   const [internalSelected, setInternalSelected] = useState<number[]>([]);
   const isControlled = selectedIndices !== undefined;
   const selected = isControlled ? selectedIndices : internalSelected;
+  const [searchText, setSearchText] = useState('');
+  const showSearch = searchEnabled ?? variant === 'painTracker';
+  const showScrollable = scrollable ?? variant !== 'default';
+  const showSelectedChips = selectedChipsEnabled ?? variant === 'painTracker';
+  const filteredOptions = options
+    .map((option, originalIndex) => ({ option, originalIndex }))
+    .filter(({ option }) => option.toLowerCase().includes(searchText.trim().toLowerCase()));
 
   const toggle = (index: number) => {
+    if (onOptionPress?.(index, selected) === true) {
+      return;
+    }
+
     const next = selected.includes(index)
       ? selected.filter((i) => i !== index)
       : [...selected, index];
@@ -62,30 +99,133 @@ export function MultiChoiceList({
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
       onRecord={onRecord}
+      onPrevious={onPrevious}
+      previousDisabled={previousDisabled}
+      validationMessage={validationMessage}
+      cardHeight={cardHeight}
+      disabled={disabled}
+      variant={variant}
     >
-      <View style={styles.optionsBox}>
-        {options.map((option, index) => {
-          const isSelected = selected.includes(index);
-          const isLast = index === options.length - 1;
-
-          return (
+      {showSearch && (
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder={searchPlaceholder}
+          style={styles.searchInput}
+        />
+      )}
+      {showSelectedChips && selected.length > 0 && (
+        <View style={styles.selectedChips}>
+          {selected.map(index => (
             <Pressable
               key={index}
-              onPress={() => toggle(index)}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: isSelected }}
-              accessibilityLabel={option}
-              style={[styles.row, !isLast && styles.rowDivider]}
+              onPress={() => onSelectionChange?.(selected.filter(selectedIndex => selectedIndex !== index))}
+              accessibilityRole="button"
+              accessibilityLabel={`Remove ${options[index]}`}
+              style={styles.selectedChip}
             >
-              <Text style={styles.label}>{option}</Text>
-              <View style={[styles.box, isSelected && styles.boxSelected]}>
-                {isSelected && <Text style={styles.checkmark}>✓</Text>}
-              </View>
+              <Text style={styles.selectedChipText}>{options[index]}</Text>
+              <Text style={styles.selectedChipClose}>×</Text>
             </Pressable>
-          );
-        })}
+          ))}
+        </View>
+      )}
+      <View
+        style={[
+          styles.optionsBox,
+          showScrollable && styles.scrollableOptionsBox,
+          variant !== 'default' && styles.painTrackerOptionsBox,
+          variant === 'personalCare' && styles.personalCareOptionsBox,
+        ]}
+      >
+        {showScrollable ? (
+          <ScrollView
+            style={[
+              styles.scrollList,
+              listHeight !== undefined && { height: listHeight },
+            ]}
+            contentContainerStyle={[styles.scrollContent, styles.scrollContentGrow]}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled
+            nestedScrollEnabled
+          >
+            {filteredOptions.map(({ option, originalIndex }, index) => (
+              <OptionRow
+                key={originalIndex}
+                option={option}
+                index={originalIndex}
+                isSelected={selected.includes(originalIndex)}
+                isLast={index === filteredOptions.length - 1}
+                onPress={toggle}
+                variant={variant}
+              />
+            ))}
+          </ScrollView>
+        ) : (
+          filteredOptions.map(({ option, originalIndex }, index) => (
+            <OptionRow
+              key={originalIndex}
+              option={option}
+              index={originalIndex}
+              isSelected={selected.includes(originalIndex)}
+              isLast={index === filteredOptions.length - 1}
+              onPress={toggle}
+              variant={variant}
+            />
+          ))
+        )}
       </View>
     </ChoiceCard>
+  );
+}
+
+function OptionRow({
+  option,
+  index,
+  isSelected,
+  isLast,
+  onPress,
+  variant,
+}: {
+  option: string;
+  index: number;
+  isSelected: boolean;
+  isLast: boolean;
+  onPress: (index: number) => void;
+  variant: 'default' | 'painTracker' | 'personalCare';
+}) {
+  const isAssessment = variant !== 'default';
+  const isPersonalCare = variant === 'personalCare';
+  return (
+    <Pressable
+      onPress={() => onPress(index)}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isSelected }}
+      accessibilityLabel={option}
+      style={[
+        styles.row,
+        isAssessment && styles.painTrackerRow,
+        !isLast &&
+          (isPersonalCare
+            ? styles.personalCareRowDivider
+            : variant === 'painTracker'
+              ? styles.painTrackerRowDivider
+              : styles.rowDivider),
+      ]}
+    >
+      <Text
+        style={[
+          styles.label,
+          isAssessment && styles.painTrackerLabel,
+          isPersonalCare && styles.personalCareLabel,
+        ]}
+      >
+        {option}
+      </Text>
+      <View style={[styles.box, isAssessment && styles.painTrackerBox, isSelected && styles.boxSelected]}>
+        {isSelected && <Text style={styles.checkmark}>✓</Text>}
+      </View>
+    </Pressable>
   );
 }
 
@@ -113,6 +253,67 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
   },
+  scrollableOptionsBox: {
+    flex: 1,
+    minHeight: 0,
+  },
+  searchInput: {
+    marginBottom: scaleHeight(16),
+  },
+  selectedChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: scaleWidth(16),
+    marginBottom: scaleHeight(10),
+  },
+  selectedChip: {
+    minHeight: scaleHeight(30),
+    borderWidth: 1,
+    borderColor: '#CAC4D0',
+    borderRadius: scaleWidth(16),
+    backgroundColor: '#EADDFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scaleWidth(16),
+    paddingHorizontal: scaleWidth(16),
+  },
+  selectedChipText: {
+    color: '#49454F',
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+  },
+  selectedChipClose: {
+    color: '#49454F',
+    fontSize: scaleFont(24),
+    lineHeight: scaleFont(20),
+  },
+  painTrackerOptionsBox: {
+    flex: 1,
+    minHeight: 0,
+    width: '100%',
+    alignSelf: 'flex-start',
+    borderColor: '#E7E0EC',
+    borderRadius: scaleWidth(5),
+    backgroundColor: '#FEF7FF',
+  },
+  personalCareOptionsBox: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    height: scaleHeight(283),
+    width: '96%',
+    marginLeft: scaleWidth(4),
+    borderRadius: scaleWidth(12),
+  },
+  scrollList: {
+    flex: 1,
+  },
+  scrollContent: {
+    backgroundColor: '#FEF7FF',
+  },
+  scrollContentGrow: {
+    flexGrow: 1,
+  },
 
   row: {
     flexDirection: 'row',
@@ -121,6 +322,18 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(18),
     paddingHorizontal: scaleWidth(18),
     minWidth: 0
+  },
+  painTrackerRow: {
+    height: scaleHeight(56),
+    paddingVertical: scaleHeight(8),
+    paddingHorizontal: scaleWidth(16),
+  },
+  painTrackerRowDivider: {
+    borderBottomWidth: 0,
+  },
+  personalCareRowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CAC4D0',
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -141,6 +354,12 @@ const styles = StyleSheet.create({
     borderColor: '#5B4A9E',
     backgroundColor: '#5B4A9E',
   },
+  painTrackerBox: {
+    width: scaleWidth(18),
+    height: scaleWidth(18),
+    borderRadius: scaleWidth(2),
+    borderColor: '#49454F',
+  },
   checkmark: {
     color: 'white',
     fontSize: scaleFont(14),
@@ -154,5 +373,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 1,
     minWidth: 0
+  },
+  painTrackerLabel: {
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    color: '#1D1B20',
+  },
+  personalCareLabel: {
+    lineHeight: scaleHeight(20),
+    letterSpacing: 0.25,
   },
 });
