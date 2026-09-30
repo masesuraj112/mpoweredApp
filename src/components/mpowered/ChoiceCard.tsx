@@ -23,7 +23,7 @@ interface ChoiceCardProps {
   cardHeight?: number;
   isRecording?: boolean;
   disabled?: boolean;
-  variant?: 'default' | 'painTracker' | 'personalCare';
+  variant?: 'default' | 'painTracker' | 'personalCare' | 'management';
   style?: StyleProp<ViewStyle>;
 }
 
@@ -45,9 +45,11 @@ export function ChoiceCard({
 }: ChoiceCardProps) {
   const isPainTracker = variant === 'painTracker';
   const isPersonalCare = variant === 'personalCare';
-  const isAssessment = isPainTracker || isPersonalCare;
+  const isManagement = variant === 'management';
+  const isFlowAssessment = isPersonalCare || isManagement;
+  const isAssessment = isPainTracker || isFlowAssessment;
   const showPager = questionNumber !== undefined && totalQuestions !== undefined;
-  const showNavigation = isPainTracker && (onPrevious || onRecord) || isPersonalCare && !!onRecord;
+  const showNavigation = (isPainTracker && (onPrevious || onRecord)) || (isFlowAssessment && !!onRecord);
   const showRecord = !!onRecord && !showNavigation;
   const isLastQuestion = showPager && questionNumber === totalQuestions;
   const showFooter = showPager || showRecord || showNavigation;
@@ -65,7 +67,7 @@ export function ChoiceCard({
         style={[
           styles.titleText,
           isPainTracker && styles.painTrackerTitle,
-          isPersonalCare && styles.personalCareTitle,
+            isFlowAssessment && styles.personalCareTitle,
         ]}
       >
         {title}
@@ -73,9 +75,9 @@ export function ChoiceCard({
       <View style={[styles.divider, isAssessment && styles.painTrackerDivider]} />
 
       {typeof prompt === 'string' ? (
-        <View style={[styles.promptWrapper, isPersonalCare && styles.personalCarePromptWrapper]}>
+        <View style={[styles.promptWrapper, isFlowAssessment && styles.personalCarePromptWrapper]}>
           {typeof prompt === 'string' ? (
-           <Text style={[styles.promptText, isPersonalCare && styles.personalCarePromptText]}>{prompt}</Text>
+           <Text style={[styles.promptText, isFlowAssessment && styles.personalCarePromptText]}>{prompt}</Text>
           ) : (
             prompt
           )}
@@ -85,7 +87,7 @@ export function ChoiceCard({
           style={[
             styles.promptContainer,
             isPainTracker && styles.painTrackerPrompt,
-            isPersonalCare && styles.personalCarePromptContainer,
+            isFlowAssessment && styles.personalCarePromptContainer,
           ]}
         >
           {prompt}
@@ -118,7 +120,7 @@ export function ChoiceCard({
               ]}
               accessibilityRole="text"
             >
-              <Text style={[footerStyles.pillText, isPersonalCare && footerStyles.personalCarePagerText]}>
+              <Text style={[footerStyles.pillText, isFlowAssessment && footerStyles.personalCarePagerText]}>
                 {questionNumber}/{totalQuestions}
               </Text>
             </View>
@@ -126,8 +128,8 @@ export function ChoiceCard({
 
           {showNavigation && (
             <View style={footerStyles.navigationGroup}>
-              {/* The first Personal Care step has no Previous action. */}
-              {(!isPersonalCare || onPrevious) && (
+              {/* First steps omit Previous when no previous route is provided. */}
+              {(!isFlowAssessment || onPrevious) && (
                 <Pressable
                   onPress={onPrevious}
                   disabled={previousDisabled || !onPrevious}
@@ -143,7 +145,7 @@ export function ChoiceCard({
                 onPress={onRecord}
                 disabled={disabled || isRecording || !onRecord}
                 accessibilityRole="button"
-                accessibilityLabel={isPersonalCare && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
+                accessibilityLabel={isFlowAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
                 accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
                 style={[
                   footerStyles.navigationButton,
@@ -158,7 +160,7 @@ export function ChoiceCard({
                       footerStyles.disabledNavigationButtonText,
                   ]}
                 >
-                  {isPersonalCare && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
+                  {isFlowAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
                 </Text>
               </Pressable>
             </View>
