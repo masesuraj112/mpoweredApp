@@ -26,6 +26,7 @@ export default function SummaryScreen() {
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportTitle}>My Management</Text>
+          {/* TODO: Use the selected assessment's recorded week when submissions include dates. */}
           <Text style={styles.period}>Period: 18-24 May</Text>
         </View>
         <View style={styles.divider} />
@@ -77,6 +78,7 @@ export default function SummaryScreen() {
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
+            {/* TODO: Persist this report to the Care Journal before showing its saved status. */}
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
               onPress={() => router.replace('/tracker')}
