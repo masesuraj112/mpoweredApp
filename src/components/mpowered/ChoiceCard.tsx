@@ -145,7 +145,7 @@ export function ChoiceCard({
                 onPress={onRecord}
                 disabled={disabled || isRecording || !onRecord}
                 accessibilityRole="button"
-                accessibilityLabel={isFlowAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
+                accessibilityLabel={isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
                 accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
                 style={[
                   footerStyles.navigationButton,
@@ -160,7 +160,7 @@ export function ChoiceCard({
                       footerStyles.disabledNavigationButtonText,
                   ]}
                 >
-                  {isFlowAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
+                  {isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
                 </Text>
               </Pressable>
             </View>
