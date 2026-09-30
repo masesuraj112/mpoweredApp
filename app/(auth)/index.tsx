@@ -24,7 +24,7 @@ export default function SplashScreen() {
       if (cancelled) return;
       timeout = setTimeout(() => {
         router.replace(hasOnboarded ? '/(auth)/verify' : '/(auth)/onboarding');
-      }, 1800);
+      }, 3000);
     };
     decideRoute();
 
