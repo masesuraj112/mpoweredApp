@@ -36,7 +36,6 @@ export default function SocialLifeScreen() {
           options={SOCIAL_HEALTH_OPTIONS}
           selectedIndex={selectedIndex}
           onSelectionChange={index => updateAnswer('socialLife', SOCIAL_HEALTH_OPTIONS[index])}
-          // onPrevious={() => router.push('/tracker/personal-care/general')}
           onRecord={handleNext}
           variant="personalCare"
           scrollable={false}

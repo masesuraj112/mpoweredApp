@@ -3,6 +3,7 @@ import { useSocialHealthAssessment } from '@/features/assessments/social-health/
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const MOOD_EMOTIONS = [
@@ -41,9 +42,12 @@ const MOOD_EMOTIONS = [
 export default function MoodEmotionScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const selected = MOOD_EMOTIONS.find(emotion => emotion.value === answers.moodEmotion);
+  // Only show the mandatory message once the user has tried to continue without a selection.
+  const [attemptedNext, setAttemptedNext] = useState(false);
 
   const handleNext = () => {
     if (!selected) {
+      setAttemptedNext(true);
       return;
     }
     router.push('/tracker/social-health/mood-trigger');
@@ -67,8 +71,9 @@ export default function MoodEmotionScreen() {
           totalQuestions={7}
           onPrevious={() => router.push('/tracker/social-health/enjoyment')}
           onRecord={handleNext}
-          disabled={!selected}
-          validationMessage={selected ? undefined : 'This question is mandatory and requires a response'}
+          validationMessage={
+            attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
+          }
           variant="personalCare"
           cardHeight={scaleHeight(300)}
         >

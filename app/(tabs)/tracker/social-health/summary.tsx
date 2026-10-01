@@ -19,10 +19,11 @@ function describeScore(assessment: ScoredAssessment, score: number | undefined):
 }
 
 // Overall impact phrase for the summary panel, from the average of the slider scores.
-function describeOverallImpact(scores: (number | undefined)[]): string {
+// Returns null when no slider scores were recorded, so we don't claim an impact without data.
+function describeOverallImpact(scores: (number | undefined)[]): string | null {
   const recorded = scores.filter((score): score is number => score !== undefined);
   if (recorded.length === 0) {
-    return 'does not limit';
+    return null;
   }
   const average = recorded.reduce((total, score) => total + score, 0) / recorded.length;
   if (average < 1) {
@@ -63,8 +64,15 @@ export default function SummaryScreen() {
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
             <Text style={styles.guidanceText}>
-              Your answers indicate that pain <Text style={styles.boldText}>{impact}</Text> your ability to enjoy social
-              activities.{'\n'}With the right treatment and support, you can stay more active and connected.
+              {impact ? (
+                <>
+                  Your answers indicate that pain <Text style={styles.boldText}>{impact}</Text> your ability to enjoy
+                  social activities.
+                </>
+              ) : (
+                'Not enough answers to summarise how pain affects your social activities.'
+              )}
+              {'\n'}With the right treatment and support, you can stay more active and connected.
             </Text>
             <Pressable
               onPress={() => Linking.openURL(MANAGING_EMOTIONS_TIPS_URL)}
