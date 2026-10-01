@@ -39,6 +39,7 @@ export default function TravellingScreen() {
           onPrevious={() => router.push('/tracker/social-health/social-life')}
           onRecord={handleNext}
           variant="personalCare"
+          scrollable={false}
           cardHeight={scaleHeight(558)}
         />
       </View>

@@ -39,6 +39,7 @@ export default function SocialLifeScreen() {
           // onPrevious={() => router.push('/tracker/personal-care/general')}
           onRecord={handleNext}
           variant="personalCare"
+          scrollable={false}
           cardHeight={scaleHeight(558)}
         />
       </View>
