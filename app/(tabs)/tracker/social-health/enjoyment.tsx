@@ -25,7 +25,7 @@ export default function EnjoymentScreen() {
           assessmentType="enjoyment"
           questionNumber={5}
           totalQuestions={7}
-          initialValue={answers.enjoymentOfLife}
+          initialValue={answers.enjoymentOfLife ?? 0}
           onValueChange={value => updateAnswer('enjoymentOfLife', value)}
           onPrevious={() => router.push('/tracker/social-health/relationships')}
           onRecord={handleNext}
