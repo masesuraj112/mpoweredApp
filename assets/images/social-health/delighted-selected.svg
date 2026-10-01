@@ -1,0 +1,28 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Delighted">
+<g id="Ellipse 13" filter="url(#filter0_dd_0_9)">
+<circle cx="20" cy="18" r="12" fill="#FFCC00"/>
+<circle cx="20" cy="18" r="11.5" stroke="#49454F"/>
+</g>
+<path id="Line 24" d="M25 22H16C16 22 16.5652 23.8501 17.5 24.5C18.4752 25.178 19.3123 25.5 20.5 25.5C21.6877 25.5 22.5652 25.15 23.5 24.5C24.4348 23.8501 25 22 25 22Z" fill="black" stroke="black"/>
+<path id="Line 25" d="M13 17.5C14.9506 15.8146 16.0491 15.6732 18 17.5" stroke="black"/>
+<path id="Line 26" d="M22 17.3176C23.9506 15.6321 25.0491 15.4907 27 17.3176" stroke="black"/>
+</g>
+<defs>
+<filter id="filter0_dd_0_9" x="0" y="0" width="40" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="2" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_0_9"/>
+<feOffset dy="2"/>
+<feGaussianBlur stdDeviation="3"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_9"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1"/>
+<feGaussianBlur stdDeviation="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0"/>
+<feBlend mode="normal" in2="effect1_dropShadow_0_9" result="effect2_dropShadow_0_9"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_0_9" result="shape"/>
+</filter>
+</defs>
+</svg>

@@ -12,7 +12,7 @@ export default function EnjoymentScreen() {
     if (answers.enjoymentOfLife === undefined) {
       updateAnswer('enjoymentOfLife', 0);
     }
-    router.push('/tracker/social-health/mood-trigger');
+    router.push('/tracker/social-health/mood-emotion');
   };
 
   return (
