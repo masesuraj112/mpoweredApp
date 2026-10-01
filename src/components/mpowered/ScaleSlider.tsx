@@ -91,7 +91,9 @@ export function ScaleSliderInput({
   // This function prevents input from being less than 0 or greater than 10
   const changeNumber = (text: string) => {
     if (text === '') {
+      setValue(0);
       setHasValue(false);
+      onValueChange?.(0);
       return;
     }
     const num = Number(text);
