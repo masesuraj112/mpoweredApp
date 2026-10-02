@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-export default function VerifyScreen() {
+export default function PlaceholderScreen() {
   return (
-    <View>
-      <Text>verify (coming soon)</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>This screen is under construction</Text>
     </View>
   );
 }
