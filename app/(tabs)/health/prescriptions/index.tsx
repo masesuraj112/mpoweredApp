@@ -4,53 +4,21 @@ import { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+
+// TODO: replace with a Supabase query once prescriptions are wired up, e.g.
+// supabase.from('prescriptions').select('*').eq('users_id', userId)
+import { PrescriptionScript, SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
 
-interface Prescription {
-  id: string;
-  name: string;
-  frequency: string;
-}
-
-// TODO: replace with a Supabase query once prescriptions are wired up, e.g.
-// supabase.from('prescriptions').select('*').eq('users_id', userId)
-const FAKE_PRESCRIPTIONS: Prescription[] = [
-  {
-    id: 'perindopril',
-    name: 'Perindopril arginine 5 mg',
-    frequency: 'Once daily',
-  },
-  {
-    id: 'candesartan',
-    name: 'Candesartan 16 mg',
-    frequency: 'Once daily',
-  },
-  {
-    id: 'amlodipine',
-    name: 'Amlodipine 5 mg',
-    frequency: 'Once daily',
-  },
-  {
-    id: 'vitamin-d3',
-    name: 'Vitamin D3 1000 IU',
-    frequency: 'Once daily',
-  },
-  {
-    id: 'raloxifene',
-    name: 'Raloxifene 60 mg',
-    frequency: 'Once daily',
-  },
-];
-
 export default function PrescriptionsScreen() {
-  const [prescriptions, setPrescriptions] = useState(FAKE_PRESCRIPTIONS);
+  const [prescriptions, setPrescriptions] = useState(SAMPLE_PRESCRIPTION_SCRIPTS);
   const isEmpty = prescriptions.length === 0;
 
-  const handleEdit = (prescription: Prescription) => {
+  const handleEdit = (prescription: PrescriptionScript) => {
     router.push({ pathname: '/health/prescriptions/add', params: { id: prescription.id } });
   };
 
@@ -60,7 +28,7 @@ export default function PrescriptionsScreen() {
     setPrescriptions((current) => current.filter((prescription) => prescription.id !== id));
   };
 
-  const handleDelete = (prescription: Prescription) => {
+  const handleDelete = (prescription: PrescriptionScript) => {
     const message = `Remove ${prescription.name} from your prescriptions?`;
 
     // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
