@@ -1,6 +1,6 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 
 interface SingleChoiceProps {
@@ -15,6 +15,8 @@ interface SingleChoiceProps {
   variant?: 'default' | 'painTracker' | 'personalCare';
   selectedIndex?: number | null;
   cardHeight?: number;
+  /** Scroll options inside a fixed-height box (personalCare only). Set false to let the list grow to fit. */
+  scrollable?: boolean;
 }
 
 
@@ -31,7 +33,9 @@ export function SingleChoiceInput({
   variant = 'default',
   selectedIndex: controlledSelectedIndex,
   cardHeight,
+  scrollable = true,
 }: SingleChoiceProps) {
+  const isScrollable = variant === 'personalCare' && scrollable;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const currentSelectedIndex = controlledSelectedIndex !== undefined ? controlledSelectedIndex : selectedIndex;
 
@@ -59,7 +63,14 @@ export function SingleChoiceInput({
       cardHeight={cardHeight}
       variant={variant}
     >
-      <View style={variant === 'personalCare' && optionStyles.personalCareList}>
+      <View
+        style={[
+          variant === 'personalCare' && optionStyles.personalCareList,
+          isScrollable && optionStyles.personalCareListFixedHeight,
+        ]}
+      >
+      {/* Rows grow with their text, so long options scroll inside the box on small screens. */}
+      <ScrollView bounces={false} scrollEnabled={isScrollable}>
       {options?.map((option, index) => {
         const isSelected = index === currentSelectedIndex;
         const isLast = index === options.length - 1;
@@ -92,6 +103,7 @@ export function SingleChoiceInput({
           </Pressable>
         );
       })}
+      </ScrollView>
       </View>
     </ChoiceCard>
   );
@@ -127,7 +139,6 @@ const optionStyles = StyleSheet.create({
   },
   personalCareList: {
     width: '96%',
-    height: scaleHeight(340),
     marginLeft: scaleWidth(4),
     borderWidth: 1,
     borderColor: '#E7E0EC',
@@ -135,8 +146,11 @@ const optionStyles = StyleSheet.create({
     backgroundColor: '#FEF7FF',
     overflow: 'hidden',
   },
+  personalCareListFixedHeight: {
+    height: scaleHeight(340),
+  },
   personalCareRow: {
-    height: scaleHeight(56),
+    minHeight: scaleHeight(56),
     paddingVertical: scaleHeight(8),
     paddingHorizontal: scaleWidth(16),
     gap: scaleWidth(16),
