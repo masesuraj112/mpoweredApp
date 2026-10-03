@@ -98,7 +98,7 @@ export function ScaleSliderInput({
     }
     const num = Number(text);
     if (isNaN(num)) return;
-    const clamped = Math.min(10, Math.max(0, num));
+    const clamped = Math.round(Math.min(10, Math.max(0, num)));
     setValue(clamped);
     setHasValue(true);
     onValueChange?.(clamped);
