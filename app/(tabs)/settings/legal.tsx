@@ -1,18 +1,14 @@
-import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+
+const privacyIcon = require('../../../assets/images/settings/privacy-data-legal.svg');
 
 export default function LegalScreen() {
   return (
     <SettingsSubpage title="Privacy/Data and Legal">
-      <View>
-        <Pressable onPress={() => router.push('/settings/privacy')} style={settingsSubpageStyles.link}>
-          <Text style={settingsSubpageStyles.linkText}>Privacy Policy</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push('/settings/terms')} style={settingsSubpageStyles.link}>
-          <Text style={settingsSubpageStyles.linkText}>Terms and Conditions</Text>
-        </Pressable>
-      </View>
+      <SettingsOption icon={privacyIcon} label="View PP and T&Cs" onPress={() => router.push('/settings/privacy')} />
+      <SettingsOption label="Export my data" onPress={() => undefined} />
+      <SettingsOption label="Account deletion" onPress={() => undefined} destructive />
     </SettingsSubpage>
   );
 }

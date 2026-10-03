@@ -1,10 +1,13 @@
-import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
-import { Text } from 'react-native';
+import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { useState } from 'react';
 
 export default function DisplayScreen() {
+  const [darkMode, setDarkMode] = useState(false);
+
   return (
     <SettingsSubpage title="Display">
-      <Text style={settingsSubpageStyles.placeholder}>Display preferences coming soon.</Text>
+      <SettingsOption label="Text size" trailing={<SettingsSelect value="Medium" />} />
+      <SettingsOption label="Enable dark mode" trailing={<SettingsToggle value={darkMode} onValueChange={setDarkMode} />} />
     </SettingsSubpage>
   );
 }
