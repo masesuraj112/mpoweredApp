@@ -1,24 +1,12 @@
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-export const PAIN_LOCATION_OPTIONS = [
-  'Head',
-  'Neck',
-  'Shoulder',
-  'Upper Back',
-  'Lower Back',
-  'Leg',
-  'Hip',
-  'Buttock',
-  'Knee',
-  'Other',
-] as const;
-
-const PRESET_OPTIONS = PAIN_LOCATION_OPTIONS.slice(0, -1);
+const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
 export default function PainLocationScreen() {
@@ -40,7 +28,7 @@ export default function PainLocationScreen() {
   const [draftOtherLocation, setDraftOtherLocation] = useState('');
 
   const otherIndex = PRESET_OPTIONS.length + customLocations.length;
-  const displayOptions: string[] = [...PRESET_OPTIONS, ...customLocations, 'Other'];
+  const displayOptions: string[] = [...PRESET_OPTIONS, ...customLocations, OTHER_LOCATION_LABEL];
   const customIndices = customLocations.map((_, i) => PRESET_OPTIONS.length + i);
   // "Other" is an action row and is never shown as checked.
   const selected = [...selectedPresets, ...customIndices];

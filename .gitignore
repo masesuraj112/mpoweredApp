@@ -47,3 +47,5 @@ example
 
 # Supabase
 supabase/.temp/
+# test coverage output
+coverage/
