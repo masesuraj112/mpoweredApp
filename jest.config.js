@@ -9,6 +9,8 @@ module.exports = {
     'src/features/assessments/week.ts',
     'src/features/assessments/pain/normalise.ts',
     'src/features/assessments/pain/validate.ts',
+    'src/features/assessments/pain/messages.ts',
+    'src/features/assessments/pain/summary.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
