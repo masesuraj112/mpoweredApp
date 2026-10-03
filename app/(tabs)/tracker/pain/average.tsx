@@ -57,13 +57,9 @@ export default function CurrePainLevel() {
         onPrevious={() => router.push('/tracker/pain/worst')}
         onRecord={handleFinish}
         disabled={saving}
+        validationMessage={errorMessage ?? undefined}
         variant="painTracker"
       />
-      {errorMessage && (
-        <Text style={styles.errorText} accessibilityRole="alert">
-          {errorMessage}
-        </Text>
-      )}
     </View>
   );
 }
@@ -77,10 +73,5 @@ const styles = StyleSheet.create({
       fontSize: scaleFont(26),
       fontWeight: '500',
       marginBottom: 20
-  },
-  errorText: {
-    marginTop: 12,
-    fontSize: scaleFont(14),
-    color: '#B3261E',
   },
 });
