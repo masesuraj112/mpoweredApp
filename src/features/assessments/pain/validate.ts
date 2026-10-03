@@ -15,8 +15,11 @@ export type PainValidationContext = {
   entryDate: string;
   /** The device-local date today. */
   today: string;
-  /** The Monday of the week the user joined. */
-  startWeek: string;
+  /**
+   * The Monday of the week the user joined. When omitted, the check is skipped here and the
+   * database rejects an earlier date with BEFORE_START.
+   */
+  startWeek?: string;
   /** Locations that may be matched to a canonical spelling. Defaults to the presets. */
   knownLocations?: readonly string[];
 };
@@ -97,7 +100,7 @@ export function validatePainAnswers(
     if (isFutureDate(entryDate, today)) {
       return fail({ code: 'FUTURE_DATE', message: 'The entry date cannot be in the future.', field: 'entryDate' });
     }
-    if (entryDate < startWeek) {
+    if (startWeek !== undefined && entryDate < startWeek) {
       return fail({ code: 'BEFORE_START', message: 'The entry date is before you started using the app.', field: 'entryDate' });
     }
   } catch {

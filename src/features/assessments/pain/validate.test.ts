@@ -120,6 +120,11 @@ describe('validatePainAnswers: entry date', () => {
     expect(errorOf(valid, { ...context, entryDate: '2026-09-27' })?.code).toBe('BEFORE_START');
   });
 
+  it('skips the start-week check when no start week is given (the database enforces it)', () => {
+    const { startWeek: _startWeek, ...withoutStart } = context;
+    expect(validatePainAnswers(valid, { ...withoutStart, entryDate: '2020-01-01' }).ok).toBe(true);
+  });
+
   it.each(['', 'yesterday', '2026-02-30', '03/10/2026'])('rejects %j as not a date', (entryDate) => {
     expect(errorOf(valid, { ...context, entryDate })).toMatchObject({
       code: 'VALIDATION',
