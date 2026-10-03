@@ -1,19 +1,10 @@
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
-export const PAIN_CHARACTERISTICS_OPTIONS = [
-  'Shooting',
-  'Stabbing',
-  'Gnawing',
-  'Sharp',
-  'Tender',
-  'Burning',
-  'Exhausting',
-] as const;
 
 export default function PainCharacteristicsScreen() {
   const { answers, updateAnswer } = usePainAssessment();
