@@ -3,8 +3,6 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import '@/global.css';
-
 import { Platform } from 'react-native';
 
 export const Colors = {
@@ -14,6 +12,11 @@ export const Colors = {
     backgroundElement: '#F0F0F3',
     backgroundSelected: '#E0E1E6',
     textSecondary: '#60646C',
+    primary: '#6750A4',
+    outline: '#CAC4D0',
+    outlineStrong: '#AEAEB2',
+    onSurface: '#1D1B20',
+    onSurfaceVariant: '#49454F',
   },
   dark: {
     text: '#ffffff',
@@ -21,6 +24,11 @@ export const Colors = {
     backgroundElement: '#212225',
     backgroundSelected: '#2E3135',
     textSecondary: '#B0B4BA',
+    primary: '#D0BCFF',
+    outline: '#938F99',
+    outlineStrong: '#79747E',
+    onSurface: '#E6E1E5',
+    onSurfaceVariant: '#CAC4D0',
   },
 } as const;
 
