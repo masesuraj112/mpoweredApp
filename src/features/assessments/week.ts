@@ -31,6 +31,51 @@ export function getWeekEnd(isoDate: string): string {
   return addDays(getWeekStart(isoDate), 6);
 }
 
+export function addWeeks(weekStart: string, weeks: number): string {
+  return addDays(weekStart, weeks * 7);
+}
+
+/** Today's date in the device's own timezone (the week comes from the date the user sees). */
+export function getLocalToday(now: Date = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+export function isFutureDate(date: string, today: string): boolean {
+  return parse(date).getTime() > parse(today).getTime();
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function parts(isoDate: string) {
+  const date = parse(isoDate);
+  return {
+    day: String(date.getUTCDate()).padStart(2, '0'),
+    month: MONTHS[date.getUTCMonth()],
+    monthNumber: String(date.getUTCMonth() + 1).padStart(2, '0'),
+    year: date.getUTCFullYear(),
+  };
+}
+
+/** For example '18–24 May 2026', '27 Apr–03 May 2026' or '28 Dec 2026–03 Jan 2027'. */
+export function formatWeekRange(weekStart: string): string {
+  const start = parts(getWeekStart(weekStart));
+  const end = parts(getWeekEnd(weekStart));
+  if (start.year !== end.year) {
+    return `${start.day} ${start.month} ${start.year}–${end.day} ${end.month} ${end.year}`;
+  }
+  if (start.month !== end.month) {
+    return `${start.day} ${start.month}–${end.day} ${end.month} ${end.year}`;
+  }
+  return `${start.day}–${end.day} ${end.month} ${end.year}`;
+}
+
+/** The Sunday of the week as dd/mm, used to label a week on the chart (for example '24/05'). */
+export function formatWeekEndLabel(weekStart: string): string {
+  const end = parts(getWeekEnd(weekStart));
+  return `${end.day}/${end.monthNumber}`;
+}
+
 /** The Monday of every week from the week containing `from` to the week containing `to`. */
 export function listWeeks(from: string, to: string): string[] {
   const last = getWeekStart(to);

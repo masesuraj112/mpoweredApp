@@ -5,6 +5,7 @@ export type AppErrorCode =
   | 'DUPLICATE_WEEK'
   | 'VALIDATION'
   | 'NOT_ALLOWED'
+  | 'NO_SESSION'
   | 'NO_PROFILE'
   | 'FUTURE_DATE'
   | 'BEFORE_START'
@@ -16,6 +17,8 @@ export type AppError = {
   message: string;
   /** For VALIDATION errors raised by save_pain_assessment: the original message code. */
   detail?: string;
+  /** For VALIDATION errors raised by the app: the answer that failed (for example 'worstPain'). */
+  field?: string;
 };
 
 // P0001 messages raised by save_pain_assessment that keep their own code
