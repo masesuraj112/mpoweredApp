@@ -50,9 +50,9 @@ jobs:
       - run: supabase start -x logflare,vector
       - run: supabase test db
       - run: supabase db lint --local --fail-on error
-      # Add the step below ONLY after src/types/database.ts has been generated with
-      # `supabase gen types typescript --local`. While the file is empty it always fails.
-      # - name: Generated types match the migrations
-      #   run: |
-      #     supabase gen types typescript --local > /tmp/database.ts
-      #     diff -u src/types/database.ts /tmp/database.ts
+      # Fails when a migration changes without regenerating the types:
+      # run `supabase gen types typescript --local > src/types/database.ts` and commit it.
+      - name: Generated types match the migrations
+        run: |
+          supabase gen types typescript --local > /tmp/database.ts
+          diff -u src/types/database.ts /tmp/database.ts
