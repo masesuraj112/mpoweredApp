@@ -5,6 +5,9 @@ import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
+const passwordIcon = require('../../../assets/images/settings/password.svg');
+const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
+
 
 export default function ProfileScreen() {
   const [faceIdEnabled, setFaceIdEnabled] = useState(false);
@@ -17,8 +20,9 @@ export default function ProfileScreen() {
   return (
     <SettingsSubpage title="Account">
       <SettingsOption icon={accountIcon} label="Personal details" onPress={() => router.push('/settings/profile')} />
-      <SettingsOption label="Change password" onPress={() => Alert.alert('Change password', 'Password changes coming soon.')} />
+      <SettingsOption icon={passwordIcon} label="Change password" onPress={() => Alert.alert('Change password', 'Password changes coming soon.')} />
       <SettingsOption
+        icon={faceIdIcon}
         label="Enable FaceID"
         trailing={<SettingsToggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />}
       />

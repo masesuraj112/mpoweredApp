@@ -1,5 +1,4 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,19 +7,10 @@ import { ReactNode } from 'react';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          style={styles.backButton}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-          <Text style={styles.backText}>Back</Text>
-        </Pressable>
+      <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
+        {children}
       </View>
-      <View style={styles.content}>{children}</View>
     </SafeAreaView>
   );
 }
@@ -98,30 +88,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  header: {
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(12),
-    paddingBottom: scaleHeight(16),
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: scaleHeight(40),
-  },
-  backArrow: {
-    color: '#49454F',
-    fontSize: scaleFont(28),
-    lineHeight: scaleFont(28),
-    marginRight: scaleWidth(8),
-  },
-  backText: {
-    color: '#49454F',
-    fontSize: scaleFont(16),
-  },
   title: {
-    marginTop: scaleHeight(12),
+    marginBottom: scaleHeight(24),
     color: '#000000',
     fontSize: scaleFont(24),
     fontWeight: '600',
