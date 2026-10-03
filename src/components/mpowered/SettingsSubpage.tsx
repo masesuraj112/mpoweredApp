@@ -63,11 +63,20 @@ export function SettingsOption({
   );
 }
 
-export function SettingsToggle({ value, onValueChange }: { value: boolean; onValueChange: (value: boolean) => void }) {
+export function SettingsToggle({
+  value,
+  onValueChange,
+  accessibilityLabel,
+}: {
+  value: boolean;
+  onValueChange: (value: boolean) => void;
+  accessibilityLabel?: string;
+}) {
   return (
     <Pressable
       onPress={() => onValueChange(!value)}
       accessibilityRole="switch"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked: value }}
       style={[styles.toggle, value && styles.toggleOn]}
     >
@@ -80,10 +89,12 @@ export function SettingsSelect({
   value,
   options,
   onChange,
+  accessibilityLabel = 'Text size',
 }: {
   value: string;
   options: string[];
   onChange: (value: string) => void;
+  accessibilityLabel?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -92,7 +103,7 @@ export function SettingsSelect({
       <Pressable
         onPress={() => setIsOpen(current => !current)}
         accessibilityRole="button"
-        accessibilityLabel={`Text size, ${value}`}
+        accessibilityLabel={`${accessibilityLabel}, ${value}`}
         accessibilityState={{ expanded: isOpen }}
         style={styles.select}
       >
