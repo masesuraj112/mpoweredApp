@@ -2,7 +2,7 @@
 
 How to run everything is in the [README Testing section](../README.md#testing). This page lists each rule and the test that proves it.
 
-**Current results (local):** 108 Jest tests in 5 suites pass; 45 pgTAP checks in 5 files pass; `npm run typecheck` is clean.
+**Current results (local):** 115 Jest tests in 7 suites pass; 45 pgTAP checks in 5 files pass; `npm run typecheck` is clean.
 
 ## Traceability
 
@@ -26,6 +26,10 @@ How to run everything is in the [README Testing section](../README.md#testing). 
 | Saving sends normalised values, and a bad answer never reaches the database | `assessments.test.ts` (`savePainEntry`) | Service | `unit-tests` |
 | A retry after a lost response is treated as success; a different stored entry stays `DUPLICATE_WEEK` | `assessments.test.ts` | Service | `unit-tests` |
 | Read functions filter by `week_start` and by the signed-in `auth_id`, and report `NO_SESSION` / `NO_PROFILE` | `assessments.test.ts` (`getPainEntryForWeek`, `getCompletedPainWeeks`, `getUserStartWeek`, `getRecentPainLocations`) | Service | `unit-tests` |
+| Each save failure shows a friendly message, and raw database text is never shown to the user | `messages.test.ts` | Unit | `unit-tests` |
+| The Summary screen shows the Monday to Sunday week, the saved values and the score wording (including 0 and 10) | `summary.test.ts` | Unit | `unit-tests` |
+| The generated types match the migrations | CI step "Generated types match the migrations" (`supabase gen types --local` compared with `src/types/database.ts`) | Static | `database-tests` |
+| No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
 ## Not automated
 
@@ -34,12 +38,10 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The Finish button cannot be double-submitted (UI behaviour; checked by hand).
 - That an untouched slider writes 0 in the UI (the validator accepts 0; the screen itself is checked by hand).
 - Screens and components in general: there are no component tests.
-- The generated types match the migrations. Checked by hand when the types were generated; not yet a CI step (see below).
 
 ## Not tested / deferred
 
 - Formatting check in CI (`prettier --check`): the repository has mixed line endings, so it would fail on most existing files.
-- `npm run lint` in CI: it currently fails on two existing errors (`app/(auth)/consent.tsx`, `src/constants/theme.ts`), so it is left out until those are fixed.
 - Deploy pipeline, EAS builds, branch protection and required checks.
 - UI component tests.
 - Coverage thresholds. The coverage report is produced and uploaded by CI, but nothing fails on a percentage.

@@ -19,8 +19,7 @@ jobs:
           node-version: 24.20.0
           cache: npm
       - run: npm ci
-      # TODO: add `npm run lint` once the existing errors are fixed
-      # (app/(auth)/consent.tsx: unescaped apostrophe; src/constants/theme.ts: unresolved '@/global.css').
+      - run: npm run lint
       - run: npm run typecheck
 
   unit-tests:

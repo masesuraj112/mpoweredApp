@@ -142,7 +142,7 @@ npm test                 # all Jest tests once
 npm run test:watch       # re-run Jest on every save while you code
 npm run test:ci          # what CI runs: Jest plus a coverage report in coverage/
 npm run typecheck        # TypeScript type check
-npm run lint             # ESLint (has existing errors, so it is not in CI yet)
+npm run lint             # ESLint (warnings are allowed, errors fail CI)
 ```
 
 The database tests need Docker Desktop running and the local Supabase stack:
@@ -161,9 +161,9 @@ If `supabase start` fails because the analytics container is unhealthy (low Dock
 
 | Job | Runs |
 | --- | ---- |
-| `static-checks` | `npm run typecheck` |
+| `static-checks` | `npm run lint`, `npm run typecheck` |
 | `unit-tests` | `npm run test:ci`, then uploads the coverage report |
-| `database-tests` | `supabase start`, `supabase test db`, `supabase db lint --local --fail-on error` |
+| `database-tests` | `supabase start`, `supabase test db`, `supabase db lint --local --fail-on error`, and a check that `src/types/database.ts` matches the migrations (if you change a migration, run `supabase gen types typescript --local > src/types/database.ts` and commit it) |
 
 See the results in the **Checks** box on a pull request, or on the repository's **Actions** tab.
 
