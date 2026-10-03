@@ -9,6 +9,7 @@ interface OnboardingData {
     hasDiagnosis: boolean | null;
     conditions: string[];
     otherConditions: string;
+    phoneNumber: string;
 }
 
 interface OnboardingContextValue {
@@ -24,6 +25,7 @@ const initData: OnboardingData = {
     hasDiagnosis: null,
     conditions: [],
     otherConditions: '',
+    phoneNumber: '',
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | undefined> (undefined);

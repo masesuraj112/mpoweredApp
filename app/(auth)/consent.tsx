@@ -9,7 +9,7 @@ const PRIVACY_URL = 'https://mpowered.example/privacy';
 export default function ConsentScreen() {
   const { data } = useOnboarding();
 
-  const handleContinue = () => router.push('/(auth)/demographics');
+  const handleContinue = () => router.push('/(auth)/sex');
 
   return (
     <View style={styles.container}>

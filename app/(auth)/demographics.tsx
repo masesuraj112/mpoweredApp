@@ -11,7 +11,7 @@ export default function DemographicsScreen() {
     const parsed = yearOfBirth.trim() ? parseInt(yearOfBirth, 10) : null;
     updateData({ yearOfBirth: parsed });
     // The route exists in the app tree, but the generated Expo Router types can lag during local development.
-    router.push('/(auth)/diagnosis' as any);
+    router.push('/(auth)/health-conditions' as any);
   };
 
   return (
