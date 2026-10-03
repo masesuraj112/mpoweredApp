@@ -21,7 +21,7 @@ export default function ConsentScreen() {
       </Pressable>
 
       <Text style={styles.legal}>
-        By continuing you agree to MPowered's{' '}
+        By continuing you agree to MPowered&apos;s{' '}
         <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)}>Terms and Conditions</Text>
         {' '}and{' '}
         <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)}>Privacy Policy</Text>
