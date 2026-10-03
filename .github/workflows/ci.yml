@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: npm
+      - run: npm ci
+      # TODO: add `npm run lint` once the existing errors are fixed
+      # (app/(auth)/consent.tsx: unescaped apostrophe; src/constants/theme.ts: unresolved '@/global.css').
+      - run: npm run typecheck
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: npm
+      - run: npm ci
+      - run: npm run test:ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
+  database-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.116.0
+      # analytics services are not needed by the tests (and can fail their health check)
+      - run: supabase start -x logflare,vector
+      - run: supabase test db
+      - run: supabase db lint --local --fail-on error
+      # Add the step below ONLY after src/types/database.ts has been generated with
+      # `supabase gen types typescript --local`. While the file is empty it always fails.
+      # - name: Generated types match the migrations
+      #   run: |
+      #     supabase gen types typescript --local > /tmp/database.ts
+      #     diff -u src/types/database.ts /tmp/database.ts
