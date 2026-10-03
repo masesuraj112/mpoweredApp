@@ -8,9 +8,13 @@ export default function HealthConditionsScreen() {
   const [selected, setSelected] = useState(data.hasDiagnosis);
 
   const handleContinue = () => {
-    updateData({ hasDiagnosis: selected });
+  updateData({ hasDiagnosis: selected });
+  if (selected) {
     router.push('/(auth)/diagnosis-conditions');
-  };
+  } else {
+    router.push({ pathname: '/(auth)/other-conditions', params: { noDiagnosis: '1' } });
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -32,8 +36,12 @@ export default function HealthConditionsScreen() {
       <Text style={styles.helperText}>
         No diagnosis? No problem! You know your body and how you feel so being Health M<Text style={styles.superscript}>Powered</Text> is for you :)
       </Text>
-      <Pressable style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueText}>Continue</Text>
+      <Pressable
+        disabled={selected === null}
+        style={[styles.continueButton, selected === null && styles.continueButtonDisabled]}
+        onPress={handleContinue}
+      >
+        <Text style={[styles.continueText, selected === null && styles.continueTextDisabled]}>Continue</Text>
       </Pressable>
     </View>
   );
@@ -49,4 +57,6 @@ const styles = StyleSheet.create({
   superscript: { fontSize: 11 },
   continueButton: { backgroundColor: '#5B3FA5', width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center' },
   continueText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  continueButtonDisabled: { backgroundColor: '#D9D0EE' },
+  continueTextDisabled: { color: '#5B3FA5' },
 });

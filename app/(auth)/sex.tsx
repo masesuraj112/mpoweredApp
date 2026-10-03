@@ -30,9 +30,13 @@ export default function SexScreen() {
           <Text style={styles.optionText}>{opt.label}</Text>
         </Pressable>
       ))}
-      <Pressable style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueText}>Continue</Text>
-      </Pressable>
+    <Pressable
+        disabled={!selected}
+        style={[styles.continueButton, !selected && styles.continueButtonDisabled]}
+        onPress={handleContinue}
+    >
+  <Text style={[styles.continueText, !selected && styles.continueTextDisabled]}>Continue</Text>
+    </Pressable>
       <Text style={styles.tip}>💡 Research shows that people may experience pain differently depending on their sex</Text>
     </View>
   );
@@ -44,7 +48,9 @@ const styles = StyleSheet.create({
   option: { width: '100%', backgroundColor: '#EDE9F5', borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
   optionSelected: { backgroundColor: '#D9D0EE' },
   optionText: { color: '#5B3FA5', fontWeight: '600', fontSize: 15 },
-  continueButton: { backgroundColor: '#D9D0EE', width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
-  continueText: { color: '#5B3FA5', fontWeight: '700', fontSize: 16 },
+  continueButton: { backgroundColor: '#5B3FA5', width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
+  continueButtonDisabled: { backgroundColor: '#D9D0EE' },
+  continueText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  continueTextDisabled: { color: '#5B3FA5' },
   tip: { textAlign: 'center', color: '#8A8590', marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
 });
