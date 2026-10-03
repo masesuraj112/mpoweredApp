@@ -6,10 +6,16 @@ const darkModeIcon = require('../../../assets/images/settings/darkmode.svg');
 
 export default function DisplayScreen() {
   const [darkMode, setDarkMode] = useState(false);
+  const [textSize, setTextSize] = useState('Medium');
 
   return (
     <SettingsSubpage title="Display">
-      <SettingsOption icon={textSizeIcon} label="Text size" trailing={<SettingsSelect value="Medium" />} />
+      <SettingsOption
+        icon={textSizeIcon}
+        label="Text size"
+        elevated
+        trailing={<SettingsSelect value={textSize} options={['Small', 'Medium', 'Large']} onChange={setTextSize} />}
+      />
       <SettingsOption icon={darkModeIcon} label="Enable dark mode" trailing={<SettingsToggle value={darkMode} onValueChange={setDarkMode} />} />
     </SettingsSubpage>
   );

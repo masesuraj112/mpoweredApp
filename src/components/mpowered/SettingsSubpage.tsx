@@ -2,7 +2,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -40,19 +40,21 @@ export function SettingsOption({
   onPress,
   trailing,
   destructive = false,
+  elevated = false,
 }: {
   icon?: number;
   label: string;
   onPress?: () => void;
   trailing?: ReactNode;
   destructive?: boolean;
+  elevated?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+      style={({ pressed }) => [styles.option, elevated && styles.optionElevated, pressed && styles.optionPressed]}
     >
       {icon && <Image source={icon} style={styles.optionIcon} contentFit="contain" accessibilityLabel="" />}
       <Text style={[styles.optionLabel, destructive && styles.destructiveText]}>{label}</Text>
@@ -74,11 +76,47 @@ export function SettingsToggle({ value, onValueChange }: { value: boolean; onVal
   );
 }
 
-export function SettingsSelect({ value }: { value: string }) {
+export function SettingsSelect({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <View style={styles.select}>
-      <Text style={styles.selectText}>{value}</Text>
-      <Text style={styles.selectArrow}>⌄</Text>
+    <View style={styles.selectWrapper}>
+      <Pressable
+        onPress={() => setIsOpen(current => !current)}
+        accessibilityRole="button"
+        accessibilityLabel={`Text size, ${value}`}
+        accessibilityState={{ expanded: isOpen }}
+        style={styles.select}
+      >
+        <Text style={styles.selectText}>{value}</Text>
+        <Text style={styles.selectArrow}>⌄</Text>
+      </Pressable>
+      {isOpen && (
+        <View style={styles.selectMenu}>
+          {options.map(option => (
+            <Pressable
+              key={option}
+              onPress={() => {
+                onChange(option);
+                setIsOpen(false);
+              }}
+              accessibilityRole="menuitem"
+              accessibilityState={{ selected: option === value }}
+              style={styles.selectOption}
+            >
+              <Text style={styles.selectOptionText}>{option}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -113,6 +151,10 @@ const styles = StyleSheet.create({
   },
   optionPressed: {
     opacity: 0.7,
+  },
+  optionElevated: {
+    zIndex: 10,
+    elevation: 10,
   },
   optionIcon: {
     width: scaleWidth(24),
@@ -165,6 +207,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#AEAEB2',
     borderRadius: scaleWidth(4),
+  },
+  selectWrapper: {
+    position: 'relative',
+    zIndex: 2,
+  },
+  selectMenu: {
+    position: 'absolute',
+    top: scaleHeight(42),
+    right: 0,
+    minWidth: scaleWidth(106),
+    borderWidth: 1,
+    borderColor: '#AEAEB2',
+    borderRadius: scaleWidth(4),
+    backgroundColor: '#FFFFFF',
+    elevation: 4,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  selectOption: {
+    minHeight: scaleHeight(40),
+    justifyContent: 'center',
+    paddingHorizontal: scaleWidth(12),
+  },
+  selectOptionText: {
+    color: '#49454F',
+    fontSize: scaleFont(16),
   },
   selectText: {
     color: '#49454F',
