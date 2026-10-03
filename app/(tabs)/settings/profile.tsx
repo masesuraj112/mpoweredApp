@@ -1,4 +1,4 @@
-import { SettingsModal, SettingsModalField } from '@/components/mpowered/SettingsModal';
+import { SettingsModal, SettingsModalField, SettingsModalText } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
@@ -23,36 +23,48 @@ export default function ProfileScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  // After a successful change the same popup switches to a confirmation message.
+  const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
   const closeChangePassword = () => {
     setIsChangePasswordOpen(false);
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
+    setPasswordError('');
+    setIsPasswordChanged(false);
+  };
+
+  // Typing in any field clears the previous error.
+  const editPasswordField = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setPasswordError('');
   };
 
   const handleChangePassword = async () => {
     if (newPassword.length < PASSWORD_MIN_LENGTH) {
-      Alert.alert('Password too short', `Your new password needs at least ${PASSWORD_MIN_LENGTH} characters.`);
+      setPasswordError(`New password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
       return;
     }
     if (newPassword !== confirmPassword) {
-      Alert.alert("Passwords don't match", 'Enter the same new password in both boxes.');
+      setPasswordError("New passwords don't match.");
       return;
     }
     if (newPassword === currentPassword) {
-      Alert.alert('Choose a different password', 'Your new password must be different from your existing one.');
+      setPasswordError('New password must be different from your existing password.');
       return;
     }
 
     setIsSavingPassword(true);
+    setPasswordError('');
     try {
       // Supabase doesn't check the old password itself, so confirm it by signing in again with it.
       const { data: userData, error: userError } = await supabase.auth.getUser();
       const accountEmail = userData.user?.email;
       if (userError || !accountEmail) {
-        Alert.alert('Something went wrong', 'We could not find your account. Please sign in again.');
+        setPasswordError("We couldn't find your account. Please sign in again.");
         return;
       }
 
@@ -61,20 +73,23 @@ export default function ProfileScreen() {
         password: currentPassword,
       });
       if (verifyError) {
-        Alert.alert(
-          verifyError.status === 400 ? 'Incorrect password' : 'Password change failed',
-          verifyError.status === 400 ? 'Your existing password is incorrect.' : verifyError.message,
-        );
+        setPasswordError(verifyError.status === 400 ? 'Your existing password is incorrect.' : verifyError.message);
         return;
       }
 
       const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) {
-        Alert.alert('Password change failed', updateError.message);
+        setPasswordError(updateError.message);
         return;
       }
 
-      Alert.alert('Password updated', 'Your password has been changed.', [{ text: 'OK', onPress: closeChangePassword }]);
+      // Clear the typed passwords right away, then show the confirmation.
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setIsPasswordChanged(true);
+    } catch {
+      setPasswordError('Something went wrong. Please try again.');
     } finally {
       setIsSavingPassword(false);
     }
@@ -110,28 +125,43 @@ export default function ProfileScreen() {
 
       <SettingsModal
         visible={isChangePasswordOpen}
-        title="Change password"
+        title={isPasswordChanged ? 'Password changed' : 'Change password'}
         onClose={closeChangePassword}
-        onConfirm={handleChangePassword}
-        confirmDisabled={isSavingPassword || !currentPassword || !newPassword || !confirmPassword}
+        onConfirm={isPasswordChanged ? closeChangePassword : handleChangePassword}
+        hideCancel={isPasswordChanged}
+        errorMessage={passwordError}
+        confirmDisabled={
+          !isPasswordChanged && (isSavingPassword || !currentPassword || !newPassword || !confirmPassword)
+        }
       >
-        <SettingsModalField label="Enter existing password" value={currentPassword} onChangeText={setCurrentPassword} password />
-        <SettingsModalField
-          label="Enter new password"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          password
-          textContentType="newPassword"
-          autoComplete="new-password"
-        />
-        <SettingsModalField
-          label="Enter new password again"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          password
-          textContentType="newPassword"
-          autoComplete="new-password"
-        />
+        {isPasswordChanged ? (
+          <SettingsModalText>Your password has been changed successfully.</SettingsModalText>
+        ) : (
+          <>
+            <SettingsModalField
+              label="Enter existing password"
+              value={currentPassword}
+              onChangeText={editPasswordField(setCurrentPassword)}
+              password
+            />
+            <SettingsModalField
+              label="Enter new password"
+              value={newPassword}
+              onChangeText={editPasswordField(setNewPassword)}
+              password
+              textContentType="newPassword"
+              autoComplete="new-password"
+            />
+            <SettingsModalField
+              label="Enter new password again"
+              value={confirmPassword}
+              onChangeText={editPasswordField(setConfirmPassword)}
+              password
+              textContentType="newPassword"
+              autoComplete="new-password"
+            />
+          </>
+        )}
       </SettingsModal>
     </SettingsSubpage>
   );

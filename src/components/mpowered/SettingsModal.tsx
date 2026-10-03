@@ -21,6 +21,8 @@ type SettingsModalProps = {
   confirmDisabled?: boolean;
   /** Hide the Cancel button (e.g. for a confirm-only popup). */
   hideCancel?: boolean;
+  /** Small red message shown directly above the Cancel / Ok buttons. Hidden when empty. */
+  errorMessage?: string;
   /**
    * Wrap the content in a ScrollView so tall popups (e.g. Manage support person) fit small screens.
    * Leave off for popups containing a SettingsSelect: a ScrollView would clip its dropdown menu.
@@ -50,6 +52,7 @@ export function SettingsModal({
   cancelLabel = 'Cancel',
   confirmDisabled = false,
   hideCancel = false,
+  errorMessage,
   scrollable = false,
   children,
 }: SettingsModalProps) {
@@ -68,6 +71,11 @@ export function SettingsModal({
             </ScrollView>
           ) : (
             children
+          )}
+          {!!errorMessage && (
+            <Text style={styles.errorText} accessibilityRole="alert" accessibilityLiveRegion="polite">
+              {errorMessage}
+            </Text>
           )}
           <View style={styles.actions}>
             {!hideCancel && (
@@ -95,6 +103,11 @@ export function SettingsModal({
       </View>
     </Modal>
   );
+}
+
+/** Plain body copy for message-style popups (e.g. "Your password has been changed."). */
+export function SettingsModalText({ children }: { children: ReactNode }) {
+  return <Text style={styles.bodyText}>{children}</Text>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -286,6 +299,18 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 14,
     fontWeight: '600',
+  },
+  errorText: {
+    marginBottom: 4,
+    color: '#D32F2F',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  bodyText: {
+    marginBottom: 16,
+    color: '#1D1B20',
+    fontSize: 16,
+    lineHeight: 24,
   },
   actions: {
     flexDirection: 'row',
