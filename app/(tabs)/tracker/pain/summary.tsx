@@ -1,42 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain/summary';
+import { getPainEntryForWeek } from '@/services/assessments';
+import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
-
-interface PainIntensityEntry {
-  value: number;
-  description: string;
-}
-
-interface PainSummaryData {
-  period: string;
-  locations: string[];
-  characteristics: string[];
-  intensity: {
-    current: PainIntensityEntry;
-    mildest: PainIntensityEntry;
-    worst: PainIntensityEntry;
-    average: PainIntensityEntry;
-  };
-}
 
 interface PainSummaryProps {
   summary: PainSummaryData;
   onClose?: () => void;
 }
 
-// Put fake data temporarily to test if flow is working
-const MOCK_SUMMARY: PainSummaryData = {
-  period: 'Last 7 days',
-  locations: ['Lower back', 'Left shoulder'],
-  characteristics: ['Sharp', 'Aching', 'Intermittent'],
-  intensity: {
-    current: { value: 3, description: 'Mild, manageable' },
-    mildest: { value: 1, description: 'Barely noticeable' },
-    worst: { value: 7, description: 'Severe, hard to move' },
-    average: { value: 4, description: 'Moderate' },
-  },
-};
-
-export default function PainSummary({ summary = MOCK_SUMMARY, onClose }: PainSummaryProps) {
+function PainSummaryView({ summary, onClose }: PainSummaryProps) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -93,6 +68,59 @@ export default function PainSummary({ summary = MOCK_SUMMARY, onClose }: PainSum
   );
 }
 
+type SummaryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; summary: PainSummaryData };
+
+// The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
+export default function PainSummary() {
+  const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
+  const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
+  const [state, setState] = useState<SummaryState>({ status: 'loading' });
+  const close = () => router.replace('/tracker');
+
+  useEffect(() => {
+    if (!weekStart) return;
+    let cancelled = false;
+    getPainEntryForWeek(weekStart).then(result => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ status: 'error', message: painSaveMessage(result.error) });
+      } else if (!result.data) {
+        setState({ status: 'error', message: 'We could not find your saved entry.' });
+      } else {
+        setState({ status: 'ready', summary: toPainSummary(result.data) });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart]);
+
+  const view: SummaryState = weekStart
+    ? state
+    : { status: 'error', message: 'We could not find the week to show.' };
+
+  if (view.status === 'ready') {
+    return <PainSummaryView summary={view.summary} onClose={close} />;
+  }
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      {view.status === 'loading' ? (
+        <ActivityIndicator accessibilityLabel="Loading your summary" />
+      ) : (
+        <>
+          <Text style={styles.bodyText}>{view.message}</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={close}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
+}
+
 function IntensityRow({ label, value, description }: { label: string; value: number; description: string }) {
   return (
     <View style={styles.intensityRow}>
@@ -103,6 +131,11 @@ function IntensityRow({ label, value, description }: { label: string; value: num
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleHeight(16),
+  },
   screen: {
     flex: 1,
     padding: scaleWidth(20),

@@ -118,3 +118,57 @@ You'll be prompted to select the project: choose the **dev** project (not produc
 ### 9. install prettier extension
 
 Set your code editor (VS Code) to format automatically using the prettier config already set-up in the repo: install the "Prettier" extension in VS Code, and optionally enable "format on save".
+
+## Testing
+
+[![CI](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml/badge.svg)](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml)
+
+### What is tested, and why
+
+The rules that must never break live in two places, so that is where the tests are.
+
+| Layer | What it checks | Tool | Where |
+| ----- | -------------- | ---- | ----- |
+| Database | Constraints (one pain entry per user per week, pain level ordering, required values), row level security (a user cannot read another user's data), table privileges, and the atomic `save_pain_assessment` function | pgTAP, run in a real local Postgres | `supabase/tests/database/*.test.sql` |
+| Pure logic | Week maths (Monday to Sunday), location normalisation, answer validation, error mapping | Jest | `src/**/*.test.ts`, next to the code |
+| Service logic | `savePainEntry` and the read functions, using a fake Supabase client (no network) | Jest | `src/services/assessments.test.ts` |
+
+The full list of rules and the test that proves each one is in [docs/testing.md](docs/testing.md), including what is **not** automated.
+
+### How to run the tests
+
+```bash
+npm test                 # all Jest tests once
+npm run test:watch       # re-run Jest on every save while you code
+npm run test:ci          # what CI runs: Jest plus a coverage report in coverage/
+npm run typecheck        # TypeScript type check
+npm run lint             # ESLint (warnings are allowed, errors fail CI)
+```
+
+The database tests need Docker Desktop running and the local Supabase stack:
+
+```bash
+supabase start           # first run downloads several GB
+supabase test db         # runs every file in supabase/tests/database/
+supabase db reset        # rebuilds the local database from all migrations
+```
+
+If `supabase start` fails because the analytics container is unhealthy (low Docker memory), use `supabase start -x logflare,vector`. The tests do not need those services.
+
+### What CI runs
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs on every pull request and every push to `main`:
+
+| Job | Runs |
+| --- | ---- |
+| `static-checks` | `npm run lint`, `npm run typecheck` |
+| `unit-tests` | `npm run test:ci`, then uploads the coverage report |
+| `database-tests` | `supabase start`, `supabase test db`, `supabase db lint --local --fail-on error`, and a check that `src/types/database.ts` matches the migrations (if you change a migration, run `supabase gen types typescript --local > src/types/database.ts` and commit it) |
+
+See the results in the **Checks** box on a pull request, or on the repository's **Actions** tab.
+
+### How to add a test
+
+- **Logic:** create `thing.test.ts` next to `thing.ts`. Name tests as plain sentences ("rejects a second submission in the same week"). Add the file you are testing to `collectCoverageFrom` in `jest.config.js`. A service test must start with `jest.mock('@/lib/supabase', () => ({ supabase: {} }))` above its imports, because the real client cannot load under Jest.
+- **Database:** add `NNN_name.test.sql` to `supabase/tests/database/`. Start with `begin;` and `select plan(N);` (N is the number of checks), and end with `select * from finish(); rollback;` so nothing is left behind.
+- Never edit an existing migration. Add a new one.

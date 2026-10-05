@@ -1,3 +1,5 @@
 node_modules
 .expo
 package-lock.json
+src/types/database.ts
+coverage

@@ -20,6 +20,8 @@ interface ScaleSliderProps {
   onPrevious?: () => void;
   previousDisabled?: boolean;
   disabled?: boolean;
+  /** Red text shown inside the card, above the footer buttons. */
+  validationMessage?: string;
   /** Leave undefined to show the "0 to 10" placeholder until the user answers. */
   initialValue?: number;
   cardHeight?: number;
@@ -77,6 +79,7 @@ export function ScaleSliderInput({
   onPrevious,
   previousDisabled = false,
   disabled = false,
+  validationMessage,
   initialValue,
   cardHeight,
   variant = 'default',
@@ -98,7 +101,7 @@ export function ScaleSliderInput({
     }
     const num = Number(text);
     if (isNaN(num)) return;
-    const clamped = Math.min(10, Math.max(0, num));
+    const clamped = Math.round(Math.min(10, Math.max(0, num)));
     setValue(clamped);
     setHasValue(true);
     onValueChange?.(clamped);
@@ -151,6 +154,7 @@ export function ScaleSliderInput({
       onPrevious={onPrevious}
       previousDisabled={previousDisabled}
       disabled={disabled}
+      validationMessage={validationMessage}
       cardHeight={cardHeight}
       variant={variant}
     >
