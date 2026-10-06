@@ -18,6 +18,7 @@ export default function OnboardingLayout() {
         <Stack.Screen name="diagnosis-conditions" />
         <Stack.Screen name="health-conditions" />
         <Stack.Screen name="other-conditions" />
+        <Stack.Screen name="login-bridge" />
         <Stack.Screen name="phone" />
         <Stack.Screen name="verify" />
       </Stack>
