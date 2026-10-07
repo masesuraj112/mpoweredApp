@@ -132,6 +132,7 @@ export function MultiChoiceList({
         </View>
       )}
       <View
+        testID="multi-choice-options"
         style={[
           styles.optionsBox,
           showScrollable && styles.scrollableOptionsBox,
@@ -305,10 +306,12 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(5),
     backgroundColor: '#FEF7FF',
   },
+  // Fixed-height box. `flex: 0` must override the `flex: 1` from the styles above: on native,
+  // Yoga turns any `flex > 0` into a flex basis of 0, which beats `height` (and ignores
+  // `flexBasis: 'auto'`), so with no grow the box collapses to 0 and the list is invisible.
+  // Web still applies `height`, which is why the bug only shows on phones.
   personalCareOptionsBox: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    flex: 0,
     height: scaleHeight(283),
     width: '96%',
     marginLeft: scaleWidth(4),
