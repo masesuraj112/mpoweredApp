@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { Text } from 'react-native';
 
 export default function TermsScreen() {
   return (
-    <View>
-      <Text>terms (coming soon)</Text>
-    </View>
+    <SettingsSubpage title="Terms and Conditions">
+      <Text style={settingsSubpageStyles.placeholder}>Terms and conditions coming soon.</Text>
+    </SettingsSubpage>
   );
 }
