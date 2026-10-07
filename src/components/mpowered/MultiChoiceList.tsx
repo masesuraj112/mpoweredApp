@@ -1,6 +1,5 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { ReactNode } from 'react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { SearchBar } from './SearchBar';
@@ -13,6 +12,7 @@ interface MultiChoiceListProps {
   /** Optional italic sub-line under the prompt, e.g. "(scroll down for more options)" */
   subPrompt?: string;
   options: string[];
+  supportingTexts?: (string | undefined)[];
   /** Pass to control selection from the parent (e.g. restoring a saved answer). Omit to let the component manage its own state. */
   selectedIndices?: number[];
   onSelectionChange?: (selectedIndices: number[]) => void;
@@ -25,7 +25,7 @@ interface MultiChoiceListProps {
   validationMessage?: string;
   cardHeight?: number;
   disabled?: boolean;
-  variant?: 'default' | 'painTracker' | 'personalCare';
+  variant?: 'default' | 'painTracker' | 'personalCare' | 'management';
   searchEnabled?: boolean;
   searchPlaceholder?: string;
   scrollable?: boolean;
@@ -38,6 +38,7 @@ export function MultiChoiceList({
   prompt,
   subPrompt,
   options,
+  supportingTexts,
   selectedIndices,
   onSelectionChange,
   onOptionPress,
@@ -135,7 +136,8 @@ export function MultiChoiceList({
           styles.optionsBox,
           showScrollable && styles.scrollableOptionsBox,
           variant !== 'default' && styles.painTrackerOptionsBox,
-          variant === 'personalCare' && styles.personalCareOptionsBox,
+          (variant === 'personalCare' || variant === 'management') && styles.personalCareOptionsBox,
+          variant === 'management' && listHeight !== undefined && { height: listHeight },
         ]}
       >
         {showScrollable ? (
@@ -153,6 +155,7 @@ export function MultiChoiceList({
               <OptionRow
                 key={originalIndex}
                 option={option}
+                supportingText={supportingTexts?.[originalIndex]}
                 index={originalIndex}
                 isSelected={selected.includes(originalIndex)}
                 isLast={index === filteredOptions.length - 1}
@@ -166,6 +169,7 @@ export function MultiChoiceList({
             <OptionRow
               key={originalIndex}
               option={option}
+              supportingText={supportingTexts?.[originalIndex]}
               index={originalIndex}
               isSelected={selected.includes(originalIndex)}
               isLast={index === filteredOptions.length - 1}
@@ -181,6 +185,7 @@ export function MultiChoiceList({
 
 function OptionRow({
   option,
+  supportingText,
   index,
   isSelected,
   isLast,
@@ -188,14 +193,15 @@ function OptionRow({
   variant,
 }: {
   option: string;
+  supportingText?: string;
   index: number;
   isSelected: boolean;
   isLast: boolean;
   onPress: (index: number) => void;
-  variant: 'default' | 'painTracker' | 'personalCare';
+  variant: 'default' | 'painTracker' | 'personalCare' | 'management';
 }) {
   const isAssessment = variant !== 'default';
-  const isPersonalCare = variant === 'personalCare';
+  const isPersonalCare = variant === 'personalCare' || variant === 'management';
   return (
     <Pressable
       onPress={() => onPress(index)}
@@ -213,15 +219,18 @@ function OptionRow({
               : styles.rowDivider),
       ]}
     >
-      <Text
-        style={[
-          styles.label,
-          isAssessment && styles.painTrackerLabel,
-          isPersonalCare && styles.personalCareLabel,
-        ]}
-      >
-        {option}
-      </Text>
+      <View style={styles.optionTextColumn}>
+        <Text
+          style={[
+            styles.label,
+            isAssessment && styles.painTrackerLabel,
+            isPersonalCare && styles.personalCareLabel,
+          ]}
+        >
+          {option}
+        </Text>
+        {supportingText && <Text style={styles.supportingText}>{supportingText}</Text>}
+      </View>
       <View style={[styles.box, isAssessment && styles.painTrackerBox, isSelected && styles.boxSelected]}>
         {isSelected && <Text style={styles.checkmark}>✓</Text>}
       </View>
@@ -322,6 +331,16 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(18),
     paddingHorizontal: scaleWidth(18),
     minWidth: 0
+  },
+  optionTextColumn: {
+    flex: 1,
+    minWidth: 0,
+  },
+  supportingText: {
+    color: '#1D1B20',
+    fontSize: scaleFont(12),
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.4,
   },
   painTrackerRow: {
     height: scaleHeight(56),
