@@ -13,6 +13,7 @@ const formatPhoneNumber = (digits: string) => {
 export default function PhoneScreen() {
   const { data, updateData } = useOnboarding();
   const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumber(data.phoneNumber.replace(/\D/g, '')));
+  const [showPhoneError, setShowPhoneError] = useState(false);
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
   const { width, height } = useWindowDimensions();
@@ -20,12 +21,19 @@ export default function PhoneScreen() {
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
 
-  const handleContinue = () => router.push('/(auth)/verify' as any);
+  const handleContinue = () => {
+    if (!isValidPhoneNumber) {
+      setShowPhoneError(true);
+      return;
+    }
+    router.push('/(auth)/verify' as any);
+  };
 
   const handlePhoneNumberChange = (value: string) => {
     const nextPhoneNumberDigits = value.replace(/\D/g, '').slice(0, 10);
     setPhoneNumber(formatPhoneNumber(nextPhoneNumberDigits));
     updateData({ phoneNumber: nextPhoneNumberDigits });
+    if (/^04\d{8}$/.test(nextPhoneNumberDigits)) setShowPhoneError(false);
   };
 
   return (
@@ -109,10 +117,27 @@ export default function PhoneScreen() {
           We will send the four digit verification codes to this number
         </Text>
 
+        {showPhoneError && (
+          <Text
+            accessibilityRole="alert"
+            style={[
+              styles.phoneError,
+              {
+                left: 49 * scale,
+                top: 405 * scale,
+                width: 313 * scale,
+                fontSize: 12 * scale,
+                lineHeight: 16 * scale,
+              },
+            ]}
+          >
+            Please enter an Australian phone number in the format 04xx xxx xxx
+          </Text>
+        )}
+
         <Pressable
           accessibilityRole="button"
-          accessibilityState={{ disabled: !isValidPhoneNumber }}
-          disabled={!isValidPhoneNumber}
+          accessibilityLabel="Continue"
           onPress={handleContinue}
           style={[
             styles.continueButton,
@@ -175,6 +200,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
+  },
+  phoneError: {
+    position: 'absolute',
+    color: '#B3261E',
+    textAlign: 'center',
   },
   continueButton: {
     position: 'absolute',

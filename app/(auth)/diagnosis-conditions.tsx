@@ -1,8 +1,9 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SearchBar } from '@/components/mpowered/SearchBar';
 
 const CONDITIONS = [
   'Arthritis',
@@ -44,14 +45,20 @@ export default function DiagnosisConditionsScreen() {
   const scale = Math.min(1, width / 412, height / 823);
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
-  const selectedConditions = data.conditions.filter((condition) => CONDITIONS.includes(condition));
+  const selectedConditions = data.conditions;
+  const [searchText, setSearchText] = useState('');
+  const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
+  const [customCondition, setCustomCondition] = useState('');
   const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
   const buttonBottom = Math.max(64 * scale, insets.bottom + 12 * scale);
   const buttonTop = canvasHeight - buttonBottom - 52 * scale;
-  const maxSelectedChipsHeight = Math.max(41 * scale, buttonTop - 258 * scale - 28 * scale - 120 * scale - 28 * scale);
+  const maxSelectedChipsHeight = Math.max(41 * scale, buttonTop - 286 * scale - 20 * scale - 120 * scale - 20 * scale);
   const selectedChipsHeight = Math.min(selectedChipsContentHeight, maxSelectedChipsHeight);
-  const conditionsTop = Math.max(330 * scale, 258 * scale + selectedChipsHeight + 28 * scale);
-  const conditionsHeight = Math.max(120 * scale, buttonTop - conditionsTop - 28 * scale);
+  const conditionsTop = Math.max(330 * scale, 286 * scale + selectedChipsHeight + 20 * scale);
+  const conditionsHeight = Math.max(120 * scale, buttonTop - conditionsTop - 20 * scale);
+  const filteredConditions = CONDITIONS.filter((condition) =>
+    (CONDITION_LABELS[condition] ?? condition).toLowerCase().includes(searchText.trim().toLowerCase()),
+  );
 
   const handleContinue = () => router.push('/(auth)/other-conditions');
 
@@ -60,6 +67,18 @@ export default function DiagnosisConditionsScreen() {
       ? selectedConditions.filter((selected) => selected !== condition)
       : [...selectedConditions, condition];
     updateData({ conditions: nextConditions });
+  };
+
+  const addCustomCondition = () => {
+    const trimmedCondition = customCondition.trim();
+    if (!trimmedCondition) return;
+    const alreadySelected = selectedConditions.some(
+      (condition) => condition.toLocaleLowerCase() === trimmedCondition.toLocaleLowerCase(),
+    );
+    if (!alreadySelected) updateData({ conditions: [...selectedConditions, trimmedCondition] });
+    setCustomCondition('');
+    setSearchText('');
+    setIsAddingCustomCondition(false);
   };
 
   const removeCondition = (condition: string) => {
@@ -89,11 +108,29 @@ export default function DiagnosisConditionsScreen() {
           You can select multiple conditions
         </Text>
 
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Search diagnoses"
+          style={[
+            styles.searchInput,
+            {
+              top: 240 * scale,
+              left: 62 * scale,
+              width: 280 * scale,
+              height: 36 * scale,
+              borderRadius: 4 * scale,
+              paddingHorizontal: 12 * scale,
+              fontSize: 14 * scale,
+            },
+          ]}
+        />
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           scrollEnabled={selectedChipsContentHeight > maxSelectedChipsHeight}
           onContentSizeChange={(_, contentHeight) => setSelectedChipsContentHeight(contentHeight)}
-          style={[styles.selectedScroller, { top: 258 * scale, left: 33 * scale, width: 346 * scale, height: selectedChipsHeight }]}
+          style={[styles.selectedScroller, { top: 286 * scale, left: 33 * scale, width: 346 * scale, height: selectedChipsHeight }]}
           contentContainerStyle={[styles.selectedChips, { width: 346 * scale, gap: 12 * scale }]}
         >
           {selectedConditions.map((condition) => (
@@ -119,7 +156,7 @@ export default function DiagnosisConditionsScreen() {
           showsVerticalScrollIndicator
           indicatorStyle="black"
         >
-          {CONDITIONS.map((condition) => {
+          {filteredConditions.map((condition) => {
             const selected = selectedConditions.includes(condition);
             return (
               <Pressable
@@ -139,6 +176,43 @@ export default function DiagnosisConditionsScreen() {
               </Pressable>
             );
           })}
+          <View style={[styles.customConditionRow, { minHeight: 56 * scale, paddingHorizontal: 12 * scale, gap: 8 * scale }]}>
+            {isAddingCustomCondition ? (
+              <>
+                <TextInput
+                  accessibilityLabel="Custom diagnosis"
+                  autoFocus
+                  value={customCondition}
+                  onChangeText={setCustomCondition}
+                  onSubmitEditing={addCustomCondition}
+                  placeholder="Enter a diagnosis"
+                  returnKeyType="done"
+                  style={[styles.customConditionInput, { fontSize: 14 * scale, height: 40 * scale }]}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={!customCondition.trim()}
+                  onPress={addCustomCondition}
+                  style={[styles.addCustomButton, !customCondition.trim() && styles.addCustomButtonDisabled]}
+                >
+                  <Text style={[styles.addCustomButtonText, { fontSize: 13 * scale }]}>Add</Text>
+                </Pressable>
+              </>
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setCustomCondition(searchText.trim());
+                  setIsAddingCustomCondition(true);
+                }}
+                style={styles.addCustomOption}
+              >
+                <Text style={[styles.addCustomOptionText, { fontSize: 14 * scale, lineHeight: 20 * scale }]}>
+                  Other – add custom diagnosis
+                </Text>
+              </Pressable>
+            )}
+          </View>
         </ScrollView>
 
         <Pressable
@@ -184,6 +258,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     overflow: 'visible',
   },
+  searchInput: {
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#CAC4D0',
+    textAlign: 'left',
+  },
   selectedChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -222,6 +302,39 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#1D1B20',
     fontWeight: '400',
+  },
+  customConditionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addCustomOption: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  addCustomOptionText: {
+    color: '#6750A4',
+    fontWeight: '600',
+  },
+  customConditionInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#79747E',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    color: '#1D1B20',
+  },
+  addCustomButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 4,
+    backgroundColor: '#6750A4',
+  },
+  addCustomButtonDisabled: {
+    backgroundColor: '#D9D0EE',
+  },
+  addCustomButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   checkbox: {
     alignItems: 'center',
