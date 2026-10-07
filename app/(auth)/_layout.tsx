@@ -11,6 +11,7 @@ export default function OnboardingLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="name" />
+        <Stack.Screen name="user-type" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="consent" />
         <Stack.Screen name="sex" />

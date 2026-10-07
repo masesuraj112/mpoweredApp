@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
 type Sex = 'female' | 'male' | 'prefer not to say' | null;
+type UserType = 'patient' | 'support-person' | null;
 
 interface OnboardingData {
     name: string;
+    userType: UserType;
     sex: Sex;
     yearOfBirth: number | null;
     hasDiagnosis: boolean | null;
@@ -20,6 +22,7 @@ interface OnboardingContextValue {
 
 const initData: OnboardingData = {
     name: '',
+    userType: null,
     sex: null,
     yearOfBirth: null,
     hasDiagnosis: null,
