@@ -11,6 +11,7 @@ module.exports = {
     'src/features/assessments/pain/validate.ts',
     'src/features/assessments/pain/messages.ts',
     'src/features/assessments/pain/summary.ts',
+    'src/features/assessments/social-health/mood.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
