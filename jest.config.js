@@ -18,5 +18,6 @@ module.exports = {
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
+    'src/services/social-health.ts',
   ],
 };
