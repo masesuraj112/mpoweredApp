@@ -15,6 +15,7 @@ module.exports = {
     'src/features/assessments/social-health/validate.ts',
     'src/features/assessments/social-health/scoring.ts',
     'src/features/assessments/social-health/messages.ts',
+    'src/features/assessments/social-health/summary.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
