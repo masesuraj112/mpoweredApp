@@ -31,7 +31,7 @@ export default function HealthConditionsScreen() {
         style={[styles.option, selected === false && styles.optionSelected]}
         onPress={() => setSelected(false)}
       >
-        <Text style={styles.optionText}>No, I haven't</Text>
+        <Text style={styles.optionText}>No, I haven&apos;t</Text>
       </Pressable>
       <Text style={styles.helperText}>
         No diagnosis? No problem! You know your body and how you feel so being Health M<Text style={styles.superscript}>Powered</Text> is for you :)
