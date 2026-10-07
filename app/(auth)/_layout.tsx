@@ -22,6 +22,7 @@ export default function OnboardingLayout() {
         <Stack.Screen name="login-bridge" />
         <Stack.Screen name="phone" />
         <Stack.Screen name="verify" />
+        <Stack.Screen name="verification-confirmation" />
       </Stack>
     </OnboardingProvider>
   );

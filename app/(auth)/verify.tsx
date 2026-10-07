@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 export default function VerifyScreen() {
@@ -27,6 +28,7 @@ export default function VerifyScreen() {
 
   const handleCodeChange = (value: string) => setCode(value.replace(/\D/g, '').slice(0, 4));
   const handleResend = () => setResendSecondsRemaining(120);
+  const handleVerify = () => router.replace('/(auth)/verification-confirmation' as any);
 
   return (
     <View style={styles.screen}>
@@ -199,6 +201,7 @@ export default function VerifyScreen() {
           accessibilityRole="button"
           accessibilityState={{ disabled: !isCodeComplete }}
           disabled={!isCodeComplete}
+          onPress={handleVerify}
           style={[
             styles.verifyButton,
             {
