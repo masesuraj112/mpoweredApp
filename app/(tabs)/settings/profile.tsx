@@ -7,18 +7,13 @@ import {
 import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { supabase } from '@/lib/supabase';
 import { isFutureDate, parseIsoDate } from '@/services/date';
+import { validateEmail, validatePassword } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const passwordIcon = require('../../../assets/images/settings/password.svg');
 const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
-
-// Keep this in line with the minimum length set in Supabase (Auth settings).
-const PASSWORD_MIN_LENGTH = 8;
-
-// Loose sanity check only (something@something.tld); Supabase does the real validation.
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ProfileScreen() {
   const [faceIdEnabled, setFaceIdEnabled] = useState(false);
@@ -63,8 +58,9 @@ export default function ProfileScreen() {
       setPersonalDetailsError("Date of birth can't be in the future.");
       return;
     }
-    if (!EMAIL_PATTERN.test(trimmedEmail)) {
-      setPersonalDetailsError('Please enter a valid email address.');
+    const emailError = validateEmail(trimmedEmail);
+    if (emailError) {
+      setPersonalDetailsError(emailError);
       return;
     }
 
@@ -101,8 +97,9 @@ export default function ProfileScreen() {
   };
 
   const handleChangePassword = async () => {
-    if (newPassword.length < PASSWORD_MIN_LENGTH) {
-      setPasswordError(`New password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
+    const newPasswordError = validatePassword(newPassword);
+    if (newPasswordError) {
+      setPasswordError(`New ${newPasswordError.charAt(0).toLowerCase()}${newPasswordError.slice(1)}`);
       return;
     }
     if (newPassword !== confirmPassword) {
