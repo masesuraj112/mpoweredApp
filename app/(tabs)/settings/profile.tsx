@@ -1,6 +1,12 @@
-import { SettingsModal, SettingsModalField, SettingsModalText } from '@/components/mpowered/SettingsModal';
+import {
+  SettingsModal,
+  SettingsModalDateField,
+  SettingsModalField,
+  SettingsModalText,
+} from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { supabase } from '@/lib/supabase';
+import { isFutureDate, parseIsoDate } from '@/services/date';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
@@ -11,12 +17,63 @@ const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 // Keep this in line with the minimum length set in Supabase (Auth settings).
 const PASSWORD_MIN_LENGTH = 8;
 
+// Loose sanity check only (something@something.tld); Supabase does the real validation.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function ProfileScreen() {
   const [faceIdEnabled, setFaceIdEnabled] = useState(false);
-  const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(false);
   const [name, setName] = useState('Sarah McLachlan');
-  const [dateOfBirth, setDateOfBirth] = useState('28/01/1968');
+  // Held as a local-midnight Date; stored as ISO YYYY-MM-DD and only formatted for display.
+  const [dateOfBirth, setDateOfBirth] = useState(() => parseIsoDate('1968-01-28')!);
   const [email, setEmail] = useState('sarah.mclachlan@gmail.com');
+
+  // --- Personal details popup -----------------------------------------------
+  // The popup edits drafts, so Cancel discards changes and Ok saves them.
+  const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(false);
+  const [draftName, setDraftName] = useState('');
+  const [draftDateOfBirth, setDraftDateOfBirth] = useState(dateOfBirth);
+  const [draftEmail, setDraftEmail] = useState('');
+  const [personalDetailsError, setPersonalDetailsError] = useState('');
+
+  const openPersonalDetails = () => {
+    setDraftName(name);
+    setDraftDateOfBirth(dateOfBirth);
+    setDraftEmail(email);
+    setPersonalDetailsError('');
+    setIsPersonalDetailsOpen(true);
+  };
+
+  // Editing any field clears the previous error.
+  const editPersonalDetailsField =
+    <T,>(setter: (value: T) => void) =>
+    (value: T) => {
+      setter(value);
+      setPersonalDetailsError('');
+    };
+
+  const handleSavePersonalDetails = () => {
+    const trimmedName = draftName.trim();
+    const trimmedEmail = draftEmail.trim();
+    if (!trimmedName) {
+      setPersonalDetailsError('Please enter your name.');
+      return;
+    }
+    // The picker already blocks future dates; this guards against a stale maximumDate (e.g. past midnight).
+    if (isFutureDate(draftDateOfBirth)) {
+      setPersonalDetailsError("Date of birth can't be in the future.");
+      return;
+    }
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setPersonalDetailsError('Please enter a valid email address.');
+      return;
+    }
+
+    // TODO: save to Supabase, sending the date as toIsoDate(draftDateOfBirth) (YYYY-MM-DD).
+    setName(trimmedName);
+    setDateOfBirth(draftDateOfBirth);
+    setEmail(trimmedEmail);
+    setIsPersonalDetailsOpen(false);
+  };
 
   // --- Change password popup ------------------------------------------------
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -102,7 +159,7 @@ export default function ProfileScreen() {
 
   return (
     <SettingsSubpage title="Account">
-      <SettingsOption icon={accountIcon} label="Personal details" onPress={() => setIsPersonalDetailsOpen(true)} />
+      <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
       <SettingsOption icon={passwordIcon} label="Change password" onPress={() => setIsChangePasswordOpen(true)} />
       <SettingsOption
         icon={faceIdIcon}
@@ -117,10 +174,32 @@ export default function ProfileScreen() {
         visible={isPersonalDetailsOpen}
         title="Personal details"
         onClose={() => setIsPersonalDetailsOpen(false)}
+        onConfirm={handleSavePersonalDetails}
+        errorMessage={personalDetailsError}
       >
-        <SettingsModalField label="Name" value={name} onChangeText={setName} />
-        <SettingsModalField label="Date of Birth" value={dateOfBirth} onChangeText={setDateOfBirth} />
-        <SettingsModalField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+        <SettingsModalField
+          label="Name"
+          value={draftName}
+          onChangeText={editPersonalDetailsField(setDraftName)}
+          textContentType="name"
+          autoComplete="name"
+        />
+        <SettingsModalDateField
+          label="Date of Birth"
+          value={draftDateOfBirth}
+          onChange={editPersonalDetailsField(setDraftDateOfBirth)}
+          maximumDate={new Date()}
+        />
+        <SettingsModalField
+          label="Email"
+          value={draftEmail}
+          onChangeText={editPersonalDetailsField(setDraftEmail)}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          textContentType="emailAddress"
+          autoComplete="email"
+        />
       </SettingsModal>
 
       <SettingsModal

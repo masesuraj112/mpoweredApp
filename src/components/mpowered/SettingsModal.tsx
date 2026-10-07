@@ -1,7 +1,9 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { formatDisplayDate } from '@/services/date';
+import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -37,6 +39,7 @@ type SettingsModalProps = {
  *
  * Content building blocks (all exported below):
  *   SettingsModalField       – labelled text input (optional `password` mode)
+ *   SettingsModalDateField   – labelled date that opens the native date picker
  *   SettingsModalSection     – bold heading above a block of content
  *   SettingsModalGroup       – bordered card that stacks rows with dividers
  *   SettingsModalToggleRow   – label + switch (use inside a Group)
@@ -176,6 +179,77 @@ export function SettingsModalField({
         )
       )}
     </View>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Date field                                                                 */
+/* -------------------------------------------------------------------------- */
+
+// The Android picker reads and returns UTC midnight, while we keep local midnight in state.
+// Convert across so the picker shows (and returns) the same calendar day in every time zone.
+const toPickerDate = (date: Date) =>
+  Platform.OS === 'android' ? new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())) : date;
+const fromPickerDate = (date: Date) =>
+  Platform.OS === 'android'
+    ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    : new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+/**
+ * Labelled date field styled like `SettingsModalField`. Shows the date as text; tapping it opens
+ * the native picker (a wheel below the field on iOS, a dialog on Android).
+ */
+export function SettingsModalDateField({
+  label,
+  value,
+  onChange,
+  minimumDate,
+  maximumDate,
+}: {
+  label: string;
+  /** A local-midnight date (see `@/services/date`). */
+  value: Date;
+  onChange: (value: Date) => void;
+  minimumDate?: Date;
+  maximumDate?: Date;
+}) {
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const displayValue = formatDisplayDate(value);
+
+  return (
+    <>
+      <Pressable
+        onPress={() => setIsPickerOpen(current => !current)}
+        accessibilityRole="button"
+        accessibilityLabel={`${label}, ${displayValue}`}
+        accessibilityHint="Opens a date picker"
+        accessibilityState={{ expanded: isPickerOpen }}
+        style={styles.field}
+      >
+        <Text style={styles.fieldLabel}>{label}</Text>
+        <Text style={styles.fieldValue}>{displayValue}</Text>
+        <Image source={pencilIcon} style={styles.editIcon} contentFit="contain" accessibilityLabel="" />
+      </Pressable>
+      {isPickerOpen && (
+        <DateTimePicker
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          value={toPickerDate(value)}
+          minimumDate={minimumDate}
+          maximumDate={maximumDate}
+          accentColor="#6750A4"
+          // The popup card is always white, so keep the wheel's text dark even in system dark mode.
+          themeVariant="light"
+          onValueChange={(_event, date) => {
+            onChange(fromPickerDate(date));
+            // The Android dialog is done once a date is picked; the iOS wheel stays until tapped again.
+            if (Platform.OS === 'android') setIsPickerOpen(false);
+          }}
+          onDismiss={() => setIsPickerOpen(false)}
+          style={styles.datePicker}
+        />
+      )}
+    </>
   );
 }
 
@@ -367,6 +441,16 @@ const styles = StyleSheet.create({
     paddingRight: 44,
     color: '#1D1B20',
     fontSize: 16,
+  },
+  fieldValue: {
+    paddingRight: 44,
+    color: '#1D1B20',
+    fontSize: 16,
+    lineHeight: 26,
+  },
+  datePicker: {
+    marginTop: -8,
+    marginBottom: 16,
   },
   editIcon: {
     position: 'absolute',
