@@ -1,17 +1,12 @@
 import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { SOCIAL_LIFE_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-const SOCIAL_HEALTH_OPTIONS = [
-  'My social life is normal and gives me no extra pain',
-  'My social life is normal but increases the degree of pain',
-  'Pain has no significant effect on my social life apart from limiting my more energetic interests eg, gym, sports',
-  'Pain has restricted my social life and I do not go out as often',
-  'Pain has restricted my social life to home',
-  'I have no social life because of pain',
-];
+// SingleChoiceInput takes a mutable string[]
+const SOCIAL_HEALTH_OPTIONS: string[] = [...SOCIAL_LIFE_OPTIONS];
 
 export default function SocialLifeScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();

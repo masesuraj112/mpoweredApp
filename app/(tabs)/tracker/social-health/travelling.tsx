@@ -1,17 +1,12 @@
 import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { TRAVELLING_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-const SOCIAL_HEALTH_OPTIONS = [
-  'I can travel anywhere without pain',
-  'I can travel anywhere but it gives me extra pain',
-  'Pain is bad but I manage journeys over two hours',
-  'Pain restricts me to journeys of less than one hour',
-  'Pain restricts me to short necessary journeys under 30 minutes',
-  'Pain prevents me from traveling except to receive treatment',
-];
+// SingleChoiceInput takes a mutable string[]
+const SOCIAL_HEALTH_OPTIONS: string[] = [...TRAVELLING_OPTIONS];
 
 export default function TravellingScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
