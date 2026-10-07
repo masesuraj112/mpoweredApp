@@ -24,7 +24,7 @@ export type AppError = {
 // P0001 messages raised by save_pain_assessment that keep their own code
 const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START'] as const;
 // P0001 messages that the app treats as a validation problem
-const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG'] as const;
+const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'MISSING_ANSWER'] as const;
 
 export function mapError(error: unknown): AppError {
   const { code, message } = readError(error);
