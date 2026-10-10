@@ -38,23 +38,29 @@ export type Database = {
         Row: {
           appointment_id: number
           date_time: string
-          health_service: string
+          health_service: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name: string | null
+          recording_consent_at: string | null
+          recording_consent_signature: string | null
         }
         Insert: {
           appointment_id?: never
           date_time: string
-          health_service: string
+          health_service?: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Update: {
           appointment_id?: never
           date_time?: string
-          health_service?: string
+          health_service?: string | null
           patient_id?: number
-          practioner_name?: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Relationships: [
           {
