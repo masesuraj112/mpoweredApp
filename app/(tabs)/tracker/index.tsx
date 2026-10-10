@@ -27,6 +27,13 @@ export default function TrackerScreen() {
 					onPress={() => router.push('/tracker/management/medication')}
 				/>
 			</View>
+      <View style={{ marginTop: 12 }}>
+				<Button
+						title="Start movement assessment"
+					onPress={() => router.push('/tracker/movement/activity')}
+				/>
+			</View>
+      
 		</View>
 	);
 }

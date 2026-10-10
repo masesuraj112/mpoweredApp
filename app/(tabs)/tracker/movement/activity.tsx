@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import {
   InputAccessoryView,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   Pressable,
   StyleSheet,
@@ -15,43 +14,52 @@ import {
   View,
 } from 'react-native';
 
-const ACCESSORY_ID = 'reflectionDone';
+const ACCESSORY_ID = 'activityDone';
 
-export default function ReflectionScreen() {
+export default function ActivityScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
+
+  const handleChange = (text: string) => {
+    const digits = text.replace(/[^0-9]/g, '');
+    if (digits === '') {
+      updateAnswer('activeHours', undefined);
+      return;
+    }
+    updateAnswer('activeHours', Math.min(Number(digits), 24));
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.screen}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={scaleHeight(109)}
-        >
+        <View style={styles.container}>
           <Text style={styles.pageTitle}>My Movement</Text>
           <ChoiceCard
-            title="Reflection on your movement"
-            prompt="Write any reflections of pain impacts on your mobility."
-            questionNumber={7}
+            title="General Movement Impacts"
+            prompt="On average, how many hours per day were you able to stay active or mobile last week?"
+            questionNumber={1}
             totalQuestions={7}
-            onPrevious={() => router.push('/tracker/movement/standing')}
-            onRecord={() => router.push('/tracker/movement/summary')}
+            onRecord={() => router.push('/tracker/movement/general')}
+            disabled={answers.activeHours === undefined}
             variant="personalCare"
             style={{ flex: 1, height: undefined }}
           >
             <TextInput
-              value={answers.reflection ?? ''}
-              onChangeText={text => updateAnswer('reflection', text)}
-              placeholder="For instance, when pain occurred, you lie down for the whole day"
+              value={answers.activeHours?.toString() ?? ''}
+              onChangeText={handleChange}
+              keyboardType="number-pad"
+              placeholder="Input number only"
               placeholderTextColor="#79747E"
-              multiline
-              textAlignVertical="top"
+              maxLength={2}
               style={styles.input}
-              accessibilityLabel="Reflection on your movement"
+              accessibilityLabel="Hours active per day"
               inputAccessoryViewID={ACCESSORY_ID}
             />
+            <Text style={styles.helper}>
+              Stay active could mean doing your typical activities like working, driving, doing
+              house chores, meeting with people, et cetera.
+            </Text>
           </ChoiceCard>
-        </KeyboardAvoidingView>
+        </View>
 
         {Platform.OS === 'ios' && (
           <InputAccessoryView nativeID={ACCESSORY_ID}>
@@ -83,15 +91,20 @@ const styles = StyleSheet.create({
     marginBottom: scaleHeight(18),
   },
   input: {
-    flex: 1,
-    minHeight: scaleHeight(120),
+    height: scaleHeight(56),
     borderWidth: 1,
     borderColor: '#79747E',
     borderRadius: scaleWidth(4),
-    padding: scaleWidth(16),
-    fontSize: scaleFont(14),
-    lineHeight: scaleHeight(20),
+    paddingHorizontal: scaleWidth(16),
+    fontSize: scaleFont(16),
     color: '#1D1B20',
+  },
+  helper: {
+    marginTop: scaleHeight(16),
+    fontSize: scaleFont(12),
+    lineHeight: scaleHeight(16),
+    letterSpacing: 0.4,
+    color: '#49454F',
   },
   accessoryBar: {
     alignItems: 'flex-end',
