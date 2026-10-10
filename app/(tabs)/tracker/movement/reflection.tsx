@@ -2,43 +2,79 @@ import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import {
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+
+const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
 
-  return (<View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="Reflection on movement"
-          prompt={<Text style={styles.promptText}>Write any reflections of pain impacts on your mobility.</Text>}
-          questionNumber={7}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/movement/standing')}
-          onRecord={() => router.push('/tracker/movement/summary')}
-          variant="painTracker"
-          cardHeight={scaleHeight(516)}
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.screen}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={scaleHeight(109)}
         >
-          <TextInput
-            accessibilityLabel="Reflection on your movement"
-            multiline
-            value={answers.reflection ?? ''}
-            onChangeText={value => updateAnswer('reflection', value)}
-            placeholder="For instance, when pain occured, you lie down for the whole day"
-            placeholderTextColor="#B3B3B3"
-            textAlignVertical="top"
-            style={styles.input}
-          />
-        </ChoiceCard>
+          <Text style={styles.pageTitle}>My Movement</Text>
+          <ChoiceCard
+            title="Reflection on your movement"
+            prompt="Write any reflections of pain impacts on your mobility."
+            questionNumber={7}
+            totalQuestions={7}
+            onPrevious={() => router.push('/tracker/movement/standing')}
+            onRecord={() => router.push('/tracker/movement/summary')}
+            variant="personalCare"
+            style={{ flex: 1, height: undefined }}
+          >
+            <TextInput
+              value={answers.reflection ?? ''}
+              onChangeText={text => updateAnswer('reflection', text)}
+              placeholder="For instance, when pain occurred, you lie down for the whole day"
+              placeholderTextColor="#79747E"
+              multiline
+              textAlignVertical="top"
+              style={styles.input}
+              accessibilityLabel="Reflection on your movement"
+              inputAccessoryViewID={ACCESSORY_ID}
+            />
+          </ChoiceCard>
+        </KeyboardAvoidingView>
+
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView nativeID={ACCESSORY_ID}>
+            <View style={styles.accessoryBar}>
+              <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
+                <Text style={styles.accessoryDone}>Done</Text>
+              </Pressable>
+            </View>
+          </InputAccessoryView>
+        )}
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  container: { flex: 1, paddingHorizontal: scaleWidth(24), paddingTop: scaleHeight(16) },
+  container: {
+    flex: 1,
+    paddingHorizontal: scaleWidth(24),
+    paddingTop: scaleHeight(16),
+    paddingBottom: scaleHeight(16),
+  },
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
@@ -46,25 +82,26 @@ const styles = StyleSheet.create({
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
-  promptText: {
-    color: '#000000',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.5,
-  },
   input: {
-    height: scaleHeight(146),
+    flex: 1,
+    minHeight: scaleHeight(120),
     borderWidth: 1,
-    borderColor: '#D9D9D9',
-    borderRadius: scaleWidth(8),
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
-    color: '#1D1B20',
+    borderColor: '#79747E',
+    borderRadius: scaleWidth(4),
+    padding: scaleWidth(16),
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
+    color: '#1D1B20',
+  },
+  accessoryBar: {
+    alignItems: 'flex-end',
+    backgroundColor: '#E8DEF8',
+    paddingHorizontal: scaleWidth(16),
+    paddingVertical: scaleHeight(10),
+  },
+  accessoryDone: {
+    color: '#6750A4',
+    fontSize: scaleFont(16),
+    fontWeight: '600',
   },
 });
-
-

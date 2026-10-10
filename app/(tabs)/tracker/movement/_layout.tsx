@@ -21,11 +21,17 @@ function MovementHeader({ navigation }: { navigation: { goBack: () => void } }) 
 }
 
 export default function MovementLayout() {
-	return (
-		<MovementAssessmentProvider>
-			<Stack screenOptions={{ headerShown: false }} />
-		</MovementAssessmentProvider>
-	);
+  return (
+    // Keep assessment answers alive while navigating between these routes.
+    <MovementAssessmentProvider>
+      <Stack
+        screenOptions={{
+          headerShown: true,
+          header: ({ navigation }) => <MovementHeader navigation={navigation} />,
+        }}
+      />
+    </MovementAssessmentProvider>
+  );
 }
 
 const styles = StyleSheet.create({
