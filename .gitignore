@@ -49,3 +49,6 @@ example
 supabase/.temp/
 # test coverage output
 coverage/
+
+#Claude
+.claude/settings.local.json
