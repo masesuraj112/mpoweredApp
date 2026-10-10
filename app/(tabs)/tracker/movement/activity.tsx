@@ -2,13 +2,27 @@ import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+
+const MAX_HOURS_PER_DAY = 24;
 
 export default function ActivityScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
 
   const handleChangeText = (value: string) => {
     const digitsOnly = value.replace(/[^0-9]/g, '');
+
+    if (digitsOnly !== '' && Number(digitsOnly) > MAX_HOURS_PER_DAY) {
+      const message = `Please enter a number between 0 and ${MAX_HOURS_PER_DAY}.`;
+      // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
+      if (Platform.OS === 'web') {
+        window.alert(message);
+      } else {
+        Alert.alert('Invalid hours', message);
+      }
+      return;
+    }
+
     updateAnswer('activeHours', digitsOnly === '' ? undefined : Number(digitsOnly));
   };
 
