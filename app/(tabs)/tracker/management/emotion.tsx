@@ -1,3 +1,4 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -8,61 +9,42 @@ export default function EmotionScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Management</Text>
-        <ChoiceCard
-          title="Emotion"
-          prompt={
-            <View style={styles.promptContent}>
-              <Text style={styles.promptText}>
-                Over the past week, did you perform any strategies to manage your stress level or emotion?
-              </Text>
-              <Text style={styles.examples}>
-                Examples: meditation, journaling, meeting people
-              </Text>
-            </View>
-          }
-          questionNumber={4}
-          totalQuestions={4}
-          onPrevious={() => router.push('/tracker/management/exercise')}
-          onRecord={() => router.push('/tracker/management/summary')}
-          variant="management"
-          cardHeight={scaleHeight(516)}
-        >
-          <TextInput
-            accessibilityLabel="Emotion management strategies"
-            multiline
-            value={answers.emotionStrategies ?? ''}
-            onChangeText={value => updateAnswer('emotionStrategies', value)}
-            placeholder="Write about any strategies you used to manage your emotions"
-            placeholderTextColor="#B3B3B3"
-            textAlignVertical="top"
-            style={styles.input}
-          />
-        </ChoiceCard>
-      </View>
-    </View>
+    <AssessmentScreen title="My Management">
+      <ChoiceCard
+        title="Emotion"
+        prompt={
+          <View style={styles.promptContent}>
+            <Text style={styles.promptText}>
+              Over the past week, did you perform any strategies to manage your stress level or emotion?
+            </Text>
+            <Text style={styles.examples}>
+              Examples: meditation, journaling, meeting people
+            </Text>
+          </View>
+        }
+        questionNumber={4}
+        totalQuestions={4}
+        onPrevious={() => router.push('/tracker/management/exercise')}
+        onRecord={() => router.push('/tracker/management/summary')}
+        variant="management"
+        cardHeight={scaleHeight(516)}
+      >
+        <TextInput
+          accessibilityLabel="Emotion management strategies"
+          multiline
+          value={answers.emotionStrategies ?? ''}
+          onChangeText={value => updateAnswer('emotionStrategies', value)}
+          placeholder="Write about any strategies you used to manage your emotions"
+          placeholderTextColor="#B3B3B3"
+          textAlignVertical="top"
+          style={styles.input}
+        />
+      </ChoiceCard>
+    </AssessmentScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptContent: {
     gap: scaleHeight(12),
   },
