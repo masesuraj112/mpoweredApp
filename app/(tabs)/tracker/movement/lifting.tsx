@@ -1,8 +1,9 @@
+import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export const LIFTING_OPTIONS = [
   'I can lift heavy weights without extra pain',
@@ -13,10 +14,12 @@ export const LIFTING_OPTIONS = [
   'I cannot lift or carry anything at all',
 ];
 
+// Roughly how many lines an option wraps to (about 36 characters per line at this font size).
+const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 36));
+
 export default function LiftingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
- // Roughly how many lines the text wraps to (about 38 characters per line at this font size).
-  const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 38));
+
   const handleNext = () => {
     if (!answers.liftingImpact) {
       return;
@@ -45,26 +48,17 @@ export default function LiftingScreen() {
           style={{ flex: 1, height: undefined }}
         >
           <View style={styles.optionsList}>
-            {LIFTING_OPTIONS.map((option, index) => {
-              const isSelected = answers.liftingImpact === option;
-              const isLast = index === LIFTING_OPTIONS.length - 1;
-
-              return (
-                <Pressable
-                  key={option}
-                  onPress={() => updateAnswer('liftingImpact', option)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={option}
-                  style={[styles.optionRow, { flex: rowWeight(option) }, !isLast && styles.optionDivider]}
-                >
-                   <Text style={styles.optionText}>{option}</Text>
-                  <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                    {isSelected && <View style={styles.radioDot} />}
-                  </View>
-                </Pressable>
-              );
-            })}
+            {LIFTING_OPTIONS.map((option, index) => (
+              <AssessmentRadioRow
+                key={option}
+                label={option}
+                selected={answers.liftingImpact === option}
+                onPress={() => updateAnswer('liftingImpact', option)}
+                weight={rowWeight(option)}
+                isLast={index === LIFTING_OPTIONS.length - 1}
+                textStyle={styles.optionText}
+              />
+            ))}
           </View>
         </ChoiceCard>
       </View>
@@ -107,50 +101,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
     backgroundColor: '#FEF7FF',
+    overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
   },
-  optionRow: {
-    minHeight: 0,
-    paddingVertical: 0,
-    justifyContent: 'center',
-    paddingLeft: scaleWidth(32),   // room for the 20pt radio plus a gap
-    paddingRight: scaleWidth(8),
-  },
-  optionDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
-  },
-  radio: {
-    position: 'absolute',
-    left: 0,
-    top: '50%',
-    marginTop: -scaleWidth(10),    // half the radio height, to centre it
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: 2,
-    borderColor: '#49454F',
-    borderRadius: scaleWidth(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioSelected: {
-    borderColor: '#5B4A9E',
-  },
-  radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
-  },
-  optionTextWrap: {
-    flex: 1,
-    minWidth: 0,
-    paddingRight: scaleWidth(12),
-  },
+  // Lifting has the longest options, so it uses a smaller size than the other screens.
   optionText: {
-    color: '#1D1B20',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
+    fontSize: scaleFont(13),
     lineHeight: scaleHeight(18),
   },
 });

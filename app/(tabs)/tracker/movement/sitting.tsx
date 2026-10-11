@@ -1,8 +1,9 @@
+import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export const SITTING_OPTIONS = [
   'I can sit in any chair as long as I like',
@@ -12,6 +13,9 @@ export const SITTING_OPTIONS = [
   'Pain prevents me from sitting more than 10 minutes',
   'Pain prevents me from sitting at all',
 ];
+
+// Roughly how many lines an option wraps to (about 34 characters per line at this font size).
+const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function SittingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -44,26 +48,16 @@ export default function SittingScreen() {
           style={{ flex: 1, height: undefined }}
         >
           <View style={styles.optionsList}>
-            {SITTING_OPTIONS.map((option, index) => {
-              const isSelected = answers.sittingImpact === option;
-              const isLast = index === SITTING_OPTIONS.length - 1;
-
-              return (
-                <Pressable
-                  key={option}
-                  onPress={() => updateAnswer('sittingImpact', option)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={option}
-                  style={[styles.optionRow, !isLast && styles.optionDivider]}
-                >
-                  <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                    {isSelected && <View style={styles.radioDot} />}
-                  </View>
-                  <Text style={styles.optionText}>{option}</Text>
-                </Pressable>
-              );
-            })}
+            {SITTING_OPTIONS.map((option, index) => (
+              <AssessmentRadioRow
+                key={option}
+                label={option}
+                selected={answers.sittingImpact === option}
+                onPress={() => updateAnswer('sittingImpact', option)}
+                weight={rowWeight(option)}
+                isLast={index === SITTING_OPTIONS.length - 1}
+              />
+            ))}
           </View>
         </ChoiceCard>
       </View>
@@ -106,48 +100,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
     backgroundColor: '#FEF7FF',
-    paddingHorizontal: scaleWidth(12),
     overflow: 'hidden',
-  },
-  optionRow: {
-    flex: 1,
-    minHeight: 0,
-    paddingVertical: scaleHeight(2),
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scaleWidth(12),
-  },
-  optionDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
-  },
-  radio: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: 2,
-    borderColor: '#49454F',
-    borderRadius: scaleWidth(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  radioSelected: {
-    borderColor: '#5B4A9E',
-  },
-  radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
-  },
-  optionText: {
-    flex: 1,
-    flexShrink: 1,
-    minWidth: 0,
-    color: '#1D1B20',
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-    lineHeight: scaleHeight(20),
-    letterSpacing: 0.25,
+    paddingHorizontal: scaleWidth(8),
   },
 });

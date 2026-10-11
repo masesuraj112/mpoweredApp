@@ -1,8 +1,9 @@
+import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export const WALKING_OPTIONS = [
   'Pain does not prevent me walking any distance',
@@ -12,6 +13,9 @@ export const WALKING_OPTIONS = [
   'I can only walk using a stick or crutches',
   'I am in bed most of the time',
 ];
+
+// Roughly how many lines an option wraps to (about 34 characters per line at this font size).
+const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function WalkingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -44,28 +48,16 @@ export default function WalkingScreen() {
           style={{ flex: 1, height: undefined }}
         >
           <View style={styles.optionsList}>
-            {WALKING_OPTIONS.map((option, index) => {
-              const isSelected = answers.walkingImpact === option;
-              const isLast = index === WALKING_OPTIONS.length - 1;
-
-              return (
-                <Pressable
-                  key={option}
-                  onPress={() => updateAnswer('walkingImpact', option)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={option}
-                  style={[styles.optionRow, !isLast && styles.optionDivider]}
-                >
-                  <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                    {isSelected && <View style={styles.radioDot} />}
-                  </View>
-                  <View style={styles.optionTextWrap}>
-                    <Text style={styles.optionText}>{option}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
+            {WALKING_OPTIONS.map((option, index) => (
+              <AssessmentRadioRow
+                key={option}
+                label={option}
+                selected={answers.walkingImpact === option}
+                onPress={() => updateAnswer('walkingImpact', option)}
+                weight={rowWeight(option)}
+                isLast={index === WALKING_OPTIONS.length - 1}
+              />
+            ))}
           </View>
         </ChoiceCard>
       </View>
@@ -110,47 +102,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF7FF',
     overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
-  },
-  optionRow: {
-    flex: 1,
-    minHeight: 0,
-    paddingVertical: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scaleWidth(12),
-  },
-  optionDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
-  },
-  radio: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: 2,
-    borderColor: '#49454F',
-    borderRadius: scaleWidth(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  radioSelected: {
-    borderColor: '#5B4A9E',
-  },
-  radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
-  },
-  optionTextWrap: {
-    flex: 1,
-    minWidth: 0,
-    paddingRight: scaleWidth(8),
-    },
-  optionText: {
-    color: '#1D1B20',
-    fontSize: scaleFont(13),
-    fontWeight: '500',
-    lineHeight: scaleHeight(20),
   },
 });
