@@ -8,10 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
@@ -21,12 +21,17 @@ export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.screen}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={scaleHeight(109)}
+    <View style={styles.screen}>
+      <KeyboardAvoidingView
+        style={styles.screen}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={scaleHeight(109)}
+      >
+        {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <Text style={styles.pageTitle}>My Movement</Text>
           <ChoiceCard
@@ -51,26 +56,26 @@ export default function ReflectionScreen() {
               inputAccessoryViewID={ACCESSORY_ID}
             />
           </ChoiceCard>
-        </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-        {Platform.OS === 'ios' && (
-          <InputAccessoryView nativeID={ACCESSORY_ID}>
-            <View style={styles.accessoryBar}>
-              <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
-                <Text style={styles.accessoryDone}>Done</Text>
-              </Pressable>
-            </View>
-          </InputAccessoryView>
-        )}
-      </View>
-    </TouchableWithoutFeedback>
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={ACCESSORY_ID}>
+          <View style={styles.accessoryBar}>
+            <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
+              <Text style={styles.accessoryDone}>Done</Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#FFFFFF' },
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
     paddingTop: scaleHeight(16),
     paddingBottom: scaleHeight(16),
