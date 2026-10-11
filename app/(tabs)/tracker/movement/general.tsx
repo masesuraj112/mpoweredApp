@@ -3,6 +3,7 @@ import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 
 export const GENERAL_IMPACT_OPTIONS = [
   'I walk more slowly than usual because of my pain',

@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     paddingRight: scaleWidth(6),
     color: '#1D1B20',
-    fontSize: scaleFont(13),
+    fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(18),
   },

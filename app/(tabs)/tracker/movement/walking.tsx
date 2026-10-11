@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     },
   optionText: {
     color: '#1D1B20',
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(13),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
   },
