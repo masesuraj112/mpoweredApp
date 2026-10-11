@@ -15,7 +15,8 @@ export const LIFTING_OPTIONS = [
 
 export default function LiftingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
-
+ // Roughly how many lines the text wraps to (about 38 characters per line at this font size).
+  const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 38));
   const handleNext = () => {
     if (!answers.liftingImpact) {
       return;
@@ -55,12 +56,12 @@ export default function LiftingScreen() {
                   accessibilityRole="radio"
                   accessibilityState={{ checked: isSelected }}
                   accessibilityLabel={option}
-                  style={[styles.optionRow, !isLast && styles.optionDivider]}
+                  style={[styles.optionRow, { flex: rowWeight(option) }, !isLast && styles.optionDivider]}
                 >
+                   <Text style={styles.optionText}>{option}</Text>
                   <View style={[styles.radio, isSelected && styles.radioSelected]}>
                     {isSelected && <View style={styles.radioDot} />}
                   </View>
-                  <Text style={styles.optionText}>{option}</Text>
                 </Pressable>
               );
             })}
@@ -109,18 +110,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(8),
   },
   optionRow: {
-    flex: 1,
     minHeight: 0,
     paddingVertical: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scaleWidth(10),
+    justifyContent: 'center',
+    paddingLeft: scaleWidth(32),   // room for the 20pt radio plus a gap
+    paddingRight: scaleWidth(8),
   },
   optionDivider: {
     borderBottomWidth: 1,
     borderBottomColor: '#CAC4D0',
   },
   radio: {
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    marginTop: -scaleWidth(10),    // half the radio height, to centre it
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderWidth: 2,
@@ -128,7 +132,6 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(10),
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
   },
   radioSelected: {
     borderColor: '#5B4A9E',
@@ -139,11 +142,12 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(5),
     backgroundColor: '#5B4A9E',
   },
-  optionText: {
+  optionTextWrap: {
     flex: 1,
-    flexShrink: 1,
     minWidth: 0,
-    paddingRight: scaleWidth(6),
+    paddingRight: scaleWidth(12),
+  },
+  optionText: {
     color: '#1D1B20',
     fontSize: scaleFont(12),
     fontWeight: '500',
