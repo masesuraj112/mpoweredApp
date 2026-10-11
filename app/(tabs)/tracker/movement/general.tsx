@@ -13,9 +13,12 @@ export const GENERAL_IMPACT_OPTIONS = [
   'I sit down most of the day because of my pain',
 ];
 
+const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
+
 export default function GeneralScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
   const selected = answers.generalImpacts ?? [];
+  
 
   const toggle = (option: string) => {
     const next = selected.includes(option)
@@ -67,9 +70,9 @@ return (
                   accessibilityLabel={option}
                   style={[styles.optionRow, !isLast && styles.optionDivider]}
                 >
-                  <View style={styles.optionTextWrap}>
-                    <Text style={styles.optionText}>{option}</Text>
-                  </View>
+                  <Text style={styles.optionText} allowFontScaling={false}>
+                    {option}
+                  </Text>
                   <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
                     {isSelected && <Text style={styles.checkmark}>✓</Text>}
                   </View>
@@ -125,18 +128,13 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
     paddingVertical: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scaleWidth(12),
+    justifyContent: 'center',
+    paddingLeft: scaleWidth(4),
+    paddingRight: scaleWidth(34),  // room for the 18pt checkbox plus a gap
   },
   optionDivider: {
     borderBottomWidth: 1,
     borderBottomColor: '#CAC4D0',
-  },
-  optionTextWrap: {
-    flex: 1,
-    minWidth: 0,
-    paddingRight: scaleWidth(8),
   },
   optionText: {
     color: '#1D1B20',
@@ -145,9 +143,12 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(20),
   },
   checkbox: {
+    position: 'absolute',
+    right: 0,
+    top: '50%',
+    marginTop: -scaleWidth(9),
     width: scaleWidth(18),
     height: scaleWidth(18),
-    flexShrink: 0,
     borderWidth: 2,
     borderColor: '#49454F',
     borderRadius: scaleWidth(2),
