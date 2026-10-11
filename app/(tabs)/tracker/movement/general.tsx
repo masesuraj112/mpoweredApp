@@ -1,4 +1,3 @@
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -15,46 +14,70 @@ export const GENERAL_IMPACT_OPTIONS = [
 ];
 
 export default function GeneralScreen() {
-   const { answers, updateAnswer } = useMovementAssessment();
-  const savedImpacts = answers.generalImpacts ?? [];
-  const selected = GENERAL_IMPACT_OPTIONS.reduce<number[]>((indices, option, index) => {
-    if (savedImpacts.includes(option)) {
-      indices.push(index);
+  const { answers, updateAnswer } = useMovementAssessment();
+  const selected = answers.generalImpacts ?? [];
+
+  const toggle = (option: string) => {
+    const next = selected.includes(option)
+      ? selected.filter(item => item !== option)
+      : [...selected, option];
+    updateAnswer('generalImpacts', next);
+  };
+
+  const handleNext = () => {
+   if (selected.length === 0) {
+     return;
     }
-    return indices;
-  }, []);
+   router.push('/tracker/movement/walking');
+ };
 
 
-const handleSelectionChange = (selectedIndices: number[]) => {
-  updateAnswer('generalImpacts', selectedIndices.map(index => GENERAL_IMPACT_OPTIONS[index]));
-};
+
 
 return (
     <View style={styles.screen}>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>My Movement</Text>
-        <MultiChoiceList
+        <ChoiceCard
           title="General Movement Impacts"
           prompt={
             <Text style={styles.promptText}>
               Select <Text style={styles.promptUnderline}>ALL</Text> relevant statements:
             </Text>
           }
-          options={GENERAL_IMPACT_OPTIONS}
-          selectedIndices={selected}
-          onSelectionChange={handleSelectionChange}
           questionNumber={2}
           totalQuestions={7}
           onPrevious={() => router.push('/tracker/movement/activity')}
-          onRecord={() => router.push('/tracker/movement/walking')}
+          onRecord={handleNext}
           disabled={selected.length === 0}
-          variant="painTracker"
-          searchEnabled={false}
-          scrollable
-          listHeight={scaleHeight(340)}
-          selectedChipsEnabled={false}
-          cardHeight={scaleHeight(516)}
-        />
+          variant="management"
+          style={{ flex: 1, height: undefined }}
+        >
+          <View style={styles.optionsList}>
+            {GENERAL_IMPACT_OPTIONS.map((option, index) => {
+              const isSelected = selected.includes(option);
+              const isLast = index === GENERAL_IMPACT_OPTIONS.length - 1;
+
+              return (
+                <Pressable
+                  key={option}
+                  onPress={() => toggle(option)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isSelected }}
+                  accessibilityLabel={option}
+                  style={[styles.optionRow, !isLast && styles.optionDivider]}
+                >
+                  <View style={styles.optionTextWrap}>
+                    <Text style={styles.optionText}>{option}</Text>
+                  </View>
+                  <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                    {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ChoiceCard>
       </View>
     </View>
   );
@@ -69,6 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: scaleWidth(24),
     paddingTop: scaleHeight(16),
+    paddingBottom: scaleHeight(16),
   },
   pageTitle: {
     fontSize: scaleFont(24),
@@ -78,7 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: scaleHeight(18),
   },
   promptText: {
-    color: '#000000',
+    color: '#1D1B20',
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -86,5 +110,57 @@ const styles = StyleSheet.create({
   },
   promptUnderline: {
     textDecorationLine: 'underline',
+  },
+  optionsList: {
+    flex: 1,
+    minHeight: 0,
+    width: '100%',
+    alignSelf: 'center',
+    borderRadius: scaleWidth(12),
+    backgroundColor: '#FEF7FF',
+    overflow: 'hidden',
+    paddingHorizontal: scaleWidth(8),
+  },
+  optionRow: {
+    flex: 1,
+    minHeight: 0,
+    paddingVertical: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scaleWidth(12),
+  },
+  optionDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CAC4D0',
+  },
+  optionTextWrap: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: scaleWidth(8),
+  },
+  optionText: {
+    color: '#1D1B20',
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    lineHeight: scaleHeight(20),
+  },
+  checkbox: {
+    width: scaleWidth(18),
+    height: scaleWidth(18),
+    flexShrink: 0,
+    borderWidth: 2,
+    borderColor: '#49454F',
+    borderRadius: scaleWidth(2),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxSelected: {
+    borderColor: '#5B4A9E',
+    backgroundColor: '#5B4A9E',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: scaleFont(12),
+    fontWeight: '700',
   },
 });
