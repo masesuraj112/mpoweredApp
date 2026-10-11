@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { AssessmentScreen, KEYBOARD_DONE_ID } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -23,6 +23,7 @@ export default function ReflectionScreen() {
         <TextInput
           accessibilityLabel="Reflection on your personal care"
           multiline
+          inputAccessoryViewID={KEYBOARD_DONE_ID}
           value={answers.reflection ?? ''}
           onChangeText={value => updateAnswer('reflection', value)}
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"

@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { AssessmentScreen, KEYBOARD_DONE_ID } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -27,6 +27,7 @@ export default function OtcScreen() {
           <TextInput
             accessibilityLabel="Over the counter medication name"
             multiline
+            inputAccessoryViewID={KEYBOARD_DONE_ID}
             value={answers.otcMedication ?? ''}
             onChangeText={value => updateAnswer('otcMedication', value)}
             placeholder="Input name of over the counter medication"

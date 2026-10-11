@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { AssessmentScreen, KEYBOARD_DONE_ID } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -23,6 +23,7 @@ export default function MoodTriggerScreen() {
         <TextInput
           accessibilityLabel="What triggered that mood?"
           multiline
+          inputAccessoryViewID={KEYBOARD_DONE_ID}
           value={answers.emotionReflection ?? ''}
           onChangeText={value => updateAnswer('emotionReflection', value)}
           placeholder="i.e: delayed in work due to pain, inability to meet with friends, etc"
