@@ -1,46 +1,17 @@
-import { ScoreThresholds } from '@/constants/scoring-thresholds';
-import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
+import { TIPS_URL } from '@/constants/socialHealthOptions';
+import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
+import {
+  toSocialHealthSummary,
+  type SocialHealthSummaryData,
+} from '@/features/assessments/social-health/summary';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { getSocialHealthEntryForWeek } from '@/services/social-health';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const MANAGING_EMOTIONS_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
-
-type ScoredAssessment = 'mood' | 'relationships' | 'enjoyment';
-
-// Map a 0-10 slider score to the phrase shown on the slider for that question.
-function describeScore(assessment: ScoredAssessment, score: number | undefined): string {
-  if (score === undefined) {
-    return 'No response recorded.';
-  }
-  const thresholds = ScoreThresholds[assessment];
-  const clamped = Math.min(10, Math.max(0, Math.round(score))) as keyof typeof thresholds;
-  return `${thresholds[clamped]}.`;
-}
-
-// Overall impact phrase for the summary panel, from the average of the slider scores.
-// Returns null when no slider scores were recorded, so we don't claim an impact without data.
-function describeOverallImpact(scores: (number | undefined)[]): string | null {
-  const recorded = scores.filter((score): score is number => score !== undefined);
-  if (recorded.length === 0) {
-    return null;
-  }
-  const average = recorded.reduce((total, score) => total + score, 0) / recorded.length;
-  if (average < 1) {
-    return 'does not limit';
-  }
-  if (average < 4) {
-    return 'slightly limits';
-  }
-  if (average < 7) {
-    return 'limits';
-  }
-  return 'significantly limits';
-}
-
-export default function SummaryScreen() {
-  const { answers } = useSocialHealthAssessment();
-  const impact = describeOverallImpact([answers.moodNumber, answers.relationWithOthers, answers.enjoymentOfLife]);
+function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSummaryData; onClose: () => void }) {
+  const impact = summary.impactPhrase;
 
   return (
     <View style={styles.screen}>
@@ -52,7 +23,7 @@ export default function SummaryScreen() {
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportTitle}>My Social Health</Text>
-          <Text style={styles.period}>Period: Last 7 days</Text>
+          <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
 
@@ -75,7 +46,7 @@ export default function SummaryScreen() {
               {'\n'}With the right treatment and support, you can stay more active and connected.
             </Text>
             <Pressable
-              onPress={() => Linking.openURL(MANAGING_EMOTIONS_TIPS_URL)}
+              onPress={() => Linking.openURL(TIPS_URL)}
               accessibilityRole="link"
               accessibilityLabel="Explore tips on managing emotions"
               style={({ pressed }) => [styles.tipsButton, pressed && styles.tipsButtonPressed]}
@@ -87,24 +58,18 @@ export default function SummaryScreen() {
 
           <Text style={styles.resultsHeading}>My results:</Text>
           <View style={styles.resultsList}>
-            <ResultSection heading="Social life:" value={answers.socialLife ? `${answers.socialLife}.` : 'No response recorded.'} />
-            <ResultSection heading="Travelling:" value={answers.travel ? `${answers.travel}.` : 'No response recorded.'} />
-            <ResultSection heading="Mood:" value={describeScore('mood', answers.moodNumber)} />
-            <ResultSection
-              heading="Relation with others:"
-              value={describeScore('relationships', answers.relationWithOthers)}
-            />
-            <ResultSection heading="Enjoyment of life:" value={describeScore('enjoyment', answers.enjoymentOfLife)} />
+            <ResultSection heading="Social life:" value={summary.results.socialLife} />
+            <ResultSection heading="Travelling:" value={summary.results.travelling} />
+            <ResultSection heading="Mood:" value={summary.results.mood} />
+            <ResultSection heading="Relation with others:" value={summary.results.relationWithOthers} />
+            <ResultSection heading="Enjoyment of life:" value={summary.results.enjoymentOfLife} />
           </View>
 
           <View style={styles.reflectionSection}>
             <Text style={styles.reflectionHeading}>My reflections on mood:</Text>
             <View style={[styles.resultsList, styles.reflectionList]}>
-              <ResultSection
-                heading="General Mood:"
-                value={answers.moodEmotion ? `I was feeling ${answers.moodEmotion}` : 'No response recorded.'}
-              />
-              <ResultSection heading="Triggers:" value={answers.emotionReflection?.trim() || 'No triggers added.'} />
+              <ResultSection heading="General Mood:" value={summary.generalMood} />
+              <ResultSection heading="Triggers:" value={summary.triggers} />
             </View>
           </View>
         </ScrollView>
@@ -113,18 +78,76 @@ export default function SummaryScreen() {
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
-            <Pressable
-              onPress={() => router.replace('/tracker')}
-              accessibilityRole="button"
-              accessibilityLabel="Close summary"
-              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
+            <CloseButton onPress={onClose} />
           </View>
         </View>
       </View>
     </View>
+  );
+}
+
+type SummaryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; summary: SocialHealthSummaryData };
+
+// The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
+export default function SummaryScreen() {
+  const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
+  const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
+  const [state, setState] = useState<SummaryState>({ status: 'loading' });
+  const close = () => router.replace('/tracker');
+
+  useEffect(() => {
+    if (!weekStart) return;
+    let cancelled = false;
+    getSocialHealthEntryForWeek(weekStart).then(result => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ status: 'error', message: socialHealthSaveMessage(result.error) });
+      } else if (!result.data) {
+        setState({ status: 'error', message: 'We could not find your saved entry.' });
+      } else {
+        setState({ status: 'ready', summary: toSocialHealthSummary(result.data) });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart]);
+
+  const view: SummaryState = weekStart
+    ? state
+    : { status: 'error', message: 'We could not find the week to show.' };
+
+  if (view.status === 'ready') {
+    return <SocialHealthSummaryView summary={view.summary} onClose={close} />;
+  }
+
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      {view.status === 'loading' ? (
+        <ActivityIndicator accessibilityLabel="Loading your summary" />
+      ) : (
+        <>
+          <Text style={styles.resultText}>{view.message}</Text>
+          <CloseButton onPress={close} />
+        </>
+      )}
+    </View>
+  );
+}
+
+function CloseButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Close summary"
+      style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+    >
+      <Text style={styles.closeButtonText}>Close</Text>
+    </Pressable>
   );
 }
 
@@ -138,6 +161,11 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleHeight(16),
+  },
   screen: {
     flex: 1,
     paddingHorizontal: scaleWidth(24),

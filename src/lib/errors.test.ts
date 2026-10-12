@@ -27,7 +27,7 @@ describe('mapError: errors raised by save_pain_assessment (P0001)', () => {
     expect(mapError(dbError('P0001', name))).toEqual({ code: name, message: name });
   });
 
-  it.each(['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG'])(
+  it.each(['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'MISSING_ANSWER'])(
     '%s becomes VALIDATION and keeps the original code in detail',
     (name) => {
       expect(mapError(dbError('P0001', name))).toEqual({
