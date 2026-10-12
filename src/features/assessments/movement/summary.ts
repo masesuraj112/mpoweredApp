@@ -6,8 +6,8 @@ import {
 } from '@/features/assessments/movement/options';
 
 /** An answer scores its position in the list: 0 for the first (least impact) up to 5. */
-function scoreOf(options: readonly string[], answer: string): number {
-  const index = options.indexOf(answer);
+export function scoreOf(options: readonly string[], answer: string | undefined): number {
+  const index = answer === undefined ? -1 : options.indexOf(answer);
   return index === -1 ? 0 : index;
 }
 
