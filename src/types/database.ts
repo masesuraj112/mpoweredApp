@@ -180,7 +180,7 @@ export type Database = {
           {
             foreignKeyName: "dosage_medications_id_fkey"
             columns: ["medications_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "medications"
             referencedColumns: ["medication_id"]
           },
@@ -254,6 +254,8 @@ export type Database = {
       }
       medications: {
         Row: {
+          created_at: string
+          deleted_at: string | null
           form: string
           medication_id: number
           name: string
@@ -262,6 +264,8 @@ export type Database = {
           users_id: number
         }
         Insert: {
+          created_at?: string
+          deleted_at?: string | null
           form: string
           medication_id?: never
           name: string
@@ -270,6 +274,8 @@ export type Database = {
           users_id: number
         }
         Update: {
+          created_at?: string
+          deleted_at?: string | null
           form?: string
           medication_id?: never
           name?: string
@@ -818,6 +824,19 @@ export type Database = {
           p_locations: string[]
           p_mildest: number
           p_worst: number
+        }
+        Returns: number
+      }
+      save_prescription: {
+        Args: {
+          p_amount: number
+          p_form: string
+          p_medication_id?: number
+          p_name: string
+          p_repeats_every: number
+          p_strength: number
+          p_strength_unit: string
+          p_unit_of_time: string
         }
         Returns: number
       }
