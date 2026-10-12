@@ -1,11 +1,40 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useManagementAssessment } from '@/features/assessments/management/context';
+import { managementSaveMessage } from '@/features/assessments/management/messages';
+import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { saveManagementEntry } from '@/services/management';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
+import { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function EmotionScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
+  const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
+  const inFlight = useRef(false);
+
+  const handleRecord = async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setSaving(true);
+    setErrorMessage(null);
+
+    const entryDate = answers.entryDate ?? getLocalToday();
+    const result = await saveManagementEntry(answers, entryDate);
+
+    inFlight.current = false;
+    setSaving(false);
+    if (!result.ok) {
+      setErrorMessage(managementSaveMessage(result.error));
+      return;
+    }
+    router.push({
+      pathname: '/tracker/management/summary',
+      params: { weekStart: getWeekStart(entryDate) },
+    });
+  };
 
   return (
     <View style={styles.screen}>
@@ -26,7 +55,9 @@ export default function EmotionScreen() {
           questionNumber={4}
           totalQuestions={4}
           onPrevious={() => router.push('/tracker/management/exercise')}
-          onRecord={() => router.push('/tracker/management/summary')}
+          onRecord={handleRecord}
+          disabled={saving}
+          validationMessage={errorMessage ?? undefined}
           variant="management"
           cardHeight={scaleHeight(516)}
         >
