@@ -14,5 +14,10 @@ module.exports = {
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
+    'src/features/health-profile/prescriptions.ts',
+    'src/features/health-profile/profile.ts',
+    'src/features/health-profile/tracking.ts',
+    'src/features/health-profile/pdf-export.ts',
+    'src/services/health.ts',
   ],
 };
