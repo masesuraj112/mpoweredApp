@@ -3,15 +3,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
-
-export const GENERAL_IMPACT_OPTIONS = [
-  'I walk more slowly than usual because of my pain',
-  'I lie down to rest more often because of my pain',
-  'I only stand up for short periods of time because of my pain',
-  'I try not to bend or kneel down because of my pain',
-  'I find it difficult to get out of a chair because of my pain',
-  'I sit down most of the day because of my pain',
-];
+import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
 
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 

@@ -2,11 +2,11 @@ import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { GENERAL_IMPACT_OPTIONS } from './general';
-import { WALKING_OPTIONS } from './walking';
-import { LIFTING_OPTIONS } from './lifting';
-import { SITTING_OPTIONS } from './sitting';
-import { STANDING_OPTIONS } from './standing';
+import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
+import { WALKING_OPTIONS } from '@/features/assessments/movement/options';
+import { LIFTING_OPTIONS } from '@/features/assessments/movement/options';
+import { SITTING_OPTIONS } from '@/features/assessments/movement/options';
+import { STANDING_OPTIONS } from '@/features/assessments/movement/options';
 
 
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
