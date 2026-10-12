@@ -1,10 +1,9 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-
-const EXERCISE_OPTIONS = ['0 days', '1–2 days', '3–4 days', '5–6 days', '7 days'];
 
 export default function ExerciseScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
