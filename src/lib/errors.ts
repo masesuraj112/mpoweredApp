@@ -9,22 +9,23 @@ export type AppErrorCode =
   | 'NO_PROFILE'
   | 'FUTURE_DATE'
   | 'BEFORE_START'
+  | 'NOT_FOUND'
   | 'NETWORK'
   | 'UNKNOWN';
 
 export type AppError = {
   code: AppErrorCode;
   message: string;
-  /** For VALIDATION errors raised by save_pain_assessment: the original message code. */
+  /** For VALIDATION errors raised by a save function: the original message code. */
   detail?: string;
   /** For VALIDATION errors raised by the app: the answer that failed (for example 'worstPain'). */
   field?: string;
 };
 
-// P0001 messages raised by save_pain_assessment that keep their own code
-const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START'] as const;
+// P0001 messages raised by the save functions that keep their own code
+const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START', 'NOT_FOUND'] as const;
 // P0001 messages that the app treats as a validation problem
-const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG'] as const;
+const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'NO_NAME'] as const;
 
 export function mapError(error: unknown): AppError {
   const { code, message } = readError(error);

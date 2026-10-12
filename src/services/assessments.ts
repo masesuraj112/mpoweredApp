@@ -8,11 +8,11 @@ import type { PainAssessmentAnswers } from '@/features/assessments/pain/types';
 import { validatePainAnswers, type ValidPainEntry } from '@/features/assessments/pain/validate';
 import { addWeeks, getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { mapError } from '@/lib/errors';
-import { fail, ok, type Result } from '@/lib/result';
+import { fail, ok, run, type Result } from '@/lib/result';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
-type Client = SupabaseClient<Database>;
+export type Client = SupabaseClient<Database>;
 
 /** A saved pain submission with its locations and characteristics. */
 export type PainEntry = {
@@ -27,24 +27,15 @@ export type PainEntry = {
   characteristics: string[];
 };
 
-type PainRow = Database['public']['Tables']['pain_assessment']['Row'] & {
+export type PainRow = Database['public']['Tables']['pain_assessment']['Row'] & {
   pain_location: { pain_location: string }[];
   pain_characteristics: { pain_characteristic: string }[];
 };
 
-const PAIN_ENTRY_SELECT =
+export const PAIN_ENTRY_SELECT =
   '*, pain_location(pain_location), pain_characteristics(pain_characteristic)';
 
-/** Runs a database call and converts both returned errors and thrown ones (for example a lost connection). */
-async function run<T>(call: () => Promise<Result<T>>): Promise<Result<T>> {
-  try {
-    return await call();
-  } catch (error) {
-    return fail(mapError(error));
-  }
-}
-
-function toPainEntry(row: PainRow): PainEntry {
+export function toPainEntry(row: PainRow): PainEntry {
   return {
     submissionId: row.submission_id,
     date: row.date,
