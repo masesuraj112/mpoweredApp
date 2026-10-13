@@ -15,5 +15,6 @@ module.exports = {
     'src/lib/errors.ts',
     'src/services/assessments.ts',
     'src/features/support-person/appointments.ts',
+    'src/features/support-person/greeting.ts',
   ],
 };

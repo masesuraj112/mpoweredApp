@@ -1,80 +1,139 @@
-import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
-import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
 import { NotificationBell } from '@/components/mpowered/support-person/NotificationBell';
-import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
 import { PillButton } from '@/components/mpowered/support-person/PillButton';
-import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
-import { StatusBadge } from '@/components/mpowered/support-person/StatusBadge';
-import { getNextAppointment, splitAppointments } from '@/features/support-person/appointments';
+import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
+import { Colors } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { getGreeting } from '@/features/support-person/greeting';
+import { SAMPLE_SUPPORT_PERSON_NAME } from '@/features/support-person/mock-data';
+import type { Appointment, SupportedPatient } from '@/features/support-person/types';
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// TEMPORARY preview of the step 3 components. Step 4 of docs/support-person-frontend.md replaces this
-// with the real Care Planner home.
+/** Care Planner home for support persons (Figma 3911-24607, empty state 3896-21458). */
 export default function CarePlannerHomeScreen() {
   const { patients, requests } = useSupportPerson();
-  const notYet = (label: string) => () => Alert.alert(label, 'Not built yet');
+
+  const openRequests = () => router.push('/care-planner/requests');
+  const openAppointments = (patient: SupportedPatient) =>
+    router.push({ pathname: '/care-planner/[patientId]', params: { patientId: patient.id } });
+  const openAddQuestions = (patient: SupportedPatient, appointment: Appointment) =>
+    router.push({
+      pathname: '/care-planner/appointment-action',
+      params: { action: 'add-questions', patientId: patient.id, appointmentId: appointment.id },
+    });
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Component preview</Text>
-          <NotificationBell count={requests.length} onPress={notYet('Requests')} />
+        <View style={styles.greetingRow}>
+          <Text style={styles.greeting}>{getGreeting(SAMPLE_SUPPORT_PERSON_NAME)}</Text>
+          <NotificationBell count={requests.length} onPress={openRequests} />
         </View>
 
-        {patients.map(patient => {
-          const next = getNextAppointment(patient.appointments);
-          const { past } = splitAppointments(patient.appointments);
-          return (
-            <View key={patient.id} style={styles.card}>
-              <View style={styles.patientRow}>
-                <InitialsAvatar name={patient.name} />
-                <View style={styles.patientText}>
-                  <Text style={styles.name}>{patient.name}</Text>
-                  <Text style={styles.condition}>{patient.condition}</Text>
-                </View>
-                <StatusBadge hasUpcoming={!!next} />
-              </View>
-              <PermissionChips canAddQuestions={patient.canAddQuestions} canAddAnswers={patient.canAddAnswers} />
-              {next && (
-                <>
-                  <SectionLabel>Upcoming appointment</SectionLabel>
-                  <AppointmentCard appointment={next} actions={[{ label: 'Add questions', onPress: notYet('Add questions') }]} />
-                </>
-              )}
-              {past[0] && (
-                <>
-                  <SectionLabel>Past appointment (two buttons)</SectionLabel>
-                  <AppointmentCard
-                    appointment={past[0]}
-                    actions={[
-                      { label: 'View questions', onPress: notYet('View questions') },
-                      { label: "View doctor's answer", onPress: notYet("View doctor's answer") },
-                    ]}
-                  />
-                </>
-              )}
-              <PillButton size="large" label="View more appointments" onPress={notYet('Appointments')} />
-            </View>
-          );
-        })}
+        <Text style={styles.title} accessibilityRole="header">
+          Your support makes a difference
+        </Text>
+        <Text style={styles.body}>Help prepare for upcoming appointments by reviewing and adding questions for the doctor</Text>
 
-        <InitialsAvatar name="Steven Harper" size={50} />
+        {patients.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle} accessibilityRole="header">
+              People you support
+            </Text>
+            <View style={styles.cards}>
+              {patients.map(patient => (
+                <SupportedPatientCard
+                  key={patient.id}
+                  patient={patient}
+                  onAddQuestions={appointment => openAddQuestions(patient, appointment)}
+                  onViewAppointments={() => openAppointments(patient)}
+                />
+              ))}
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.sectionTitle} accessibilityRole="header">
+              People you support (0 people)
+            </Text>
+            <Text style={styles.body}>
+              You haven’t accepted any support person requests yet. Requests can be sent by a patient through your phone
+              number.
+            </Text>
+            <View>
+              <Text style={[styles.body, styles.bodyEmphasis]}>Haven’t received a request?</Text>
+              <Text style={styles.body}>Check to make sure your phone number was entered correctly by the patient.</Text>
+            </View>
+            <View style={styles.emptyButton}>
+              <PillButton size="large" label="Check support person requests" onPress={openRequests} />
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  content: { padding: 24, gap: 16 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { fontSize: 20, fontWeight: '600' },
-  card: { gap: 10, padding: 14, borderWidth: 1, borderColor: '#6750A4', borderRadius: 20 },
-  patientRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  patientText: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '700', color: '#1D1B20' },
-  condition: { fontSize: 12, color: 'rgba(60, 60, 67, 0.6)' },
+  screen: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  content: {
+    gap: scaleHeight(12),
+    paddingTop: scaleHeight(24),
+    paddingBottom: scaleHeight(32),
+    paddingHorizontal: scaleWidth(24),
+  },
+  greetingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: scaleWidth(10),
+    paddingRight: scaleWidth(6),
+  },
+  greeting: {
+    color: Colors.light.text,
+    fontSize: scaleFont(14),
+    fontWeight: '500',
+    lineHeight: 20,
+    letterSpacing: 0.25,
+  },
+  title: {
+    marginTop: scaleHeight(6),
+    paddingHorizontal: scaleWidth(9),
+    color: Colors.light.text,
+    fontSize: scaleFont(20),
+    fontWeight: '700',
+    lineHeight: scaleFont(24),
+  },
+  body: {
+    paddingHorizontal: scaleWidth(9),
+    color: Colors.light.text,
+    fontSize: scaleFont(14),
+    lineHeight: 20,
+    letterSpacing: 0.25,
+  },
+  bodyEmphasis: {
+    fontWeight: '600',
+    letterSpacing: 0.1,
+  },
+  sectionTitle: {
+    marginTop: scaleHeight(18),
+    paddingHorizontal: scaleWidth(11),
+    color: Colors.light.text,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    lineHeight: scaleFont(22),
+  },
+  cards: {
+    gap: scaleHeight(18),
+    marginTop: scaleHeight(8),
+  },
+  emptyButton: {
+    marginTop: scaleHeight(18),
+    paddingHorizontal: scaleWidth(14),
+  },
 });
