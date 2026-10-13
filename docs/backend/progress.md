@@ -19,7 +19,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S2.1 `toE164`
 - [x] S2.2 OTP helpers
 - [x] S2.3 AppError codes
-- [ ] S2.4 Auth messages
+- [x] S2.4 Auth messages
 
 ## Phase 3: `auth.ts` service
 - [ ] S3.1 `sendVerificationCode`
