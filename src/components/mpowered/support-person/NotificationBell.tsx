@@ -7,12 +7,33 @@ const bellIcon = require('../../../../assets/images/support-person/bell.svg');
 
 type NotificationBellProps = {
   count: number;
-  onPress: () => void;
+  /** Leave out to show the bell as a plain indicator, e.g. on the requests screen itself. */
+  onPress?: () => void;
 };
 
 /** Bell with a red count badge, hidden when there's nothing new (Figma 3911-24703). */
 export function NotificationBell({ count, onPress }: NotificationBellProps) {
   const label = count > 0 ? `Support person requests, ${count} new` : 'Support person requests';
+  const content = (
+    <>
+      <View style={styles.iconBox}>
+        <Image source={bellIcon} style={styles.bell} contentFit="contain" accessibilityLabel="" />
+      </View>
+      {count > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{count > 9 ? '9+' : count}</Text>
+        </View>
+      )}
+    </>
+  );
+
+  if (!onPress) {
+    return (
+      <View style={styles.container} accessible accessibilityLabel={label}>
+        {content}
+      </View>
+    );
+  }
 
   return (
     <Pressable
@@ -22,14 +43,7 @@ export function NotificationBell({ count, onPress }: NotificationBellProps) {
       hitSlop={10}
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
     >
-      <View style={styles.iconBox}>
-        <Image source={bellIcon} style={styles.bell} contentFit="contain" accessibilityLabel="" />
-      </View>
-      {count > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{count > 9 ? '9+' : count}</Text>
-        </View>
-      )}
+      {content}
     </Pressable>
   );
 }

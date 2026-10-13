@@ -128,7 +128,8 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 | Designer | The "Manage person you support" popup (3911-24318) shows the patient's four tabs, not the support person's two. Which is right? |
 | Designer | That popup says "Stevie Nicks" while the list says "Steven Harper". Placeholder mix-up? |
 | Designer | How does a permission the support person doesn't have look in that popup? |
-| Designer | What does the requests screen show when there are no requests? |
+| Designer | What does the requests screen show when there are no requests? (Currently: "You don’t have any support person requests right now.") |
+| Designer | The requests screen has no Back button, unlike the appointments screen. Should it have one? (Currently: swipe back, Android back, or tap the Care Planner tab.) |
 | Designer | Are there designs for "Add questions" / "View doctor's answer" from a support person's view? |
 | Sign-up owner | Do support persons go through the same onboarding questions as patients (sex, year of birth, health conditions)? At the moment `user-type.tsx` leads into all of them. |
 | Sign-up owner | Where will the account type be saved, so the app can pick `(tabs)` or `(support)` after login? |

@@ -16,5 +16,6 @@ module.exports = {
     'src/services/assessments.ts',
     'src/features/support-person/appointments.ts',
     'src/features/support-person/greeting.ts',
+    'src/features/support-person/context.tsx',
   ],
 };
