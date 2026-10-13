@@ -94,19 +94,20 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 
 ### 7. Settings
 - **Settings home** (`app/(support)/support-settings/index.tsx`): Account, People you support, Privacy/Data and Legal,
-  and Sign out. Copy the layout of `app/(tabs)/settings/index.tsx`, with only these rows.
+  and Sign out. Built as a shared `src/components/mpowered/SettingsHome.tsx` that both apps pass their own rows to.
 - **Account and Privacy/Data and Legal** look the same as the patient versions, so reuse them rather than copying:
   - `app/(support)/support-settings/profile.tsx`: `export { default } from '../../(tabs)/settings/profile';`
   - Do the same for `legal.tsx` and `privacy.tsx`.
+  - The patient `legal.tsx` now opens `./privacy` (a relative link), so each app opens its own privacy page.
 - **Settings `_layout.tsx`**: reuse the same Back / "Settings" header as `app/(tabs)/settings/_layout.tsx`.
   Done in step 6: it is now `src/components/mpowered/BackHeader.tsx` (takes a `title`), also used by the appointments screen.
-- **People you support** (`app/(support)/support-settings/support-persons.tsx`):
+- **People you support** (`app/(support)/support-settings/people-you-support.tsx`):
   - "Manage people you support" and one `SettingsOption` per patient.
   - Tapping one opens a `SettingsModal` titled "Manage person you support":
     - The name, read-only.
     - "Your access permissions": both permissions shown read-only. Only the patient can change them,
       and the database already blocks support persons from changing their own `access_type`.
-      Check with the designer how a missing permission should look.
+      Each row shows "Allowed" / "Not allowed" (new `SettingsModalInfoRow`). Check with the designer how a missing permission should look.
     - "Unpair from <first name>" as a destructive `SettingsModalActionRow` (with the unlink icon),
       using the same confirmation `Alert` as "Revoke all access".
   - Unpair removes them from the placeholder list: `// TODO: save to Supabase.`

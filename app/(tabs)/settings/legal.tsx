@@ -9,7 +9,8 @@ const deleteIcon = require('../../../assets/images/settings/delete.svg');
 export default function LegalScreen() {
   return (
     <SettingsSubpage title="Privacy/Data and Legal">
-      <SettingsOption icon={privacyIcon} label="View PP and T&Cs" onPress={() => router.push('/settings/privacy')} />
+      {/* Relative, so the support person app (which reuses this screen) opens its own privacy page. */}
+      <SettingsOption icon={privacyIcon} label="View PP and T&Cs" onPress={() => router.push('./privacy')} />
       <SettingsOption icon={exportIcon} label="Export my data" onPress={() => undefined} />
       <SettingsOption icon={deleteIcon} label="Account deletion" onPress={() => undefined} destructive />
     </SettingsSubpage>
