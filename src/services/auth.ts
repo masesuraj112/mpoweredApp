@@ -73,3 +73,12 @@ export async function verifyCode(
     return ok({ userId });
   });
 }
+
+/** Ends the session on this device. */
+export function signOut(client: Client = supabase): Promise<Result<void>> {
+  return run(async () => {
+    const { error } = await client.auth.signOut();
+    if (error) return fail(mapError(error));
+    return ok(undefined);
+  });
+}

@@ -1,6 +1,6 @@
 jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
 
-import { sendVerificationCode, verifyCode } from '@/services/auth';
+import { sendVerificationCode, signOut, verifyCode } from '@/services/auth';
 
 const fakeClient = (parts: Record<string, unknown>) => parts as never;
 
@@ -121,6 +121,29 @@ describe('verifyCode', () => {
   it('maps a lost connection thrown by the client to NETWORK', async () => {
     const verifyOtp = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
     const result = await verifyCode('0491 570 006', '123456', fakeClient({ auth: { verifyOtp } }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NETWORK');
+  });
+});
+
+describe('signOut', () => {
+  it('signs out and returns ok', async () => {
+    const signOutCall = jest.fn().mockResolvedValue({ error: null });
+    const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));
+    expect(signOutCall).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ ok: true, data: undefined });
+  });
+
+  it('maps an error returned by the client', async () => {
+    const signOutCall = jest.fn().mockResolvedValue({ error: { code: 'weird', message: 'boom' } });
+    const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('UNKNOWN');
+  });
+
+  it('maps a lost connection thrown by the client to NETWORK', async () => {
+    const signOutCall = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
+    const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('NETWORK');
   });

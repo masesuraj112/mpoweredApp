@@ -24,7 +24,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 3: `auth.ts` service
 - [x] S3.1 `sendVerificationCode`
 - [x] S3.2 `verifyCode`
-- [ ] S3.3 `signOut`
+- [x] S3.3 `signOut`
 - [ ] S3.4 `hasProfile`
 - [ ] S3.5 Coverage
 
