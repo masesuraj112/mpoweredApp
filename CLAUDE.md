@@ -16,3 +16,22 @@
 > 13. Re-read each file before editing it. Make the **minimum** change. Do not reformat unrelated code (the repo has mixed line endings; keep each file's existing endings).
 > 14. Run `npm run lint` and `npm run typecheck` before committing. **Do not run `supabase start`, `supabase test db` or anything needing Docker**; CI runs those. Jest may be run locally.
 > 15. One commit per step, using the suggested message. If a step needs a decision that is not recorded in section 2, stop and ask.
+
+## 2. Reference docs
+
+- Build plan: `docs/backend/login-backend-build-plan.md` (section 1 = guardrails, section 2 = decisions register, Phases 1-10 = steps)
+- Testing and CI: `docs/backend/testing-and-cicd.md` (CI-only testing rules)
+- Progress tracker: `docs/backend/progress.md` (resume a new session from here)
+
+## 3. Working agreement
+
+- Work one PHASE at a time, in order. One commit per step, using the suggested commit message. Never start the next phase until the user says so.
+- At the end of each phase: push, then give a summary with one line per step, anything unsure, anything that could not be verified, and what CI should prove.
+- NEVER decide a question that is open in the decisions register (status 🟡, ❓ or ⏳), and never invent column names, error codes or library behaviour marked "(verify)". STOP and ask the user with the AskUserQuestion tool, giving 2-4 options and a recommendation.
+- Steps marked [GATE] or [B] must not start until the decision they depend on is recorded as settled. Ask first.
+- Before any migration (Phase 6), show the exact SQL and grants and wait for approval before writing the file.
+- Do not run `supabase start`, `supabase test db` or anything needing Docker. `npm run lint`, `npm run typecheck` and `npm test` are allowed.
+- Never edit an existing migration. Never touch files outside the step.
+- If something in the plan conflicts with what is found in the repo, stop and tell the user; do not silently choose.
+- Keep `docs/backend/progress.md` up to date: a checklist of every step ID with done / blocked / skipped.
+- Commit attribution: add no Co-authored-by / Generated-by trailers.
