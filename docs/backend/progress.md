@@ -17,7 +17,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 
 ## Phase 2: Phone and error foundations
 - [x] S2.1 `toE164`
-- [ ] S2.2 OTP helpers
+- [x] S2.2 OTP helpers
 - [x] S2.3 AppError codes
 - [ ] S2.4 Auth messages
 

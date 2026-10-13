@@ -17,6 +17,7 @@ module.exports = {
     'src/features/assessments/social-health/messages.ts',
     'src/features/assessments/social-health/summary.ts',
     'src/features/auth/phone.ts',
+    'src/features/auth/otp.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
