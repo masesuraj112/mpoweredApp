@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
+import { accountType } from '../src/features/support-person/account-type';
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
@@ -10,6 +11,8 @@ function RootNavigator() {
   // Implements a temporary loading screen for the initial session check
   if (loading) return null;
 
+  const isSupportPerson = accountType === 'support-person';
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!session || bypassAuth}>
@@ -17,8 +20,13 @@ function RootNavigator() {
       </Stack.Protected>
 
       {/* When there is no session, tabs group becomes unreachable */}
-      <Stack.Protected guard={!!session || bypassAuth}>
+      <Stack.Protected guard={(!!session && !isSupportPerson) || bypassAuth}>
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+      <Stack.Protected guard={(!!session && isSupportPerson) || bypassAuth}>
+        <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>
   );
