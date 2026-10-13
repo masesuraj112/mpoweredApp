@@ -6,6 +6,7 @@ import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { saveMovementEntry } from '@/services/assessments';
 import { useRef, useState } from 'react';
+import { countWords, isReflectionTooLong, MAX_REFLECTION_WORDS } from '@/features/assessments/reflection';
 import {
   InputAccessoryView,
   Keyboard,
@@ -25,6 +26,10 @@ export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const wordCount = countWords(answers.reflection);
+  const overLimit = isReflectionTooLong(answers.reflection);
+  const limitMessage = `Your reflection is ${wordCount} words. Please shorten it to ${MAX_REFLECTION_WORDS} words or fewer.`;
+
   // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
   const inFlight = useRef(false);
 
@@ -70,8 +75,8 @@ export default function ReflectionScreen() {
             totalQuestions={7}
             onPrevious={() => router.push('/tracker/movement/standing')}
             onRecord={handleRecord}
-            disabled={saving}
-            validationMessage={errorMessage ?? undefined}
+            disabled={saving || overLimit}
+            validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
             variant="personalCare"
             style={{ flex: 1, height: undefined }}
           >
@@ -86,6 +91,9 @@ export default function ReflectionScreen() {
               accessibilityLabel="Reflection on your movement"
               inputAccessoryViewID={ACCESSORY_ID}
             />
+            <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
+              {wordCount}/{MAX_REFLECTION_WORDS} words
+            </Text>
           </ChoiceCard>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -139,5 +147,15 @@ const styles = StyleSheet.create({
     color: '#6750A4',
     fontSize: scaleFont(16),
     fontWeight: '600',
+  },
+  counter: { 
+    alignSelf: 'flex-end',
+    marginTop: scaleHeight(6),
+    fontSize: scaleFont(12),
+    color: '#49454F',
+  },
+  counterOver: { 
+    color: '#B3261E', 
+    fontWeight: '600', 
   },
 });

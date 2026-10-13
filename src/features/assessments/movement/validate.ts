@@ -9,6 +9,7 @@ import {
 } from '@/features/assessments/movement/options';
 import type { MovementAssessmentAnswers } from '@/features/assessments/movement/types';
 import { fail, ok, type Result } from '@/lib/result';
+import { isReflectionTooLong, MAX_REFLECTION_WORDS } from '@/features/assessments/reflection';
 
 export type MovementValidationContext = EntryDateContext;
 
@@ -82,7 +83,14 @@ export function validateMovementAnswers(
     chosen[field] = value;
   }
 
-  const reflection = answers.reflection?.trim() ?? '';
+    const reflection = answers.reflection?.trim() ?? '';
+    if (isReflectionTooLong(reflection)) {
+        return invalid(
+        'reflection',
+        'TOO_LONG',
+        `Your reflection must be ${MAX_REFLECTION_WORDS} words or fewer.`,
+        );
+    }
 
   return ok({
     date: date.data,
