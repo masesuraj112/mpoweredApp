@@ -821,7 +821,6 @@ export type Database = {
         Args: { target_users_id: number }
         Returns: number
       }
-
       save_movement_assessment: {
         Args: {
           p_active_hours: number
