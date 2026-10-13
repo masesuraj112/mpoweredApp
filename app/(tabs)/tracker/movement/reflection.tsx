@@ -2,6 +2,10 @@ import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
+import { assessmentSaveMessage } from '@/features/assessments/messages';
+import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { saveMovementEntry } from '@/services/assessments';
+import { useRef, useState } from 'react';
 import {
   InputAccessoryView,
   Keyboard,
@@ -19,6 +23,31 @@ const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
+  const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
+  const inFlight = useRef(false);
+
+  const handleRecord = async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setSaving(true);
+    setErrorMessage(null);
+
+    const entryDate = getLocalToday();
+    const result = await saveMovementEntry(answers, entryDate);
+
+    inFlight.current = false;
+    setSaving(false);
+    if (!result.ok) {
+      setErrorMessage(assessmentSaveMessage(result.error, 'movement'));
+      return;
+    }
+    router.push({
+      pathname: '/tracker/movement/summary',
+      params: { weekStart: getWeekStart(entryDate) },
+    });
+  };
 
   return (
     <View style={styles.screen}>
@@ -40,7 +69,9 @@ export default function ReflectionScreen() {
             questionNumber={7}
             totalQuestions={7}
             onPrevious={() => router.push('/tracker/movement/standing')}
-            onRecord={() => router.push('/tracker/movement/summary')}
+            onRecord={handleRecord}
+            disabled={saving}
+            validationMessage={errorMessage ?? undefined}
             variant="personalCare"
             style={{ flex: 1, height: undefined }}
           >

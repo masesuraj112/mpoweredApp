@@ -5,7 +5,7 @@ import {
   STANDING_OPTIONS,
   WALKING_OPTIONS,
 } from '@/features/assessments/movement/options';
-import { impactMessage, movementScore } from '@/features/assessments/movement/summary';
+import { impactMessage, movementScore, toMovementSummary } from '@/features/assessments/movement/summary';
 
 const answers = {
   generalImpacts: [GENERAL_IMPACT_OPTIONS[0], GENERAL_IMPACT_OPTIONS[1]],
@@ -49,5 +49,33 @@ describe('impactMessage', () => {
     [16, 'significantly impacting'],
   ])('a score of %i says "%s"', (score, wording) => {
     expect(impactMessage(score)).toContain(wording);
+  });
+});
+
+const savedEntry = {
+  submissionId: 5,
+  date: '2026-10-01',
+  weekStart: '2026-09-28',
+  activeHours: 6,
+  generalImpacts: [GENERAL_IMPACT_OPTIONS[0], GENERAL_IMPACT_OPTIONS[1]],
+  walking: WALKING_OPTIONS[1],
+  lifting: LIFTING_OPTIONS[2],
+  sitting: SITTING_OPTIONS[3],
+  standing: STANDING_OPTIONS[4],
+  reflection: null,
+};
+
+describe('toMovementSummary', () => {
+  it('shows the Monday to Sunday week as the period', () => {
+    expect(toMovementSummary(savedEntry).period).toBe('28 Sep–04 Oct 2026');
+  });
+
+  it('keeps the saved answers and adds the score and message', () => {
+    expect(toMovementSummary(savedEntry)).toMatchObject({
+      activeHours: 6,
+      reflection: null,
+      totalScore: 12,
+      message: impactMessage(12),
+    });
   });
 });
