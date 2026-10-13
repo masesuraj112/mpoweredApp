@@ -82,3 +82,24 @@ export function signOut(client: Client = supabase): Promise<Result<void>> {
     return ok(undefined);
   });
 }
+
+/**
+ * Whether the signed-in user already has a row in public.users. Filters by auth_id, because
+ * users_select also returns a patient's row to their support persons.
+ */
+export function hasProfile(client: Client = supabase): Promise<Result<boolean>> {
+  return run(async () => {
+    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    if (sessionError) return fail(mapError(sessionError));
+    const userId = sessionData.session?.user?.id;
+    if (!userId) return fail({ code: 'NO_SESSION', message: 'There is no signed-in user.' });
+
+    const { data, error } = await client
+      .from('users')
+      .select('users_id')
+      .eq('auth_id', userId)
+      .maybeSingle();
+    if (error) return fail(mapError(error));
+    return ok(data !== null);
+  });
+}

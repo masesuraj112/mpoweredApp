@@ -1,6 +1,6 @@
 jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
 
-import { sendVerificationCode, signOut, verifyCode } from '@/services/auth';
+import { hasProfile, sendVerificationCode, signOut, verifyCode } from '@/services/auth';
 
 const fakeClient = (parts: Record<string, unknown>) => parts as never;
 
@@ -146,5 +146,52 @@ describe('signOut', () => {
     const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('NETWORK');
+  });
+});
+
+describe('hasProfile', () => {
+  const clientWith = (session: unknown, row: { data: unknown; error: unknown }) => {
+    const eq = jest.fn();
+    const maybeSingle = jest.fn().mockResolvedValue(row);
+    const select = jest.fn(() => ({ eq }));
+    eq.mockReturnValue({ maybeSingle });
+    const from = jest.fn(() => ({ select }));
+    const getSession = jest.fn().mockResolvedValue({ data: { session }, error: null });
+    return { from, select, eq, getSession, client: fakeClient({ auth: { getSession }, from }) };
+  };
+
+  it('returns NO_SESSION and does not query when nobody is signed in', async () => {
+    const { from, client } = clientWith(null, { data: null, error: null });
+    const result = await hasProfile(client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NO_SESSION');
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it('is true when a users row exists, looked up by auth_id', async () => {
+    const { from, select, eq, client } = clientWith(
+      { user: { id: 'u-1' } },
+      { data: { users_id: 5 }, error: null },
+    );
+    const result = await hasProfile(client);
+    expect(from).toHaveBeenCalledWith('users');
+    expect(select).toHaveBeenCalledWith('users_id');
+    expect(eq).toHaveBeenCalledWith('auth_id', 'u-1');
+    expect(result).toEqual({ ok: true, data: true });
+  });
+
+  it('is false when there is no users row', async () => {
+    const { client } = clientWith({ user: { id: 'u-1' } }, { data: null, error: null });
+    expect(await hasProfile(client)).toEqual({ ok: true, data: false });
+  });
+
+  it('maps a database error', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-1' } },
+      { data: null, error: { code: '42501', message: 'permission denied' } },
+    );
+    const result = await hasProfile(client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NOT_ALLOWED');
   });
 });
