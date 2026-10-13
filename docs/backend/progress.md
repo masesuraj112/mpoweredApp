@@ -7,11 +7,11 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [ ] A2 ACMA sender-ID registration
 - [ ] A3 MHA sign-off on 6-digit OTP
 - [ ] A4 Product call on support person (L11)
-- [ ] A5 Test OTP spike on hosted dev project
+- [x] A5 Test OTP spike on hosted dev project
 
 ## Phase 1: Recon and groundwork
 - [x] S1.1 Schema recon note
-- [!] S1.2 Local test-OTP config (blocked: needs A5)
+- [x] S1.2 Local test-OTP config (A5 answered; CI to prove local stack accepts it without an SMS provider)
 - [x] S1.3 Remove stray client logging
 - [x] S1.4 Fix `OnboardingContext.reset`
 
