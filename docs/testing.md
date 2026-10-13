@@ -18,6 +18,10 @@ Pain and social health tests share some file names (`validate.test.ts`, `message
 | A level of 0 is a real answer, not "missing" | `validate.test.ts` ("accepts 0 as a real answer") | Unit | `unit-tests` |
 | Users cannot read each other's pain data | `020_pain_rls` (user A and user B each see only their own pain row) | Database | `database-tests` |
 | Users only see their own `users` row | `020_pain_rls` (own `users` row count is 1 for each user) | Database | `database-tests` |
+| An appointment needs only a date and time; doctor and service are optional, and a blank one is rejected rather than stored | `040_appointment_schema` (nullable columns, insert with only `patient_id` and `date_time`, empty and whitespace-only values rejected with 23514) | Database | `database-tests` |
+| A recording-consent signature cannot be stored without a consent time | `040_appointment_schema` (signature without `recording_consent_at` rejected with 23514) | Database | `database-tests` |
+| The logged-in role can read, create and update appointments but not delete them, and anon has no access | `040_appointment_schema` (`has_table_privilege` checks) | Database | `database-tests` |
+| Users cannot see or change each other's appointments | `040_appointment_schema` (user B sees none of user A's rows and updates 0 rows) | Database | `database-tests` |
 | Every table has row level security | `000_rls_enabled` | Database | `database-tests` |
 | The logged-in role has the table privileges it needs, and cannot update or delete pain entries | `025_table_privileges`; `030_save_pain_assessment` (privilege checks) | Database | `database-tests` |
 | Saving is atomic: if a child insert fails, no parent row remains | `030_save_pain_assessment` (temporary trigger forces a failure; row count unchanged) | Database | `database-tests` |
@@ -66,7 +70,7 @@ These are not covered by an automated test, so no coverage is claimed for them.
 
 ## Evidence
 
-Database tests passing (45 checks across 5 files):
+Database tests passing (72 checks across 6 files):
 
 ![supabase test db passing](screenshots/db-tests-passing.png)
 
