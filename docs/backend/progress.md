@@ -16,7 +16,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S1.4 Fix `OnboardingContext.reset`
 
 ## Phase 2: Phone and error foundations
-- [ ] S2.1 `toE164`
+- [x] S2.1 `toE164`
 - [ ] S2.2 OTP helpers
 - [x] S2.3 AppError codes
 - [ ] S2.4 Auth messages
