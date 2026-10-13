@@ -10,7 +10,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [ ] A5 Test OTP spike on hosted dev project
 
 ## Phase 1: Recon and groundwork
-- [ ] S1.1 Schema recon note
+- [x] S1.1 Schema recon note
 - [!] S1.2 Local test-OTP config (blocked: needs A5)
 - [ ] S1.3 Remove stray client logging
 - [ ] S1.4 Fix `OnboardingContext.reset`
