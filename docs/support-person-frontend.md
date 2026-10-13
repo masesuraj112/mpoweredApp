@@ -38,6 +38,8 @@ Create `src/features/support-person/`:
 ### 2. Route the support person to their own app
 - Add a new route group `app/(support)/` with its own `_layout.tsx`: a two-tab layout with
   **Care Planner** and **Settings**, styled like the tab bar in the designs.
+  - The tab folders are `care-planner/` and `support-settings/`, not `planner/` and `settings/`.
+    Expo Router throws an error when two groups contain the same path, and `(tabs)` already uses `/planner` and `/settings`.
 - In `app/_layout.tsx`, add a `Stack.Protected` for `(support)`. Use the account type to decide
   whether `(tabs)` or `(support)` is shown.
 - The account type isn't saved anywhere yet. `user-type.tsx` stores it only in memory
@@ -49,7 +51,7 @@ Create `src/features/support-person/`:
   `(support)` home instead, based on the onboarding user type.
 
 ### 3. Shared components
-Put these in `src/components/mpowered/` so both the home and appointments screens use them:
+Put these in `src/components/mpowered/support-person/` so both the home and appointments screens use them:
 - **Initials avatar**: the purple circle with "JC" / "SH".
 - **Status badge**: "Appointment upcoming" (yellow) and "No scheduled appointments" (green).
 - **Permission chips**: "Add Questions" and "Add Doctor's Answer". Greyed out when the person
@@ -60,7 +62,7 @@ Put these in `src/components/mpowered/` so both the home and appointments screen
 - **Notification bell with a count badge.**
 - Use colours from `src/constants/theme.ts` where they exist, rather than writing new hardcoded values.
 
-### 4. Care Planner home (`app/(support)/planner/index.tsx`)
+### 4. Care Planner home (`app/(support)/care-planner/index.tsx`)
 - Greeting: "Good morning / afternoon / evening, <first name>", based on the time of day.
   Use a placeholder name: `// TODO: load the name from the profile.`
 - The bell opens the requests screen and shows how many requests are waiting.
@@ -74,13 +76,13 @@ Put these in `src/components/mpowered/` so both the home and appointments screen
   - "People you support (0 people)", the explanation, and "Haven't received a request?"
   - "Check support person requests" opens the requests screen.
 
-### 5. Support person requests (`app/(support)/planner/requests.tsx`)
+### 5. Support person requests (`app/(support)/care-planner/requests.tsx`)
 - One card per request: "<Name> has added you as a support person", with Reject and Accept.
 - Accept adds the patient to the placeholder list. Reject removes the request.
   - Both: `// TODO: save to Supabase.`
 - Show an empty message when there are no requests. It isn't in the designs, so check the wording with the designer.
 
-### 6. Patient's appointments (`app/(support)/planner/[patientId].tsx`)
+### 6. Patient's appointments (`app/(support)/care-planner/[patientId].tsx`)
 - Header title: "<Name>'s Appointments", with the Back button.
 - The patient's avatar, name and condition, plus the permission chips.
 - **Upcoming appointments**: "Add questions" if allowed, "Add doctor's answer" if allowed.
@@ -91,14 +93,14 @@ Put these in `src/components/mpowered/` so both the home and appointments screen
   - `// TODO: link to the real question and answer screens once the Planner builds them.`
 
 ### 7. Settings
-- **Settings home** (`app/(support)/settings/index.tsx`): Account, People you support, Privacy/Data and Legal,
+- **Settings home** (`app/(support)/support-settings/index.tsx`): Account, People you support, Privacy/Data and Legal,
   and Sign out. Copy the layout of `app/(tabs)/settings/index.tsx`, with only these rows.
 - **Account and Privacy/Data and Legal** look the same as the patient versions, so reuse them rather than copying:
-  - `app/(support)/settings/profile.tsx`: `export { default } from '../../(tabs)/settings/profile';`
+  - `app/(support)/support-settings/profile.tsx`: `export { default } from '../../(tabs)/settings/profile';`
   - Do the same for `legal.tsx` and `privacy.tsx`.
 - **Settings `_layout.tsx`**: reuse the same Back / "Settings" header as `app/(tabs)/settings/_layout.tsx`.
   Move `SettingsHeader` into `src/components/mpowered/` so both layouts can import it.
-- **People you support** (`app/(support)/settings/support-persons.tsx`):
+- **People you support** (`app/(support)/support-settings/support-persons.tsx`):
   - "Manage people you support" and one `SettingsOption` per patient.
   - Tapping one opens a `SettingsModal` titled "Manage person you support":
     - The name, read-only.
