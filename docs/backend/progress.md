@@ -26,7 +26,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S3.2 `verifyCode`
 - [x] S3.3 `signOut`
 - [x] S3.4 `hasProfile`
-- [ ] S3.5 Coverage
+- [x] S3.5 Coverage
 
 ## Phase 4: UI wiring
 - [ ] S4.1 Six-digit verify
