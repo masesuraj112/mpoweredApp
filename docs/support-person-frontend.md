@@ -99,7 +99,7 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
   - `app/(support)/support-settings/profile.tsx`: `export { default } from '../../(tabs)/settings/profile';`
   - Do the same for `legal.tsx` and `privacy.tsx`.
 - **Settings `_layout.tsx`**: reuse the same Back / "Settings" header as `app/(tabs)/settings/_layout.tsx`.
-  Move `SettingsHeader` into `src/components/mpowered/` so both layouts can import it.
+  Done in step 6: it is now `src/components/mpowered/BackHeader.tsx` (takes a `title`), also used by the appointments screen.
 - **People you support** (`app/(support)/support-settings/support-persons.tsx`):
   - "Manage people you support" and one `SettingsOption` per patient.
   - Tapping one opens a `SettingsModal` titled "Manage person you support":

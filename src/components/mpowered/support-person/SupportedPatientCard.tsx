@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { getNextAppointment } from '@/features/support-person/appointments';
+import { APPOINTMENT_ACTION_LABELS } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { StyleSheet, Text, View } from 'react-native';
@@ -49,7 +50,11 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
             <SectionLabel>Upcoming appointment</SectionLabel>
             <AppointmentCard
               appointment={next}
-              actions={patient.canAddQuestions ? [{ label: 'Add questions', onPress: () => onAddQuestions(next) }] : []}
+              actions={
+                patient.canAddQuestions
+                  ? [{ label: APPOINTMENT_ACTION_LABELS['add-questions'], onPress: () => onAddQuestions(next) }]
+                  : []
+              }
             />
           </View>
         </>
