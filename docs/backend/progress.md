@@ -13,7 +13,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S1.1 Schema recon note
 - [!] S1.2 Local test-OTP config (blocked: needs A5)
 - [x] S1.3 Remove stray client logging
-- [ ] S1.4 Fix `OnboardingContext.reset`
+- [x] S1.4 Fix `OnboardingContext.reset`
 
 ## Phase 2: Phone and error foundations
 - [ ] S2.1 `toE164`
