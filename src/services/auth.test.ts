@@ -1,6 +1,6 @@
 jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
 
-import { sendVerificationCode } from '@/services/auth';
+import { sendVerificationCode, verifyCode } from '@/services/auth';
 
 const fakeClient = (parts: Record<string, unknown>) => parts as never;
 
@@ -53,5 +53,75 @@ describe('sendVerificationCode', () => {
     const result = await sendVerificationCode('0491 570 006', client);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('UNKNOWN');
+  });
+});
+
+describe('verifyCode', () => {
+  const clientWith = (result: unknown) => {
+    const verifyOtp = jest.fn().mockResolvedValue(result);
+    return { verifyOtp, client: fakeClient({ auth: { verifyOtp } }) };
+  };
+  const failure = async (result: unknown, phone = '0491 570 006', code = '123456') => {
+    const { client } = clientWith(result);
+    const res = await verifyCode(phone, code, client);
+    if (res.ok) throw new Error('expected a failure');
+    return res.error.code;
+  };
+
+  it('does not call Supabase when the code is not six digits', async () => {
+    const { verifyOtp, client } = clientWith({ data: {}, error: null });
+    for (const code of ['', '12345', '1234567', '12345a']) {
+      const result = await verifyCode('0491 570 006', code, client);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error.code).toBe('INVALID_OTP');
+    }
+    expect(verifyOtp).not.toHaveBeenCalled();
+  });
+
+  it('does not call Supabase when the phone number is invalid', async () => {
+    const { verifyOtp, client } = clientWith({ data: {}, error: null });
+    const result = await verifyCode('0312345678', '123456', client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('INVALID_PHONE');
+    expect(verifyOtp).not.toHaveBeenCalled();
+  });
+
+  it('verifies an E.164 number with an sms token and returns only the user id', async () => {
+    const { verifyOtp, client } = clientWith({
+      data: { user: { id: 'u-1' }, session: { access_token: 'secret' } },
+      error: null,
+    });
+    const result = await verifyCode('0491 570 006', '123456', client);
+    expect(verifyOtp).toHaveBeenCalledWith({
+      phone: '+61491570006',
+      token: '123456',
+      type: 'sms',
+    });
+    expect(result).toEqual({ ok: true, data: { userId: 'u-1' } });
+  });
+
+  it('maps a rejected or expired code to OTP_EXPIRED', async () => {
+    const code = await failure({
+      data: {},
+      error: { code: 'otp_expired', message: 'Token has expired or is invalid' },
+    });
+    expect(code).toBe('OTP_EXPIRED');
+  });
+
+  it('maps a rate-limit error', async () => {
+    expect(
+      await failure({ data: {}, error: { code: 'over_request_rate_limit', message: 'slow' } }),
+    ).toBe('RATE_LIMITED');
+  });
+
+  it('returns UNKNOWN when the response has no user', async () => {
+    expect(await failure({ data: { user: null, session: null }, error: null })).toBe('UNKNOWN');
+  });
+
+  it('maps a lost connection thrown by the client to NETWORK', async () => {
+    const verifyOtp = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
+    const result = await verifyCode('0491 570 006', '123456', fakeClient({ auth: { verifyOtp } }));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NETWORK');
   });
 });

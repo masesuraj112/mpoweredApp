@@ -3,6 +3,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { isCodeComplete } from '@/features/auth/otp';
 import { toE164 } from '@/features/auth/phone';
 import { mapError } from '@/lib/errors';
 import { fail, ok, type Result } from '@/lib/result';
@@ -40,5 +41,35 @@ export async function sendVerificationCode(
     });
     if (error) return fail(mapError(error));
     return ok({ phone });
+  });
+}
+
+/**
+ * Checks a code and signs the user in. The phone and code are validated first, so nothing is sent
+ * for a malformed one. Returns only the user id, never the session.
+ *
+ * The server uses the same error for a wrong code and an expired one, so both come back as
+ * OTP_EXPIRED; INVALID_OTP is only returned for a code that is not six digits.
+ */
+export async function verifyCode(
+  rawPhone: string,
+  code: string,
+  client: Client = supabase,
+): Promise<Result<{ userId: string }>> {
+  const normalised = toE164(rawPhone);
+  if (!normalised.ok) return normalised;
+  if (!isCodeComplete(code)) {
+    return fail({ code: 'INVALID_OTP', message: 'The code must be six digits.' });
+  }
+  const phone = normalised.data;
+
+  return run(async () => {
+    const { data, error } = await client.auth.verifyOtp({ phone, token: code, type: 'sms' });
+    if (error) return fail(mapError(error));
+    const userId = data?.user?.id;
+    if (!userId) {
+      return fail({ code: 'UNKNOWN', message: 'Verification did not return a user.' });
+    }
+    return ok({ userId });
   });
 }
