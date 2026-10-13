@@ -6,7 +6,7 @@ import {
   SettingsModalSection,
   SettingsModalToggleRow,
 } from '@/components/mpowered/SettingsModal';
-import { KEYBOARD_DONE_ID, KeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
 import { validateEmail, validatePhone } from '@/services/validation';
 import { useState } from 'react';
@@ -44,6 +44,7 @@ export default function SupportPersonsScreen() {
   // The popup edits a copy ("draft") so Cancel discards changes. null = popup closed.
   const [draft, setDraft] = useState<SupportPerson | null>(null);
   const [error, setError] = useState('');
+  const doneBar = useKeyboardDoneBar();
   // A draft whose id isn't in the list yet came from "Add support person".
   const isNew = !!draft && !people.some(person => person.id === draft.id);
 
@@ -135,10 +136,10 @@ export default function SupportPersonsScreen() {
             onChangeText={phone => updateDraft({ phone })}
             keyboardType="phone-pad"
             // The iOS phone pad has no return key, so this Done bar is the only way to close it.
-            inputAccessoryViewID={KEYBOARD_DONE_ID}
+            inputAccessoryViewID={doneBar.id}
           />
-          {/* Rendered inside the popup so iOS finds it alongside the phone field. */}
-          <KeyboardDoneBar />
+          {/* Rendered inside the popup, after the phone field, so iOS can find the field. */}
+          {doneBar.bar}
           <SettingsModalField
             label="Email"
             value={draft.email}

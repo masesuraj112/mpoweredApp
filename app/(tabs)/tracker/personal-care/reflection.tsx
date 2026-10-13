@@ -1,5 +1,6 @@
-import { AssessmentScreen, KEYBOARD_DONE_ID } from '@/components/mpowered/AssessmentScreen';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -7,6 +8,7 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
+  const doneBar = useKeyboardDoneBar();
 
   return (
     <AssessmentScreen title="My Personal Care">
@@ -23,7 +25,7 @@ export default function ReflectionScreen() {
         <TextInput
           accessibilityLabel="Reflection on your personal care"
           multiline
-          inputAccessoryViewID={KEYBOARD_DONE_ID}
+          inputAccessoryViewID={doneBar.id}
           value={answers.reflection ?? ''}
           onChangeText={value => updateAnswer('reflection', value)}
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"
@@ -32,6 +34,7 @@ export default function ReflectionScreen() {
           style={styles.reflectionInput}
         />
       </ChoiceCard>
+      {doneBar.bar}
     </AssessmentScreen>
   );
 }

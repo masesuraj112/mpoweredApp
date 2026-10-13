@@ -1,10 +1,6 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
-import { KeyboardDoneBar } from './KeyboardDoneBar';
-
-// Re-exported so assessment screens can import it alongside AssessmentScreen.
-export { KEYBOARD_DONE_ID } from './KeyboardDoneBar';
 
 /**
  * Page shell for assessment questions: white background, page title, then the question card.
@@ -12,7 +8,7 @@ export { KEYBOARD_DONE_ID } from './KeyboardDoneBar';
  * Tapping anywhere outside a text box closes the keyboard. Multiline inputs have no return-to-close
  * and the iOS keyboard has no hide key, so without this the keyboard can cover Next / Record with
  * no way to dismiss it. Buttons and inputs inside still receive their own taps first.
- * On iOS, inputs can also opt in to a "Done" bar above the keyboard via `KEYBOARD_DONE_ID`.
+ * On iOS, inputs can also add a "Done" bar above the keyboard with `useKeyboardDoneBar`.
  */
 export function AssessmentScreen({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -22,7 +18,6 @@ export function AssessmentScreen({ title, children }: { title: string; children:
         <Text style={styles.pageTitle}>{title}</Text>
         {children}
       </View>
-      <KeyboardDoneBar />
     </Pressable>
   );
 }

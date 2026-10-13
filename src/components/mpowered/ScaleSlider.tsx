@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
-import { KEYBOARD_DONE_ID, KeyboardDoneBar } from './KeyboardDoneBar';
+import { useKeyboardDoneBar } from './KeyboardDoneBar';
 
 interface ScaleSliderProps {
   titleText: string;
@@ -91,6 +91,7 @@ export function ScaleSliderInput({
   const [hasValue, setHasValue] = useState(initialValue !== undefined);
   const isPersonalCare = variant === 'personalCare';
   const [sliderWidth, setSliderWidth] = useState(0);
+  const doneBar = useKeyboardDoneBar();
 
   // This function prevents input from being less than 0 or greater than 10
   const changeNumber = (text: string) => {
@@ -127,7 +128,7 @@ export function ScaleSliderInput({
           style={personalCareSheet.scoreInput}
           keyboardType="number-pad"
           // The iOS number pad has no return key, so this Done bar is the only way to close it.
-          inputAccessoryViewID={KEYBOARD_DONE_ID}
+          inputAccessoryViewID={doneBar.id}
           placeholder="0 to 10"
           placeholderTextColor="rgba(0, 0, 0, 0.19)"
           value={hasValue ? String(value) : ''}
@@ -141,7 +142,7 @@ export function ScaleSliderInput({
       <TextInput
         style={stylesSheet.underlineText}
         keyboardType="number-pad"
-        inputAccessoryViewID={KEYBOARD_DONE_ID}
+        inputAccessoryViewID={doneBar.id}
         value={hasValue ? String(value) : ''}
         onChangeText={changeNumber}
       />
@@ -216,7 +217,7 @@ export function ScaleSliderInput({
       <Text style={isPersonalCare ? personalCareSheet.descriptionText : stylesSheet.descriptionText}>
         {getScoreDescription(assessmentType, value)}
       </Text>
-      <KeyboardDoneBar />
+      {doneBar.bar}
     </ChoiceCard>
   );
 }

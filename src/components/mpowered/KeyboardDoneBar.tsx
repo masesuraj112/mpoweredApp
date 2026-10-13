@@ -1,22 +1,26 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { useId } from 'react';
 import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 /**
- * Pass as `inputAccessoryViewID` on a TextInput to show the "Done" bar above the iOS keyboard.
- * Needed for keyboards with no way to close them on iOS: multiline inputs (return adds a new line)
- * and number / phone pads (no return key at all). Ignored on Android, which has its own hide key.
+ * A "Done" bar shown above the iOS keyboard, for keyboards with no way to close them: multiline
+ * inputs (return adds a new line) and number / phone pads (no return key at all). Ignored on
+ * Android, which has its own hide key.
+ *
+ * Pass `id` as the input's `inputAccessoryViewID` and render `bar` once, after that input.
+ * iOS links each bar to only the first input in the whole app with a matching ID, and earlier
+ * screens stay mounted, so every bar gets its own ID rather than sharing one.
  */
-export const KEYBOARD_DONE_ID = 'keyboard-done';
+export function useKeyboardDoneBar() {
+  const id = useId();
+  return { id, bar: <KeyboardDoneBar nativeID={id} /> };
+}
 
-/**
- * Render once on any screen whose inputs use `KEYBOARD_DONE_ID`. It draws nothing in the layout;
- * iOS shows it above the keyboard while one of those inputs is focused.
- */
-export function KeyboardDoneBar() {
+function KeyboardDoneBar({ nativeID }: { nativeID: string }) {
   if (Platform.OS !== 'ios') return null;
 
   return (
-    <InputAccessoryView nativeID={KEYBOARD_DONE_ID}>
+    <InputAccessoryView nativeID={nativeID}>
       <View style={styles.bar}>
         <Pressable
           onPress={Keyboard.dismiss}

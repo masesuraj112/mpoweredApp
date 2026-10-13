@@ -1,5 +1,6 @@
-import { AssessmentScreen, KEYBOARD_DONE_ID } from '@/components/mpowered/AssessmentScreen';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -7,6 +8,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function OtcScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
+  const doneBar = useKeyboardDoneBar();
 
   return (
     <AssessmentScreen title="My Management">
@@ -27,7 +29,7 @@ export default function OtcScreen() {
           <TextInput
             accessibilityLabel="Over the counter medication name"
             multiline
-            inputAccessoryViewID={KEYBOARD_DONE_ID}
+            inputAccessoryViewID={doneBar.id}
             value={answers.otcMedication ?? ''}
             onChangeText={value => updateAnswer('otcMedication', value)}
             placeholder="Input name of over the counter medication"
@@ -37,6 +39,7 @@ export default function OtcScreen() {
           />
         </View>
       </ChoiceCard>
+      {doneBar.bar}
     </AssessmentScreen>
   );
 }
