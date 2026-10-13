@@ -9,6 +9,12 @@ export type AppErrorCode =
   | 'NO_PROFILE'
   | 'FUTURE_DATE'
   | 'BEFORE_START'
+  | 'INVALID_PHONE'
+  | 'INVALID_OTP'
+  | 'OTP_EXPIRED'
+  | 'RATE_LIMITED'
+  | 'PROFILE_EXISTS'
+  | 'SMS_FAILED'
   | 'NETWORK'
   | 'UNKNOWN';
 
@@ -22,9 +28,17 @@ export type AppError = {
 };
 
 // P0001 messages raised by save_pain_assessment that keep their own code
-const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START'] as const;
+const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START', 'PROFILE_EXISTS'] as const;
 // P0001 messages that the app treats as a validation problem
-const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'MISSING_ANSWER'] as const;
+const VALIDATION_MESSAGES = [
+  'NO_LOCATION',
+  'NO_CHARACTERISTIC',
+  'VALUE_TOO_LONG',
+  'MISSING_ANSWER',
+  'INVALID_NAME',
+  'INVALID_SEX',
+  'INVALID_YEAR',
+] as const;
 
 export function mapError(error: unknown): AppError {
   const { code, message } = readError(error);
@@ -37,6 +51,14 @@ export function mapError(error: unknown): AppError {
       return { code: 'VALIDATION', message };
     case '42501':
       return { code: 'NOT_ALLOWED', message };
+    // Supabase Auth error codes (AuthApiError.code), checked against @supabase/auth-js ErrorCode
+    case 'otp_expired':
+      return { code: 'OTP_EXPIRED', message };
+    case 'over_sms_send_rate_limit':
+    case 'over_request_rate_limit':
+      return { code: 'RATE_LIMITED', message };
+    case 'sms_send_failed':
+      return { code: 'SMS_FAILED', message };
     case 'P0001': {
       const passthrough = PASSTHROUGH_CODES.find((c) => message.includes(c));
       if (passthrough) return { code: passthrough, message };

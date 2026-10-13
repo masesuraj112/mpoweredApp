@@ -43,6 +43,49 @@ describe('mapError: errors raised by save_pain_assessment (P0001)', () => {
   });
 });
 
+describe('mapError: errors raised by create_profile (P0001)', () => {
+  it('PROFILE_EXISTS keeps its own code', () => {
+    expect(mapError(dbError('P0001', 'PROFILE_EXISTS'))).toEqual({
+      code: 'PROFILE_EXISTS',
+      message: 'PROFILE_EXISTS',
+    });
+  });
+
+  it.each(['INVALID_NAME', 'INVALID_SEX', 'INVALID_YEAR'])(
+    '%s becomes VALIDATION and keeps the original code in detail',
+    (name) => {
+      expect(mapError(dbError('P0001', name))).toEqual({
+        code: 'VALIDATION',
+        message: name,
+        detail: name,
+      });
+    },
+  );
+});
+
+describe('mapError: Supabase Auth error codes', () => {
+  it('an expired or unusable code (otp_expired) gives OTP_EXPIRED', () => {
+    expect(mapError(dbError('otp_expired', 'Token has expired or is invalid')).code).toBe(
+      'OTP_EXPIRED',
+    );
+  });
+
+  it.each(['over_sms_send_rate_limit', 'over_request_rate_limit'])(
+    '%s gives RATE_LIMITED',
+    (code) => {
+      expect(mapError(dbError(code, 'too many requests')).code).toBe('RATE_LIMITED');
+    },
+  );
+
+  it('sms_send_failed gives SMS_FAILED', () => {
+    expect(mapError(dbError('sms_send_failed', 'Error sending sms')).code).toBe('SMS_FAILED');
+  });
+
+  it('an unrecognised auth code gives UNKNOWN', () => {
+    expect(mapError(dbError('some_new_auth_code', 'boom')).code).toBe('UNKNOWN');
+  });
+});
+
 describe('mapError: everything else', () => {
   it('a failed network request gives NETWORK', () => {
     expect(mapError(new TypeError('Network request failed')).code).toBe('NETWORK');
