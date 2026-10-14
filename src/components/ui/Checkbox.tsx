@@ -8,10 +8,10 @@ import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
  * MultiChoiceList (24dp box, 2dp border, 6dp radius, bold white "✓" at 14), kept together so the
  * proportions stay identical: 24 - 2 * 2 = 20dp of room inside the border for a 14dp glyph.
  */
-export const CHECKBOX_BOX_SIZE = 24;
-export const CHECKBOX_BORDER_WIDTH = 2;
-export const CHECKBOX_RADIUS = 6;
-export const CHECKBOX_TICK_SIZE = 14;
+const CHECKBOX_BOX_SIZE = 24;
+const CHECKBOX_BORDER_WIDTH = 2;
+const CHECKBOX_RADIUS = 6;
+const CHECKBOX_TICK_SIZE = 14;
 
 type CheckboxProps = {
   checked: boolean;

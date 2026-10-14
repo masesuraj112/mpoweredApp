@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   AccessibilityInfo,
   Modal,
@@ -225,7 +225,7 @@ function NavButton({
 }: {
   label: string;
   onPress: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <Pressable

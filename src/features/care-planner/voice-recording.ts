@@ -31,11 +31,17 @@ export type DictationResult = { text: string; isFinal: boolean };
 
 type Subscription = { remove: () => void };
 
+/** The parts of the engine's events that this hook reads. */
+type SpeechResultEvent = { results?: { transcript?: string }[]; isFinal?: boolean };
+type SpeechErrorEvent = { error?: string };
+
 type Engine = {
   start(options: Record<string, unknown>): void;
   stop(): void;
   abort(): void;
-  addListener(event: string, listener: (event: any) => void): Subscription;
+  addListener(event: 'start' | 'end', listener: () => void): Subscription;
+  addListener(event: 'result', listener: (event: SpeechResultEvent) => void): Subscription;
+  addListener(event: 'error', listener: (event: SpeechErrorEvent) => void): Subscription;
   requestPermissionsAsync(): Promise<{ granted: boolean; canAskAgain: boolean }>;
   supportsOnDeviceRecognition(): boolean;
   getSupportedLocales(options: Record<string, unknown>): Promise<{
@@ -47,6 +53,8 @@ type Engine = {
 function loadEngine(): Engine | null {
   if (Platform.OS === 'web') return null;
   try {
+    // The package is a native module: it is required lazily so a build without it (Expo Go)
+    // does not crash when this file is imported.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const speech = require('expo-speech-recognition');
     return (speech?.ExpoSpeechRecognitionModule as Engine | undefined) ?? null;

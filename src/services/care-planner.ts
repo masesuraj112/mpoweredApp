@@ -279,12 +279,6 @@ const selectedIdsFor = (appointmentId: number): number[] =>
 const answersFor = (appointmentId: number): Record<number, string> =>
   doctorAnswers.get(appointmentId) ?? MOCK_DOCTOR_ANSWERS;
 
-/** Test helper: forget every question choice and answer change made through the mock. */
-export function clearMockAppointmentQuestions(): void {
-  selectedQuestionIds.clear();
-  doctorAnswers.clear();
-}
-
 /** The suggested questions for an appointment, with which are chosen and which have answers. */
 export async function getQuestionSuggestions(
   appointmentId: number,
@@ -355,11 +349,6 @@ function buildPlanGroups(appointmentId: number): QuestionGroup[] {
 
 /** Signed consents held in memory by the mock, keyed by appointment id. Lost on app restart. */
 const savedConsents = new Map<number, { signature: string; consentedAt: string }>();
-
-/** Test helper: forget every consent saved by the mock. */
-export function clearMockRecordingConsents(): void {
-  savedConsents.clear();
-}
 
 /**
  * Saves the signed recording consent for an appointment.

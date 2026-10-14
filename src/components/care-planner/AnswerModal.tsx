@@ -71,8 +71,7 @@ export function AnswerModal({ questions, initialQuestionId, onSave, onClose }: A
     if (drafts.count > 0) {
       AccessibilityInfo.announceForAccessibility(`Question ${drafts.index + 1} of ${drafts.count}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drafts.index]);
+  }, [drafts.index, drafts.count]);
 
   const previousStatus = useRef(status);
   useEffect(() => {

@@ -1,7 +1,6 @@
 import {
   getSuggestionLabel,
   hasSelectionChanged,
-  isQuestionSelected,
   needsRemovalConfirmation,
   toggleQuestion,
 } from './suggestionSelection';
@@ -23,13 +22,6 @@ describe('toggleQuestion', () => {
 
   it('works from an empty selection', () => {
     expect(toggleQuestion([], 5)).toEqual([5]);
-  });
-});
-
-describe('isQuestionSelected', () => {
-  it('reports membership', () => {
-    expect(isQuestionSelected([1, 2], 2)).toBe(true);
-    expect(isQuestionSelected([1, 2], 3)).toBe(false);
   });
 });
 

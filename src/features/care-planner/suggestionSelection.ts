@@ -8,10 +8,6 @@ export function toggleQuestion(selectedIds: readonly number[], questionId: numbe
     : [...selectedIds, questionId];
 }
 
-export function isQuestionSelected(selectedIds: readonly number[], questionId: number): boolean {
-  return selectedIds.includes(questionId);
-}
-
 /** True when the two selections hold different questions (order does not matter). */
 export function hasSelectionChanged(
   saved: readonly number[],
