@@ -2,7 +2,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
 import { Colors, Spacing } from '@/constants/theme';
-import { getAnswerLine, getEditAnswerLabel } from '@/features/care-planner/planDisplay';
+import {
+  getAnswerLine,
+  getEditAnswerLabel,
+  getQuestionRowLabel,
+} from '@/features/care-planner/planDisplay';
 import type { QuestionGroup } from '@/features/care-planner/planTypes';
 
 import { QuestionListItem } from './QuestionListItem';
@@ -27,6 +31,7 @@ export function QuestionGroupList({ group, onEditAnswer }: QuestionGroupListProp
               question={question.text}
               answerLine={text}
               answered={answered}
+              rowLabel={getQuestionRowLabel(question)}
               editLabel={getEditAnswerLabel(question)}
               onEditAnswer={() => onEditAnswer(question.questionId)}
               showDivider={index > 0}

@@ -35,6 +35,11 @@ export function getEditAnswerLabel(question: PlanQuestion): string {
   return `${verb} doctor's answer for: ${question.text}`;
 }
 
+/** Spoken label for a whole question row: what it does, then the question. */
+export function getQuestionRowLabel(question: PlanQuestion): string {
+  return `${getAnswerLine(question).text}: ${question.text}`;
+}
+
 /** Value for a summary row; a placeholder when nothing was recorded. */
 export function displayOrPlaceholder(value: string | null | undefined): string {
   const trimmed = value?.trim();

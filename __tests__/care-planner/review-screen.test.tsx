@@ -91,21 +91,6 @@ describe('ReviewScreen recording consent and modify questions', () => {
       params: { appointmentId: '1' },
     });
   });
-
-  it('sends the pen button to the answer screen with the question id', async () => {
-    mockGetPlan.mockResolvedValue(ok(planWithQuestions));
-    await render(<ReviewScreen />);
-
-    await fireEvent.press(
-      await screen.findByRole('button', {
-        name: "Add doctor's answer for: What could be causing pain?",
-      }),
-    );
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/planner/answer',
-      params: { appointmentId: '1', questionId: '7' },
-    });
-  });
 });
 
 describe('ReviewScreen states', () => {

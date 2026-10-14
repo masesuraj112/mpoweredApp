@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconButton } from '@/components/ui/IconButton';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -10,8 +10,11 @@ type QuestionListItemProps = {
   /** Saved answer text, or the prompt to add one. */
   answerLine: string;
   answered: boolean;
+  /** Spoken label for the whole row. */
+  rowLabel: string;
   /** Spoken label for the pen button. */
   editLabel: string;
+  /** Opens the answer box on this question (tapping the row or the pen). */
   onEditAnswer: () => void;
   /** Draws a divider above the item (every item after the first in a group). */
   showDivider: boolean;
@@ -21,18 +24,23 @@ export function QuestionListItem({
   question,
   answerLine,
   answered,
+  rowLabel,
   editLabel,
   onEditAnswer,
   showDivider,
 }: QuestionListItemProps) {
   return (
     <View style={[styles.item, showDivider && styles.divider]}>
-      <View style={styles.text}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={rowLabel}
+        onPress={onEditAnswer}
+        style={styles.text}>
         <Text style={[styles.answerLine, answered ? styles.answered : styles.unanswered]}>
           {answerLine}
         </Text>
         <Text style={styles.question}>{question}</Text>
-      </View>
+      </Pressable>
       <IconButton icon={pencilIcon} accessibilityLabel={editLabel} onPress={onEditAnswer} />
     </View>
   );
@@ -43,7 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    paddingVertical: Spacing.two,
     paddingLeft: Spacing.three,
   },
   divider: {
@@ -53,7 +60,10 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     minWidth: 0,
+    minHeight: MinTapTarget,
+    justifyContent: 'center',
     gap: Spacing.half,
+    paddingVertical: Spacing.two,
   },
   answerLine: {
     fontSize: 14,

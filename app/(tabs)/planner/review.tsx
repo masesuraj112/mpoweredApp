@@ -1,8 +1,9 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
 import { PlanActionBar } from '@/components/care-planner/PlanActionBar';
 import { QuestionGroupList } from '@/components/care-planner/QuestionGroupList';
@@ -18,7 +19,9 @@ import {
   formatShortAppointmentDate,
   isPlanEmpty,
 } from '@/features/care-planner/planDisplay';
+import type { AnswerInput } from '@/features/care-planner/planTypes';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
+import { saveAnswers } from '@/services/care-planner';
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -47,11 +50,17 @@ export default function ReviewScreen() {
       params: { appointmentId: String(appointmentId) },
     });
 
-  const editAnswer = (questionId: number) =>
-    router.push({
-      pathname: '/planner/answer',
-      params: { appointmentId: String(appointmentId), questionId: String(questionId) },
-    });
+  // The answer box opens over this screen on a question, so this screen stays mounted below it.
+  const [answerQuestionId, setAnswerQuestionId] = useState<number | null>(null);
+
+  const saveAnswersFromBox = async (answers: AnswerInput[]): Promise<boolean> => {
+    const result = await saveAnswers(appointmentId, answers);
+    if (result.ok) refresh();
+    return result.ok;
+  };
+
+  const answerableQuestions =
+    state.status === 'ready' ? state.plan.questionGroups.flatMap((group) => group.questions) : [];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -93,7 +102,11 @@ export default function ReviewScreen() {
               state.plan.questionGroups
                 .filter((group) => group.questions.length > 0)
                 .map((group) => (
-                  <QuestionGroupList key={group.groupId} group={group} onEditAnswer={editAnswer} />
+                  <QuestionGroupList
+                    key={group.groupId}
+                    group={group}
+                    onEditAnswer={setAnswerQuestionId}
+                  />
                 ))
             )}
           </Card>
@@ -109,6 +122,15 @@ export default function ReviewScreen() {
           })
         }
       />
+
+      {answerQuestionId !== null && answerableQuestions.length > 0 ? (
+        <AnswerModal
+          questions={answerableQuestions}
+          initialQuestionId={answerQuestionId}
+          onSave={saveAnswersFromBox}
+          onClose={() => setAnswerQuestionId(null)}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
