@@ -70,7 +70,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 10: Docs and handover
 - [x] S10.1 Testing docs
 - [x] S10.2 Login back-end doc
-- [ ] S10.3 `.env.example`
+- [x] S10.3 `.env.example`
 
 ## Open decisions
 | ID | Decision | Status |
