@@ -4,7 +4,7 @@ import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function PainCharacteristicsScreen() {
   const { answers, updateAnswer } = usePainAssessment();
@@ -43,7 +43,8 @@ export default function PainCharacteristicsScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>My Pain</Text>
         <MultiChoiceList
@@ -65,7 +66,7 @@ export default function PainCharacteristicsScreen() {
           selectedChipsEnabled={false}
         />
       </View>
-    </View>
+    </Pressable>
   );
 }
 

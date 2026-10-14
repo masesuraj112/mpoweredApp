@@ -38,23 +38,29 @@ export type Database = {
         Row: {
           appointment_id: number
           date_time: string
-          health_service: string
+          health_service: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name: string | null
+          recording_consent_at: string | null
+          recording_consent_signature: string | null
         }
         Insert: {
           appointment_id?: never
           date_time: string
-          health_service: string
+          health_service?: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Update: {
           appointment_id?: never
           date_time?: string
-          health_service?: string
+          health_service?: string | null
           patient_id?: number
-          practioner_name?: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Relationships: [
           {
@@ -673,6 +679,7 @@ export type Database = {
       }
       social_health_assessment: {
         Row: {
+          created_at: string
           date: string
           enjoyment_of_life: number
           mood: number
@@ -683,8 +690,10 @@ export type Database = {
           submission_id: number
           travelling: string
           users_id: number
+          week_start: string | null
         }
         Insert: {
+          created_at?: string
           date: string
           enjoyment_of_life: number
           mood: number
@@ -695,8 +704,10 @@ export type Database = {
           submission_id?: never
           travelling: string
           users_id: number
+          week_start?: string | null
         }
         Update: {
+          created_at?: string
           date?: string
           enjoyment_of_life?: number
           mood?: number
@@ -707,6 +718,7 @@ export type Database = {
           submission_id?: never
           travelling?: string
           users_id?: number
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -818,6 +830,19 @@ export type Database = {
           p_locations: string[]
           p_mildest: number
           p_worst: number
+        }
+        Returns: number
+      }
+      save_social_health_assessment: {
+        Args: {
+          p_date: string
+          p_enjoyment_of_life: number
+          p_mood: number
+          p_mood_overall: string
+          p_reflection: string
+          p_relation_with_others: number
+          p_social_life: string
+          p_travelling: string
         }
         Returns: number
       }

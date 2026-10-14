@@ -1,8 +1,8 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
 
 export default function RelationshipsScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
@@ -16,42 +16,20 @@ export default function RelationshipsScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Social Health</Text>
-        <ScaleSliderInput
-          titleText="Relation with others"
-          questionText="Over the past week, how much has pain interfered with your relationships with other people?"
-          assessmentType="relationships"
-          questionNumber={4}
-          totalQuestions={7}
-          initialValue={answers.relationWithOthers ?? 0}
-          onValueChange={value => updateAnswer('relationWithOthers', value)}
-          onPrevious={() => router.push('/tracker/social-health/mood')}
-          onRecord={handleNext}
-          variant="personalCare"
-          cardHeight={scaleHeight(330)}
-        />
-      </View>
-    </View>
+    <AssessmentScreen title="My Social Health">
+      <ScaleSliderInput
+        titleText="Relation with others"
+        questionText="Over the past week, how much has pain interfered with your relationships with other people?"
+        assessmentType="relationships"
+        questionNumber={4}
+        totalQuestions={7}
+        initialValue={answers.relationWithOthers ?? 0}
+        onValueChange={value => updateAnswer('relationWithOthers', value)}
+        onPrevious={() => router.push('/tracker/social-health/mood')}
+        onRecord={handleNext}
+        variant="personalCare"
+        cardHeight={scaleHeight(330)}
+      />
+    </AssessmentScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
-});

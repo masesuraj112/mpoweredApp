@@ -1,10 +1,11 @@
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
@@ -26,6 +27,7 @@ export default function PainLocationScreen() {
   );
   const [isOtherModalVisible, setIsOtherModalVisible] = useState(false);
   const [draftOtherLocation, setDraftOtherLocation] = useState('');
+  const doneBar = useKeyboardDoneBar();
 
   const otherIndex = PRESET_OPTIONS.length + customLocations.length;
   const displayOptions: string[] = [...PRESET_OPTIONS, ...customLocations, OTHER_LOCATION_LABEL];
@@ -72,7 +74,8 @@ export default function PainLocationScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>My Pain</Text>
       <MultiChoiceList
@@ -105,7 +108,10 @@ export default function PainLocationScreen() {
               placeholderTextColor="#1D1B20"
               style={styles.input}
               accessibilityLabel="Other pain location"
+              inputAccessoryViewID={doneBar.id}
             />
+            {/* Rendered inside the popup so iOS finds it alongside the field. */}
+            {doneBar.bar}
             <Text style={styles.previousLabel}>Previously entered locations</Text>
             <View style={styles.previousLocations}>
               {PREVIOUS_LOCATIONS.map(location => (
@@ -152,7 +158,7 @@ export default function PainLocationScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </Pressable>
   );
 }
 
