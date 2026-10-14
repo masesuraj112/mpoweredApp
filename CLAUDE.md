@@ -39,5 +39,5 @@ React Native 0.86 + Expo SDK 57 + Expo Router + TypeScript (strict) + Supabase. 
 - Do not run `npm run format` or Prettier over the whole repo: line endings are mixed and it would rewrite unrelated files. Keep diffs minimal.
 
 ## Git
-- Do not run git commands that write (add, commit, push, branch, checkout -b, stash, reset, merge) unless I ask. Leave changes uncommitted.
+- You run git commands that write (add, commit, push, branch, checkout -b, stash, reset, merge)
 - Branches: `feature/`, `fix/`, `chore/`, `refactor/`, `test/`, `docs/` + lowercase-hyphenated name.
