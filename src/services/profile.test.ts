@@ -82,3 +82,38 @@ describe('createProfile', () => {
     if (!result.ok) expect(result.error.code).toBe('NETWORK');
   });
 });
+
+describe('createProfile payload', () => {
+  const sentArgs = async (input: OnboardingAnswers) => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: null });
+    await createProfile(input, fakeClient({ rpc }), options);
+    return rpc.mock.calls[0][1] as Record<string, unknown>;
+  };
+
+  it.each([
+    ['a patient', answers],
+    ['a patient with no year, no conditions and no other conditions', {
+      ...answers,
+      yearOfBirth: null,
+      conditions: [],
+      otherConditions: '',
+    }],
+    ['a support person', { ...answers, userType: 'support-person' as const, sex: null }],
+  ])('for %s carries no user id and no undefined values', async (_label, input) => {
+    const payload = await sentArgs(input);
+    const keys = Object.keys(payload);
+
+    // the function takes the user from the session, so nothing identifies the user
+    expect(keys.filter((key) => /(^|_)(id|uid)$|auth|users?_id/i.test(key))).toEqual([]);
+    expect(keys.sort()).toEqual([
+      'p_conditions',
+      'p_name',
+      'p_other_conditions',
+      'p_phone',
+      'p_sex',
+      'p_user_type',
+      'p_year_of_birth',
+    ]);
+    expect(Object.values(payload).filter((value) => value === undefined)).toEqual([]);
+  });
+});
