@@ -2,6 +2,7 @@ import { mapError } from '@/lib/errors';
 
 const dbError = (code: string, message: string) => ({ code, message });
 
+
 describe('mapError: Postgres error codes', () => {
   it('a unique violation (23505) means a second submission in the same week', () => {
     expect(mapError(dbError('23505', 'duplicate key value')).code).toBe('DUPLICATE_WEEK');
