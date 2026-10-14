@@ -29,7 +29,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S3.5 Coverage
 
 ## Phase 4: UI wiring
-- [ ] S4.1 Six-digit verify
+- [x] S4.1 Six-digit verify
 - [ ] S4.2 phone.tsx send
 - [ ] S4.3 verify action
 - [ ] S4.4 Resend

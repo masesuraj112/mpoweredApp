@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
+import { OTP_LENGTH, isCodeComplete as isOtpComplete, sanitiseCode } from '@/features/auth/otp';
+
+// Six cells: 6 * 40 + 5 * 10 = 290 wide
+const CODE_CELL_WIDTH = 40;
+const CODE_CELL_GAP = 10;
+const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CELL_GAP;
+
 export default function VerifyScreen() {
   const [code, setCode] = useState('');
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
@@ -10,7 +17,7 @@ export default function VerifyScreen() {
   const scale = Math.min(1, width / 412, height / 823);
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
-  const isCodeComplete = code.length === 4;
+  const isCodeComplete = isOtpComplete(code);
   const hasResentCode = resendSecondsRemaining !== null;
 
   useEffect(() => {
@@ -26,7 +33,7 @@ export default function VerifyScreen() {
     return () => clearInterval(timer);
   }, [hasResentCode]);
 
-  const handleCodeChange = (value: string) => setCode(value.replace(/\D/g, '').slice(0, 4));
+  const handleCodeChange = (value: string) => setCode(sanitiseCode(value));
   const handleResend = () => setResendSecondsRemaining(120);
   const handleVerify = () => router.replace('/(auth)/verification-confirmation' as any);
 
@@ -65,12 +72,12 @@ export default function VerifyScreen() {
             {
               left: 51 * scale,
               top: 309 * scale,
-              width: 228 * scale,
+              width: CODE_ROW_WIDTH * scale,
               height: 51 * scale,
             },
           ]}
         >
-          {Array.from({ length: 4 }, (_, index) => (
+          {Array.from({ length: OTP_LENGTH }, (_, index) => (
             <Pressable
               key={index}
               accessibilityRole="button"
@@ -79,8 +86,8 @@ export default function VerifyScreen() {
               style={[
                 styles.codeCell,
                 {
-                  left: index * 59 * scale,
-                  width: 51 * scale,
+                  left: index * (CODE_CELL_WIDTH + CODE_CELL_GAP) * scale,
+                  width: CODE_CELL_WIDTH * scale,
                   height: 51 * scale,
                   borderRadius: 5 * scale,
                   borderWidth: scale,
@@ -97,7 +104,7 @@ export default function VerifyScreen() {
             accessibilityLabel="Verification code"
             autoComplete="one-time-code"
             keyboardType="number-pad"
-            maxLength={4}
+            maxLength={OTP_LENGTH}
             onChangeText={handleCodeChange}
             value={code}
             style={styles.hiddenInput}
