@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,13 +14,13 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatAppointmentDate } from '@/features/care-planner/appointmentDisplay';
 import { displayOrPlaceholder } from '@/features/care-planner/planDisplay';
+import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
 import { useRecordingConsent } from '@/features/care-planner/useRecordingConsent';
 
 export default function ConsentScreen() {
   const router = useRouter();
-  const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
-  const appointmentId = Number(appointmentIdParam);
+  const { appointmentId } = useAppointmentIdParam();
 
   const plan = useAppointmentPlan(appointmentId);
   const consent = useRecordingConsent(appointmentId);

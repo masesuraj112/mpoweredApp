@@ -1,6 +1,6 @@
-import { useNavigation, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DateTimeField } from '@/components/care-planner/DateTimeField';
@@ -15,6 +15,7 @@ import { TextField } from '@/components/ui/TextField';
 import { Colors, Spacing } from '@/constants/theme';
 import { formatDisplayDateTime } from '@/features/care-planner/dateTime';
 import { HEALTH_SERVICE_OPTIONS } from '@/features/care-planner/healthServiceOptions';
+import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import {
   MAX_PRACTITIONER_NAME_LENGTH,
   useCreateAppointment,
@@ -22,30 +23,16 @@ import {
 
 export default function AppointmentDetailsScreen() {
   const router = useRouter();
-  const navigation = useNavigation();
   const form = useCreateAppointment();
   const [pickerOpen, setPickerOpen] = useState(false);
   const { dirty } = form;
 
-  // Leaving with something entered asks first (Back, hardware back and swipe back).
-  const leaveAllowed = useRef(false);
-  useEffect(() => {
-    return navigation.addListener('beforeRemove', (event) => {
-      if (leaveAllowed.current || !dirty) return;
-      event.preventDefault();
-      Alert.alert('Discard this appointment?', 'What you have entered has not been saved.', [
-        { text: 'Keep editing', style: 'cancel' },
-        {
-          text: 'Discard',
-          style: 'destructive',
-          onPress: () => {
-            leaveAllowed.current = true;
-            navigation.dispatch(event.data.action);
-          },
-        },
-      ]);
-    });
-  }, [navigation, dirty]);
+  // Leaving with unsaved changes asks first (Back, hardware back and swipe back).
+  useConfirmDiscard(
+    dirty,
+    'Discard this appointment?',
+    'What you have entered has not been saved.',
+  );
 
   // Next saves the draft (creating it the first time, updating it after that) and goes on. The
   // form stays mounted below the next screen, so going back keeps what was entered.

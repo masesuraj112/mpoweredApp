@@ -1,4 +1,4 @@
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,13 +21,13 @@ import {
 } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
 import { FIRST_TIME_ANSWERS_HINT, getReviewMode } from '@/features/care-planner/reviewMode';
+import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
 import { markAppointmentSaved, saveAnswers } from '@/services/care-planner';
 
 export default function ReviewScreen() {
   const router = useRouter();
-  const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
-  const appointmentId = Number(appointmentIdParam);
+  const { appointmentId } = useAppointmentIdParam();
   const state = useAppointmentPlan(appointmentId);
   const { refresh } = state;
 

@@ -1,6 +1,6 @@
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
-import { AccessibilityInfo, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
@@ -13,6 +13,8 @@ import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
+import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
+import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/care-planner/useSupportPerson';
 
 // Wording copied exactly from the Figma design.
@@ -21,31 +23,16 @@ const INTRO =
 
 export default function SupportPersonScreen() {
   const router = useRouter();
-  const navigation = useNavigation();
-  const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
-  const appointmentId = Number(appointmentIdParam);
+  const { appointmentId } = useAppointmentIdParam();
   const form = useSupportPerson(appointmentId);
   const { dirty } = form;
 
-  // Leaving with something entered or changed asks first (Back, hardware back and swipe back).
-  const leaveAllowed = useRef(false);
-  useEffect(() => {
-    return navigation.addListener('beforeRemove', (event) => {
-      if (leaveAllowed.current || !dirty) return;
-      event.preventDefault();
-      Alert.alert('Discard this support person?', 'What you have entered has not been saved.', [
-        { text: 'Keep editing', style: 'cancel' },
-        {
-          text: 'Discard',
-          style: 'destructive',
-          onPress: () => {
-            leaveAllowed.current = true;
-            navigation.dispatch(event.data.action);
-          },
-        },
-      ]);
-    });
-  }, [navigation, dirty]);
+  // Leaving with unsaved changes asks first (Back, hardware back and swipe back).
+  useConfirmDiscard(
+    dirty,
+    'Discard this support person?',
+    'What you have entered has not been saved.',
+  );
 
   const goToQuestions = () =>
     router.push({

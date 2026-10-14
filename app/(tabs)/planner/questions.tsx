@@ -1,5 +1,4 @@
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useRouter } from 'expo-router';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,7 +13,9 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
 import { needsRemovalConfirmation } from '@/features/care-planner/suggestionSelection';
+import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentQuestions } from '@/features/care-planner/useAppointmentQuestions';
+import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { formatDisplayDate, parseIsoDate } from '@/services/date';
 
 // Wording copied exactly from the Figma design.
@@ -25,33 +26,17 @@ const HINT =
 
 export default function QuestionsScreen() {
   const router = useRouter();
-  const navigation = useNavigation();
-  const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
-  const appointmentId = Number(appointmentIdParam);
-  const hasAppointment = appointmentIdParam !== undefined && Number.isFinite(appointmentId);
+  const { appointmentId, hasAppointment } = useAppointmentIdParam();
 
   const questions = useAppointmentQuestions(appointmentId);
   const { load, dirty } = questions;
 
-  // Leaving with unsaved ticks asks first (covers the Back button, hardware back and swipe back).
-  const leaveAllowed = useRef(false);
-  useEffect(() => {
-    return navigation.addListener('beforeRemove', (event) => {
-      if (leaveAllowed.current || !dirty) return;
-      event.preventDefault();
-      Alert.alert('Discard changes?', 'You have unsaved changes to your questions.', [
-        { text: 'Keep editing', style: 'cancel' },
-        {
-          text: 'Discard',
-          style: 'destructive',
-          onPress: () => {
-            leaveAllowed.current = true;
-            navigation.dispatch(event.data.action);
-          },
-        },
-      ]);
-    });
-  }, [navigation, dirty]);
+  // Leaving with unsaved changes asks first (Back, hardware back and swipe back).
+  const allowLeave = useConfirmDiscard(
+    dirty,
+    'Discard changes?',
+    'You have unsaved changes to your questions.',
+  );
 
   const answeredIds = load.status === 'ready' ? load.suggestions.answeredQuestionIds : [];
 
@@ -78,7 +63,7 @@ export default function QuestionsScreen() {
       router.push({ pathname: '/planner/review', params: { appointmentId: String(appointmentId) } });
       return;
     }
-    leaveAllowed.current = true;
+    allowLeave();
     router.back();
   };
 
