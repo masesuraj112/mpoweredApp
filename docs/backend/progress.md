@@ -78,9 +78,9 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 | L3 | Resend interval / OTP expiry | ⏳ |
 | L6 | Sign-in and sign-up share `sendVerificationCode` | ✅ settled (2026-10-14) |
 | L7 | Returning-user routing, stop using `hasOnboarded` | ✅ settled (2026-10-14) |
-| L9 | RPC security model (invoker vs definer) | 🟡 |
-| L10 | Name length 45 vs 50 (mapping settled) | 🟡 |
-| L11 | Support person: A cosmetic or B `users.user_type` | ❓ |
+| L9 | RPC security model (invoker vs definer) | ✅ settled: invoker |
+| L10 | Name length 45 vs 50 (mapping settled) | ✅ settled: UI limited to 45 |
+| L11 | Support person: A cosmetic or B `users.user_type` | ✅ settled: B, patient screens skipped |
 | L13 | Session length | ⏳ |
 | L14 | Retire dev harness | ✅ settled (2026-10-14) |
 | L15 | Production config record | ✅ settled: docs/backend/production-auth-checklist.md |

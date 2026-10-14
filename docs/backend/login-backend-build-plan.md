@@ -1,6 +1,6 @@
 # MPowered Login & Onboarding Back-End: Build Plan
 
-**Owner:** Mohammad  |  **Repo:** `masesuraj112/mpoweredApp`  |  **Revision:** 1 (2026-10-14)
+**Owner:** Mohammad  |  **Repo:** `masesuraj112/mpoweredApp`  |  **Revision:** 2 (2026-10-14)
 **Stack:** Expo SDK 57 (Expo Router) · Supabase (Postgres, Auth, RLS) · supabase-js ^2.112.4 · TypeScript strict · Jest (`jest-expo`) · pgTAP · GitHub Actions
 **Companion file:** `testing-and-cicd.md` (CI-only testing, CI/CD, and how to drive Claude Code)
 
@@ -21,7 +21,7 @@ Phone-number login for MPowered using **Supabase phone OTP**, plus creation of t
 | Removing the dev harness (`dev-login`, `AuthDebug`) before release | Home screen differences for patient vs support person |
 
 ### 0.2 Basis
-Written against the **updated repo snapshot** (`UPDATED_main_with_most_backends-merged-repomix-output.xml`). Anything marked **(verify)** is something I could not confirm from the repo or docs. Claude Code must check it before relying on it.
+Written against the **updated repo snapshot** (`UPDATED_main_with_most_backends-merged-repomix-output.xml`). Anything marked **(verify)** was something I could not confirm from the repo or docs. Claude Code must check it before relying on it.
 
 ### 0.3 How to use this document
 - **One step = one commit.** Each step has a suggested commit message (Conventional Commits) and a **Done when** line.
@@ -87,16 +87,16 @@ Status: ✅ settled · 🟡 recommended, needs your yes · ⏳ deferred · ❓ o
 | L3 | Resend interval | UI countdown currently 120 s; server minimum is Supabase's (60 s default, local `max_frequency = "5s"`). Build the countdown as a constant; decide the real value in the Twilio sprint. Check OTP expiry in the dev dashboard (docs conflict) | ⏳ |
 | L4 | Dev sign-in | Supabase **test OTP** phone→code map. One fixed number per developer | ✅ |
 | L5 | Phone normalisation | UI keeps local `04xx xxx xxx`. **`auth.ts` converts to E.164 `+614…`.** `users.phone_number` stores E.164 (`varchar(12)` fits exactly) | ✅ (my call, delegated) |
-| L6 | Sign-in vs sign-up | Both call the **same** `sendVerificationCode`. No "account exists?" message (avoids account enumeration) | 🟡 |
-| L7 | Returning-user routing | Stop using `hasOnboarded` for routing. After verify, check whether a profile exists: yes → home; no → onboarding. Root guard also checks "has profile" | 🟡 |
+| L6 | Sign-in vs sign-up | Both call the **same** `sendVerificationCode`. No "account exists?" message (avoids account enumeration) | ✅ (section 6) |
+| L7 | Returning-user routing | Stop using `hasOnboarded` for routing. After verify, check whether a profile exists: yes → home; no → onboarding. Root guard also checks "has profile" | ✅ (section 6) |
 | L8 | Profile write | **One atomic RPC** after verify | ✅ |
-| L9 | RPC security model | `security invoker` + explicit minimal insert grants (matches existing pattern). Alternative: `security definer` with fixed `search_path`. Recommend invoker | 🟡 |
-| L10 | Value mapping | `sex` lower→DB casing; conditions → `patient_musko_skeletal_pain`; `otherConditions` → `patients.other_conditions`. **Name length:** DB `varchar(45)` vs UI 50. Recommend limiting UI to 45 (no schema change) | ✅ mapping / 🟡 length |
-| L11 | Support person | Keep the screen. **A:** cosmetic, store nothing. **B (recommended):** add `users.user_type`; RPC creates only a `users` row for support persons. B also raises whether they see sex/diagnosis screens | ❓ |
+| L9 | RPC security model | `security invoker` + explicit minimal insert grants (matches existing pattern). Alternative: `security definer` with fixed `search_path`. **Settled: invoker** | ✅ |
+| L10 | Value mapping | `sex` lower→DB casing; conditions → `patient_musko_skeletal_pain`; `otherConditions` → `patients.other_conditions`. **Name length:** DB `varchar(45)` vs UI 50. Recommend limiting UI to 45 (no schema change) | ✅ mapping / ✅ length (UI limited to 45) |
+| L11 | Support person | Keep the screen. **A:** cosmetic, store nothing. **B (recommended):** add `users.user_type`; RPC creates only a `users` row for support persons. B also raises whether they see sex/diagnosis screens. **Settled: B; the patient screens are skipped** | ✅ |
 | L12 | Session storage | Keep `expo-sqlite` localStorage (matches Supabase Expo quickstart). Encryption is a production-hardening item | ✅ |
 | L13 | Session length | Parked: you decide when relevant | ⏳ |
-| L14 | Retire dev harness | Gate `dev-login` behind `__DEV__`; remove `AuthDebug`; disable email provider / `signUp` in production | 🟡 |
-| L15 | Production config record | Record production Auth settings in a doc (not `config.toml`) | 🟡 |
+| L14 | Retire dev harness | Gate `dev-login` behind `__DEV__`; remove `AuthDebug`; disable email provider / `signUp` in production | ✅ (section 6) |
+| L15 | Production config record | Record production Auth settings in a doc (not `config.toml`): `production-auth-checklist.md` | ✅ |
 | L16 | Password / Face ID login | Settings assets exist (`password.svg`, `faceid.svg`) and Account settings already has change-password and Face ID UI that assume email/password. Decide whether these survive | ❓ |
 | L17 | Phone change | Re-verification flow needed if users may change number | ⏳ |
 
@@ -431,6 +431,70 @@ Costs reference for the Twilio sprint (USD, my research, **verify before quoting
 - Remove test numbers from any non-dev project; add a spend alert.
 - Session encryption and session length (L12, L13).
 - Phone-change re-verification (L17).
+
+---
+
+## 6. Build record: decisions and changes made while building
+
+Revision 2 (2026-10-14). Everything in sections 1 to 5 above is the original plan; this section records what was decided or changed once the work started, so the plan and the repo agree. The progress tracker is `progress.md`, the resulting design is described in `login-backend.md`.
+
+### 6.1 Decisions settled during the build
+
+| ID | Decision | Outcome |
+| --- | --- | --- |
+| L6 | Sign-in and sign-up share one `sendVerificationCode`, no "account exists?" message | Yes. The profile check happens only after the code is accepted. |
+| L7 | Route on "has profile", not `hasOnboarded` | Yes. Splash always goes to onboarding; routing is decided after verify. |
+| L9 | RPC security model | `security invoker` with explicit minimal grants. |
+| L10 | Name length | UI limited to 45; no migration. |
+| L11 | Support person | **B**: `users.user_type`; support persons get a `users` row only. |
+| L14 | Retire the dev harness | Yes: `dev-login` gated behind `__DEV__`, `AuthDebug` removed. |
+| L15 | Production config record | `production-auth-checklist.md`. |
+| N1 | A wrong code and an expired code | Supabase returns `otp_expired` for both, so a server rejection maps to `OTP_EXPIRED` (message: "wrong or expired"). `INVALID_OTP` is only for a code that is not six digits. |
+| N2 | `patients.sex` is `NOT NULL` | Sex is required in the app for patients. The column is unchanged and can be relaxed later. |
+| N3 | Privileges on the profile tables | Revoke all from `anon` and `authenticated`, then grant `select, insert` to `authenticated` (also `select` on `patient_musko_skeletal_pain`). Needed because local default privileges differ from hosted. |
+| N4 | Support person screens | Skipped: consent goes straight to `login-bridge`. |
+| N5 | Orphan `welcome-loading.tsx` | Deleted (no references). |
+| N6 | Commit attribution | A `Co-Authored-By` trailer is added to commits from this point; earlier commits were left as they are. |
+| N7 | Twilio for the dev spike | Plain Twilio (not Verify) with placeholder credentials, and a test number accepted without `+`. |
+
+### 6.2 Where the build differs from the plan text
+
+| Step | Plan said | What was built, and why |
+| --- | --- | --- |
+| S2.1 / S2.3 | S2.1 before S2.3 | S2.3 first, because `toE164` returns the `INVALID_PHONE` code that S2.3 adds. |
+| S3.2 | Wrong code returns `INVALID_OTP` | Server rejection returns `OTP_EXPIRED` (N1). |
+| S3.4 | `select('id')` | `select('users_id')`: the key column is `users_id`. Uses `auth.getSession()` for the user. |
+| S4.3 | Clear the code on `INVALID_OTP` | Clears on `INVALID_OTP` and `OTP_EXPIRED`, because of N1. |
+| S5.1 / S5.2 | Splash routes returning users to `phone` | Done in S5.1, then removed by S5.2. `hasOnboarded` was never written anywhere, so no behaviour was lost. |
+| S5.5 | Phase 5 | Moved to Phase 8: it needs the verify routing (S8.1) and `createProfile` (Phase 7). |
+| S6.1 | Grant insert only | Revoke-then-grant (N3). |
+| S6.4 | Signature with `p_has_diagnosis`; sex may be null | No `p_has_diagnosis` (no column for it); sex required for patients (N2); added `INVALID_USER_TYPE`, `INVALID_CONDITION` and `NO_SESSION` codes; the new row ids are read back with a `select` because `INSERT ... RETURNING` cannot pass the select policies that read the same table; a unique violation on the `users` insert is reported as `PROFILE_EXISTS`. |
+| S6.6 | Take the CI types diff | Types were written by hand to match; the CI types check passed, so they match the generated output. |
+| S7.1 | `otherConditions` empty becomes `null` | Same, but the nullable arguments are cast in the service because the generated types cannot express nullable arguments. The mapper has its own input type so it stays free of React imports. |
+| S7.2 | `PROFILE_EXISTS` is success | Same. `mapError` was also extended for `NO_SESSION`, `INVALID_PHONE`, `INVALID_USER_TYPE` and `INVALID_CONDITION`. |
+| S8.2 | Refresh the profile after `createProfile` | The refresh is called from the confirmation screen's Continue. Refreshing earlier would flip the guard and skip the confirmation slides. |
+| S8.3 | Show the splash while `hasProfile` is `null` | The auth stack stays mounted while the check runs (returning nothing unmounted the verify screen mid sign-in). A failed check shows a retry screen. |
+| S8.4 | Clear `OnboardingContext` on sign-out | Implicit: the provider lives in the `(auth)` layout, which unmounts when hidden. |
+
+### 6.3 Plan items that were checked and resolved
+
+- **S1.2 (verify):** the local stack accepts the test OTP without an enabled SMS provider (CI `database-tests` passed), so the dummy-Twilio fallback was not needed.
+- **A5:** the dev project accepted the test number without a `+`, with placeholder Twilio credentials; the code expires after 60 seconds by default.
+- **Error codes:** `otp_expired`, `over_sms_send_rate_limit`, `over_request_rate_limit` and `sms_send_failed` exist in `@supabase/auth-js` 2.116.0. There is no separate "wrong code" code.
+- **CI scope:** the workflow runs only on pull requests and on pushes to `main`, so nothing runs on a plain branch push until a pull request is open.
+
+### 6.4 Still open or deferred
+
+| ID | Item | Note |
+| --- | --- | --- |
+| L2 / A3 | MHA sign-off on six digit wording | Pending. |
+| L3 | Resend interval and OTP expiry | UI countdown is 120 s but the dev expiry is 60 s; decide in the Twilio sprint. |
+| L12 / L13 | Session storage encryption and session length | Production hardening. |
+| L16 | Password and Face ID login | `settings/account` still assumes email and password, which phone users do not have. |
+| L17 | Phone number change | Needs a re-verification flow. |
+| A1 / A2 | Twilio account owner and sender ID registration | Needed for the Twilio sprint. |
+| n/a | Linking a support person's login to `support_persons.users_id` | Not built; the patient creates the `support_persons` row today and nothing sets `users_id`. |
+| n/a | `hasDiagnosis` and consent are not stored | No columns; confirm with MHA that this meets privacy obligations (Appendix A). |
 
 ---
 
