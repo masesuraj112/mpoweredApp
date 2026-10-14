@@ -3,11 +3,21 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+const isValidName = (value: string) =>
+  /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(value.trim());
+
 export default function NameScreen() {
   const { data, updateData } = useOnboarding();
   const [name, setName] = useState(data.name);
+  const [showNameError, setShowNameError] = useState(false);
+  const hasName = name.trim().length > 0;
+  const isNameValid = hasName && isValidName(name);
 
   const handleContinue = () => {
+    if (!isNameValid) {
+      setShowNameError(true);
+      return;
+    }
     updateData({ name: name.trim() });
     router.push('/(auth)/consent');
   };
@@ -17,16 +27,24 @@ export default function NameScreen() {
       <Text style={styles.title}>Your name</Text>
       <TextInput
         value={name}
-        onChangeText={setName}
+        onChangeText={(value) => {
+          setName(value);
+          if (isValidName(value)) setShowNameError(false);
+        }}
         placeholder="Type your name"
         style={styles.input}
+        maxLength={50}
         autoFocus
       />
+      {showNameError && (
+        <Text accessibilityRole="alert" style={styles.nameError}>
+          Enter a name using letters, spaces, hyphens, or apostrophes (up to 50 characters).
+        </Text>
+      )}
       <Text style={styles.subtext}>Your health and wellbeing is uniquely YOU!</Text>
       <Pressable
-        disabled={!name.trim()}
         onPress={handleContinue}
-        style={[styles.continueButton, !name.trim() && styles.continueButtonDisabled]}
+        style={[styles.continueButton, !hasName && styles.continueButtonDisabled]}
       >
         <Text style={styles.continueText}>Continue</Text>
       </Pressable>
@@ -54,6 +72,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
+  },
+  nameError: {
+    color: '#B3261E',
+    fontSize: 13,
+    marginTop: 8,
+    textAlign: 'center',
   },
   subtext: { 
     fontStyle: 'italic',
