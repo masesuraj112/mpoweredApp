@@ -51,7 +51,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S6.6 Regenerate types (hand-written; CI types-diff passed)
 
 ## Phase 7: Mapping and service
-- [ ] S7.1 Pure mapper
+- [x] S7.1 Pure mapper
 - [ ] S7.2 `createProfile` service
 - [ ] S7.3 Payload hygiene test
 - [ ] S7.4 Coverage list
