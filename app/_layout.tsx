@@ -23,10 +23,9 @@ function RootNavigator() {
     );
   }
 
-  // Signed in and the profile check is still running
-  if (session && hasProfile === null) return null;
-
-  // The app itself needs both a session and a profile; everything else stays in (auth)
+  // The app itself needs both a session and a profile; everything else stays in (auth). While
+  // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
+  // would unmount the verify screen in the middle of signing in.
   const canUseApp = !!session && hasProfile === true;
 
   return (

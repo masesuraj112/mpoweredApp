@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { hasProfile as fetchHasProfile } from '../services/auth';
@@ -13,7 +13,7 @@ type AuthContextType = {
   /** Set when the profile check failed (for example no connection); cleared by refreshProfile. */
   profileError: AppError | null;
   /** Checks again whether the signed-in user has a profile. */
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => void;
 };
 
 // Following React documentation, intialised the context with undefined and handle it in the useAuth hook to ensure that the context is used within a provider.
@@ -22,9 +22,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
-    const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-    const [profileError, setProfileError] = useState<AppError | null>(null);
+    // The profile check is stored with the user it was made for, so it never applies to a
+    // different user.
+    const [profile, setProfile] = useState<{ userId: string; value: boolean } | null>(null);
+    const [profileFailure, setProfileFailure] = useState<{ userId: string; error: AppError } | null>(null);
+    const [profileCheck, setProfileCheck] = useState(0);
     const userId = session?.user?.id ?? null;
+    const hasProfile = userId === null ? false : profile?.userId === userId ? profile.value : null;
+    const profileError = profileFailure?.userId === userId ? profileFailure.error : null;
 
     useEffect(() => {
         let mounted = true;
@@ -50,29 +55,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
     }, []);
 
-    const refreshProfile = useCallback(async () => {
-        setProfileError(null);
-        const result = await fetchHasProfile(supabase);
-        if (result.ok) {
-            setHasProfile(result.data);
-        } else if (result.error.code === 'NO_SESSION') {
-            setHasProfile(false);
-        } else {
-            setProfileError(result.error);
-        }
-    }, []);
+    const refreshProfile = () => setProfileCheck((count) => count + 1);
 
-    // Check for a profile when the signed-in user changes (not on every token refresh).
+    // Check for a profile when the signed-in user changes (not on every token refresh), and
+    // again whenever refreshProfile is called.
     useEffect(() => {
-        if (loading) return;
-        if (userId === null) {
-            setHasProfile(false);
-            setProfileError(null);
-            return;
-        }
-        setHasProfile(null);
-        refreshProfile();
-    }, [userId, loading, refreshProfile]);
+        if (loading || userId === null) return;
+        let cancelled = false;
+        fetchHasProfile(supabase).then((result) => {
+            if (cancelled) return;
+            if (result.ok || result.error.code === 'NO_SESSION') {
+                setProfile({ userId, value: result.ok ? result.data : false });
+                setProfileFailure(null);
+            } else {
+                setProfileFailure({ userId, error: result.error });
+            }
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [loading, userId, profileCheck]);
 
     const value: AuthContextType = {
         user: session?.user ?? null,
