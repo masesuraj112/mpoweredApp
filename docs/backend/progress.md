@@ -59,7 +59,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 8: End-to-end wiring
 - [ ] S8.1 After verify routing
 - [x] S8.2 AuthContext `hasProfile`
-- [ ] S8.3 Root guard
+- [x] S8.3 Root guard
 - [ ] S8.4 Sign out
 
 ## Phase 9: Dev harness retirement [GATE L14]
