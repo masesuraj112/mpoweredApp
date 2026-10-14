@@ -32,7 +32,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S4.1 Six-digit verify
 - [x] S4.2 phone.tsx send
 - [x] S4.3 verify action
-- [ ] S4.4 Resend
+- [x] S4.4 Resend
 - [ ] S4.5 Show target number
 
 ## Phase 5: Routing fixes

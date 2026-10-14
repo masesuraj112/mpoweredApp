@@ -4,8 +4,13 @@ import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } fro
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
-import { OTP_LENGTH, isCodeComplete as isOtpComplete, sanitiseCode } from '@/features/auth/otp';
-import { verifyCode } from '@/services/auth';
+import {
+  OTP_LENGTH,
+  RESEND_SECONDS,
+  isCodeComplete as isOtpComplete,
+  sanitiseCode,
+} from '@/features/auth/otp';
+import { sendVerificationCode, verifyCode } from '@/services/auth';
 
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
 const CODE_CELL_WIDTH = 40;
@@ -16,6 +21,7 @@ export default function VerifyScreen() {
   const { data } = useOnboarding();
   const [code, setCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
   const codeInputRef = useRef<TextInput>(null);
@@ -26,6 +32,7 @@ export default function VerifyScreen() {
   const isCodeComplete = isOtpComplete(code);
   const canVerify = isCodeComplete && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
+  const resendMinutes = Math.round(RESEND_SECONDS / 60);
 
   useEffect(() => {
     if (!hasResentCode) return;
@@ -44,7 +51,19 @@ export default function VerifyScreen() {
     setCode(sanitiseCode(value));
     setErrorMessage(null);
   };
-  const handleResend = () => setResendSecondsRemaining(120);
+  const handleResend = async () => {
+    if (isResending) return;
+    setErrorMessage(null);
+    setIsResending(true);
+    const result = await sendVerificationCode(data.phoneNumber);
+    setIsResending(false);
+    if (!result.ok) {
+      setErrorMessage(authErrorMessage(result.error.code));
+      return;
+    }
+    setCode('');
+    setResendSecondsRemaining(RESEND_SECONDS);
+  };
   const handleVerify = async () => {
     if (!canVerify) return;
     setErrorMessage(null);
@@ -191,6 +210,7 @@ export default function VerifyScreen() {
               </Text>
               <Pressable
                 accessibilityRole="button"
+                disabled={isResending}
                 onPress={handleResend}
                 style={styles.resendButton}
               >
@@ -222,7 +242,7 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              You can resend codes in two minutes
+              You can resend codes in {resendMinutes} {resendMinutes === 1 ? 'minute' : 'minutes'}
             </Text>
           </>
         )}
