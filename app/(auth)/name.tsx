@@ -33,12 +33,12 @@ export default function NameScreen() {
         }}
         placeholder="Type your name"
         style={styles.input}
-        maxLength={50}
+        maxLength={45}
         autoFocus
       />
       {showNameError && (
         <Text accessibilityRole="alert" style={styles.nameError}>
-          Enter a name using letters, spaces, hyphens, or apostrophes (up to 50 characters).
+          Enter a name using letters, spaces, hyphens, or apostrophes (up to 45 characters).
         </Text>
       )}
       <Text style={styles.subtext}>Your health and wellbeing is uniquely YOU!</Text>

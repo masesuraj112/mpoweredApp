@@ -45,7 +45,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 6: Profile database
 - [ ] S6.1 Insert privileges migration [GATE L9]
 - [ ] S6.2 `users.user_type` [B] [GATE L11]
-- [ ] S6.3 Name length (L10)
+- [x] S6.3 Name length (L10)
 - [ ] S6.4 `create_profile` function
 - [ ] S6.5 pgTAP tests
 - [ ] S6.6 Regenerate types
