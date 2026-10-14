@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { getSuggestionLabel } from '@/features/care-planner/suggestionSelection';
 import type { SuggestedQuestionGroup } from '@/features/care-planner/suggestionTypes';
 
@@ -42,10 +42,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   title: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.text,
   },
   list: {

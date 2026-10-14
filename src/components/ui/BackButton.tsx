@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 type BackButtonProps = {
   onPress: () => void;
@@ -41,9 +41,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.secondaryContainer,
   },
   text: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSecondaryContainer,
   },
   pressed: {

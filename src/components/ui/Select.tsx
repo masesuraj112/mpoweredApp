@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 import { fieldStyles } from './fieldStyles';
 import { CheckIcon, ChevronDownIcon } from './icons';
@@ -151,11 +151,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primaryContainer,
   },
   optionText: {
+    ...Typography.bodyLarge,
     flex: 1,
     minWidth: 0,
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
     color: Colors.light.onSurface,
   },
   clear: {

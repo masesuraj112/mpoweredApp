@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 
 type EmptyStateProps = {
   message: string;
@@ -24,10 +24,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   message: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.25,
+    ...Typography.bodyMedium,
     textAlign: 'center',
     color: Colors.light.textSecondary,
   },

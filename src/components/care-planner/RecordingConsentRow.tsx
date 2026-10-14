@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
 
 import { Checkbox } from '@/components/ui/Checkbox';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 
 type RecordingConsentRowProps = {
   /** True once the consent has been signed. The tick is set by that, not by tapping the row. */
@@ -33,10 +33,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundElement,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
-    letterSpacing: 0.1,
+    ...Typography.labelLargeBold,
     textDecorationLine: 'underline',
     color: Colors.light.onSurfaceVariant,
   },

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 
 type ListeningIndicatorProps = {
   listening: boolean;
@@ -39,10 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   text: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.25,
+    ...Typography.bodyMedium,
     color: Colors.light.text,
   },
   listening: {

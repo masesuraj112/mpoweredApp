@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconButton } from '@/components/ui/IconButton';
-import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Spacing, Typography } from '@/constants/theme';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -84,10 +84,7 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.three,
   },
   answerLine: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
   },
   unanswered: {
     color: Colors.light.error,
@@ -96,9 +93,7 @@ const styles = StyleSheet.create({
     color: Colors.light.success,
   },
   question: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSurface,
   },
 });

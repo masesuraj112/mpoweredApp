@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
 
@@ -119,10 +119,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.secondary,
   },
   tonalLabel: {

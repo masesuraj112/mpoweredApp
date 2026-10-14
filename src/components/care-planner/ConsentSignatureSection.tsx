@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { SignaturePad } from '@/components/ui/SignaturePad';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import type { SignatureData } from '@/features/care-planner/signature';
 
 type ConsentSignatureSectionProps = {
@@ -46,10 +46,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurface,
   },
   statement: {

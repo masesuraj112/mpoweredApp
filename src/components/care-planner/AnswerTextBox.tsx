@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 
 type AnswerTextBoxProps = {
   /** The question being answered. Shown as the label and spoken as the field's name. */
@@ -40,21 +40,17 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   question: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSurface,
   },
   input: {
+    ...Typography.bodyLarge,
     minHeight: 160,
     padding: Spacing.three,
     borderWidth: 1,
     borderColor: Colors.light.outline,
     borderRadius: Radius.control - 2,
     backgroundColor: Colors.light.backgroundElement,
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
     color: Colors.light.onSurface,
   },
   inputListening: {

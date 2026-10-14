@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Spacing, Typography } from '@/constants/theme';
 
 /**
  * Box and tick dimensions. These are the same numbers as the default checkbox in
@@ -69,10 +69,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
-    letterSpacing: 0.1,
+    ...Typography.labelLargeBold,
     color: Colors.light.onSurfaceVariant,
   },
   box: {

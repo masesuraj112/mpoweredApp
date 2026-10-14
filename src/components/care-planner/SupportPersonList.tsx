@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { describeAccess, describeContact } from '@/features/care-planner/supportPerson';
 import type { SupportPerson } from '@/features/care-planner/types';
 
@@ -47,10 +47,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   heading: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurface,
   },
   row: {

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { appendDictatedText } from '@/features/care-planner/answerDrafts';
 import type { AnswerInput, PlanQuestion } from '@/features/care-planner/planTypes';
 import { useAnswerDrafts } from '@/features/care-planner/useAnswerDrafts';
@@ -237,12 +237,9 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
   },
   hint: {
+    ...Typography.bodyMedium,
     flex: 1,
     minWidth: 0,
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.25,
     color: Colors.light.onSurface,
   },
   error: {

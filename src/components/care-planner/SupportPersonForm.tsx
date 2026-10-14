@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { PhoneIcon } from '@/components/ui/icons';
 import { TextField } from '@/components/ui/TextField';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import type {
   SupportPersonDraft,
   SupportPersonErrors,
@@ -94,10 +94,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   accessLabel: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurface,
   },
   accessList: {

@@ -106,5 +106,20 @@ export const Radius = {
 /** Minimum touch target (dp) for interactive elements. */
 export const MinTapTarget = 48;
 
+/**
+ * Text styles from the design (the Material 3 type scale). Spread one into a text style and add a
+ * colour: `{ ...Typography.labelLarge, color: Colors.light.text }`.
+ */
+export const Typography = {
+  /** 14/20 medium: labels and field labels. */
+  labelLarge: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.1 },
+  /** 14/20 semibold: section headings and emphasised labels. */
+  labelLargeBold: { fontSize: 14, lineHeight: 20, fontWeight: '600', letterSpacing: 0.1 },
+  /** 16/24 regular: question text and field values. */
+  bodyLarge: { fontSize: 16, lineHeight: 24, letterSpacing: 0.5 },
+  /** 14/20 medium with wider tracking: short messages and hints. */
+  bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
+} as const;
+
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;

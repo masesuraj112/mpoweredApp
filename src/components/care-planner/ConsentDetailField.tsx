@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 
 type ConsentDetailFieldProps = {
   label: string;
@@ -24,10 +24,7 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurface,
   },
   valueBox: {
@@ -41,9 +38,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   value: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSurface,
   },
 });

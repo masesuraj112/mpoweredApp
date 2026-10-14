@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 
 type AppointmentOverviewCardProps = {
   dateText: string;
@@ -44,10 +44,7 @@ const styles = StyleSheet.create({
     gap: Spacing.half,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurfaceVariant,
   },
   value: {

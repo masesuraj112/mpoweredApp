@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import {
   getAppointmentDateText,
   getAppointmentTitle,
@@ -114,11 +114,8 @@ const styles = StyleSheet.create({
     minWidth: 200,
   },
   heading: {
+    ...Typography.labelLargeBold,
     flexShrink: 1,
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
-    letterSpacing: 0.1,
     color: Colors.light.onSurface,
   },
   list: {

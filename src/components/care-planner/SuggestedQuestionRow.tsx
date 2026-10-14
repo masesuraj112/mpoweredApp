@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
 
 import { Checkbox } from '@/components/ui/Checkbox';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 
 type SuggestedQuestionRowProps = {
   text: string;
@@ -36,9 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundElement,
   },
   text: {
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSurface,
   },
 });
