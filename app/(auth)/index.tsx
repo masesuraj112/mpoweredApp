@@ -1,11 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { StatusBar, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-
-const HAS_ONBOARDED_KEY = 'mpowered:hasOnboarded';
 
 export default function SplashScreen() {
   const { width, height } = useWindowDimensions();
@@ -16,22 +13,11 @@ export default function SplashScreen() {
   const canvasTop = (height - canvasHeight) / 2;
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    let cancelled = false;
+    const timeout = setTimeout(() => {
+      router.replace('/(auth)/onboarding');
+    }, 3000);
 
-    const decideRoute = async () => {
-      const hasOnboarded = await AsyncStorage.getItem(HAS_ONBOARDED_KEY);
-      if (cancelled) return;
-      timeout = setTimeout(() => {
-        router.replace(hasOnboarded ? '/(auth)/phone' : '/(auth)/onboarding');
-      }, 3000);
-    };
-    decideRoute();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeout);
-    };
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
