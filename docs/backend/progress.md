@@ -40,7 +40,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S5.2 Stop using `hasOnboarded` [GATE L7]
 - [x] S5.3 `_layout.tsx` order
 - [x] S5.4 Verify login-bridge hops (checked: other-conditions -> login-bridge -> phone; no change needed)
-- [!] S5.5 Returning user, no profile (L7 settled; blocked: needs S8.1 verify routing and Phase 7 createProfile; do it in Phase 8)
+- [x] S5.5 Returning user with no profile (login-bridge creates the profile directly when already signed in)
 
 ## Phase 6: Profile database
 - [x] S6.1 Insert privileges migration (revoke-then-grant, approved)
