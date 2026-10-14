@@ -10,6 +10,7 @@ import {
   isCodeComplete as isOtpComplete,
   sanitiseCode,
 } from '@/features/auth/otp';
+import { formatForDisplay, toE164 } from '@/features/auth/phone';
 import { sendVerificationCode, verifyCode } from '@/services/auth';
 
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
@@ -33,6 +34,8 @@ export default function VerifyScreen() {
   const canVerify = isCodeComplete && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
   const resendMinutes = Math.round(RESEND_SECONDS / 60);
+  const normalisedPhone = toE164(data.phoneNumber);
+  const displayPhone = normalisedPhone.ok ? formatForDisplay(normalisedPhone.data) : '';
 
   useEffect(() => {
     if (!hasResentCode) return;
@@ -107,6 +110,24 @@ export default function VerifyScreen() {
         >
           We’re sending the verification code to this number
         </Text>
+
+        {displayPhone !== '' && (
+          <Text
+            accessibilityLabel={`Phone number ${displayPhone}`}
+            style={[
+              styles.phoneNumber,
+              {
+                left: 47 * scale,
+                top: 252 * scale,
+                width: 313 * scale,
+                fontSize: 18 * scale,
+                lineHeight: 24 * scale,
+              },
+            ]}
+          >
+            {displayPhone}
+          </Text>
+        )}
 
         <View
           style={[
@@ -310,6 +331,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     color: '#000000',
     fontWeight: '500',
+  },
+  phoneNumber: {
+    position: 'absolute',
+    color: '#000000',
+    fontWeight: '600',
   },
   codeRow: {
     position: 'absolute',
