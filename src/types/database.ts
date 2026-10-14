@@ -775,6 +775,7 @@ export type Database = {
           created_at: string
           name: string
           phone_number: string | null
+          user_type: string
           users_id: number
         }
         Insert: {
@@ -782,6 +783,7 @@ export type Database = {
           created_at?: string
           name: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Update: {
@@ -789,6 +791,7 @@ export type Database = {
           created_at?: string
           name?: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Relationships: []
@@ -801,6 +804,18 @@ export type Database = {
       can_access_patient: {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
+      }
+      create_profile: {
+        Args: {
+          p_conditions: string[]
+          p_name: string
+          p_other_conditions: string
+          p_phone: string
+          p_sex: string
+          p_user_type: string
+          p_year_of_birth: number
+        }
+        Returns: undefined
       }
       current_users_id: { Args: never; Returns: number }
       is_own_patient_record: {
