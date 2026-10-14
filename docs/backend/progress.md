@@ -43,7 +43,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [!] S5.5 Returning user, no profile (L7 settled; blocked: needs S8.1 verify routing and Phase 7 createProfile; do it in Phase 8)
 
 ## Phase 6: Profile database
-- [ ] S6.1 Insert privileges migration [GATE L9]
+- [x] S6.1 Insert privileges migration (revoke-then-grant, approved)
 - [x] S6.2 users.user_type (migration written; types pending S6.6)
 - [x] S6.3 Name length (L10)
 - [x] S6.4 `create_profile` function
