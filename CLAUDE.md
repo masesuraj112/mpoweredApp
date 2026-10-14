@@ -34,4 +34,3 @@
 - Never edit an existing migration. Never touch files outside the step.
 - If something in the plan conflicts with what is found in the repo, stop and tell the user; do not silently choose.
 - Keep `docs/backend/progress.md` up to date: a checklist of every step ID with done / blocked / skipped.
-- Commit attribution: add no Co-authored-by / Generated-by trailers.

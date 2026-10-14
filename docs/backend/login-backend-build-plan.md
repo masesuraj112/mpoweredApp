@@ -439,7 +439,6 @@ Costs reference for the Twilio sprint (USD, my research, **verify before quoting
 ## 2.1 One-time setup
 1. Save this file and `testing-and-cicd.md` into the repo at `docs/backend/` (commit on a `docs/` branch). Claude Code can then read them with `@docs/backend/login-backend-build-plan.md`.
 2. Create `CLAUDE.md` in the repo root containing **only** the guardrails block from section 1 plus one line: "Build plan: `docs/backend/login-backend-build-plan.md`; testing: `docs/backend/testing-and-cicd.md`." Claude Code loads `CLAUDE.md` automatically, so guardrails apply even if you forget to paste them.
-3. Commit attribution: the repo's `.claude/settings.local.json` currently blanks commit attribution (`attribution.commit: ""`). Leave it unless you want co-author lines.
 
 ## 2.2 The prompt template (one per step)
 
