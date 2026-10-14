@@ -38,7 +38,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 5: Routing fixes
 - [x] S5.1 Sign in -> phone
 - [x] S5.2 Stop using `hasOnboarded` [GATE L7]
-- [ ] S5.3 `_layout.tsx` order
+- [x] S5.3 `_layout.tsx` order
 - [ ] S5.4 Verify login-bridge hops
 - [ ] S5.5 Returning user, no profile [GATE L7]
 
