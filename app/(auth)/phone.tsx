@@ -114,7 +114,7 @@ export default function PhoneScreen() {
             },
           ]}
         >
-          We will send the four digit verification codes to this number
+          We will send the six digit verification codes to this number
         </Text>
 
         {showPhoneError && (
