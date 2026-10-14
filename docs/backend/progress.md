@@ -48,7 +48,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S6.3 Name length (L10)
 - [x] S6.4 `create_profile` function
 - [x] S6.5 pgTAP tests
-- [x] S6.6 Types updated by hand to match the migrations (CI types-diff is the check; replace with CI output if it differs)
+- [x] S6.6 Regenerate types (hand-written; CI types-diff passed)
 
 ## Phase 7: Mapping and service
 - [ ] S7.1 Pure mapper
