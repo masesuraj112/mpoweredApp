@@ -13,6 +13,7 @@ module.exports = {
     'src/features/assessments/pain/summary.ts',
     'src/features/care-planner/appointmentDisplay.ts',
     'src/features/care-planner/planDisplay.ts',
+    'src/features/care-planner/signature.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
