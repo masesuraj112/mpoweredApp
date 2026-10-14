@@ -57,7 +57,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S7.4 Coverage list
 
 ## Phase 8: End-to-end wiring
-- [ ] S8.1 After verify routing
+- [x] S8.1 After verify routing
 - [x] S8.2 AuthContext `hasProfile`
 - [x] S8.3 Root guard
 - [ ] S8.4 Sign out

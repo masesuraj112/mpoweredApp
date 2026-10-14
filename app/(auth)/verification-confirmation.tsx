@@ -1,11 +1,12 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
+  const { refreshProfile } = useAuth();
   const [slide, setSlide] = useState(0);
   const { width, height } = useWindowDimensions();
   const scale = Math.min(1, width / 412, height / 823);
@@ -19,7 +20,8 @@ export default function VerificationConfirmationScreen() {
     return () => clearTimeout(timer);
   }, [slide]);
 
-  const handleContinue = () => router.replace('/(tabs)/home' as any);
+  // The root guard opens the tabs once the profile check reports that the profile exists.
+  const handleContinue = () => refreshProfile();
 
   return (
     <View style={styles.screen}>

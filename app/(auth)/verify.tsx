@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
+import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
 import {
@@ -11,7 +12,9 @@ import {
   sanitiseCode,
 } from '@/features/auth/otp';
 import { formatForDisplay, toE164 } from '@/features/auth/phone';
-import { sendVerificationCode, verifyCode } from '@/services/auth';
+import { toProfileArgs } from '@/features/auth/profile';
+import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
+import { createProfile } from '@/services/profile';
 
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
 const CODE_CELL_WIDTH = 40;
@@ -20,7 +23,10 @@ const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CE
 
 export default function VerifyScreen() {
   const { data } = useOnboarding();
+  const { refreshProfile } = useAuth();
   const [code, setCode] = useState('');
+  // True once the code is accepted: from then on a retry only repeats the profile step
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,7 +37,7 @@ export default function VerifyScreen() {
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
   const isCodeComplete = isOtpComplete(code);
-  const canVerify = isCodeComplete && !isVerifying;
+  const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
   const resendMinutes = Math.round(RESEND_SECONDS / 60);
   const normalisedPhone = toE164(data.phoneNumber);
@@ -67,19 +73,51 @@ export default function VerifyScreen() {
     setCode('');
     setResendSecondsRemaining(RESEND_SECONDS);
   };
+  // After a good code: returning users go home, new users get a profile made, and a user who
+  // has no profile and no onboarding answers (signed in with an unknown number) is sent to
+  // onboarding. The root guard moves anyone with a profile to the tabs.
+  const finishSignIn = async () => {
+    const profile = await hasProfile();
+    if (!profile.ok) {
+      setErrorMessage(authErrorMessage(profile.error.code));
+      return;
+    }
+    if (profile.data) {
+      refreshProfile();
+      return;
+    }
+    if (!toProfileArgs(data).ok) {
+      router.replace('/(auth)/user-type' as any);
+      return;
+    }
+    const created = await createProfile(data);
+    if (!created.ok) {
+      setErrorMessage(authErrorMessage(created.error.code));
+      return;
+    }
+    router.replace('/(auth)/verification-confirmation' as any);
+  };
+
   const handleVerify = async () => {
     if (!canVerify) return;
     setErrorMessage(null);
     setIsVerifying(true);
+    if (isSignedIn) {
+      await finishSignIn();
+      setIsVerifying(false);
+      return;
+    }
     const result = await verifyCode(data.phoneNumber, code);
-    setIsVerifying(false);
     if (!result.ok) {
+      setIsVerifying(false);
       setErrorMessage(authErrorMessage(result.error.code));
       // The server reports a wrong code and an expired one the same way, so both start over.
       if (result.error.code === 'INVALID_OTP' || result.error.code === 'OTP_EXPIRED') setCode('');
       return;
     }
-    router.replace('/(auth)/verification-confirmation' as any);
+    setIsSignedIn(true);
+    await finishSignIn();
+    setIsVerifying(false);
   };
 
   return (
@@ -310,7 +348,7 @@ export default function VerifyScreen() {
               !canVerify && styles.verifyTextDisabled,
             ]}
           >
-            Verify
+            {isSignedIn ? 'Try again' : 'Verify'}
           </Text>
         </Pressable>
       </View>
