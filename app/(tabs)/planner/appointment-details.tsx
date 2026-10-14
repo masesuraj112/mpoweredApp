@@ -1,18 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AccessibilityInfo, StyleSheet } from 'react-native';
 
 import { DateTimeField } from '@/components/care-planner/DateTimeField';
 import { DateTimePickerModal } from '@/components/care-planner/DateTimePickerModal';
+import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { ActionBar } from '@/components/ui/ActionBar';
-import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
 import { TextField } from '@/components/ui/TextField';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { formatDisplayDateTime } from '@/features/care-planner/dateTime';
 import { HEALTH_SERVICE_OPTIONS } from '@/features/care-planner/healthServiceOptions';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
@@ -55,104 +54,77 @@ export default function AppointmentDetailsScreen() {
   }, [dateTimeError, nameError]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.topBar}>
-        <BackButton onPress={() => router.back()} />
-      </View>
+    <PlannerFlowScreen
+      title="Plan My Appointment"
+      keyboardShouldPersistTaps="handled"
+      footer={
+        <>
+          <ActionBar>
+            <Button
+              label={form.saving ? 'Saving…' : 'Next'}
+              accessibilityLabel={form.saving ? 'Saving appointment' : 'Next'}
+              variant="primary"
+              disabled={form.saving}
+              onPress={save}
+            />
+          </ActionBar>
 
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.title}>
-          Plan My Appointment
-        </Text>
-
-        <Card style={styles.card}>
-          <DateTimeField
-            label="Appointment date and time"
-            placeholder="Pick appointment date and time"
-            displayValue={form.dateTime ? formatDisplayDateTime(form.dateTime) : null}
-            error={form.errors.dateTime}
-            onPress={() => setPickerOpen(true)}
-          />
-
-          <TextField
-            label="Doctor’s name"
-            hint="optional"
-            placeholder="Type healthcare practitioner name"
-            value={form.practitionerName}
-            onChangeText={form.changeName}
-            maxLength={MAX_PRACTITIONER_NAME_LENGTH}
-            error={form.errors.practitionerName}
-          />
-
-          <Select
-            label="Health services"
-            hint="optional"
-            placeholder="Select healthcare practitioner service"
-            options={HEALTH_SERVICE_OPTIONS}
-            value={form.healthService}
-            onChange={form.setHealthService}
-            clearable
-          />
-        </Card>
-
-        {form.saveError ? (
-          <ErrorState
-            message="We could not save your appointment."
-            onRetry={save}
-            retryLabel="Try saving again"
-          />
-        ) : null}
-      </ScrollView>
-
-      <ActionBar>
-        <Button
-          label={form.saving ? 'Saving…' : 'Next'}
-          accessibilityLabel={form.saving ? 'Saving appointment' : 'Next'}
-          variant="primary"
-          disabled={form.saving}
-          onPress={save}
+          {pickerOpen ? (
+            <DateTimePickerModal
+              value={form.dateTime}
+              onConfirm={(value) => {
+                form.chooseDateTime(value);
+                setPickerOpen(false);
+              }}
+              onCancel={() => setPickerOpen(false)}
+            />
+          ) : null}
+        </>
+      }>
+      <Card variant="outlined" style={styles.card}>
+        <DateTimeField
+          label="Appointment date and time"
+          placeholder="Pick appointment date and time"
+          displayValue={form.dateTime ? formatDisplayDateTime(form.dateTime) : null}
+          error={form.errors.dateTime}
+          onPress={() => setPickerOpen(true)}
         />
-      </ActionBar>
 
-      {pickerOpen ? (
-        <DateTimePickerModal
-          value={form.dateTime}
-          onConfirm={(value) => {
-            form.chooseDateTime(value);
-            setPickerOpen(false);
-          }}
-          onCancel={() => setPickerOpen(false)}
+        <TextField
+          label="Doctor’s name"
+          hint="optional"
+          placeholder="Type healthcare practitioner name"
+          value={form.practitionerName}
+          onChangeText={form.changeName}
+          maxLength={MAX_PRACTITIONER_NAME_LENGTH}
+          error={form.errors.practitionerName}
+        />
+
+        <Select
+          label="Health services"
+          hint="optional"
+          placeholder="Select healthcare practitioner service"
+          options={HEALTH_SERVICE_OPTIONS}
+          value={form.healthService}
+          onChange={form.setHealthService}
+          clearable
+        />
+      </Card>
+
+      {form.saveError ? (
+        <ErrorState
+          message="We could not save your appointment."
+          onRetry={save}
+          retryLabel="Try saving again"
         />
       ) : null}
-    </SafeAreaView>
+    </PlannerFlowScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
-  topBar: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-  },
-  content: {
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
   card: {
     gap: Spacing.four,
     padding: Spacing.four,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
   },
 });

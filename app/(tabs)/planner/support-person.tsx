@@ -1,18 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AccessibilityInfo, StyleSheet } from 'react-native';
 
+import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
 import { SupportPersonForm } from '@/components/care-planner/SupportPersonForm';
 import { SupportPersonList } from '@/components/care-planner/SupportPersonList';
 import { ActionBar } from '@/components/ui/ActionBar';
-import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/care-planner/useSupportPerson';
@@ -55,95 +54,66 @@ export default function SupportPersonScreen() {
   }, [message]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.topBar}>
-        <BackButton onPress={() => router.back()} />
-      </View>
-
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.title}>
-          Add a Support Person
-        </Text>
-
-        <QuestionHintBanner message={INTRO} />
-
-        {form.loadStatus === 'loading' ? <LoadingState label="Loading support people" /> : null}
-
-        {form.loadStatus === 'error' ? (
-          <ErrorState message="We could not load the support people." onRetry={form.reload} />
-        ) : null}
-
-        {form.loadStatus === 'ready' ? (
-          <>
-            <SupportPersonList people={form.people} onRemove={form.removePerson} />
-
-            <Card style={styles.card}>
-              <SupportPersonForm
-                draft={form.draft}
-                errors={form.errors}
-                onChange={form.updateDraft}
-                onBlurField={form.blurField}
-              />
-              <Button
-                label="Add another person"
-                variant="elevated"
-                disabled={form.saving}
-                onPress={form.addAnother}
-                style={styles.addAnother}
-              />
-            </Card>
-          </>
-        ) : null}
-
-        {form.saveError ? (
-          <ErrorState
-            message="We could not save the support person."
-            onRetry={save}
-            retryLabel="Try saving again"
+    <PlannerFlowScreen
+      title="Add a Support Person"
+      keyboardShouldPersistTaps="handled"
+      footer={
+        <ActionBar layout="pair">
+          <Button label="Skip" variant="outlined" disabled={form.saving} onPress={skip} />
+          <Button
+            label={form.saving ? 'Saving…' : 'Save'}
+            accessibilityLabel={form.saving ? 'Saving support person' : 'Save'}
+            variant="primary"
+            disabled={form.saving}
+            onPress={save}
           />
-        ) : null}
-      </ScrollView>
+        </ActionBar>
+      }>
+      <QuestionHintBanner message={INTRO} />
 
-      <ActionBar layout="pair">
-        <Button label="Skip" variant="outlined" disabled={form.saving} onPress={skip} />
-        <Button
-          label={form.saving ? 'Saving…' : 'Save'}
-          accessibilityLabel={form.saving ? 'Saving support person' : 'Save'}
-          variant="primary"
-          disabled={form.saving}
-          onPress={save}
+      {form.loadStatus === 'loading' ? <LoadingState label="Loading support people" /> : null}
+
+      {form.loadStatus === 'error' ? (
+        <ErrorState message="We could not load the support people." onRetry={form.reload} />
+      ) : null}
+
+      {form.loadStatus === 'ready' ? (
+        <>
+          <SupportPersonList people={form.people} onRemove={form.removePerson} />
+
+          <Card variant="outlined" style={styles.card}>
+            <SupportPersonForm
+              draft={form.draft}
+              errors={form.errors}
+              onChange={form.updateDraft}
+              onBlurField={form.blurField}
+            />
+            <Button
+              label="Add another person"
+              variant="elevated"
+              disabled={form.saving}
+              onPress={form.addAnother}
+              style={styles.addAnother}
+            />
+          </Card>
+        </>
+      ) : null}
+
+      {form.saveError ? (
+        <ErrorState
+          message="We could not save the support person."
+          onRetry={save}
+          retryLabel="Try saving again"
         />
-      </ActionBar>
-    </SafeAreaView>
+      ) : null}
+    </PlannerFlowScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
-  topBar: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-  },
-  content: {
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
   card: {
     gap: Spacing.four,
     padding: Spacing.four,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
   },
   addAnother: {
     alignSelf: 'stretch',

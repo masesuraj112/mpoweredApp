@@ -1,11 +1,10 @@
 import { useRouter } from 'expo-router';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
+import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
 import { QuestionSuggestionGroup } from '@/components/care-planner/QuestionSuggestionGroup';
 import { ActionBar } from '@/components/ui/ActionBar';
-import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -73,108 +72,81 @@ export default function QuestionsScreen() {
     load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.topBar}>
-        <BackButton onPress={() => router.back()} />
-      </View>
-
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.title}>
-          Add Questions for My Appointment
-        </Text>
-
-        {!hasAppointment ? (
-          <ErrorState message="No appointment has been chosen, so questions cannot be added yet." />
-        ) : null}
-
-        {hasAppointment && load.status === 'loading' ? (
-          <LoadingState label="Loading suggested questions" />
-        ) : null}
-
-        {hasAppointment && load.status === 'error' ? (
-          <ErrorState
-            message="We could not load the suggested questions."
-            onRetry={questions.reload}
+    <PlannerFlowScreen
+      title="Add Questions for My Appointment"
+      keyboardShouldPersistTaps="handled"
+      footer={
+        <ActionBar>
+          <Button
+            label={questions.saving ? 'Saving…' : 'Save'}
+            accessibilityLabel={questions.saving ? 'Saving' : 'Save'}
+            variant={canSave ? 'primary' : 'outlined'}
+            disabled={!canSave}
+            accessibilityHint={
+              canSave || questions.saving ? undefined : 'Tick or untick a question to enable'
+            }
+            onPress={save}
           />
-        ) : null}
+        </ActionBar>
+      }>
+      {!hasAppointment ? (
+        <ErrorState message="No appointment has been chosen, so questions cannot be added yet." />
+      ) : null}
 
-        {hasAppointment && load.status === 'ready' ? (
-          <>
-            <Text style={styles.subhead}>{SUBHEAD}</Text>
-            <QuestionHintBanner message={HINT} />
+      {hasAppointment && load.status === 'loading' ? (
+        <LoadingState label="Loading suggested questions" />
+      ) : null}
 
-            <Card style={styles.card}>
-              {generatedDate ? (
-                <Text style={styles.generatedOn}>
-                  Generated on {formatDisplayDate(generatedDate)}
-                </Text>
-              ) : null}
-              <View style={styles.divider} />
-
-              {load.suggestions.groups.every((group) => group.questions.length === 0) ? (
-                <EmptyState message="There are no suggested questions yet." />
-              ) : (
-                load.suggestions.groups
-                  .filter((group) => group.questions.length > 0)
-                  .map((group) => (
-                    <QuestionSuggestionGroup
-                      key={group.groupId}
-                      group={group}
-                      selectedIds={questions.selectedIds}
-                      onToggle={handleToggle}
-                    />
-                  ))
-              )}
-            </Card>
-
-            {questions.saveError ? (
-              <ErrorState
-                message="We could not save your questions."
-                onRetry={save}
-                retryLabel="Try saving again"
-              />
-            ) : null}
-          </>
-        ) : null}
-      </ScrollView>
-
-      <ActionBar>
-        <Button
-          label={questions.saving ? 'Saving…' : 'Save'}
-          accessibilityLabel={questions.saving ? 'Saving' : 'Save'}
-          variant={canSave ? 'primary' : 'outlined'}
-          disabled={!canSave}
-          accessibilityHint={
-            canSave || questions.saving ? undefined : 'Tick or untick a question to enable'
-          }
-          onPress={save}
+      {hasAppointment && load.status === 'error' ? (
+        <ErrorState
+          message="We could not load the suggested questions."
+          onRetry={questions.reload}
         />
-      </ActionBar>
-    </SafeAreaView>
+      ) : null}
+
+      {hasAppointment && load.status === 'ready' ? (
+        <>
+          <Text style={styles.subhead}>{SUBHEAD}</Text>
+          <QuestionHintBanner message={HINT} />
+
+          <Card variant="outlined" style={styles.card}>
+            {generatedDate ? (
+              <Text style={styles.generatedOn}>
+                Generated on {formatDisplayDate(generatedDate)}
+              </Text>
+            ) : null}
+            <View style={styles.divider} />
+
+            {load.suggestions.groups.every((group) => group.questions.length === 0) ? (
+              <EmptyState message="There are no suggested questions yet." />
+            ) : (
+              load.suggestions.groups
+                .filter((group) => group.questions.length > 0)
+                .map((group) => (
+                  <QuestionSuggestionGroup
+                    key={group.groupId}
+                    group={group}
+                    selectedIds={questions.selectedIds}
+                    onToggle={handleToggle}
+                  />
+                ))
+            )}
+          </Card>
+
+          {questions.saveError ? (
+            <ErrorState
+              message="We could not save your questions."
+              onRetry={save}
+              retryLabel="Try saving again"
+            />
+          ) : null}
+        </>
+      ) : null}
+    </PlannerFlowScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
-  topBar: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-  },
-  content: {
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '700',
-    color: Colors.light.text,
-  },
   subhead: {
     fontSize: 12,
     lineHeight: 16,
@@ -184,8 +156,6 @@ const styles = StyleSheet.create({
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
   },
   generatedOn: {
     fontSize: 12,
