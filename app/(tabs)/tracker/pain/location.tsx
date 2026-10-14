@@ -4,7 +4,7 @@ import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
@@ -72,7 +72,8 @@ export default function PainLocationScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View style={styles.container}>
         <Text style={styles.pageTitle}>My Pain</Text>
       <MultiChoiceList
@@ -152,7 +153,7 @@ export default function PainLocationScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </Pressable>
   );
 }
 

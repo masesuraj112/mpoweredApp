@@ -1,12 +1,14 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
 export default function DemographicsScreen() {
   const { data, updateData } = useOnboarding();
   const [yearOfBirth, setYearOfBirth] = useState(data.yearOfBirth?.toString() ?? '');
   const currentYear = new Date().getFullYear();
+  const doneBar = useKeyboardDoneBar();
 
   const handleContinue = () => {
     const parsedYear = yearOfBirth.trim() ? parseInt(yearOfBirth, 10) : null;
@@ -18,30 +20,39 @@ export default function DemographicsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Text style={styles.title}>Your year of birth</Text>
-      <Text style={styles.optional}>This question is optional</Text>
-      <TextInput
-        value={yearOfBirth}
-        onChangeText={(value) => {
-          const digits = value.replace(/\D/g, '').slice(0, 4);
-          const parsedYear = digits.length === 4 ? parseInt(digits, 10) : null;
-          setYearOfBirth(parsedYear !== null && parsedYear > currentYear ? String(currentYear) : digits);
-        }}
-        placeholder="YYYY"
-        keyboardType="number-pad"
-        maxLength={4}
-        style={styles.input}
-      />
-      <Pressable style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueText}>Continue</Text>
-      </Pressable>
-      <Text style={styles.tip}>💡 Research shows that people can feel pain differently depending on their age</Text>
-    </KeyboardAvoidingView>
+    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
+      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <Text style={styles.title}>Your year of birth</Text>
+        <Text style={styles.optional}>This question is optional</Text>
+        <TextInput
+          value={yearOfBirth}
+          onChangeText={(value) => {
+            const digits = value.replace(/\D/g, '').slice(0, 4);
+            const parsedYear = digits.length === 4 ? parseInt(digits, 10) : null;
+            setYearOfBirth(parsedYear !== null && parsedYear > currentYear ? String(currentYear) : digits);
+          }}
+          placeholder="YYYY"
+          keyboardType="number-pad"
+          // The iOS number pad has no return key, so add a Done bar to close it.
+          inputAccessoryViewID={doneBar.id}
+          maxLength={4}
+          style={styles.input}
+        />
+        {doneBar.bar}
+        <Pressable style={styles.continueButton} onPress={handleContinue}>
+          <Text style={styles.continueText}>Continue</Text>
+        </Pressable>
+        <Text style={styles.tip}>💡 Research shows that people can feel pain differently depending on their age</Text>
+      </KeyboardAvoidingView>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 24,

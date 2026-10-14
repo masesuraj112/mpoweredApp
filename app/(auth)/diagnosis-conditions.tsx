@@ -1,7 +1,7 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
@@ -88,7 +88,8 @@ export default function DiagnosisConditionsScreen() {
   const hasSelection = selectedConditions.length > 0;
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View
         style={[
           styles.canvas,
@@ -227,7 +228,7 @@ export default function DiagnosisConditionsScreen() {
           <Text style={[styles.continueText, { fontSize: 14 * scale }, !hasSelection && styles.continueTextDisabled]}>Continue</Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
