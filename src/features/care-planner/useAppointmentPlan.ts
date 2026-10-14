@@ -10,8 +10,13 @@ export type AppointmentPlanState =
   | { status: 'error'; error: AppError }
   | { status: 'ready'; plan: AppointmentPlan };
 
-/** Loads one appointment's plan and exposes `reload` for a retry. */
-export function useAppointmentPlan(appointmentId: number): AppointmentPlanState & { reload: () => void } {
+/**
+ * Loads one appointment's plan. `reload` shows the loading state again (for a retry); `refresh`
+ * fetches again quietly, keeping what is on screen (for coming back to the screen).
+ */
+export function useAppointmentPlan(
+  appointmentId: number,
+): AppointmentPlanState & { reload: () => void; refresh: () => void } {
   const [state, setState] = useState<AppointmentPlanState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
 
@@ -33,5 +38,9 @@ export function useAppointmentPlan(appointmentId: number): AppointmentPlanState 
     setAttempt((n) => n + 1);
   }, []);
 
-  return { ...state, reload };
+  const refresh = useCallback(() => {
+    setAttempt((n) => n + 1);
+  }, []);
+
+  return { ...state, reload, refresh };
 }

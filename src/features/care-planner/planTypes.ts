@@ -19,5 +19,7 @@ export type QuestionGroup = {
 export type AppointmentPlan = {
   appointment: Appointment;
   supportPersonName: string | null;
+  /** UTC instant the recording consent was signed (ISO string), or null if it has not been. */
+  recordingConsentedAt: string | null;
   questionGroups: QuestionGroup[];
 };

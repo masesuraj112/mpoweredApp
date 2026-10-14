@@ -24,6 +24,7 @@ const plan = (counts: number[]): AppointmentPlan => ({
     healthService: 'General Practitioner (GP)',
   },
   supportPersonName: null,
+  recordingConsentedAt: null,
   questionGroups: counts.map((count, index) => ({
     groupId: `group-${index}`,
     title: `Group ${index}`,

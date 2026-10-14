@@ -2,6 +2,7 @@
 // MOCK: serves local sample data. The Supabase version will keep the same signature and take the
 // client as its last optional argument.
 
+import type { RecordingConsentInput } from '@/features/care-planner/consentTypes';
 import type { AppointmentPlan, QuestionGroup } from '@/features/care-planner/planTypes';
 import type { Appointment } from '@/features/care-planner/types';
 import { mapError } from '@/lib/errors';
@@ -79,6 +80,33 @@ const MOCK_QUESTION_GROUPS: QuestionGroup[] = [
   },
 ];
 
+/** Signed consents held in memory by the mock, keyed by appointment id. Lost on app restart. */
+const savedConsents = new Map<number, { signature: string; consentedAt: string }>();
+
+/** Test helper: forget every consent saved by the mock. */
+export function clearMockRecordingConsents(): void {
+  savedConsents.clear();
+}
+
+/**
+ * Saves the signed recording consent for an appointment.
+ * MOCK: keeps it in memory. It will map to the appointment columns `recording_consent_signature`
+ * and `recording_consent_at`.
+ */
+export async function saveRecordingConsent(input: RecordingConsentInput): Promise<Result<void>> {
+  return run(async () => {
+    const appointment = MOCK_APPOINTMENTS.find((a) => a.appointmentId === input.appointmentId);
+    if (!appointment) {
+      return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    }
+    savedConsents.set(input.appointmentId, {
+      signature: input.signature,
+      consentedAt: input.consentedAt,
+    });
+    return ok(undefined);
+  });
+}
+
 /** The plan for one appointment: its details, support person and questions. */
 export async function getAppointmentPlan(appointmentId: number): Promise<Result<AppointmentPlan>> {
   return run(async () => {
@@ -89,6 +117,7 @@ export async function getAppointmentPlan(appointmentId: number): Promise<Result<
     return ok({
       appointment,
       supportPersonName: 'Bron',
+      recordingConsentedAt: savedConsents.get(appointmentId)?.consentedAt ?? null,
       questionGroups: MOCK_QUESTION_GROUPS.map((group) => ({
         ...group,
         questions: group.questions.map((question) => ({ ...question })),
