@@ -29,6 +29,7 @@ const plan: AppointmentPlan = {
     dateTime: '2026-06-10T09:30:00',
     practitionerName: 'Dr. Maximiliano Prinzi',
     healthService: 'General Practitioner (GP)',
+    status: 'saved',
   },
   supportPersonName: 'Bron',
   recordingConsentedAt: null,

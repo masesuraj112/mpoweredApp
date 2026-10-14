@@ -1,3 +1,5 @@
+import type { AppointmentStatus } from './types';
+
 /** A question suggested for the appointment. */
 export type SuggestedQuestion = {
   questionId: number;
@@ -13,6 +15,8 @@ export type SuggestedQuestionGroup = {
 
 /** What the "Add Questions for My Appointment" screen shows. */
 export type QuestionSuggestions = {
+  /** Whether the appointment is still a draft in the create wizard, or saved. */
+  appointmentStatus: AppointmentStatus;
   /** Calendar date the suggestions were generated, `YYYY-MM-DD`. */
   generatedOn: string;
   groups: SuggestedQuestionGroup[];

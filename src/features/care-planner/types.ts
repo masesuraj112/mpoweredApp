@@ -1,4 +1,11 @@
 /**
+ * Whether an appointment has been saved yet.
+ * `draft`: being created in the wizard and not finished. Drafts are never listed.
+ * `saved`: the plan was saved on the review screen, so it appears in My Appointments.
+ */
+export type AppointmentStatus = 'draft' | 'saved';
+
+/**
  * A planned doctor appointment.
  *
  * `dateTime` is local wall-clock time as `YYYY-MM-DDTHH:mm:ss` with no zone suffix (the database
@@ -9,4 +16,27 @@ export type Appointment = {
   dateTime: string;
   practitionerName: string | null;
   healthService: string | null;
+  status: AppointmentStatus;
+};
+
+/**
+ * What the "Plan my appointment" form produces. `dateTime` is local wall-clock time
+ * (`YYYY-MM-DDTHH:mm:ss`, no zone). The name and service are null when left empty.
+ */
+export type NewAppointmentInput = {
+  dateTime: string;
+  practitionerName: string | null;
+  healthService: string | null;
+};
+
+/**
+ * Someone nominated to help with an appointment. Phone and email are optional for now; the
+ * access flags match the settings screen's support person (can add questions / answers).
+ */
+export type SupportPerson = {
+  name: string;
+  phone: string | null;
+  email: string | null;
+  canAddQuestions: boolean;
+  canAddAnswers: boolean;
 };

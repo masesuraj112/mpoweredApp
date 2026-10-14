@@ -13,6 +13,7 @@ const make = (overrides: Partial<Appointment> = {}): Appointment => ({
   dateTime: '2026-06-10T09:30:00',
   practitionerName: 'Dr. Maximiliano Prinzi',
   healthService: 'Pain Clinic',
+  status: 'saved',
   ...overrides,
 });
 

@@ -14,6 +14,8 @@ type ButtonProps = {
    */
   variant?: ButtonVariant;
   disabled?: boolean;
+  /** Decorative text shown before the label (for example a plus). Hidden from screen readers. */
+  leadingGlyph?: string;
   /** Decorative text shown after the label (for example an arrow). Hidden from screen readers. */
   trailingGlyph?: string;
   /** Spoken label. Defaults to `label`; set it when the visible text needs more context. */
@@ -28,6 +30,7 @@ export function Button({
   onPress,
   variant = 'elevated',
   disabled = false,
+  leadingGlyph,
   trailingGlyph,
   accessibilityLabel,
   accessibilityHint,
@@ -56,6 +59,11 @@ export function Button({
         style,
       ]}>
       <View style={[styles.pill, styles[variant]]}>
+        {leadingGlyph ? (
+          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
+            {leadingGlyph}
+          </Text>
+        ) : null}
         <Text style={labelStyle}>{label}</Text>
         {trailingGlyph ? (
           <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>

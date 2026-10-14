@@ -19,10 +19,13 @@ type MyAppointmentsSectionProps = {
   state: AppointmentsState;
   onViewAppointment: (appointmentId: number) => void;
   onPrepare: () => void;
+  /** Opens the screen for planning a new appointment. */
+  onAdd: () => void;
   onRetry: () => void;
 };
 
 const PREPARE_LABEL = 'Prepare for my appointment';
+const ADD_LABEL = 'Add appointment';
 
 /**
  * The "My Appointments" card: the list (or an empty message, loading or error state) and the
@@ -32,15 +35,22 @@ export function MyAppointmentsSection({
   state,
   onViewAppointment,
   onPrepare,
+  onAdd,
   onRetry,
 }: MyAppointmentsSectionProps) {
   const prepareButton = <Button label={PREPARE_LABEL} onPress={onPrepare} />;
+  const addButtonProminent = (
+    <Button label={ADD_LABEL} variant="primary" onPress={onAdd} style={styles.prominentAdd} />
+  );
 
   return (
     <Card variant="muted" style={styles.section}>
-      <Text accessibilityRole="header" style={styles.heading}>
-        My Appointments
-      </Text>
+      <View style={styles.header}>
+        <Text accessibilityRole="header" style={styles.heading}>
+          My Appointments
+        </Text>
+        <Button label={ADD_LABEL} leadingGlyph="+" variant="tonal" onPress={onAdd} />
+      </View>
 
       {state.status === 'loading' ? (
         <>
@@ -60,7 +70,10 @@ export function MyAppointmentsSection({
 
       {state.status === 'ready' && state.appointments.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <EmptyState message="You have not planned any appointments.">{prepareButton}</EmptyState>
+          <EmptyState message="You have not planned any appointments.">
+            {addButtonProminent}
+            {prepareButton}
+          </EmptyState>
         </Card>
       ) : null}
 
@@ -90,7 +103,18 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     gap: Spacing.three,
   },
+  header: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  prominentAdd: {
+    minWidth: 200,
+  },
   heading: {
+    flexShrink: 1,
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '600',

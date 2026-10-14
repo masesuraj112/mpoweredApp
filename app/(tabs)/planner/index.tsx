@@ -1,4 +1,5 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,7 +12,19 @@ import { useAppointments } from '@/features/care-planner/useAppointments';
 
 export default function PlannerScreen() {
   const router = useRouter();
-  const { reload, ...appointments } = useAppointments();
+  const { reload, refresh, ...appointments } = useAppointments();
+
+  // A new appointment is planned on another screen. Read the list again when coming back.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) {
+        firstFocus.current = false;
+        return;
+      }
+      refresh();
+    }, [refresh]),
+  );
 
   const shortcuts: Shortcut[] = [
     {
@@ -37,6 +50,7 @@ export default function PlannerScreen() {
           state={appointments}
           onRetry={reload}
           onPrepare={() => router.push('/planner/appointment-details')}
+          onAdd={() => router.push('/planner/appointment-details')}
           onViewAppointment={(appointmentId) =>
             router.push({
               pathname: '/planner/review',

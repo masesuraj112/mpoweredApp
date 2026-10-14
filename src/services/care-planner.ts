@@ -12,7 +12,11 @@ import type {
   QuestionSuggestions,
   SuggestedQuestionGroup,
 } from '@/features/care-planner/suggestionTypes';
-import type { Appointment } from '@/features/care-planner/types';
+import type {
+  Appointment,
+  NewAppointmentInput,
+  SupportPerson,
+} from '@/features/care-planner/types';
 import { mapError } from '@/lib/errors';
 import { fail, ok, type Result } from '@/lib/result';
 
@@ -26,12 +30,14 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
     dateTime: '2026-06-10T09:30:00',
     practitionerName: 'Dr. Maximiliano Prinzi',
     healthService: 'Pain Clinic',
+    status: 'saved',
   },
   {
     appointmentId: 2,
     dateTime: '2026-07-26T14:00:00',
     practitionerName: 'Ms Linda Ho',
     healthService: 'Physiotherapy',
+    status: 'saved',
   },
 ];
 
@@ -44,9 +50,136 @@ async function run<T>(call: () => Promise<Result<T>>): Promise<Result<T>> {
   }
 }
 
-/** The signed-in user's appointments. Unsorted: callers use `sortAppointments`. */
+/** Appointments created through `createAppointment`, kept in memory by the mock. */
+const createdAppointments: Appointment[] = [];
+/** Changes made to any appointment (details edited, saved), keyed by appointment id. */
+const appointmentOverrides = new Map<number, Appointment>();
+/** Support people chosen for each appointment, kept in memory by the mock. */
+const supportPeople = new Map<number, SupportPerson[]>();
+
+/** The people the sample appointments start with, so the review screen has something to show. */
+const SAMPLE_SUPPORT_PEOPLE: SupportPerson[] = [
+  { name: 'Bron', phone: null, email: null, canAddQuestions: false, canAddAnswers: false },
+];
+
+/** Every appointment the mock knows about, drafts included. */
+const allAppointments = (): Appointment[] =>
+  [...MOCK_APPOINTMENTS, ...createdAppointments].map(
+    (appointment) => appointmentOverrides.get(appointment.appointmentId) ?? appointment,
+  );
+
+const findAppointment = (appointmentId: number): Appointment | undefined =>
+  allAppointments().find((a) => a.appointmentId === appointmentId);
+
+/** Test helper: forget everything created or changed through the mock. */
+export function clearMockCreatedAppointments(): void {
+  createdAppointments.length = 0;
+  appointmentOverrides.clear();
+  supportPeople.clear();
+}
+
+/**
+ * The signed-in user's saved appointments. Drafts (still being created in the wizard) are not
+ * listed. Unsorted: callers use `sortAppointments`.
+ */
 export async function listAppointments(): Promise<Result<Appointment[]>> {
-  return run(async () => ok([...MOCK_APPOINTMENTS]));
+  return run(async () => ok(allAppointments().filter((a) => a.status === 'saved')));
+}
+
+/**
+ * Creates an appointment. `dateTime` is local wall-clock `YYYY-MM-DDTHH:mm:ss`.
+ * MOCK: kept in memory; it will insert a row into `appointment`.
+ */
+export async function createAppointment(input: NewAppointmentInput): Promise<Result<Appointment>> {
+  return run(async () => {
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(input.dateTime)) {
+      return fail({ code: 'VALIDATION', message: 'INVALID_DATE_TIME' });
+    }
+    if (input.practitionerName !== null && input.practitionerName.length > 100) {
+      return fail({ code: 'VALIDATION', message: 'NAME_TOO_LONG' });
+    }
+    const nextId = Math.max(0, ...allAppointments().map((a) => a.appointmentId)) + 1;
+    const appointment: Appointment = {
+      appointmentId: nextId,
+      dateTime: input.dateTime,
+      practitionerName: input.practitionerName,
+      healthService: input.healthService,
+      status: 'draft',
+    };
+    createdAppointments.push(appointment);
+    return ok({ ...appointment });
+  });
+}
+
+/**
+ * Changes an appointment's details (the wizard goes back and forward, so it must not create a
+ * second record). MOCK: kept in memory; it will update the `appointment` row.
+ */
+export async function updateAppointmentDetails(
+  appointmentId: number,
+  input: NewAppointmentInput,
+): Promise<Result<Appointment>> {
+  return run(async () => {
+    const existing = findAppointment(appointmentId);
+    if (!existing) return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(input.dateTime)) {
+      return fail({ code: 'VALIDATION', message: 'INVALID_DATE_TIME' });
+    }
+    if (input.practitionerName !== null && input.practitionerName.length > 100) {
+      return fail({ code: 'VALIDATION', message: 'NAME_TOO_LONG' });
+    }
+    const updated: Appointment = {
+      ...existing,
+      dateTime: input.dateTime,
+      practitionerName: input.practitionerName,
+      healthService: input.healthService,
+    };
+    appointmentOverrides.set(appointmentId, updated);
+    return ok({ ...updated });
+  });
+}
+
+/** Marks a draft appointment as saved, so it appears in My Appointments. */
+export async function markAppointmentSaved(appointmentId: number): Promise<Result<void>> {
+  return run(async () => {
+    const existing = findAppointment(appointmentId);
+    if (!existing) return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    appointmentOverrides.set(appointmentId, { ...existing, status: 'saved' });
+    return ok(undefined);
+  });
+}
+
+/** The support people chosen for an appointment (none for a new one). */
+export async function getSupportPeople(appointmentId: number): Promise<Result<SupportPerson[]>> {
+  return run(async () => {
+    if (!findAppointment(appointmentId)) {
+      return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    }
+    const isSample = MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId);
+    const people = supportPeople.get(appointmentId) ?? (isSample ? SAMPLE_SUPPORT_PEOPLE : []);
+    return ok(people.map((person) => ({ ...person })));
+  });
+}
+
+/**
+ * Saves the support people for an appointment. This REPLACES the earlier list, so going back and
+ * saving again never duplicates anyone. An empty list means "no support person".
+ * MOCK: kept in memory; it will map to `support_persons` and `appointment_has_support_persons`.
+ */
+export async function saveSupportPeople(
+  appointmentId: number,
+  people: SupportPerson[],
+): Promise<Result<void>> {
+  return run(async () => {
+    if (!findAppointment(appointmentId)) {
+      return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    }
+    supportPeople.set(
+      appointmentId,
+      people.map((person) => ({ ...person })),
+    );
+    return ok(undefined);
+  });
 }
 
 /**
@@ -157,12 +290,14 @@ export async function getQuestionSuggestions(
   appointmentId: number,
 ): Promise<Result<QuestionSuggestions>> {
   return run(async () => {
-    if (!MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId)) {
+    const appointment = findAppointment(appointmentId);
+    if (!appointment) {
       return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
     }
     const selected = selectedIdsFor(appointmentId);
     const answers = answersFor(appointmentId);
     return ok({
+      appointmentStatus: appointment.status,
       generatedOn: MOCK_SUGGESTIONS_GENERATED_ON,
       groups: MOCK_SUGGESTED_GROUPS.map((group) => ({
         ...group,
@@ -183,7 +318,7 @@ export async function saveAppointmentQuestions(
   questionIds: number[],
 ): Promise<Result<void>> {
   return run(async () => {
-    if (!MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId)) {
+    if (!findAppointment(appointmentId)) {
       return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
     }
     const known = new Set(allSuggestedQuestionIds());
@@ -233,7 +368,7 @@ export function clearMockRecordingConsents(): void {
  */
 export async function saveRecordingConsent(input: RecordingConsentInput): Promise<Result<void>> {
   return run(async () => {
-    const appointment = MOCK_APPOINTMENTS.find((a) => a.appointmentId === input.appointmentId);
+    const appointment = findAppointment(input.appointmentId);
     if (!appointment) {
       return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
     }
@@ -245,16 +380,23 @@ export async function saveRecordingConsent(input: RecordingConsentInput): Promis
   });
 }
 
+/** The names of an appointment's support people as one line, or null when there are none. */
+function supportNamesFor(appointmentId: number): string | null {
+  const isSample = MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId);
+  const people = supportPeople.get(appointmentId) ?? (isSample ? SAMPLE_SUPPORT_PEOPLE : []);
+  return people.length > 0 ? people.map((person) => person.name).join(', ') : null;
+}
+
 /** The plan for one appointment: its details, support person and questions. */
 export async function getAppointmentPlan(appointmentId: number): Promise<Result<AppointmentPlan>> {
   return run(async () => {
-    const appointment = MOCK_APPOINTMENTS.find((a) => a.appointmentId === appointmentId);
+    const appointment = findAppointment(appointmentId);
     if (!appointment) {
       return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
     }
     return ok({
       appointment,
-      supportPersonName: 'Bron',
+      supportPersonName: supportNamesFor(appointmentId),
       recordingConsentedAt: savedConsents.get(appointmentId)?.consentedAt ?? null,
       questionGroups: buildPlanGroups(appointmentId),
     });
@@ -270,7 +412,7 @@ export async function saveAnswers(
   answers: AnswerInput[],
 ): Promise<Result<void>> {
   return run(async () => {
-    if (!MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId)) {
+    if (!findAppointment(appointmentId)) {
       return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
     }
     const onPlan = new Set(selectedIdsFor(appointmentId));
