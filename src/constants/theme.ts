@@ -17,6 +17,8 @@ export const Colors = {
     outlineStrong: '#AEAEB2',
     onSurface: '#1D1B20',
     onSurfaceVariant: '#49454F',
+    secondary: '#625B71',
+    primaryContainer: '#EADDFF',
   },
   dark: {
     text: '#ffffff',
@@ -29,6 +31,8 @@ export const Colors = {
     outlineStrong: '#79747E',
     onSurface: '#E6E1E5',
     onSurfaceVariant: '#CAC4D0',
+    secondary: '#CCC2DC',
+    primaryContainer: '#4F378B',
   },
 } as const;
 
@@ -68,6 +72,14 @@ export const Spacing = {
   five: 32,
   six: 64,
 } as const;
+
+export const Radius = {
+  card: 12,
+  pill: 999,
+} as const;
+
+/** Minimum touch target (dp) for interactive elements. */
+export const MinTapTarget = 48;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
