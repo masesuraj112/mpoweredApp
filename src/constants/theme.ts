@@ -19,6 +19,12 @@ export const Colors = {
     onSurfaceVariant: '#49454F',
     secondary: '#625B71',
     primaryContainer: '#EADDFF',
+    onPrimary: '#FFFFFF',
+    error: '#B3261E',
+    secondaryContainer: '#E8DEF8',
+    onSecondaryContainer: '#4A4459',
+    controlBorder: '#3A3A3A',
+    controlChecked: '#5B4A9E',
   },
   dark: {
     text: '#ffffff',
@@ -33,6 +39,12 @@ export const Colors = {
     onSurfaceVariant: '#CAC4D0',
     secondary: '#CCC2DC',
     primaryContainer: '#4F378B',
+    onPrimary: '#381E72',
+    error: '#F2B8B5',
+    secondaryContainer: '#4A4458',
+    onSecondaryContainer: '#E8DEF8',
+    controlBorder: '#CAC4D0',
+    controlChecked: '#D0BCFF',
   },
 } as const;
 
@@ -75,6 +87,7 @@ export const Spacing = {
 
 export const Radius = {
   card: 12,
+  control: 10,
   pill: 999,
 } as const;
 

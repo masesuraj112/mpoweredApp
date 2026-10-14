@@ -2,16 +2,24 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 
 import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 
+type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
+
 type ButtonProps = {
   label: string;
   onPress: () => void;
-  /** `elevated` is a white button with a shadow; `tonal` is a purple filled button. */
-  variant?: 'elevated' | 'tonal';
+  /**
+   * `elevated`: white pill with a shadow. `tonal`: purple-tinted pill.
+   * `primary`: filled purple. `outlined`: white with a purple outline and black text.
+   * Only `elevated` and `tonal` are dimmed when disabled; `primary` and `outlined` keep their look.
+   */
+  variant?: ButtonVariant;
   disabled?: boolean;
   /** Decorative text shown after the label (for example an arrow). Hidden from screen readers. */
   trailingGlyph?: string;
   /** Spoken label. Defaults to `label`; set it when the visible text needs more context. */
   accessibilityLabel?: string;
+  /** Spoken after the label, for example why a button is disabled. */
+  accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -22,25 +30,35 @@ export function Button({
   disabled = false,
   trailingGlyph,
   accessibilityLabel,
+  accessibilityHint,
   style,
 }: ButtonProps) {
-  const tonal = variant === 'tonal';
+  const dimWhenDisabled = variant === 'elevated' || variant === 'tonal';
+  const labelStyle = [
+    styles.label,
+    variant === 'tonal' && styles.tonalLabel,
+    variant === 'primary' && styles.primaryLabel,
+    variant === 'outlined' && styles.outlinedLabel,
+  ];
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.target, pressed && styles.pressed, disabled && styles.disabled, style]}>
-      <View style={[styles.pill, tonal ? styles.tonal : styles.elevated]}>
-        <Text style={[styles.label, tonal && styles.tonalLabel]}>{label}</Text>
+      style={({ pressed }) => [
+        styles.target,
+        pressed && styles.pressed,
+        disabled && dimWhenDisabled && styles.disabled,
+        style,
+      ]}>
+      <View style={[styles.pill, styles[variant]]}>
+        <Text style={labelStyle}>{label}</Text>
         {trailingGlyph ? (
-          <Text
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-            style={[styles.label, tonal && styles.tonalLabel]}>
+          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
             {trailingGlyph}
           </Text>
         ) : null}
@@ -50,7 +68,7 @@ export function Button({
 }
 
 const styles = StyleSheet.create({
-  // The touch target is at least 48dp tall even though the visible pill is shorter.
+  // The touch target is at least 48dp tall even though the visible shape is shorter.
   target: {
     minHeight: MinTapTarget,
     minWidth: MinTapTarget,
@@ -78,6 +96,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.outline,
   },
+  primary: {
+    backgroundColor: Colors.light.primary,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
+  },
+  outlined: {
+    backgroundColor: Colors.light.background,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
+  },
   label: {
     fontSize: 14,
     lineHeight: 20,
@@ -87,6 +119,14 @@ const styles = StyleSheet.create({
   },
   tonalLabel: {
     color: Colors.light.onSurfaceVariant,
+  },
+  primaryLabel: {
+    fontWeight: '600',
+    color: Colors.light.onPrimary,
+  },
+  outlinedLabel: {
+    fontWeight: '600',
+    color: Colors.light.text,
   },
   pressed: {
     opacity: 0.8,
