@@ -46,7 +46,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [ ] S6.1 Insert privileges migration [GATE L9]
 - [x] S6.2 users.user_type (migration written; types pending S6.6)
 - [x] S6.3 Name length (L10)
-- [ ] S6.4 `create_profile` function
+- [x] S6.4 `create_profile` function
 - [ ] S6.5 pgTAP tests
 - [ ] S6.6 Regenerate types
 
