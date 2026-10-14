@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -25,7 +25,27 @@ export default function ReviewScreen() {
   const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
   const appointmentId = Number(appointmentIdParam);
   const state = useAppointmentPlan(appointmentId);
-  const [consented, setConsented] = useState(false);
+  const { refresh } = state;
+
+  // Consent is signed on its own screen. Re-read the plan when coming back so the tick shows.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) {
+        firstFocus.current = false;
+        return;
+      }
+      refresh();
+    }, [refresh]),
+  );
+
+  const consented = state.status === 'ready' && state.plan.recordingConsentedAt !== null;
+
+  const openConsent = () =>
+    router.push({
+      pathname: '/planner/consent',
+      params: { appointmentId: String(appointmentId) },
+    });
 
   const editAnswer = (questionId: number) =>
     router.push({
@@ -65,7 +85,7 @@ export default function ReviewScreen() {
             <Text accessibilityRole="header" style={styles.sectionTitle}>
               Questions to ask
             </Text>
-            <RecordingConsentRow checked={consented} onChange={setConsented} />
+            <RecordingConsentRow checked={consented} onPress={openConsent} />
 
             {isPlanEmpty(state.plan) ? (
               <EmptyState message="You have not added any questions for this appointment yet." />
@@ -84,7 +104,7 @@ export default function ReviewScreen() {
         consented={consented}
         onModifyQuestions={() =>
           router.push({
-            pathname: '/planner/consent',
+            pathname: '/planner/questions',
             params: { appointmentId: String(appointmentId) },
           })
         }

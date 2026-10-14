@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Colors, Spacing } from '@/constants/theme';
 
 type PlanActionBarProps = {
-  /** Recording consent has been ticked. The action stays disabled until it is. */
+  /** Recording consent has been signed. The action stays disabled until it is. */
   consented: boolean;
   onModifyQuestions: () => void;
 };
@@ -17,7 +17,7 @@ export function PlanActionBar({ consented, onModifyQuestions }: PlanActionBarPro
         label="Modify questions"
         variant={consented ? 'primary' : 'outlined'}
         disabled={!consented}
-        accessibilityHint={consented ? undefined : 'Tick the recording consent box to enable'}
+        accessibilityHint={consented ? undefined : 'Complete the recording consent to enable'}
         onPress={onModifyQuestions}
         style={styles.button}
       />

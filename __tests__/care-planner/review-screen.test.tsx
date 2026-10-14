@@ -13,6 +13,7 @@ const mockBack = jest.fn();
 jest.mock('expo-router', () => ({
   useRouter: () => ({ push: mockPush, back: mockBack }),
   useLocalSearchParams: () => ({ appointmentId: '1' }),
+  useFocusEffect: () => {},
 }));
 
 jest.mock('@/services/care-planner', () => ({
@@ -29,6 +30,7 @@ const planWithQuestions: AppointmentPlan = {
     healthService: 'General Practitioner (GP)',
   },
   supportPersonName: 'Bron',
+  recordingConsentedAt: null,
   questionGroups: [
     {
       groupId: 'pain-location',
@@ -48,8 +50,8 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('ReviewScreen modify questions button', () => {
-  it('is disabled and does nothing until consent is ticked, then navigates', async () => {
+describe('ReviewScreen recording consent and modify questions', () => {
+  it('opens the consent screen from the consent row and keeps Modify questions disabled', async () => {
     mockGetPlan.mockResolvedValue(ok(planWithQuestions));
     await render(<ReviewScreen />);
 
@@ -60,13 +62,32 @@ describe('ReviewScreen modify questions button', () => {
     await fireEvent.press(modify);
     expect(mockPush).not.toHaveBeenCalled();
 
-    await fireEvent.press(screen.getByRole('checkbox', { name: /consent for recording/i }));
+    const consent = screen.getByRole('checkbox', { name: /consent for recording/i });
+    expect(screen.getByRole('checkbox', { checked: false })).toBeTruthy();
+    await fireEvent.press(consent);
 
-    const enabled = screen.getByRole('button', { name: 'Modify questions' });
-    expect(enabled).toBeEnabled();
-    await fireEvent.press(enabled);
     expect(mockPush).toHaveBeenCalledWith({
       pathname: '/planner/consent',
+      params: { appointmentId: '1' },
+    });
+  });
+
+  it('ticks the consent and enables Modify questions once consent has been signed', async () => {
+    mockGetPlan.mockResolvedValue(
+      ok({ ...planWithQuestions, recordingConsentedAt: '2026-10-14T01:02:03.000Z' }),
+    );
+    await render(<ReviewScreen />);
+
+    expect(
+      await screen.findByRole('checkbox', { name: /consent for recording/i, checked: true }),
+    ).toBeTruthy();
+
+    const modify = screen.getByRole('button', { name: 'Modify questions' });
+    expect(modify).toBeEnabled();
+    await fireEvent.press(modify);
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/planner/questions',
       params: { appointmentId: '1' },
     });
   });
