@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
 const CONDITIONS = [
@@ -49,6 +50,7 @@ export default function DiagnosisConditionsScreen() {
   const [searchText, setSearchText] = useState('');
   const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
   const [customCondition, setCustomCondition] = useState('');
+  const doneBar = useKeyboardDoneBar();
   const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
   const buttonBottom = Math.max(64 * scale, insets.bottom + 12 * scale);
   const buttonTop = canvasHeight - buttonBottom - 52 * scale;
@@ -188,6 +190,7 @@ export default function DiagnosisConditionsScreen() {
                   onSubmitEditing={addCustomCondition}
                   placeholder="Enter a diagnosis"
                   returnKeyType="done"
+                  inputAccessoryViewID={doneBar.id}
                   style={[styles.customConditionInput, { fontSize: 14 * scale, height: 40 * scale }]}
                 />
                 <Pressable
@@ -228,6 +231,7 @@ export default function DiagnosisConditionsScreen() {
           <Text style={[styles.continueText, { fontSize: 14 * scale }, !hasSelection && styles.continueTextDisabled]}>Continue</Text>
         </Pressable>
       </View>
+      {doneBar.bar}
     </Pressable>
   );
 }
