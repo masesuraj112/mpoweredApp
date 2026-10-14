@@ -47,7 +47,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S6.2 users.user_type (migration written; types pending S6.6)
 - [x] S6.3 Name length (L10)
 - [x] S6.4 `create_profile` function
-- [ ] S6.5 pgTAP tests
+- [x] S6.5 pgTAP tests
 - [ ] S6.6 Regenerate types
 
 ## Phase 7: Mapping and service
