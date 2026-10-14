@@ -20,5 +20,9 @@ module.exports = {
     'src/lib/errors.ts',
     'src/services/assessments.ts',
     'src/services/social-health.ts',
+    'src/features/support-person/appointments.ts',
+    'src/features/support-person/greeting.ts',
+    'src/features/support-person/context.tsx',
+    'src/features/support-person/permissions.ts',
   ],
 };

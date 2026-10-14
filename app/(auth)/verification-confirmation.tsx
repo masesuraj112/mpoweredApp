@@ -1,3 +1,5 @@
+import { useOnboarding } from '@/context/Onboarding-Context';
+import { homeRouteFor } from '@/features/support-person/account-type';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -6,6 +8,7 @@ import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-na
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
+  const { data } = useOnboarding();
   const [slide, setSlide] = useState(0);
   const { width, height } = useWindowDimensions();
   const scale = Math.min(1, width / 412, height / 823);
@@ -19,7 +22,8 @@ export default function VerificationConfirmationScreen() {
     return () => clearTimeout(timer);
   }, [slide]);
 
-  const handleContinue = () => router.replace('/(tabs)/home' as any);
+  // TODO: once the account type is saved at sign-up, the root layout's guards should decide this instead.
+  const handleContinue = () => router.replace(homeRouteFor(data.userType ?? 'patient'));
 
   return (
     <View style={styles.screen}>

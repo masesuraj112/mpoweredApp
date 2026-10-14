@@ -1,0 +1,81 @@
+import {
+  SettingsModal,
+  SettingsModalActionRow,
+  SettingsModalField,
+  SettingsModalGroup,
+  SettingsModalInfoRow,
+  SettingsModalSection,
+} from '@/components/mpowered/SettingsModal';
+import { SettingsOption, SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { useSupportPerson } from '@/features/support-person/context';
+import type { SupportedPatient } from '@/features/support-person/types';
+import { useState } from 'react';
+import { Alert, Platform, StyleSheet, Text } from 'react-native';
+
+const accountIcon = require('../../../assets/images/settings/account.svg');
+const unlinkIcon = require('../../../assets/images/support-person/unlink.svg');
+
+const permissionText = (allowed: boolean) => (allowed ? 'Allowed' : 'Not allowed');
+
+/** The patients this support person supports, with a popup to see access and unpair (Figma 3911-24201, 3911-24318). */
+export default function PeopleYouSupportScreen() {
+  const { patients, unpair } = useSupportPerson();
+  const [selected, setSelected] = useState<SupportedPatient | null>(null);
+
+  const confirmUnpair = (patient: SupportedPatient) => {
+    const firstName = patient.name.split(' ')[0];
+    const message = `You'll no longer see ${firstName}'s appointments. ${firstName} would need to send a new request to add you again.`;
+    const doUnpair = () => {
+      unpair(patient.id);
+      setSelected(null);
+    };
+
+    // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
+    if (Platform.OS === 'web') {
+      if (window.confirm(message)) doUnpair();
+      return;
+    }
+
+    Alert.alert(`Unpair from ${firstName}?`, message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Unpair', style: 'destructive', onPress: doUnpair },
+    ]);
+  };
+
+  return (
+    <SettingsSubpage title="People you support">
+      <Text style={styles.sectionTitle}>Manage people you support</Text>
+      {patients.length === 0 ? (
+        <Text style={settingsSubpageStyles.placeholder}>You aren’t supporting anyone yet.</Text>
+      ) : (
+        patients.map(patient => (
+          <SettingsOption key={patient.id} icon={accountIcon} label={patient.name} onPress={() => setSelected(patient)} />
+        ))
+      )}
+
+      {selected && (
+        <SettingsModal visible title="Manage person you support" scrollable onClose={() => setSelected(null)}>
+          <SettingsModalField label="Name" value={selected.name} editable={false} showEditIcon={false} />
+          {/* Only the patient can change these, so they're shown read-only. */}
+          <SettingsModalSection title="Your access permissions">
+            <SettingsModalGroup>
+              <SettingsModalInfoRow label="Add questions" value={permissionText(selected.canAddQuestions)} />
+              <SettingsModalInfoRow label="Add doctor’s answers" value={permissionText(selected.canAddAnswers)} />
+              <SettingsModalActionRow
+                label={`Unpair from ${selected.name.split(' ')[0]}`}
+                icon={unlinkIcon}
+                destructive
+                onPress={() => confirmUnpair(selected)}
+              />
+            </SettingsModalGroup>
+          </SettingsModalSection>
+        </SettingsModal>
+      )}
+    </SettingsSubpage>
+  );
+}
+
+const styles = StyleSheet.create({
+  // Same as "Manage support persons" on the patient's Support Persons page.
+  sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
+});

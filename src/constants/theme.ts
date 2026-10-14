@@ -17,6 +17,8 @@ export const Colors = {
     outlineStrong: '#AEAEB2',
     onSurface: '#1D1B20',
     onSurfaceVariant: '#49454F',
+    surfaceContainer: '#F3EDF7',
+    secondaryContainer: '#E8DEF8',
   },
   dark: {
     text: '#ffffff',
@@ -29,6 +31,8 @@ export const Colors = {
     outlineStrong: '#79747E',
     onSurface: '#E6E1E5',
     onSurfaceVariant: '#CAC4D0',
+    surfaceContainer: '#211F26',
+    secondaryContainer: '#4A4458',
   },
 } as const;
 

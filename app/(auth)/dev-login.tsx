@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../src/lib/supabase';
+import { accountType, homeRouteFor } from '../../src/features/support-person/account-type';
 
 export default function DevAuthHarness() {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ export default function DevAuthHarness() {
 
     if (!signInError) {
       setSubmitting(false);
-      router.replace('/(tabs)/home');
+      router.replace(homeRouteFor(accountType));
       return;
     }
 
@@ -36,7 +37,7 @@ export default function DevAuthHarness() {
       return;
     }
 
-    router.replace('/(tabs)/home');
+    router.replace(homeRouteFor(accountType));
   };
 
   return (
