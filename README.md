@@ -132,6 +132,7 @@ The rules that must never break live in two places, so that is where the tests a
 | Database | Constraints (one pain entry per user per week, pain level ordering, required values), row level security (a user cannot read another user's data), table privileges, and the atomic `save_pain_assessment` function | pgTAP, run in a real local Postgres | `supabase/tests/database/*.test.sql` |
 | Pure logic | Week maths (Monday to Sunday), location normalisation, answer validation, error mapping | Jest | `src/**/*.test.ts`, next to the code |
 | Service logic | `savePainEntry` and the read functions, using a fake Supabase client (no network) | Jest | `src/services/assessments.test.ts` |
+| Sign-in | Phone normalisation, six digit codes, error mapping, `sendVerificationCode` / `verifyCode` / `hasProfile` / `createProfile`, and the `create_profile` function and its privileges | Jest, pgTAP | `src/features/auth/*.test.ts`, `src/services/auth.test.ts`, `src/services/profile.test.ts`, `supabase/tests/database/060_*` and `061_*` |
 
 The full list of rules and the test that proves each one is in [docs/testing.md](docs/testing.md), including what is **not** automated.
 
@@ -145,15 +146,7 @@ npm run typecheck        # TypeScript type check
 npm run lint             # ESLint (warnings are allowed, errors fail CI)
 ```
 
-The database tests need Docker Desktop running and the local Supabase stack:
-
-```bash
-supabase start           # first run downloads several GB
-supabase test db         # runs every file in supabase/tests/database/
-supabase db reset        # rebuilds the local database from all migrations
-```
-
-If `supabase start` fails because the analytics container is unhealthy (low Docker memory), use `supabase start -x logflare,vector`. The tests do not need those services.
+Database tests (pgTAP) run **only in CI**. Do not run `supabase start` or `supabase test db` locally. Open a pull request and read the **Checks** box: if `database-tests` is red, open the failing step and fix it in a new commit.
 
 ### What CI runs
 

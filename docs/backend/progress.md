@@ -68,7 +68,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S9.3 Production auth checklist
 
 ## Phase 10: Docs and handover
-- [ ] S10.1 Testing docs
+- [x] S10.1 Testing docs
 - [ ] S10.2 Login back-end doc
 - [ ] S10.3 `.env.example`
 
