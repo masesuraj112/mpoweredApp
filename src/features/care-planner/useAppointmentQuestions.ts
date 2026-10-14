@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { AppError } from '@/lib/errors';
 import { getQuestionSuggestions, saveAppointmentQuestions } from '@/services/care-planner';
 
 import { hasSelectionChanged, toggleQuestion } from './suggestionSelection';
 import type { QuestionSuggestions } from './suggestionTypes';
+import { useAsyncResult } from './useAsyncResult';
 
 type LoadState =
   | { status: 'loading' }
@@ -16,39 +17,33 @@ type LoadState =
  * `dirty` is true while the ticks differ from what was last saved.
  */
 export function useAppointmentQuestions(appointmentId: number) {
-  const [load, setLoad] = useState<LoadState>({ status: 'loading' });
-  const [attempt, setAttempt] = useState(0);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const load = useCallback(() => getQuestionSuggestions(appointmentId), [appointmentId]);
+  const { state, reload: reloadSuggestions } = useAsyncResult(load);
+
+  // The ticks the person has changed (null until they touch one) and the ticks last saved by this
+  // screen (null until a save). Both fall back to what was loaded, so there is no copy to sync.
+  const [editedIds, setEditedIds] = useState<number[] | null>(null);
+  const [savedIds, setSavedIds] = useState<number[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<AppError | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    getQuestionSuggestions(appointmentId).then((result) => {
-      if (cancelled) return;
-      if (result.ok) {
-        setLoad({ status: 'ready', suggestions: result.data });
-        setSelectedIds(result.data.selectedQuestionIds);
-        setSavedIds(result.data.selectedQuestionIds);
-      } else {
-        setLoad({ status: 'error', error: result.error });
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [appointmentId, attempt]);
+  const loadedIds = state.status === 'ready' ? state.data.selectedQuestionIds : [];
+  const baselineIds = savedIds ?? loadedIds;
+  const selectedIds = editedIds ?? baselineIds;
 
   const reload = useCallback(() => {
-    setLoad({ status: 'loading' });
-    setAttempt((n) => n + 1);
-  }, []);
+    setEditedIds(null);
+    setSavedIds(null);
+    reloadSuggestions();
+  }, [reloadSuggestions]);
 
-  const toggle = useCallback((questionId: number) => {
-    setSaveError(null);
-    setSelectedIds((current) => toggleQuestion(current, questionId));
-  }, []);
+  const toggle = useCallback(
+    (questionId: number) => {
+      setSaveError(null);
+      setEditedIds(toggleQuestion(selectedIds, questionId));
+    },
+    [selectedIds],
+  );
 
   /** Resolves true when the choices were saved. */
   const save = useCallback(async (): Promise<boolean> => {
@@ -58,18 +53,22 @@ export function useAppointmentQuestions(appointmentId: number) {
     setSaving(false);
     if (result.ok) {
       setSavedIds(selectedIds);
+      setEditedIds(null);
       return true;
     }
     setSaveError(result.error);
     return false;
   }, [appointmentId, selectedIds]);
 
+  const loadState: LoadState =
+    state.status === 'ready' ? { status: 'ready', suggestions: state.data } : state;
+
   return {
-    load,
+    load: loadState,
     reload,
     selectedIds,
     toggle,
-    dirty: hasSelectionChanged(savedIds, selectedIds),
+    dirty: hasSelectionChanged(baselineIds, selectedIds),
     saving,
     saveError,
     save,

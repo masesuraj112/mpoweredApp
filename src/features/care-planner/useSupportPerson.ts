@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import type { AppError } from '@/lib/errors';
 import { getSupportPeople, saveSupportPeople } from '@/services/care-planner';
@@ -15,8 +15,7 @@ import {
   type SupportPersonErrors,
 } from './supportPerson';
 import type { SupportPerson } from './types';
-
-type LoadStatus = 'loading' | 'ready' | 'error';
+import { useAsyncResult } from './useAsyncResult';
 
 const sameList = (a: readonly SupportPerson[], b: readonly SupportPerson[]) =>
   JSON.stringify(a) === JSON.stringify(b);
@@ -27,36 +26,27 @@ const sameList = (a: readonly SupportPerson[], b: readonly SupportPerson[]) =>
  * going back and saving again never duplicates anyone.
  */
 export function useSupportPerson(appointmentId: number) {
-  const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
-  const [attempt, setAttempt] = useState(0);
-  const [people, setPeople] = useState<SupportPerson[]>([]);
-  const [savedPeople, setSavedPeople] = useState<SupportPerson[]>([]);
+  const load = useCallback(() => getSupportPeople(appointmentId), [appointmentId]);
+  const { state, reload: reloadPeople } = useAsyncResult(load);
+
+  // The list as edited on this screen (null until it is changed) and as last saved by it (null
+  // until a save). Both fall back to what was loaded, so there is no copy to keep in sync.
+  const [editedPeople, setEditedPeople] = useState<SupportPerson[] | null>(null);
+  const [savedPeople, setSavedPeople] = useState<SupportPerson[] | null>(null);
   const [draft, setDraft] = useState<SupportPersonDraft>(EMPTY_SUPPORT_PERSON_DRAFT);
   const [errors, setErrors] = useState<SupportPersonErrors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<AppError | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    getSupportPeople(appointmentId).then((result) => {
-      if (cancelled) return;
-      if (result.ok) {
-        setPeople(result.data);
-        setSavedPeople(result.data);
-        setLoadStatus('ready');
-      } else {
-        setLoadStatus('error');
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [appointmentId, attempt]);
+  const loadedPeople = state.status === 'ready' ? state.data : [];
+  const baselinePeople = savedPeople ?? loadedPeople;
+  const people = editedPeople ?? baselinePeople;
 
   const reload = useCallback(() => {
-    setLoadStatus('loading');
-    setAttempt((n) => n + 1);
-  }, []);
+    setEditedPeople(null);
+    setSavedPeople(null);
+    reloadPeople();
+  }, [reloadPeople]);
 
   const updateDraft = useCallback((patch: Partial<SupportPersonDraft>) => {
     setDraft((current) => ({ ...current, ...patch }));
@@ -89,14 +79,15 @@ export function useSupportPerson(appointmentId: number) {
     const found = validateSupportPerson(draft);
     setErrors(found);
     if (hasErrors(found)) return false;
-    setPeople((current) => [...current, toSupportPerson(draft)]);
+    setEditedPeople([...people, toSupportPerson(draft)]);
     setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
     return true;
-  }, [draft]);
+  }, [draft, people]);
 
-  const removePerson = useCallback((index: number) => {
-    setPeople((current) => current.filter((_, i) => i !== index));
-  }, []);
+  const removePerson = useCallback(
+    (index: number) => setEditedPeople(people.filter((_, i) => i !== index)),
+    [people],
+  );
 
   const persist = useCallback(
     async (list: SupportPerson[]): Promise<boolean> => {
@@ -108,8 +99,8 @@ export function useSupportPerson(appointmentId: number) {
         setSaveError(result.error);
         return false;
       }
-      setPeople(list);
       setSavedPeople(list);
+      setEditedPeople(null);
       setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
       setErrors({});
       return true;
@@ -132,10 +123,8 @@ export function useSupportPerson(appointmentId: number) {
   /** Skips the step: no support person is saved for this appointment. */
   const skip = useCallback(async (): Promise<boolean> => persist([]), [persist]);
 
-  const dirty = !isDraftEmpty(draft) || !sameList(people, savedPeople);
-
   return {
-    loadStatus,
+    loadStatus: state.status,
     reload,
     people,
     draft,
@@ -148,6 +137,6 @@ export function useSupportPerson(appointmentId: number) {
     skip,
     saving,
     saveError,
-    dirty,
+    dirty: !isDraftEmpty(draft) || !sameList(people, baselinePeople),
   };
 }
