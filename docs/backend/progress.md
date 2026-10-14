@@ -65,7 +65,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Phase 9: Dev harness retirement [GATE L14]
 - [x] S9.1 Gate `dev-login`
 - [x] S9.2 Remove `AuthDebug`
-- [ ] S9.3 Production auth checklist
+- [x] S9.3 Production auth checklist
 
 ## Phase 10: Docs and handover
 - [ ] S10.1 Testing docs
@@ -82,7 +82,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 | L10 | Name length 45 vs 50 (mapping settled) | 🟡 |
 | L11 | Support person: A cosmetic or B `users.user_type` | ❓ |
 | L13 | Session length | ⏳ |
-| L14 | Retire dev harness | 🟡 |
-| L15 | Production config record | 🟡 |
+| L14 | Retire dev harness | ✅ settled (2026-10-14) |
+| L15 | Production config record | ✅ settled: docs/backend/production-auth-checklist.md |
 | L16 | Password / Face ID login | ❓ |
 | L17 | Phone change | ⏳ |
