@@ -4,6 +4,7 @@ import type { AppError } from '@/lib/errors';
 import { createAppointment, updateAppointmentDetails } from '@/services/care-planner';
 
 import { formatLocalTimestamp, type LocalDateTime } from './dateTime';
+import { toOptionalText } from './text';
 import type { Appointment, NewAppointmentInput } from './types';
 
 export const MAX_PRACTITIONER_NAME_LENGTH = 100;
@@ -12,12 +13,6 @@ export const DATE_TIME_REQUIRED_MESSAGE = 'Choose the date and time of your appo
 export const NAME_TOO_LONG_MESSAGE = `Doctor’s name must be ${MAX_PRACTITIONER_NAME_LENGTH} characters or fewer.`;
 
 export type FormErrors = { dateTime?: string; practitionerName?: string };
-
-/** Turns what was typed into what is saved: trimmed, and empty becomes null. */
-export function toOptionalText(value: string): string | null {
-  const trimmed = value.trim();
-  return trimmed === '' ? null : trimmed;
-}
 
 /** Checks the form. Returns the messages to show, empty when everything is fine. */
 export function validateAppointmentForm(input: {

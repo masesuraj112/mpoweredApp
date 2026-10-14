@@ -1,8 +1,9 @@
 // Pure helpers for showing and ordering appointments.
 // Pure module: no imports from @/lib/supabase, react-native or expo-*.
 
-import { formatDisplayDate, parseIsoDate } from '@/services/date';
+import { formatDisplayDate } from '@/services/date';
 
+import { parseLocalDatePart } from './dateTime';
 import type { Appointment } from './types';
 
 /** Shown when an appointment has neither a practitioner nor a health service. */
@@ -32,8 +33,7 @@ export function getAppointmentTitle(appointment: Appointment): string {
 
 /** `2026-06-10T09:30:00` becomes "10 June 2026". Empty string if the date part is malformed. */
 export function formatAppointmentDate(dateTime: string): string {
-  const match = /^(\d{4}-\d{2}-\d{2})T/.exec(dateTime);
-  const date = match ? parseIsoDate(match[1]) : null;
+  const date = parseLocalDatePart(dateTime);
   return date ? formatDisplayDate(date) : '';
 }
 

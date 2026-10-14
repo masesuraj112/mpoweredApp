@@ -5,6 +5,8 @@
 // value here is built from local components. Never use toISOString() or a UTC conversion.
 // Pure module: no imports from @/lib/supabase, react-native or expo-*.
 
+import { parseIsoDate } from '@/services/date';
+
 export type Meridiem = 'AM' | 'PM';
 
 /** A calendar day. `month` is 1 to 12. */
@@ -147,6 +149,17 @@ export function formatDisplayDateTime(value: LocalDateTime): string {
   return `${weekday} ${value.day} ${SHORT_MONTH_NAMES[value.month - 1]} ${value.year}, ${hour}:${pad2(
     value.minute,
   )} ${meridiem}`;
+}
+
+/** The calendar date at the start of a local `YYYY-MM-DDTHH:mm:ss` timestamp, or null. */
+export function parseLocalDatePart(dateTime: string): Date | null {
+  const match = /^(\d{4}-\d{2}-\d{2})T/.exec(dateTime);
+  return match ? parseIsoDate(match[1]) : null;
+}
+
+/** "10 Jun 2026". Months are spelled out by hand because locale short months differ. */
+export function formatShortDate(date: Date): string {
+  return `${date.getDate()} ${SHORT_MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 /** "Tuesday 21 October 2026", for screen readers. */

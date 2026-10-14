@@ -3,6 +3,7 @@
 
 import { normalisePhone, validateEmail, validatePhone } from '@/services/validation';
 
+import { toOptionalText } from './text';
 import type { SupportPerson } from './types';
 
 /** What is typed into the form. Strings, never null, so inputs stay controlled. */
@@ -71,18 +72,13 @@ export function validateField(
   return validateSupportPerson(draft)[field];
 }
 
-const toOptional = (value: string): string | null => {
-  const trimmed = value.trim();
-  return trimmed === '' ? null : trimmed;
-};
-
 /** A valid draft as a saved person: trimmed, phone separators removed, empty becomes null. */
 export function toSupportPerson(draft: SupportPersonDraft): SupportPerson {
-  const phone = toOptional(draft.phone);
+  const phone = toOptionalText(draft.phone);
   return {
     name: draft.name.trim(),
     phone: phone === null ? null : normalisePhone(phone),
-    email: toOptional(draft.email),
+    email: toOptionalText(draft.email),
     canAddQuestions: draft.canAddQuestions,
     canAddAnswers: draft.canAddAnswers,
   };
