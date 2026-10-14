@@ -6,7 +6,7 @@ import { parseIsoDate } from '@/services/date';
 import type { AppointmentPlan, PlanQuestion } from './planTypes';
 
 export const ADD_ANSWER_PROMPT = "Add doctor's answer";
-export const DOCTOR_ANSWER_HEADING = "Doctor's answer";
+export const VIEW_ANSWER_PROMPT = "View doctor's answer";
 export const NOT_PROVIDED_TEXT = 'Not provided';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -22,11 +22,10 @@ export function formatShortAppointmentDate(dateTime: string): string {
   return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 }
 
-/** Text above a question: the saved answer, or the prompt to add one. */
+/** Text above a question: a prompt to view the doctor's answer, or to add one. */
 export function getAnswerLine(question: PlanQuestion): { text: string; answered: boolean } {
-  const answer = question.doctorAnswer?.trim();
-  return answer
-    ? { text: `${DOCTOR_ANSWER_HEADING}: ${answer}`, answered: true }
+  return question.doctorAnswer?.trim()
+    ? { text: VIEW_ANSWER_PROMPT, answered: true }
     : { text: ADD_ANSWER_PROMPT, answered: false };
 }
 

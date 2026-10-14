@@ -14,7 +14,7 @@ export function PlanActionBar({ consented, onModifyQuestions }: PlanActionBarPro
   return (
     <View style={styles.bar}>
       <Button
-        label="Modify questions"
+        label="Add or Modify Questions"
         variant={consented ? 'primary' : 'outlined'}
         disabled={!consented}
         accessibilityHint={consented ? undefined : 'Complete the recording consent to enable'}

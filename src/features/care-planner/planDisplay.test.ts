@@ -6,6 +6,7 @@ import {
   getEditAnswerLabel,
   isPlanEmpty,
   NOT_PROVIDED_TEXT,
+  VIEW_ANSWER_PROMPT,
 } from './planDisplay';
 import type { AppointmentPlan, PlanQuestion } from './planTypes';
 
@@ -61,9 +62,9 @@ describe('getAnswerLine', () => {
     expect(getAnswerLine(question({ doctorAnswer: '   ' })).answered).toBe(false);
   });
 
-  it('shows the saved answer', () => {
+  it('prompts to view the answer when there is one', () => {
     expect(getAnswerLine(question({ doctorAnswer: 'Likely posture.' }))).toEqual({
-      text: "Doctor's answer: Likely posture.",
+      text: VIEW_ANSWER_PROMPT,
       answered: true,
     });
   });

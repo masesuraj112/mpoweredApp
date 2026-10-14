@@ -51,11 +51,11 @@ beforeEach(() => {
 });
 
 describe('ReviewScreen recording consent and modify questions', () => {
-  it('opens the consent screen from the consent row and keeps Modify questions disabled', async () => {
+  it('opens the consent screen from the consent row and keeps Add or Modify Questions disabled', async () => {
     mockGetPlan.mockResolvedValue(ok(planWithQuestions));
     await render(<ReviewScreen />);
 
-    const modify = await screen.findByRole('button', { name: 'Modify questions' });
+    const modify = await screen.findByRole('button', { name: 'Add or Modify Questions' });
     expect(modify).toBeDisabled();
     expect(modify.props.accessibilityHint).toMatch(/consent/i);
 
@@ -72,7 +72,7 @@ describe('ReviewScreen recording consent and modify questions', () => {
     });
   });
 
-  it('ticks the consent and enables Modify questions once consent has been signed', async () => {
+  it('ticks the consent and enables Add or Modify Questions once consent has been signed', async () => {
     mockGetPlan.mockResolvedValue(
       ok({ ...planWithQuestions, recordingConsentedAt: '2026-10-14T01:02:03.000Z' }),
     );
@@ -82,7 +82,7 @@ describe('ReviewScreen recording consent and modify questions', () => {
       await screen.findByRole('checkbox', { name: /consent for recording/i, checked: true }),
     ).toBeTruthy();
 
-    const modify = screen.getByRole('button', { name: 'Modify questions' });
+    const modify = screen.getByRole('button', { name: 'Add or Modify Questions' });
     expect(modify).toBeEnabled();
     await fireEvent.press(modify);
 

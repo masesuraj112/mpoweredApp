@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     color: Colors.light.error,
   },
   answered: {
-    color: Colors.light.onSurfaceVariant,
+    color: Colors.light.success,
   },
   question: {
     fontSize: 16,
