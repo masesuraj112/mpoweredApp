@@ -3,7 +3,11 @@
 // client as its last optional argument.
 
 import type { RecordingConsentInput } from '@/features/care-planner/consentTypes';
-import type { AppointmentPlan, QuestionGroup } from '@/features/care-planner/planTypes';
+import type {
+  AnswerInput,
+  AppointmentPlan,
+  QuestionGroup,
+} from '@/features/care-planner/planTypes';
 import type {
   QuestionSuggestions,
   SuggestedQuestionGroup,
@@ -254,5 +258,32 @@ export async function getAppointmentPlan(appointmentId: number): Promise<Result<
       recordingConsentedAt: savedConsents.get(appointmentId)?.consentedAt ?? null,
       questionGroups: buildPlanGroups(appointmentId),
     });
+  });
+}
+
+/**
+ * Saves doctor's answers (plain text). An empty answer text clears the answer.
+ * MOCK: kept in memory; it will map to `appointment_questions.answer`.
+ */
+export async function saveAnswers(
+  appointmentId: number,
+  answers: AnswerInput[],
+): Promise<Result<void>> {
+  return run(async () => {
+    if (!MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId)) {
+      return fail({ code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' });
+    }
+    const onPlan = new Set(selectedIdsFor(appointmentId));
+    if (!answers.every((answer) => onPlan.has(answer.questionId))) {
+      return fail({ code: 'VALIDATION', message: 'QUESTION_NOT_ON_PLAN' });
+    }
+    const next = { ...answersFor(appointmentId) };
+    answers.forEach(({ questionId, answerText }) => {
+      const text = answerText.trim();
+      if (text) next[questionId] = text;
+      else delete next[questionId];
+    });
+    doctorAnswers.set(appointmentId, next);
+    return ok(undefined);
   });
 }
