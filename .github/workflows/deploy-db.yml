@@ -1,0 +1,39 @@
+name: Deploy database
+
+# Pushes pending migrations to the hosted test project after CI has passed on main.
+# Production is not deployed here yet; add a job with required reviewers when that project exists.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-db
+  cancel-in-progress: false
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    environment: test
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.116.0
+      - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Show migration status
+        run: supabase migration list
+      # Applies migrations only. Never use `supabase config push` here: config.toml has test OTP numbers.
+      - run: supabase db push
