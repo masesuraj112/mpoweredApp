@@ -63,7 +63,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S8.4 Sign out
 
 ## Phase 9: Dev harness retirement [GATE L14]
-- [ ] S9.1 Gate `dev-login`
+- [x] S9.1 Gate `dev-login`
 - [ ] S9.2 Remove `AuthDebug`
 - [ ] S9.3 Production auth checklist
 
