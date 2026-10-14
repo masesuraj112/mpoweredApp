@@ -1,0 +1,23 @@
+import type { Appointment } from './types';
+
+/** One question the person plans to ask, with the doctor's answer once it has been noted. */
+export type PlanQuestion = {
+  questionId: number;
+  text: string;
+  /** Null until an answer has been added. */
+  doctorAnswer: string | null;
+};
+
+/** Questions that belong together, e.g. "Pain location". */
+export type QuestionGroup = {
+  groupId: string;
+  title: string;
+  questions: PlanQuestion[];
+};
+
+/** Everything the "Review My Appointment Plan" screen shows. */
+export type AppointmentPlan = {
+  appointment: Appointment;
+  supportPersonName: string | null;
+  questionGroups: QuestionGroup[];
+};
