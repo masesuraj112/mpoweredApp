@@ -1,9 +1,201 @@
-import { Text, View } from 'react-native';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
+import { QuestionSuggestionGroup } from '@/components/care-planner/QuestionSuggestionGroup';
+import { QuestionsActionBar } from '@/components/care-planner/QuestionsActionBar';
+import { BackButton } from '@/components/ui/BackButton';
+import { Card } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { Colors, Spacing } from '@/constants/theme';
+import { needsRemovalConfirmation } from '@/features/care-planner/suggestionSelection';
+import { useAppointmentQuestions } from '@/features/care-planner/useAppointmentQuestions';
+import { formatDisplayDate, parseIsoDate } from '@/services/date';
+
+// Wording copied exactly from the Figma design.
+const SUBHEAD =
+  'Based on your answers to the four impact sections, we have provided some suggested questions to ask your healthcare professional/s.';
+const HINT =
+  'Click the checkbox next to any questions you wish to add to your appointment plan.';
 
 export default function QuestionsScreen() {
+  const router = useRouter();
+  const navigation = useNavigation();
+  const { appointmentId: appointmentIdParam } = useLocalSearchParams<{ appointmentId?: string }>();
+  const appointmentId = Number(appointmentIdParam);
+  const hasAppointment = appointmentIdParam !== undefined && Number.isFinite(appointmentId);
+
+  const questions = useAppointmentQuestions(appointmentId);
+  const { load, dirty } = questions;
+
+  // Leaving with unsaved ticks asks first (covers the Back button, hardware back and swipe back).
+  const leaveAllowed = useRef(false);
+  useEffect(() => {
+    return navigation.addListener('beforeRemove', (event) => {
+      if (leaveAllowed.current || !dirty) return;
+      event.preventDefault();
+      Alert.alert('Discard changes?', 'You have unsaved changes to your questions.', [
+        { text: 'Keep editing', style: 'cancel' },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => {
+            leaveAllowed.current = true;
+            navigation.dispatch(event.data.action);
+          },
+        },
+      ]);
+    });
+  }, [navigation, dirty]);
+
+  const answeredIds = load.status === 'ready' ? load.suggestions.answeredQuestionIds : [];
+
+  const handleToggle = (questionId: number) => {
+    if (needsRemovalConfirmation(questions.selectedIds, answeredIds, questionId)) {
+      Alert.alert(
+        'Remove this question?',
+        'This question has a doctor’s answer. Removing it will also remove the answer.',
+        [
+          { text: 'Keep question', style: 'cancel' },
+          { text: 'Remove', style: 'destructive', onPress: () => questions.toggle(questionId) },
+        ],
+      );
+      return;
+    }
+    questions.toggle(questionId);
+  };
+
+  const save = async () => {
+    if (await questions.save()) {
+      leaveAllowed.current = true;
+      router.back();
+    }
+  };
+
+  const generatedDate =
+    load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
+
   return (
-    <View>
-      <Text>questions (coming soon)</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <View style={styles.topBar}>
+        <BackButton onPress={() => router.back()} />
+      </View>
+
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+        <Text accessibilityRole="header" style={styles.title}>
+          Add Questions for My Appointment
+        </Text>
+
+        {!hasAppointment ? (
+          <ErrorState message="No appointment has been chosen, so questions cannot be added yet." />
+        ) : null}
+
+        {hasAppointment && load.status === 'loading' ? (
+          <LoadingState label="Loading suggested questions" />
+        ) : null}
+
+        {hasAppointment && load.status === 'error' ? (
+          <ErrorState
+            message="We could not load the suggested questions."
+            onRetry={questions.reload}
+          />
+        ) : null}
+
+        {hasAppointment && load.status === 'ready' ? (
+          <>
+            <Text style={styles.subhead}>{SUBHEAD}</Text>
+            <QuestionHintBanner message={HINT} />
+
+            <Card style={styles.card}>
+              {generatedDate ? (
+                <Text style={styles.generatedOn}>
+                  Generated on {formatDisplayDate(generatedDate)}
+                </Text>
+              ) : null}
+              <View style={styles.divider} />
+
+              {load.suggestions.groups.every((group) => group.questions.length === 0) ? (
+                <EmptyState message="There are no suggested questions yet." />
+              ) : (
+                load.suggestions.groups
+                  .filter((group) => group.questions.length > 0)
+                  .map((group) => (
+                    <QuestionSuggestionGroup
+                      key={group.groupId}
+                      group={group}
+                      selectedIds={questions.selectedIds}
+                      onToggle={handleToggle}
+                    />
+                  ))
+              )}
+            </Card>
+
+            {questions.saveError ? (
+              <ErrorState
+                message="We could not save your questions."
+                onRetry={save}
+                retryLabel="Try saving again"
+              />
+            ) : null}
+          </>
+        ) : null}
+      </ScrollView>
+
+      <QuestionsActionBar
+        canSave={load.status === 'ready' && dirty && !questions.saving}
+        saving={questions.saving}
+        onSave={save}
+      />
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  topBar: {
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
+  },
+  content: {
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.four,
+  },
+  title: {
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: Colors.light.text,
+  },
+  subhead: {
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.4,
+    color: Colors.light.onSurface,
+  },
+  card: {
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderWidth: 1,
+    borderColor: Colors.light.outlineStrong,
+  },
+  generatedOn: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    color: Colors.light.onSurface,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.light.outline,
+  },
+});
