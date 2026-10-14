@@ -8,6 +8,12 @@ export type PlanQuestion = {
   doctorAnswer: string | null;
 };
 
+/** A doctor's answer to save. Plain text; an empty string clears the answer. */
+export type AnswerInput = {
+  questionId: number;
+  answerText: string;
+};
+
 /** Questions that belong together, e.g. "Pain location". */
 export type QuestionGroup = {
   groupId: string;

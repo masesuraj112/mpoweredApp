@@ -15,6 +15,8 @@ module.exports = {
     'src/features/care-planner/planDisplay.ts',
     'src/features/care-planner/signature.ts',
     'src/features/care-planner/suggestionSelection.ts',
+    'src/features/care-planner/answerDrafts.ts',
+    'src/features/care-planner/dictation.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
