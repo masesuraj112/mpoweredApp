@@ -1,3 +1,4 @@
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 
@@ -6,14 +7,20 @@ type SearchBarProps = TextInputProps & {
 };
 
 export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBarProps) {
+  const doneBar = useKeyboardDoneBar();
+
   return (
-    <TextInput
-      {...props}
-      placeholder={placeholder}
-      placeholderTextColor="rgba(0, 0, 0, 0.19)"
-      style={[styles.input, style]}
-      accessibilityLabel={props.accessibilityLabel ?? placeholder}
-    />
+    <>
+      <TextInput
+        {...props}
+        inputAccessoryViewID={doneBar.id}
+        placeholder={placeholder}
+        placeholderTextColor="rgba(0, 0, 0, 0.19)"
+        style={[styles.input, style]}
+        accessibilityLabel={props.accessibilityLabel ?? placeholder}
+      />
+      {doneBar.bar}
+    </>
   );
 }
 

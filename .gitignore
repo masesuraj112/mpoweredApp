@@ -49,3 +49,5 @@ example
 supabase/.temp/
 # test coverage output
 coverage/
+
+.claude/

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 export default function VerifyScreen() {
   const [code, setCode] = useState('');
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
   const codeInputRef = useRef<TextInput>(null);
+  const doneBar = useKeyboardDoneBar();
   const { width, height } = useWindowDimensions();
   const scale = Math.min(1, width / 412, height / 823);
   const canvasWidth = 412 * scale;
@@ -31,7 +33,8 @@ export default function VerifyScreen() {
   const handleVerify = () => router.replace('/(auth)/verification-confirmation' as any);
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View
         style={[
           styles.canvas,
@@ -97,11 +100,14 @@ export default function VerifyScreen() {
             accessibilityLabel="Verification code"
             autoComplete="one-time-code"
             keyboardType="number-pad"
+            // The iOS number pad has no return key, so add a Done bar to close it.
+            inputAccessoryViewID={doneBar.id}
             maxLength={4}
             onChangeText={handleCodeChange}
             value={code}
             style={styles.hiddenInput}
           />
+          {doneBar.bar}
         </View>
 
         {hasResentCode ? (
@@ -225,7 +231,7 @@ export default function VerifyScreen() {
           </Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
