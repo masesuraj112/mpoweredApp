@@ -5,15 +5,18 @@ import QuestionsScreen from '../../app/(tabs)/planner/questions';
 import { fail } from '../../src/lib/result';
 import {
   clearMockAppointmentQuestions,
+  clearMockCreatedAppointments,
+  createAppointment,
   getAppointmentPlan,
   getQuestionSuggestions,
 } from '../../src/services/care-planner';
 
 const mockBack = jest.fn();
+const mockPush = jest.fn();
 let mockParams: { appointmentId?: string } = { appointmentId: '1' };
 
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ push: jest.fn(), back: mockBack }),
+  useRouter: () => ({ push: mockPush, back: mockBack }),
   useLocalSearchParams: () => mockParams,
   useNavigation: () => ({ addListener: () => () => {}, dispatch: jest.fn() }),
 }));
@@ -43,6 +46,7 @@ jest.setTimeout(30000);
 beforeEach(() => {
   jest.clearAllMocks();
   clearMockAppointmentQuestions();
+  clearMockCreatedAppointments();
   mockParams = { appointmentId: '1' };
 });
 
@@ -81,6 +85,42 @@ describe('QuestionsScreen choosing questions', () => {
     await fireEvent.press(row(NOT_CHOSEN));
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+  });
+});
+
+describe('QuestionsScreen finishing', () => {
+  it('goes back to review for a saved appointment', async () => {
+    await render(<QuestionsScreen />);
+    await screen.findByText('Pain location');
+
+    await fireEvent.press(row(NOT_CHOSEN));
+    await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(mockBack).toHaveBeenCalled());
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('carries on forward to review for a draft appointment', async () => {
+    const created = await createAppointment({
+      dateTime: '2026-10-23T09:00:00',
+      practitionerName: null,
+      healthService: null,
+    });
+    if (!created.ok) throw new Error('could not create the draft');
+    mockParams = { appointmentId: String(created.data.appointmentId) };
+
+    await render(<QuestionsScreen />);
+    await screen.findByText('Pain location');
+    await fireEvent.press(row(NOT_CHOSEN));
+    await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: '/planner/review',
+        params: { appointmentId: String(created.data.appointmentId) },
+      }),
+    );
+    expect(mockBack).not.toHaveBeenCalled();
   });
 });
 

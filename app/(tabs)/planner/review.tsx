@@ -20,8 +20,9 @@ import {
   isPlanEmpty,
 } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
+import { FIRST_TIME_ANSWERS_HINT, getReviewMode } from '@/features/care-planner/reviewMode';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
-import { saveAnswers } from '@/services/care-planner';
+import { markAppointmentSaved, saveAnswers } from '@/services/care-planner';
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -43,6 +44,25 @@ export default function ReviewScreen() {
   );
 
   const consented = state.status === 'ready' && state.plan.recordingConsentedAt !== null;
+  // A draft appointment is still being created: Save instead of Modify, and no answers yet.
+  const mode = state.status === 'ready' ? getReviewMode(state.plan.appointment) : 'saved';
+  const firstTime = mode === 'first-time';
+
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+
+  // Saves the new appointment and closes the whole wizard back to the planner list.
+  const saveAppointment = async () => {
+    setSaving(true);
+    setSaveFailed(false);
+    const result = await markAppointmentSaved(appointmentId);
+    setSaving(false);
+    if (!result.ok) {
+      setSaveFailed(true);
+      return;
+    }
+    router.dismissTo('/planner');
+  };
 
   const openConsent = () =>
     router.push({
@@ -94,6 +114,7 @@ export default function ReviewScreen() {
             <Text accessibilityRole="header" style={styles.sectionTitle}>
               Questions to ask
             </Text>
+            {firstTime ? <Text style={styles.hint}>{FIRST_TIME_ANSWERS_HINT}</Text> : null}
             <RecordingConsentRow checked={consented} onPress={openConsent} />
 
             {isPlanEmpty(state.plan) ? (
@@ -105,16 +126,27 @@ export default function ReviewScreen() {
                   <QuestionGroupList
                     key={group.groupId}
                     group={group}
-                    onEditAnswer={setAnswerQuestionId}
+                    onEditAnswer={firstTime ? undefined : setAnswerQuestionId}
                   />
                 ))
             )}
           </Card>
         ) : null}
+
+        {saveFailed ? (
+          <ErrorState
+            message="We could not save your appointment."
+            onRetry={saveAppointment}
+            retryLabel="Try saving again"
+          />
+        ) : null}
       </ScrollView>
 
       <PlanActionBar
+        mode={mode}
         consented={consented}
+        onSave={saveAppointment}
+        saving={saving}
         onModifyQuestions={() =>
           router.push({
             pathname: '/planner/questions',
@@ -123,7 +155,7 @@ export default function ReviewScreen() {
         }
       />
 
-      {answerQuestionId !== null && answerableQuestions.length > 0 ? (
+      {!firstTime && answerQuestionId !== null && answerableQuestions.length > 0 ? (
         <AnswerModal
           questions={answerableQuestions}
           initialQuestionId={answerQuestionId}
@@ -160,6 +192,13 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     borderWidth: 1,
     borderColor: Colors.light.outlineStrong,
+  },
+  hint: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '500',
+    letterSpacing: 0.4,
+    color: Colors.light.onSurfaceVariant,
   },
   sectionTitle: {
     fontSize: 16,

@@ -14,8 +14,11 @@ type QuestionListItemProps = {
   rowLabel: string;
   /** Spoken label for the pen button. */
   editLabel: string;
-  /** Opens the answer box on this question (tapping the row or the pen). */
-  onEditAnswer: () => void;
+  /**
+   * Opens the answer box on this question (tapping the row or the pen). Leave it out to show the
+   * question read-only: no pen and the row cannot be pressed (answers cannot be added yet).
+   */
+  onEditAnswer?: () => void;
   /** Draws a divider above the item (every item after the first in a group). */
   showDivider: boolean;
 };
@@ -29,19 +32,31 @@ export function QuestionListItem({
   onEditAnswer,
   showDivider,
 }: QuestionListItemProps) {
+  const content = (
+    <>
+      <Text style={[styles.answerLine, answered ? styles.answered : styles.unanswered]}>
+        {answerLine}
+      </Text>
+      <Text style={styles.question}>{question}</Text>
+    </>
+  );
+
   return (
     <View style={[styles.item, showDivider && styles.divider]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={rowLabel}
-        onPress={onEditAnswer}
-        style={styles.text}>
-        <Text style={[styles.answerLine, answered ? styles.answered : styles.unanswered]}>
-          {answerLine}
-        </Text>
-        <Text style={styles.question}>{question}</Text>
-      </Pressable>
-      <IconButton icon={pencilIcon} accessibilityLabel={editLabel} onPress={onEditAnswer} />
+      {onEditAnswer ? (
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={rowLabel}
+            onPress={onEditAnswer}
+            style={styles.text}>
+            {content}
+          </Pressable>
+          <IconButton icon={pencilIcon} accessibilityLabel={editLabel} onPress={onEditAnswer} />
+        </>
+      ) : (
+        <View style={[styles.text, styles.readOnly]}>{content}</View>
+      )}
     </View>
   );
 }
@@ -64,6 +79,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.half,
     paddingVertical: Spacing.two,
+  },
+  readOnly: {
+    paddingRight: Spacing.three,
   },
   answerLine: {
     fontSize: 14,

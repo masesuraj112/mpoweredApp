@@ -70,10 +70,15 @@ export default function QuestionsScreen() {
   };
 
   const save = async () => {
-    if (await questions.save()) {
-      leaveAllowed.current = true;
-      router.back();
+    if (!(await questions.save())) return;
+    const draft = load.status === 'ready' && load.suggestions.appointmentStatus === 'draft';
+    if (draft) {
+      // Still creating the appointment: carry on to review, and back returns here.
+      router.push({ pathname: '/planner/review', params: { appointmentId: String(appointmentId) } });
+      return;
     }
+    leaveAllowed.current = true;
+    router.back();
   };
 
   const generatedDate =

@@ -13,7 +13,8 @@ import { QuestionListItem } from './QuestionListItem';
 
 type QuestionGroupListProps = {
   group: QuestionGroup;
-  onEditAnswer: (questionId: number) => void;
+  /** Leave out to show the questions read-only (no pen, rows not pressable). */
+  onEditAnswer?: (questionId: number) => void;
 };
 
 export function QuestionGroupList({ group, onEditAnswer }: QuestionGroupListProps) {
@@ -33,7 +34,7 @@ export function QuestionGroupList({ group, onEditAnswer }: QuestionGroupListProp
               answered={answered}
               rowLabel={getQuestionRowLabel(question)}
               editLabel={getEditAnswerLabel(question)}
-              onEditAnswer={() => onEditAnswer(question.questionId)}
+              onEditAnswer={onEditAnswer ? () => onEditAnswer(question.questionId) : undefined}
               showDivider={index > 0}
             />
           );

@@ -2,15 +2,46 @@ import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Colors, Spacing } from '@/constants/theme';
+import type { ReviewMode } from '@/features/care-planner/reviewMode';
 
 type PlanActionBarProps = {
-  /** Recording consent has been signed. The action stays disabled until it is. */
+  /**
+   * `saved` (the normal screen): the "Add or Modify Questions" button, which stays disabled until
+   * recording consent is signed. `first-time` (a draft appointment): a purple "Save" that is
+   * always enabled and not gated by consent.
+   */
+  mode?: ReviewMode;
+  /** Recording consent has been signed. Only matters in `saved` mode. */
   consented: boolean;
   onModifyQuestions: () => void;
+  /** Saves the new appointment (first-time mode). */
+  onSave?: () => void;
+  saving?: boolean;
 };
 
 /** Bar at the bottom of the review screen. It sits below the scrolling content, never over it. */
-export function PlanActionBar({ consented, onModifyQuestions }: PlanActionBarProps) {
+export function PlanActionBar({
+  mode = 'saved',
+  consented,
+  onModifyQuestions,
+  onSave,
+  saving = false,
+}: PlanActionBarProps) {
+  if (mode === 'first-time') {
+    return (
+      <View style={styles.bar}>
+        <Button
+          label={saving ? 'Saving…' : 'Save'}
+          accessibilityLabel={saving ? 'Saving appointment' : 'Save'}
+          variant="primary"
+          disabled={saving}
+          onPress={onSave ?? (() => {})}
+          style={styles.button}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.bar}>
       <Button
