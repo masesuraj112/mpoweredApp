@@ -54,7 +54,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S7.1 Pure mapper
 - [x] S7.2 `createProfile` service
 - [x] S7.3 Payload hygiene test
-- [ ] S7.4 Coverage list
+- [x] S7.4 Coverage list
 
 ## Phase 8: End-to-end wiring
 - [ ] S8.1 After verify routing

@@ -19,10 +19,12 @@ module.exports = {
     'src/features/auth/phone.ts',
     'src/features/auth/otp.ts',
     'src/features/auth/messages.ts',
+    'src/features/auth/profile.ts',
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
     'src/services/auth.ts',
+    'src/services/profile.ts',
     'src/services/social-health.ts',
   ],
 };
