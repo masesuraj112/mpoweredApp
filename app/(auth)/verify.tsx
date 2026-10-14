@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
+import { useOnboarding } from '@/context/Onboarding-Context';
+import { authErrorMessage } from '@/features/auth/messages';
 import { OTP_LENGTH, isCodeComplete as isOtpComplete, sanitiseCode } from '@/features/auth/otp';
+import { verifyCode } from '@/services/auth';
 
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
 const CODE_CELL_WIDTH = 40;
@@ -10,7 +13,10 @@ const CODE_CELL_GAP = 10;
 const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CELL_GAP;
 
 export default function VerifyScreen() {
+  const { data } = useOnboarding();
   const [code, setCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
   const codeInputRef = useRef<TextInput>(null);
   const { width, height } = useWindowDimensions();
@@ -18,6 +24,7 @@ export default function VerifyScreen() {
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
   const isCodeComplete = isOtpComplete(code);
+  const canVerify = isCodeComplete && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
 
   useEffect(() => {
@@ -33,9 +40,25 @@ export default function VerifyScreen() {
     return () => clearInterval(timer);
   }, [hasResentCode]);
 
-  const handleCodeChange = (value: string) => setCode(sanitiseCode(value));
+  const handleCodeChange = (value: string) => {
+    setCode(sanitiseCode(value));
+    setErrorMessage(null);
+  };
   const handleResend = () => setResendSecondsRemaining(120);
-  const handleVerify = () => router.replace('/(auth)/verification-confirmation' as any);
+  const handleVerify = async () => {
+    if (!canVerify) return;
+    setErrorMessage(null);
+    setIsVerifying(true);
+    const result = await verifyCode(data.phoneNumber, code);
+    setIsVerifying(false);
+    if (!result.ok) {
+      setErrorMessage(authErrorMessage(result.error.code));
+      // The server reports a wrong code and an expired one the same way, so both start over.
+      if (result.error.code === 'INVALID_OTP' || result.error.code === 'OTP_EXPIRED') setCode('');
+      return;
+    }
+    router.replace('/(auth)/verification-confirmation' as any);
+  };
 
   return (
     <View style={styles.screen}>
@@ -204,10 +227,28 @@ export default function VerifyScreen() {
           </>
         )}
 
+        {errorMessage !== null && (
+          <Text
+            accessibilityRole="alert"
+            style={[
+              styles.errorText,
+              {
+                left: 49 * scale,
+                top: 436 * scale,
+                width: 313 * scale,
+                fontSize: 12 * scale,
+                lineHeight: 16 * scale,
+              },
+            ]}
+          >
+            {errorMessage}
+          </Text>
+        )}
+
         <Pressable
           accessibilityRole="button"
-          accessibilityState={{ disabled: !isCodeComplete }}
-          disabled={!isCodeComplete}
+          accessibilityState={{ disabled: !canVerify }}
+          disabled={!canVerify}
           onPress={handleVerify}
           style={[
             styles.verifyButton,
@@ -218,14 +259,14 @@ export default function VerifyScreen() {
               height: 48 * scale,
               borderRadius: 12 * scale,
             },
-            !isCodeComplete && styles.verifyButtonDisabled,
+            !canVerify && styles.verifyButtonDisabled,
           ]}
         >
           <Text
             style={[
               styles.verifyText,
               { fontSize: 14 * scale, lineHeight: 20 * scale, letterSpacing: 0.1 * scale },
-              !isCodeComplete && styles.verifyTextDisabled,
+              !canVerify && styles.verifyTextDisabled,
             ]}
           >
             Verify
@@ -296,6 +337,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     color: '#898A8D',
     fontWeight: '500',
+  },
+  errorText: {
+    position: 'absolute',
+    color: '#B3261E',
   },
   verifyButton: {
     position: 'absolute',
