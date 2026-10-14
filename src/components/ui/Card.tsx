@@ -4,14 +4,17 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
 type CardProps = {
-  /** `muted` is a tinted container that holds other cards; `plain` is a white card. */
-  variant?: 'muted' | 'plain';
+  /**
+   * `plain` is a white card, `muted` a tinted container that holds other cards, and `outlined` a
+   * white card with a border (the main card of a screen).
+   */
+  variant?: 'plain' | 'muted' | 'outlined';
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 };
 
 export function Card({ variant = 'plain', children, style }: CardProps) {
-  return <View style={[styles.base, variant === 'muted' ? styles.muted : styles.plain, style]}>{children}</View>;
+  return <View style={[styles.base, styles[variant], style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -19,10 +22,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.card,
     padding: Spacing.three,
   },
+  plain: {
+    backgroundColor: Colors.light.background,
+  },
   muted: {
     backgroundColor: Colors.light.backgroundElement,
   },
-  plain: {
+  outlined: {
     backgroundColor: Colors.light.background,
+    borderWidth: 1,
+    borderColor: Colors.light.outlineStrong,
   },
 });

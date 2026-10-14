@@ -1,14 +1,13 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
 import { PlanActionBar } from '@/components/care-planner/PlanActionBar';
+import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionGroupList } from '@/components/care-planner/QuestionGroupList';
 import { RecordingConsentRow } from '@/components/care-planner/RecordingConsentRow';
-import { BackButton } from '@/components/ui/BackButton';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -83,115 +82,89 @@ export default function ReviewScreen() {
     state.status === 'ready' ? state.plan.questionGroups.flatMap((group) => group.questions) : [];
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.topBar}>
-        <BackButton onPress={() => router.back()} />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text accessibilityRole="header" style={styles.title}>
-          Review My Appointment Plan
-        </Text>
-
-        {state.status === 'loading' ? <LoadingState label="Loading appointment plan" /> : null}
-
-        {state.status === 'error' ? (
-          <ErrorState message="We could not load your appointment plan." onRetry={state.reload} />
-        ) : null}
-
-        {state.status === 'ready' ? (
-          <Card style={styles.card}>
-            <Text accessibilityRole="header" style={styles.sectionTitle}>
-              Appointment overview
-            </Text>
-            <AppointmentOverviewCard
-              dateText={displayOrPlaceholder(formatShortAppointmentDate(state.plan.appointment.dateTime))}
-              doctorName={displayOrPlaceholder(state.plan.appointment.practitionerName)}
-              healthService={displayOrPlaceholder(state.plan.appointment.healthService)}
-              supportPerson={displayOrPlaceholder(state.plan.supportPersonName)}
-            />
-
-            <Text accessibilityRole="header" style={styles.sectionTitle}>
-              Questions to ask
-            </Text>
-            {firstTime ? <Text style={styles.hint}>{FIRST_TIME_ANSWERS_HINT}</Text> : null}
-            <RecordingConsentRow checked={consented} onPress={openConsent} />
-
-            {isPlanEmpty(state.plan) ? (
-              <EmptyState message="You have not added any questions for this appointment yet." />
-            ) : (
-              state.plan.questionGroups
-                .filter((group) => group.questions.length > 0)
-                .map((group) => (
-                  <QuestionGroupList
-                    key={group.groupId}
-                    group={group}
-                    onEditAnswer={firstTime ? undefined : setAnswerQuestionId}
-                  />
-                ))
-            )}
-          </Card>
-        ) : null}
-
-        {saveFailed ? (
-          <ErrorState
-            message="We could not save your appointment."
-            onRetry={saveAppointment}
-            retryLabel="Try saving again"
+    <PlannerFlowScreen
+      title="Review My Appointment Plan"
+      titleWeight="regular"
+      footer={
+        <>
+          <PlanActionBar
+            mode={mode}
+            consented={consented}
+            onSave={saveAppointment}
+            saving={saving}
+            onModifyQuestions={() =>
+              router.push({
+                pathname: '/planner/questions',
+                params: { appointmentId: String(appointmentId) },
+              })
+            }
           />
-        ) : null}
-      </ScrollView>
 
-      <PlanActionBar
-        mode={mode}
-        consented={consented}
-        onSave={saveAppointment}
-        saving={saving}
-        onModifyQuestions={() =>
-          router.push({
-            pathname: '/planner/questions',
-            params: { appointmentId: String(appointmentId) },
-          })
-        }
-      />
+          {!firstTime && answerQuestionId !== null && answerableQuestions.length > 0 ? (
+            <AnswerModal
+              questions={answerableQuestions}
+              initialQuestionId={answerQuestionId}
+              onSave={saveAnswersFromBox}
+              onClose={() => setAnswerQuestionId(null)}
+            />
+          ) : null}
+        </>
+      }>
+      {state.status === 'loading' ? <LoadingState label="Loading appointment plan" /> : null}
 
-      {!firstTime && answerQuestionId !== null && answerableQuestions.length > 0 ? (
-        <AnswerModal
-          questions={answerableQuestions}
-          initialQuestionId={answerQuestionId}
-          onSave={saveAnswersFromBox}
-          onClose={() => setAnswerQuestionId(null)}
+      {state.status === 'error' ? (
+        <ErrorState message="We could not load your appointment plan." onRetry={state.reload} />
+      ) : null}
+
+      {state.status === 'ready' ? (
+        <Card variant="outlined" style={styles.card}>
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            Appointment overview
+          </Text>
+          <AppointmentOverviewCard
+            dateText={displayOrPlaceholder(formatShortAppointmentDate(state.plan.appointment.dateTime))}
+            doctorName={displayOrPlaceholder(state.plan.appointment.practitionerName)}
+            healthService={displayOrPlaceholder(state.plan.appointment.healthService)}
+            supportPerson={displayOrPlaceholder(state.plan.supportPersonName)}
+          />
+
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            Questions to ask
+          </Text>
+          {firstTime ? <Text style={styles.hint}>{FIRST_TIME_ANSWERS_HINT}</Text> : null}
+          <RecordingConsentRow checked={consented} onPress={openConsent} />
+
+          {isPlanEmpty(state.plan) ? (
+            <EmptyState message="You have not added any questions for this appointment yet." />
+          ) : (
+            state.plan.questionGroups
+              .filter((group) => group.questions.length > 0)
+              .map((group) => (
+                <QuestionGroupList
+                  key={group.groupId}
+                  group={group}
+                  onEditAnswer={firstTime ? undefined : setAnswerQuestionId}
+                />
+              ))
+          )}
+        </Card>
+      ) : null}
+
+      {saveFailed ? (
+        <ErrorState
+          message="We could not save your appointment."
+          onRetry={saveAppointment}
+          retryLabel="Try saving again"
         />
       ) : null}
-    </SafeAreaView>
+    </PlannerFlowScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
-  topBar: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-  },
-  content: {
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.light.text,
-  },
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
   },
   hint: {
     fontSize: 12,
