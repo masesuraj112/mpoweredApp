@@ -36,7 +36,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S4.5 Show target number
 
 ## Phase 5: Routing fixes
-- [ ] S5.1 Sign in -> phone
+- [x] S5.1 Sign in -> phone
 - [ ] S5.2 Stop using `hasOnboarded` [GATE L7]
 - [ ] S5.3 `_layout.tsx` order
 - [ ] S5.4 Verify login-bridge hops
@@ -76,8 +76,8 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 | ID | Decision | Status |
 | --- | --- | --- |
 | L3 | Resend interval / OTP expiry | ⏳ |
-| L6 | Sign-in and sign-up share `sendVerificationCode` | 🟡 |
-| L7 | Returning-user routing, stop using `hasOnboarded` | 🟡 |
+| L6 | Sign-in and sign-up share `sendVerificationCode` | ✅ settled (2026-10-14) |
+| L7 | Returning-user routing, stop using `hasOnboarded` | ✅ settled (2026-10-14) |
 | L9 | RPC security model (invoker vs definer) | 🟡 |
 | L10 | Name length 45 vs 50 (mapping settled) | 🟡 |
 | L11 | Support person: A cosmetic or B `users.user_type` | ❓ |

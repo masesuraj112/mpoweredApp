@@ -23,7 +23,7 @@ export default function SplashScreen() {
       const hasOnboarded = await AsyncStorage.getItem(HAS_ONBOARDED_KEY);
       if (cancelled) return;
       timeout = setTimeout(() => {
-        router.replace(hasOnboarded ? '/(auth)/verify' : '/(auth)/onboarding');
+        router.replace(hasOnboarded ? '/(auth)/phone' : '/(auth)/onboarding');
       }, 3000);
     };
     decideRoute();
