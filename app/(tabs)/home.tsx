@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useAuth } from '../../src/context/AuthContext';
-import { supabase } from '../../src/lib/supabase';
+import { signOut } from '../../src/services/auth';
 
 export default function HomeScreen() {
   return (
@@ -25,8 +25,8 @@ function AuthDebug() {
   }, [user, session, loading]);
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.log('[AuthDebug] sign out error:', error.message);
+    const result = await signOut();
+    if (!result.ok) console.log('[AuthDebug] sign out error:', result.error.message);
   };
 
   return (
