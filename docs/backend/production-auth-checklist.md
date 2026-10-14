@@ -8,7 +8,7 @@ Items marked **(verify)** are facts I could not confirm from the repo; check the
 
 - [ ] Do not run `supabase config push` or `supabase db reset` against production. `config.toml` contains a test OTP number and `enable_signup = true` for SMS.
 - [ ] A migration reaches production only by merging to `main`, passing the `test` environment, then a human approving the `production` environment (see `testing-and-cicd.md` §7).
-- [ ] Every migration in `supabase/migrations/` is applied to production: run `supabase migration list` against it and check that no version has a Local entry with no Remote entry. Passing CI does not mean the hosted project has the migration (CI uses a local database). At the time of writing nothing deploys migrations automatically, so the login ones (`20261014100000`, `20261014100100`, `20261014100200`) must be pushed by hand or by the deploy job.
+- [ ] Every migration in `supabase/migrations/` is applied to production: run `supabase migration list` against it and check that no version has a Local entry with no Remote entry. Passing CI does not mean the hosted project has the migration (CI uses a local database). The `Deploy database` workflow pushes migrations to the `test` project only; it has no production job yet, so the login ones (`20261014100000`, `20261014100100`, `20261014100200`) must be pushed to production by hand until a `production` job with required reviewers is added.
 - [ ] `create_profile` exists on the production project and `users` has a `user_type` column, or sign-up will fail after a correct code.
 
 ## 2. Providers

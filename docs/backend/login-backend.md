@@ -89,7 +89,7 @@ Pure helpers (no Supabase, no React Native) are in `src/features/auth/`:
 
 ## Before you test: the database must have the migrations
 
-CI builds a throwaway local database from the migrations every time, so a green CI run says nothing about the hosted dev project. The app cannot create profiles there until the pending migrations are pushed. Signs that they are missing: after a correct code the app says "Something went wrong. Please try again." and the Try again button keeps failing.
+CI builds a throwaway local database from the migrations every time, so a green CI run says nothing about the hosted dev project. Migrations reach the dev project when a PR is merged to `main`: the `Deploy database` workflow (`.github/workflows/deploy-db.yml`) runs after CI passes on `main` and pushes anything pending. Until your branch is merged, or if that workflow failed, the app cannot create profiles there. Use the manual steps below as a fallback, or run the workflow from the Actions tab (`workflow_dispatch`). Signs that they are missing: after a correct code the app says "Something went wrong. Please try again." and the Try again button keeps failing.
 
 ```bash
 supabase migration list        # a version with a Local entry and no Remote entry is pending
