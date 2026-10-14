@@ -28,7 +28,14 @@ export type AppError = {
 };
 
 // P0001 messages raised by save_pain_assessment that keep their own code
-const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START', 'PROFILE_EXISTS'] as const;
+const PASSTHROUGH_CODES = [
+  'NO_PROFILE',
+  'FUTURE_DATE',
+  'BEFORE_START',
+  'PROFILE_EXISTS',
+  'NO_SESSION',
+  'INVALID_PHONE',
+] as const;
 // P0001 messages that the app treats as a validation problem
 const VALIDATION_MESSAGES = [
   'NO_LOCATION',
@@ -38,6 +45,8 @@ const VALIDATION_MESSAGES = [
   'INVALID_NAME',
   'INVALID_SEX',
   'INVALID_YEAR',
+  'INVALID_USER_TYPE',
+  'INVALID_CONDITION',
 ] as const;
 
 export function mapError(error: unknown): AppError {

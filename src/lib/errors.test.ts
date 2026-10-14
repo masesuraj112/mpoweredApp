@@ -44,14 +44,17 @@ describe('mapError: errors raised by save_pain_assessment (P0001)', () => {
 });
 
 describe('mapError: errors raised by create_profile (P0001)', () => {
-  it('PROFILE_EXISTS keeps its own code', () => {
-    expect(mapError(dbError('P0001', 'PROFILE_EXISTS'))).toEqual({
-      code: 'PROFILE_EXISTS',
-      message: 'PROFILE_EXISTS',
-    });
+  it.each(['PROFILE_EXISTS', 'NO_SESSION', 'INVALID_PHONE'])('%s keeps its own code', (name) => {
+    expect(mapError(dbError('P0001', name))).toEqual({ code: name, message: name });
   });
 
-  it.each(['INVALID_NAME', 'INVALID_SEX', 'INVALID_YEAR'])(
+  it.each([
+    'INVALID_NAME',
+    'INVALID_SEX',
+    'INVALID_YEAR',
+    'INVALID_USER_TYPE',
+    'INVALID_CONDITION',
+  ])(
     '%s becomes VALIDATION and keeps the original code in detail',
     (name) => {
       expect(mapError(dbError('P0001', name))).toEqual({
