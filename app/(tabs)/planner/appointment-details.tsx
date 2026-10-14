@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppointmentDetailsActionBar } from '@/components/care-planner/AppointmentDetailsActionBar';
 import { DateTimeField } from '@/components/care-planner/DateTimeField';
 import { DateTimePickerModal } from '@/components/care-planner/DateTimePickerModal';
+import { ActionBar } from '@/components/ui/ActionBar';
 import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Select } from '@/components/ui/Select';
@@ -116,7 +117,15 @@ export default function AppointmentDetailsScreen() {
         ) : null}
       </ScrollView>
 
-      <AppointmentDetailsActionBar saving={form.saving} onSave={save} />
+      <ActionBar>
+        <Button
+          label={form.saving ? 'Saving…' : 'Next'}
+          accessibilityLabel={form.saving ? 'Saving appointment' : 'Next'}
+          variant="primary"
+          disabled={form.saving}
+          onPress={save}
+        />
+      </ActionBar>
 
       {pickerOpen ? (
         <DateTimePickerModal

@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ConsentActionBar } from '@/components/care-planner/ConsentActionBar';
 import { ConsentDetailField } from '@/components/care-planner/ConsentDetailField';
 import { ConsentSignatureSection } from '@/components/care-planner/ConsentSignatureSection';
+import { ActionBar } from '@/components/ui/ActionBar';
 import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -25,6 +26,9 @@ export default function ConsentScreen() {
   const consent = useRecordingConsent(appointmentId);
   // Strokes must never scroll the page, so scrolling is off while a finger is on the pad.
   const [drawing, setDrawing] = useState(false);
+
+  const saving = consent.status === 'saving';
+  const canSave = plan.status === 'ready' && consent.canSubmit;
 
   const save = async () => {
     if (await consent.submit()) router.back();
@@ -66,7 +70,7 @@ export default function ConsentScreen() {
               onChange={consent.changeSignature}
               onDrawStart={() => setDrawing(true)}
               onDrawEnd={() => setDrawing(false)}
-              disabled={consent.status === 'saving'}
+              disabled={saving}
             />
           </Card>
         ) : null}
@@ -80,11 +84,16 @@ export default function ConsentScreen() {
         ) : null}
       </ScrollView>
 
-      <ConsentActionBar
-        canSave={plan.status === 'ready' && consent.canSubmit}
-        saving={consent.status === 'saving'}
-        onSave={save}
-      />
+      <ActionBar>
+        <Button
+          label={saving ? 'Saving…' : 'Save'}
+          accessibilityLabel={saving ? 'Saving' : 'Save'}
+          variant={canSave ? 'primary' : 'outlined'}
+          disabled={!canSave}
+          accessibilityHint={canSave || saving ? undefined : 'Draw a signature to enable'}
+          onPress={save}
+        />
+      </ActionBar>
     </SafeAreaView>
   );
 }

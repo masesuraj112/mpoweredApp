@@ -5,8 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
 import { QuestionSuggestionGroup } from '@/components/care-planner/QuestionSuggestionGroup';
-import { QuestionsActionBar } from '@/components/care-planner/QuestionsActionBar';
+import { ActionBar } from '@/components/ui/ActionBar';
 import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -81,6 +82,8 @@ export default function QuestionsScreen() {
     router.back();
   };
 
+  const canSave = load.status === 'ready' && dirty && !questions.saving;
+
   const generatedDate =
     load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
 
@@ -150,11 +153,18 @@ export default function QuestionsScreen() {
         ) : null}
       </ScrollView>
 
-      <QuestionsActionBar
-        canSave={load.status === 'ready' && dirty && !questions.saving}
-        saving={questions.saving}
-        onSave={save}
-      />
+      <ActionBar>
+        <Button
+          label={questions.saving ? 'Saving…' : 'Save'}
+          accessibilityLabel={questions.saving ? 'Saving' : 'Save'}
+          variant={canSave ? 'primary' : 'outlined'}
+          disabled={!canSave}
+          accessibilityHint={
+            canSave || questions.saving ? undefined : 'Tick or untick a question to enable'
+          }
+          onPress={save}
+        />
+      </ActionBar>
     </SafeAreaView>
   );
 }

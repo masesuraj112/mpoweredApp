@@ -1,7 +1,5 @@
-import { StyleSheet, View } from 'react-native';
-
+import { ActionBar } from '@/components/ui/ActionBar';
 import { Button } from '@/components/ui/Button';
-import { Colors, Spacing } from '@/constants/theme';
 import type { ReviewMode } from '@/features/care-planner/reviewMode';
 
 type PlanActionBarProps = {
@@ -29,44 +27,27 @@ export function PlanActionBar({
 }: PlanActionBarProps) {
   if (mode === 'first-time') {
     return (
-      <View style={styles.bar}>
+      <ActionBar>
         <Button
           label={saving ? 'Saving…' : 'Save'}
           accessibilityLabel={saving ? 'Saving appointment' : 'Save'}
           variant="primary"
           disabled={saving}
           onPress={onSave ?? (() => {})}
-          style={styles.button}
         />
-      </View>
+      </ActionBar>
     );
   }
 
   return (
-    <View style={styles.bar}>
+    <ActionBar>
       <Button
         label="Add or Modify Questions"
         variant={consented ? 'primary' : 'outlined'}
         disabled={!consented}
         accessibilityHint={consented ? undefined : 'Complete the recording consent to enable'}
         onPress={onModifyQuestions}
-        style={styles.button}
       />
-    </View>
+    </ActionBar>
   );
 }
-
-const styles = StyleSheet.create({
-  bar: {
-    alignItems: 'center',
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
-    borderTopWidth: 2,
-    borderTopColor: Colors.light.backgroundElement,
-    backgroundColor: Colors.light.background,
-  },
-  button: {
-    width: '100%',
-    maxWidth: 250,
-  },
-});

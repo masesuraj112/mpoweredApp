@@ -4,9 +4,9 @@ import { AccessibilityInfo, Alert, ScrollView, StyleSheet, Text, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
-import { SupportPersonActionBar } from '@/components/care-planner/SupportPersonActionBar';
 import { SupportPersonForm } from '@/components/care-planner/SupportPersonForm';
 import { SupportPersonList } from '@/components/care-planner/SupportPersonList';
+import { ActionBar } from '@/components/ui/ActionBar';
 import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -117,7 +117,16 @@ export default function SupportPersonScreen() {
         ) : null}
       </ScrollView>
 
-      <SupportPersonActionBar saving={form.saving} onSkip={skip} onSave={save} />
+      <ActionBar layout="pair">
+        <Button label="Skip" variant="outlined" disabled={form.saving} onPress={skip} />
+        <Button
+          label={form.saving ? 'Saving…' : 'Save'}
+          accessibilityLabel={form.saving ? 'Saving support person' : 'Save'}
+          variant="primary"
+          disabled={form.saving}
+          onPress={save}
+        />
+      </ActionBar>
     </SafeAreaView>
   );
 }
