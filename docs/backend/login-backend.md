@@ -87,6 +87,21 @@ Pure helpers (no Supabase, no React Native) are in `src/features/auth/`:
 | `VALIDATION` | App answer checks; `P0001 INVALID_NAME`, `INVALID_SEX`, `INVALID_YEAR`, `INVALID_USER_TYPE`, `INVALID_CONDITION` (in `detail`) | Check your answers |
 | `NOT_ALLOWED` | Postgres `42501` | Please sign in again |
 
+## Before you test: the database must have the migrations
+
+CI builds a throwaway local database from the migrations every time, so a green CI run says nothing about the hosted dev project. The app cannot create profiles there until the pending migrations are pushed. Signs that they are missing: after a correct code the app says "Something went wrong. Please try again." and the Try again button keeps failing.
+
+```bash
+supabase migration list        # a version with a Local entry and no Remote entry is pending
+supabase db push --dry-run     # shows exactly what would be applied
+supabase db push
+```
+
+- Check the dry run before pushing. If it lists migrations you did not expect, another branch's migrations have not been pushed either; ask whoever merged them.
+- Do not paste migrations into the SQL editor: that does not record them in the migration history, and a later `db push` will try to apply them again.
+- Do this against the **dev** project only. The project the CLI is linked to is in `supabase/.temp/project-ref` (it must match the project ref in `EXPO_PUBLIC_SUPABASE_URL`).
+- The login migrations are `20261014100000_grant_profile_insert_privileges`, `20261014100100_add_users_user_type` and `20261014100200_create_profile`. The first one revokes all privileges on `users`, `patients` and `patient_musko_skeletal_pain` from `anon` and `authenticated` and re-grants select and insert to `authenticated`.
+
 ## Signing in as a developer
 
 SMS is not connected yet. The dev project and the local/CI stack use a **test OTP**: a fictional number mapped to a fixed code, so no SMS is sent.
