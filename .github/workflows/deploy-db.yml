@@ -36,4 +36,7 @@ jobs:
       - name: Show migration status
         run: supabase migration list
       # Applies migrations only. Never use `supabase config push` here: config.toml has test OTP numbers.
-      - run: supabase db push
+      # --include-all applies a pending migration whose timestamp is older than the newest applied one.
+      # That is normal with parallel feature branches; CI has already proved the whole set applies in
+      # version order, and this still refuses to run if the hosted history has versions main lacks.
+      - run: supabase db push --include-all
