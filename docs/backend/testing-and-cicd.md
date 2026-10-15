@@ -208,7 +208,8 @@ Caveats: output variable names and the env var your client reads (**verify** in 
 | **Test/Dev project** (hosted) | Team development | Test OTP numbers allowed |
 | **Production project** | Real users | **No test OTP. Email provider off.** |
 
-### 7.2 `deploy-db.yml` (add after Phase 6 merges and Production exists)
+### 7.2 `deploy-db.yml`
+Implemented for the `test` environment in `.github/workflows/deploy-db.yml`: it runs when CI completes successfully on `main` (or by `workflow_dispatch`) and runs `supabase link`, `migration list` and `db push --include-all`. `--include-all` is needed because feature branches are cut at different times, so a merged migration often has an older timestamp than one already applied; a plain `db push` refuses that. It does not hide a mismatch the other way: if the hosted project has versions that `main` lacks, the push still fails and needs a human. The `production` job below is **not built yet**; add it when a production project exists. It needs the `test` environment secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD` and `SUPABASE_PROJECT_REF`. The sketch below is the original design:
 ```yaml
 name: Deploy database
 on:

@@ -55,3 +55,15 @@ jobs:
         run: |
           supabase gen types typescript --local > /tmp/database.ts
           diff -u src/types/database.ts /tmp/database.ts
+
+  migrations-immutable:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Existing migrations must not change
+        run: |
+          changed=$(git diff --name-status origin/${{ github.base_ref }}...HEAD -- supabase/migrations | grep -E '^(M|D|R)' || true)
+          if [ -n "$changed" ]; then echo "Edited existing migrations:"; echo "$changed"; exit 1; fi

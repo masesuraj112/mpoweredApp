@@ -72,6 +72,12 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 - [x] S10.2 Login back-end doc
 - [x] S10.3 `.env.example`
 
+## CI/CD
+- [x] Migration-immutability check (`migrations-immutable` job)
+- [x] Auto-deploy migrations to the `test` project after merge (`deploy-db.yml`)
+- [ ] GitHub: `test` environment secrets and branch protection on `main` (done by hand in GitHub)
+- [ ] `production` deploy job (blocked: no production project yet)
+
 ## Open decisions
 | ID | Decision | Status |
 | --- | --- | --- |
