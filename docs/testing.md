@@ -2,7 +2,7 @@
 
 How to run everything is in the [README Testing section](../README.md#testing). This page lists each rule and the test that proves it.
 
-**Current results (local):** 227 Jest tests in 15 suites pass; 80 pgTAP checks in 9 files pass; `npm run typecheck` is clean.
+**Current results:** see the latest run of the CI workflow on the Actions tab (the badge in the README links to it). Jest, pgTAP and type checks run there; database tests are not run locally.
 
 Pain and social health tests share some file names (`validate.test.ts`, `messages.test.ts`, `summary.test.ts`); the pain ones are in `src/features/assessments/pain/` and the social health ones in `src/features/assessments/social-health/`.
 
@@ -47,6 +47,16 @@ Pain and social health tests share some file names (`validate.test.ts`, `message
 | The social health Summary shows the saved week, the band phrase and the existing result wording | social health `summary.test.ts` | Unit | `unit-tests` |
 | Saving social health sends validated values, bad answers never reach the database, and a lost-response retry succeeds | `social-health.test.ts` | Service | `unit-tests` |
 | Database errors map to app codes (including `MISSING_ANSWER`) and show friendly social health messages | `errors.test.ts`; social health `messages.test.ts` | Unit | `unit-tests` |
+| Local numbers become `+614...` and anything that is not an Australian mobile is rejected | `phone.test.ts` (accepted shapes, rejected input, idempotence, display format) | Unit | `unit-tests` |
+| The sign-in code is exactly six digits | `otp.test.ts` | Unit | `unit-tests` |
+| A bad phone number or code never reaches Supabase; verifying returns only a user id | `src/services/auth.test.ts` | Service | `unit-tests` |
+| Auth and profile errors map to app codes, and the friendly text never reveals whether an account exists | `errors.test.ts`; `src/features/auth/messages.test.ts` | Unit | `unit-tests` |
+| Onboarding answers map to the database values (sex casing, user type, E.164 phone, conditions) | `src/features/auth/profile.test.ts` | Unit | `unit-tests` |
+| Creating a profile never sends bad answers or a user id, and a retry after a lost response succeeds | `src/services/profile.test.ts` | Service | `unit-tests` |
+| Profile creation is atomic, rejects a second profile, and validates name, phone, sex, year and conditions | `061_create_profile` | Database | `database-tests` |
+| A user cannot see another user's profile rows; a support person gets a `users` row only | `061_create_profile` | Database | `database-tests` |
+| Logged-in users can insert and read the profile tables but not update or delete; anon has no access and cannot run `create_profile` | `060_profile_privileges` | Database | `database-tests` |
+| Resetting the onboarding answers clears them | `__tests__/onboarding-context.test.tsx` | Unit | `unit-tests` |
 | The generated types match the migrations | CI step "Generated types match the migrations" (`supabase gen types --local` compared with `src/types/database.ts`) | Static | `database-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
@@ -60,6 +70,8 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - Social health save atomicity: not applicable, the function makes a single insert.
 - That an untouched slider writes 0 in the UI (the validator accepts 0; the screen itself is checked by hand).
 - Screens and components in general: there are no component tests.
+- Real SMS delivery and the code's expiry time (test OTP numbers send nothing; checked by hand when Twilio is connected).
+- The verify screen layout, the routing between the auth screens and the tabs, the root guard, and sign-out resetting onboarding (manual checklist in `docs/backend/login-backend-build-plan.md` section 5).
 
 ## Not tested / deferred
 

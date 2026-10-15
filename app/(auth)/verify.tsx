@@ -3,8 +3,34 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
+import { useAuth } from '@/context/AuthContext';
+import { useOnboarding } from '@/context/Onboarding-Context';
+import { authErrorMessage } from '@/features/auth/messages';
+import {
+  OTP_LENGTH,
+  RESEND_SECONDS,
+  isCodeComplete as isOtpComplete,
+  sanitiseCode,
+} from '@/features/auth/otp';
+import { formatForDisplay, toE164 } from '@/features/auth/phone';
+import { toProfileArgs } from '@/features/auth/profile';
+import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
+import { createProfile } from '@/services/profile';
+
+// Six cells: 6 * 40 + 5 * 10 = 290 wide
+const CODE_CELL_WIDTH = 40;
+const CODE_CELL_GAP = 10;
+const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CELL_GAP;
+
 export default function VerifyScreen() {
+  const { data } = useOnboarding();
+  const { refreshProfile } = useAuth();
   const [code, setCode] = useState('');
+  // True once the code is accepted: from then on a retry only repeats the profile step
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
   const codeInputRef = useRef<TextInput>(null);
   const doneBar = useKeyboardDoneBar();
@@ -12,8 +38,12 @@ export default function VerifyScreen() {
   const scale = Math.min(1, width / 412, height / 823);
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
-  const isCodeComplete = code.length === 4;
+  const isCodeComplete = isOtpComplete(code);
+  const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
+  const resendMinutes = Math.round(RESEND_SECONDS / 60);
+  const normalisedPhone = toE164(data.phoneNumber);
+  const displayPhone = normalisedPhone.ok ? formatForDisplay(normalisedPhone.data) : '';
 
   useEffect(() => {
     if (!hasResentCode) return;
@@ -28,9 +58,69 @@ export default function VerifyScreen() {
     return () => clearInterval(timer);
   }, [hasResentCode]);
 
-  const handleCodeChange = (value: string) => setCode(value.replace(/\D/g, '').slice(0, 4));
-  const handleResend = () => setResendSecondsRemaining(120);
-  const handleVerify = () => router.replace('/(auth)/verification-confirmation' as any);
+  const handleCodeChange = (value: string) => {
+    setCode(sanitiseCode(value));
+    setErrorMessage(null);
+  };
+  const handleResend = async () => {
+    if (isResending) return;
+    setErrorMessage(null);
+    setIsResending(true);
+    const result = await sendVerificationCode(data.phoneNumber);
+    setIsResending(false);
+    if (!result.ok) {
+      setErrorMessage(authErrorMessage(result.error.code));
+      return;
+    }
+    setCode('');
+    setResendSecondsRemaining(RESEND_SECONDS);
+  };
+  // After a good code: returning users go home, new users get a profile made, and a user who
+  // has no profile and no onboarding answers (signed in with an unknown number) is sent to
+  // onboarding. The root guard moves anyone with a profile to the tabs.
+  const finishSignIn = async () => {
+    const profile = await hasProfile();
+    if (!profile.ok) {
+      setErrorMessage(authErrorMessage(profile.error.code));
+      return;
+    }
+    if (profile.data) {
+      refreshProfile();
+      return;
+    }
+    if (!toProfileArgs(data).ok) {
+      router.replace('/(auth)/user-type' as any);
+      return;
+    }
+    const created = await createProfile(data);
+    if (!created.ok) {
+      setErrorMessage(authErrorMessage(created.error.code));
+      return;
+    }
+    router.replace('/(auth)/verification-confirmation' as any);
+  };
+
+  const handleVerify = async () => {
+    if (!canVerify) return;
+    setErrorMessage(null);
+    setIsVerifying(true);
+    if (isSignedIn) {
+      await finishSignIn();
+      setIsVerifying(false);
+      return;
+    }
+    const result = await verifyCode(data.phoneNumber, code);
+    if (!result.ok) {
+      setIsVerifying(false);
+      setErrorMessage(authErrorMessage(result.error.code));
+      // The server reports a wrong code and an expired one the same way, so both start over.
+      if (result.error.code === 'INVALID_OTP' || result.error.code === 'OTP_EXPIRED') setCode('');
+      return;
+    }
+    setIsSignedIn(true);
+    await finishSignIn();
+    setIsVerifying(false);
+  };
 
   return (
     // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
@@ -62,18 +152,36 @@ export default function VerifyScreen() {
           We’re sending the verification code to this number
         </Text>
 
+        {displayPhone !== '' && (
+          <Text
+            accessibilityLabel={`Phone number ${displayPhone}`}
+            style={[
+              styles.phoneNumber,
+              {
+                left: 47 * scale,
+                top: 252 * scale,
+                width: 313 * scale,
+                fontSize: 18 * scale,
+                lineHeight: 24 * scale,
+              },
+            ]}
+          >
+            {displayPhone}
+          </Text>
+        )}
+
         <View
           style={[
             styles.codeRow,
             {
               left: 51 * scale,
               top: 309 * scale,
-              width: 228 * scale,
+              width: CODE_ROW_WIDTH * scale,
               height: 51 * scale,
             },
           ]}
         >
-          {Array.from({ length: 4 }, (_, index) => (
+          {Array.from({ length: OTP_LENGTH }, (_, index) => (
             <Pressable
               key={index}
               accessibilityRole="button"
@@ -82,8 +190,8 @@ export default function VerifyScreen() {
               style={[
                 styles.codeCell,
                 {
-                  left: index * 59 * scale,
-                  width: 51 * scale,
+                  left: index * (CODE_CELL_WIDTH + CODE_CELL_GAP) * scale,
+                  width: CODE_CELL_WIDTH * scale,
                   height: 51 * scale,
                   borderRadius: 5 * scale,
                   borderWidth: scale,
@@ -102,7 +210,7 @@ export default function VerifyScreen() {
             keyboardType="number-pad"
             // The iOS number pad has no return key, so add a Done bar to close it.
             inputAccessoryViewID={doneBar.id}
-            maxLength={4}
+            maxLength={OTP_LENGTH}
             onChangeText={handleCodeChange}
             value={code}
             style={styles.hiddenInput}
@@ -167,6 +275,7 @@ export default function VerifyScreen() {
               </Text>
               <Pressable
                 accessibilityRole="button"
+                disabled={isResending}
                 onPress={handleResend}
                 style={styles.resendButton}
               >
@@ -198,15 +307,33 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              You can resend codes in two minutes
+              You can resend codes in {resendMinutes} {resendMinutes === 1 ? 'minute' : 'minutes'}
             </Text>
           </>
         )}
 
+        {errorMessage !== null && (
+          <Text
+            accessibilityRole="alert"
+            style={[
+              styles.errorText,
+              {
+                left: 49 * scale,
+                top: 436 * scale,
+                width: 313 * scale,
+                fontSize: 12 * scale,
+                lineHeight: 16 * scale,
+              },
+            ]}
+          >
+            {errorMessage}
+          </Text>
+        )}
+
         <Pressable
           accessibilityRole="button"
-          accessibilityState={{ disabled: !isCodeComplete }}
-          disabled={!isCodeComplete}
+          accessibilityState={{ disabled: !canVerify }}
+          disabled={!canVerify}
           onPress={handleVerify}
           style={[
             styles.verifyButton,
@@ -217,17 +344,17 @@ export default function VerifyScreen() {
               height: 48 * scale,
               borderRadius: 12 * scale,
             },
-            !isCodeComplete && styles.verifyButtonDisabled,
+            !canVerify && styles.verifyButtonDisabled,
           ]}
         >
           <Text
             style={[
               styles.verifyText,
               { fontSize: 14 * scale, lineHeight: 20 * scale, letterSpacing: 0.1 * scale },
-              !isCodeComplete && styles.verifyTextDisabled,
+              !canVerify && styles.verifyTextDisabled,
             ]}
           >
-            Verify
+            {isSignedIn ? 'Try again' : 'Verify'}
           </Text>
         </Pressable>
       </View>
@@ -248,6 +375,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     color: '#000000',
     fontWeight: '500',
+  },
+  phoneNumber: {
+    position: 'absolute',
+    color: '#000000',
+    fontWeight: '600',
   },
   codeRow: {
     position: 'absolute',
@@ -295,6 +427,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     color: '#898A8D',
     fontWeight: '500',
+  },
+  errorText: {
+    position: 'absolute',
+    color: '#B3261E',
   },
   verifyButton: {
     position: 'absolute',

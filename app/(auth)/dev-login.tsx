@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { supabase } from '../../src/lib/supabase';
 
-export default function DevAuthHarness() {
+function DevAuthHarness() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +71,13 @@ export default function DevAuthHarness() {
       )}
     </View>
   );
+}
+
+// Email and password sign-in is for developers only: outside a development build the route
+// sends the user back to the normal phone sign-in.
+export default function DevLoginRoute() {
+  if (!__DEV__) return <Redirect href={'/(auth)' as any} />;
+  return <DevAuthHarness />;
 }
 
 const styles = StyleSheet.create({

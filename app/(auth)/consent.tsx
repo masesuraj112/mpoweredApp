@@ -9,7 +9,9 @@ const PRIVACY_URL = 'https://mpowered.example/privacy';
 export default function ConsentScreen() {
   const { data } = useOnboarding();
 
-  const handleContinue = () => router.push('/(auth)/sex');
+  // Support persons only need a name and a phone number, so the patient questions are skipped.
+  const handleContinue = () =>
+    router.push(data.userType === 'support-person' ? '/(auth)/login-bridge' : '/(auth)/sex');
 
   return (
     <View style={styles.container}>
