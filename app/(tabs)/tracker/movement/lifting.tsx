@@ -4,15 +4,7 @@ import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-
-export const LIFTING_OPTIONS = [
-  'I can lift heavy weights without extra pain',
-  'I can lift heavy weights but it gives extra pain',
-  'I struggle to lift heavy weights off the floor, but I can lift them from a table',
-  'I struggle to lift heavy weights off the floor, but I can lift medium weights on the table',
-  'I can lift very light weights',
-  'I cannot lift or carry anything at all',
-];
+import { LIFTING_OPTIONS } from '@/features/assessments/movement/options';
 
 // Roughly how many lines an option wraps to (about 36 characters per line at this font size).
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 36));

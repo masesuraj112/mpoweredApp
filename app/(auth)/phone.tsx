@@ -1,9 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
 import { sendVerificationCode } from '@/services/auth';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
@@ -18,6 +19,7 @@ export default function PhoneScreen() {
   const [showPhoneError, setShowPhoneError] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const doneBar = useKeyboardDoneBar();
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
   const { width, height } = useWindowDimensions();
@@ -51,7 +53,8 @@ export default function PhoneScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View
         style={[
           styles.canvas,
@@ -101,6 +104,8 @@ export default function PhoneScreen() {
             placeholder="04xx xxx xxx"
             placeholderTextColor="#1D1B20"
             keyboardType="phone-pad"
+            // The iOS phone pad has no return key, so add a Done bar to close it.
+            inputAccessoryViewID={doneBar.id}
             maxLength={12}
             style={[
               styles.input,
@@ -113,6 +118,7 @@ export default function PhoneScreen() {
             ]}
           />
         </View>
+        {doneBar.bar}
 
         <Text
           style={[
@@ -180,7 +186,7 @@ export default function PhoneScreen() {
           </Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

@@ -1,8 +1,9 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
 const CONDITIONS = [
@@ -49,6 +50,7 @@ export default function DiagnosisConditionsScreen() {
   const [searchText, setSearchText] = useState('');
   const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
   const [customCondition, setCustomCondition] = useState('');
+  const doneBar = useKeyboardDoneBar();
   const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
   const buttonBottom = Math.max(64 * scale, insets.bottom + 12 * scale);
   const buttonTop = canvasHeight - buttonBottom - 52 * scale;
@@ -88,7 +90,8 @@ export default function DiagnosisConditionsScreen() {
   const hasSelection = selectedConditions.length > 0;
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View
         style={[
           styles.canvas,
@@ -187,6 +190,7 @@ export default function DiagnosisConditionsScreen() {
                   onSubmitEditing={addCustomCondition}
                   placeholder="Enter a diagnosis"
                   returnKeyType="done"
+                  inputAccessoryViewID={doneBar.id}
                   style={[styles.customConditionInput, { fontSize: 14 * scale, height: 40 * scale }]}
                 />
                 <Pressable
@@ -227,7 +231,8 @@ export default function DiagnosisConditionsScreen() {
           <Text style={[styles.continueText, { fontSize: 14 * scale }, !hasSelection && styles.continueTextDisabled]}>Continue</Text>
         </Pressable>
       </View>
-    </View>
+      {doneBar.bar}
+    </Pressable>
   );
 }
 

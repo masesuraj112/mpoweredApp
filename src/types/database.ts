@@ -38,23 +38,29 @@ export type Database = {
         Row: {
           appointment_id: number
           date_time: string
-          health_service: string
+          health_service: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name: string | null
+          recording_consent_at: string | null
+          recording_consent_signature: string | null
         }
         Insert: {
           appointment_id?: never
           date_time: string
-          health_service: string
+          health_service?: string | null
           patient_id: number
-          practioner_name: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Update: {
           appointment_id?: never
           date_time?: string
-          health_service?: string
+          health_service?: string | null
           patient_id?: number
-          practioner_name?: string
+          practitioner_name?: string | null
+          recording_consent_at?: string | null
+          recording_consent_signature?: string | null
         }
         Relationships: [
           {
@@ -290,6 +296,7 @@ export type Database = {
       movement_assessment: {
         Row: {
           average_active_hours: number
+          created_at: string
           date: string
           lifting_impact: string
           reflection: string | null
@@ -298,9 +305,11 @@ export type Database = {
           submission_id: number
           users_id: number
           walking_impact: string
+          week_start: string | null
         }
         Insert: {
           average_active_hours: number
+          created_at?: string
           date: string
           lifting_impact: string
           reflection?: string | null
@@ -309,9 +318,11 @@ export type Database = {
           submission_id?: never
           users_id: number
           walking_impact: string
+          week_start?: string | null
         }
         Update: {
           average_active_hours?: number
+          created_at?: string
           date?: string
           lifting_impact?: string
           reflection?: string | null
@@ -320,6 +331,7 @@ export type Database = {
           submission_id?: never
           users_id?: number
           walking_impact?: string
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -828,6 +840,19 @@ export type Database = {
       }
       patient_id_for_user: {
         Args: { target_users_id: number }
+        Returns: number
+      }
+      save_movement_assessment: {
+        Args: {
+          p_active_hours: number
+          p_date: string
+          p_general_impacts: string[]
+          p_lifting: string
+          p_reflection: string
+          p_sitting: string
+          p_standing: string
+          p_walking: string
+        }
         Returns: number
       }
       save_pain_assessment: {

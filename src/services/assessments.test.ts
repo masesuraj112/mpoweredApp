@@ -7,7 +7,17 @@ import {
   getRecentPainLocations,
   getUserStartWeek,
   savePainEntry,
+  getMovementEntryForWeek,
+  saveMovementEntry,
 } from '@/services/assessments';
+import {
+  GENERAL_IMPACT_OPTIONS,
+  LIFTING_OPTIONS,
+  SITTING_OPTIONS,
+  STANDING_OPTIONS,
+  WALKING_OPTIONS,
+} from '@/features/assessments/movement/options';
+import type { MovementAssessmentAnswers } from '@/features/assessments/movement/types';
 
 // A fake query builder: every filter returns the builder, and awaiting it (or maybeSingle)
 // gives the canned { data, error } result.
@@ -251,5 +261,168 @@ describe('getRecentPainLocations', () => {
     // today is in the week starting 2026-10-05, so two weeks reach back to 2026-09-28
     expect(builder.gte).toHaveBeenCalledWith('week_start', '2026-09-28');
     expect(result).toEqual({ ok: true, data: ['Head', 'Outer Thigh', 'Inner Thigh'] });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Movement
+// ---------------------------------------------------------------------------
+
+const movementAnswers: MovementAssessmentAnswers = {
+  activeHours: 6,
+  generalImpacts: [GENERAL_IMPACT_OPTIONS[0], GENERAL_IMPACT_OPTIONS[3]],
+  walkingImpact: WALKING_OPTIONS[1],
+  liftingImpact: LIFTING_OPTIONS[2],
+  sittingImpact: SITTING_OPTIONS[3],
+  standingImpact: STANDING_OPTIONS[4],
+  reflection: ' a slow week ',
+};
+
+const movementRow = {
+  submission_id: 15,
+  date: '2026-10-01',
+  week_start: '2026-09-28',
+  average_active_hours: 6,
+  walking_impact: WALKING_OPTIONS[1],
+  lifting_impact: LIFTING_OPTIONS[2],
+  sitting_impact: SITTING_OPTIONS[3],
+  standing_impact: STANDING_OPTIONS[4],
+  reflection: 'a slow week',
+  movement_general_impacts: [
+    { impact_statement: GENERAL_IMPACT_OPTIONS[0] },
+    { impact_statement: GENERAL_IMPACT_OPTIONS[3] },
+  ],
+};
+
+describe('saveMovementEntry', () => {
+  it('sends trimmed values to the database and returns the new submission id', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 31, error: null });
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc }), options);
+
+    expect(result).toEqual({ ok: true, data: 31 });
+    expect(rpc).toHaveBeenCalledWith('save_movement_assessment', {
+      p_date: '2026-10-01',
+      p_active_hours: 6,
+      p_general_impacts: [GENERAL_IMPACT_OPTIONS[0], GENERAL_IMPACT_OPTIONS[3]],
+      p_walking: WALKING_OPTIONS[1],
+      p_lifting: LIFTING_OPTIONS[2],
+      p_sitting: SITTING_OPTIONS[3],
+      p_standing: STANDING_OPTIONS[4],
+      p_reflection: 'a slow week',
+    });
+  });
+
+  it('sends 0 active hours as a real answer', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 31, error: null });
+    await saveMovementEntry({ ...movementAnswers, activeHours: 0 }, '2026-10-01', fakeClient({ rpc }), options);
+    expect(rpc).toHaveBeenCalledWith(
+      'save_movement_assessment',
+      expect.objectContaining({ p_active_hours: 0 }),
+    );
+  });
+
+  it('does not call the database when an answer is missing', async () => {
+    const rpc = jest.fn();
+    const result = await saveMovementEntry(
+      { ...movementAnswers, activeHours: undefined },
+      '2026-10-01',
+      fakeClient({ rpc }),
+      options,
+    );
+    expect(result).toMatchObject({ ok: false, error: { code: 'VALIDATION', field: 'activeHours' } });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('does not call the database for a date in the future', async () => {
+    const rpc = jest.fn();
+    const result = await saveMovementEntry(movementAnswers, '2026-10-04', fakeClient({ rpc }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'FUTURE_DATE' } });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['23505', 'duplicate key', 'DUPLICATE_WEEK'],
+    ['23514', 'violates check constraint', 'VALIDATION'],
+    ['42501', 'permission denied', 'NOT_ALLOWED'],
+    ['P0001', 'NO_PROFILE', 'NO_PROFILE'],
+    ['P0001', 'INVALID_HOURS', 'VALIDATION'],
+    ['P0001', 'NO_IMPACT', 'VALIDATION'],
+  ])('maps database error %s (%s) to %s', async (code, message, expected) => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code, message } });
+    const from = jest.fn(() => query({ data: null, error: null }));
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc, from }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: expected } });
+  });
+
+  it('treats a duplicate week as success when the stored entry is identical (lost response)', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'dup' } });
+    const from = jest.fn(() => query({ data: movementRow, error: null }));
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc, from }), options);
+    expect(result).toEqual({ ok: true, data: 15 });
+    expect(from).toHaveBeenCalledWith('movement_assessment');
+  });
+
+  it('keeps DUPLICATE_WEEK when the stored entry is different', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'dup' } });
+    const from = jest.fn(() => query({ data: { ...movementRow, average_active_hours: 9 }, error: null }));
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc, from }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'DUPLICATE_WEEK' } });
+  });
+
+  it('gives NETWORK when the request itself fails', async () => {
+    const rpc = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'NETWORK' } });
+  });
+
+  it('gives UNKNOWN when the database returns no id and no error', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: null });
+    const result = await saveMovementEntry(movementAnswers, '2026-10-01', fakeClient({ rpc }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'UNKNOWN' } });
+  });
+});
+
+describe('getMovementEntryForWeek', () => {
+  it('filters by week_start and returns the entry with its impacts', async () => {
+    const builder = query({ data: movementRow, error: null });
+    const result = await getMovementEntryForWeek('2026-09-28', fakeClient({ from: () => builder }));
+    expect(builder.eq).toHaveBeenCalledWith('week_start', '2026-09-28');
+    expect(result).toEqual({
+      ok: true,
+      data: {
+        submissionId: 15,
+        date: '2026-10-01',
+        weekStart: '2026-09-28',
+        activeHours: 6,
+        generalImpacts: [GENERAL_IMPACT_OPTIONS[0], GENERAL_IMPACT_OPTIONS[3]],
+        walking: WALKING_OPTIONS[1],
+        lifting: LIFTING_OPTIONS[2],
+        sitting: SITTING_OPTIONS[3],
+        standing: STANDING_OPTIONS[4],
+        reflection: 'a slow week',
+      },
+    });
+  });
+
+  it('turns an hours value that arrives as text into a number', async () => {
+    const builder = query({ data: { ...movementRow, average_active_hours: '6.50' }, error: null });
+    const result = await getMovementEntryForWeek('2026-09-28', fakeClient({ from: () => builder }));
+    expect(result).toMatchObject({ ok: true, data: { activeHours: 6.5 } });
+  });
+
+  it('returns null when the week has no entry', async () => {
+    const from = () => query({ data: null, error: null });
+    expect(await getMovementEntryForWeek('2026-09-28', fakeClient({ from }))).toEqual({
+      ok: true,
+      data: null,
+    });
+  });
+
+  it('maps a database error', async () => {
+    const from = () => query({ data: null, error: { code: '42501', message: 'denied' } });
+    expect(await getMovementEntryForWeek('2026-09-28', fakeClient({ from }))).toMatchObject({
+      ok: false,
+      error: { code: 'NOT_ALLOWED' },
+    });
   });
 });
