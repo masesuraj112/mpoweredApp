@@ -1,12 +1,22 @@
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 
 const PAIN_TIPS_URL = 'https://muscha.org/pain-guide/';
 
 export default function SummaryScreen() {
   const { answers } = useManagementAssessment();
+  const close = async () => {
+    try {
+      await markAssessmentCompleted('management');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.error('[ManagementSummary] Failed to save weekly assessment progress:', error);
+      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+    }
+  };
   const medicationNames = [
     ...(answers.medications ?? []),
     ...(answers.otcMedication?.trim() ? [answers.otcMedication.trim()] : []),
@@ -81,7 +91,7 @@ export default function SummaryScreen() {
             {/* TODO: Persist this report to the Care Journal before showing its saved status. */}
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={() => router.replace('/tracker')}
+              onPress={close}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}

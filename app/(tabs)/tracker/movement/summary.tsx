@@ -1,8 +1,8 @@
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { GENERAL_IMPACT_OPTIONS } from './general';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 import { WALKING_OPTIONS } from './walking';
 import { LIFTING_OPTIONS } from './lifting';
 import { SITTING_OPTIONS } from './sitting';
@@ -26,6 +26,15 @@ function impactMessage(score: number): string {
 
 export default function SummaryScreen() {
   const { answers } = useMovementAssessment();
+  const close = async () => {
+    try {
+      await markAssessmentCompleted('movement');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.error('[MovementSummary] Failed to save weekly assessment progress:', error);
+      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+    }
+  };
 
   const generalScore = answers.generalImpacts?.length ?? 0;
   const walkingScore = scoreOf(WALKING_OPTIONS, answers.walkingImpact);
@@ -104,7 +113,7 @@ export default function SummaryScreen() {
             {/* TODO: Persist this report to the Care Journal before showing its saved status. */}
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={() => router.replace('/tracker')}
+              onPress={close}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
