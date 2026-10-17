@@ -1,4 +1,5 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { formatDisplayDate } from '@/services/date';
 import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { Image } from 'expo-image';
@@ -140,6 +141,7 @@ export function SettingsModalField({
   ...inputProps
 }: SettingsModalFieldProps) {
   const [revealed, setRevealed] = useState(false);
+  const doneBar = useKeyboardDoneBar();
 
   const passwordProps: TextInputProps = password
     ? {
@@ -160,9 +162,12 @@ export function SettingsModalField({
         {...inputProps}
         value={value}
         onChangeText={onChangeText}
+        // Every field gets a Done bar, since phone pads have no return key to close the keyboard.
+        inputAccessoryViewID={doneBar.id}
         style={styles.fieldInput}
         accessibilityLabel={label}
       />
+      {doneBar.bar}
       {password ? (
         <Pressable
           onPress={() => setRevealed(current => !current)}

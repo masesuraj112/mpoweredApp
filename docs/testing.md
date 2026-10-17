@@ -2,7 +2,7 @@
 
 How to run everything is in the [README Testing section](../README.md#testing). This page lists each rule and the test that proves it.
 
-**Current results (local):** 293 Jest tests in 20 suites pass; 117 pgTAP checks in 13 files pass; `npm run typecheck` is clean.
+**Current results:** see the latest run of the CI workflow on the Actions tab (the badge in the README links to it). Jest, pgTAP and type checks run there; database tests are not run locally.
 
 Pain, social health and management tests share some file names (`validate.test.ts`, `messages.test.ts`, `summary.test.ts`); they are in `src/features/assessments/pain/`, `src/features/assessments/social-health/` and `src/features/assessments/management/`.
 
@@ -18,6 +18,10 @@ Pain, social health and management tests share some file names (`validate.test.t
 | A level of 0 is a real answer, not "missing" | `validate.test.ts` ("accepts 0 as a real answer") | Unit | `unit-tests` |
 | Users cannot read each other's pain data | `020_pain_rls` (user A and user B each see only their own pain row) | Database | `database-tests` |
 | Users only see their own `users` row | `020_pain_rls` (own `users` row count is 1 for each user) | Database | `database-tests` |
+| An appointment needs only a date and time; doctor and service are optional, and a blank one is rejected rather than stored | `040_appointment_schema` (nullable columns, insert with only `patient_id` and `date_time`, empty and whitespace-only values rejected with 23514) | Database | `database-tests` |
+| A recording-consent signature cannot be stored without a consent time | `040_appointment_schema` (signature without `recording_consent_at` rejected with 23514) | Database | `database-tests` |
+| The logged-in role can read, create and update appointments but not delete them, and anon has no access | `040_appointment_schema` (`has_table_privilege` checks) | Database | `database-tests` |
+| Users cannot see or change each other's appointments | `040_appointment_schema` (user B sees none of user A's rows and updates 0 rows) | Database | `database-tests` |
 | Every table has row level security | `000_rls_enabled` | Database | `database-tests` |
 | The logged-in role has the table privileges it needs, and cannot update or delete pain entries | `025_table_privileges`; `030_save_pain_assessment` (privilege checks) | Database | `database-tests` |
 | Saving is atomic: if a child insert fails, no parent row remains | `030_save_pain_assessment` (temporary trigger forces a failure; row count unchanged) | Database | `database-tests` |
@@ -57,6 +61,16 @@ Pain, social health and management tests share some file names (`validate.test.t
 | The management Summary uses the agreed wording for every exercise/medication combination | management `summary.test.ts` | Unit | `unit-tests` |
 | Saving management sends validated values; a lost-response retry succeeds | `management.test.ts` | Service | `unit-tests` |
 | Database errors map to app codes (including `MEDICATION_CONFLICT`) and show friendly management messages | `errors.test.ts`; management `messages.test.ts` | Unit | `unit-tests` |
+| Local numbers become `+614...` and anything that is not an Australian mobile is rejected | `phone.test.ts` (accepted shapes, rejected input, idempotence, display format) | Unit | `unit-tests` |
+| The sign-in code is exactly six digits | `otp.test.ts` | Unit | `unit-tests` |
+| A bad phone number or code never reaches Supabase; verifying returns only a user id | `src/services/auth.test.ts` | Service | `unit-tests` |
+| Auth and profile errors map to app codes, and the friendly text never reveals whether an account exists | `errors.test.ts`; `src/features/auth/messages.test.ts` | Unit | `unit-tests` |
+| Onboarding answers map to the database values (sex casing, user type, E.164 phone, conditions) | `src/features/auth/profile.test.ts` | Unit | `unit-tests` |
+| Creating a profile never sends bad answers or a user id, and a retry after a lost response succeeds | `src/services/profile.test.ts` | Service | `unit-tests` |
+| Profile creation is atomic, rejects a second profile, and validates name, phone, sex, year and conditions | `061_create_profile` | Database | `database-tests` |
+| A user cannot see another user's profile rows; a support person gets a `users` row only | `061_create_profile` | Database | `database-tests` |
+| Logged-in users can insert and read the profile tables but not update or delete; anon has no access and cannot run `create_profile` | `060_profile_privileges` | Database | `database-tests` |
+| Resetting the onboarding answers clears them | `__tests__/onboarding-context.test.tsx` | Unit | `unit-tests` |
 | The generated types match the migrations | CI step "Generated types match the migrations" (`supabase gen types --local` compared with `src/types/database.ts`) | Static | `database-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
@@ -73,6 +87,8 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The management Summary screen rendering and the tips link (no component tests).
 - That an untouched slider writes 0 in the UI (the validator accepts 0; the screen itself is checked by hand).
 - Screens and components in general: there are no component tests.
+- Real SMS delivery and the code's expiry time (test OTP numbers send nothing; checked by hand when Twilio is connected).
+- The verify screen layout, the routing between the auth screens and the tabs, the root guard, and sign-out resetting onboarding (manual checklist in `docs/backend/login-backend-build-plan.md` section 5).
 
 ## Not tested / deferred
 
@@ -83,7 +99,7 @@ These are not covered by an automated test, so no coverage is claimed for them.
 
 ## Evidence
 
-Database tests passing (45 checks across 5 files):
+Database tests passing (72 checks across 6 files):
 
 ![supabase test db passing](screenshots/db-tests-passing.png)
 

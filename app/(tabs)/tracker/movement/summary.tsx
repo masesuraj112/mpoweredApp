@@ -1,39 +1,22 @@
-import { useMovementAssessment } from '@/features/assessments/movement/context';
+import { assessmentSaveMessage } from '@/features/assessments/messages';
+import { toMovementSummary, type MovementSummaryData } from '@/features/assessments/movement/summary';
+import { getMovementEntryForWeek } from '@/services/assessments';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { GENERAL_IMPACT_OPTIONS } from './general';
-import { WALKING_OPTIONS } from './walking';
-import { LIFTING_OPTIONS } from './lifting';
-import { SITTING_OPTIONS } from './sitting';
-import { STANDING_OPTIONS } from './standing';
-
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
 
-function scoreOf(options: string[], answer?: string): number {
-  if (!answer) return 0;
-  const index = options.indexOf(answer);
-  return index === -1 ? 0 : index;
-}
-
-function impactMessage(score: number): string {
-  if (score <= 5) return 'Your answers indicate that pain does not really impact your movement.';
-  if (score <= 10) return 'Your answers indicate that pain mildly impacts your movement.';
-  if (score <= 15) return 'Your answers indicate that pain moderately impacts your movement.';
-  return 'Your answers indicate that pain is significantly impacting your movement. With the right support and treatment, your movement and mobility can improve.';
-}
-
-export default function SummaryScreen() {
-  const { answers } = useMovementAssessment();
-
-  const generalScore = answers.generalImpacts?.length ?? 0;
-  const walkingScore = scoreOf(WALKING_OPTIONS, answers.walkingImpact);
-  const liftingScore = scoreOf(LIFTING_OPTIONS, answers.liftingImpact);
-  const sittingScore = scoreOf(SITTING_OPTIONS, answers.sittingImpact);
-  const standingScore = scoreOf(STANDING_OPTIONS, answers.standingImpact);
-  const totalScore = generalScore + walkingScore + liftingScore + sittingScore + standingScore;
-
+function MovementSummaryView({ summary }: { summary: MovementSummaryData }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -44,8 +27,7 @@ export default function SummaryScreen() {
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportTitle}>My Movement</Text>
-          {/* TODO: Use the selected assessment's recorded week when submissions include dates. */}
-          <Text style={styles.period}>Period: 18-24 May</Text>
+          <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
 
@@ -56,7 +38,7 @@ export default function SummaryScreen() {
         >
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
-            <Text style={styles.guidanceText}>{impactMessage(totalScore)}</Text>
+            <Text style={styles.guidanceText}>{summary.message}</Text>
             <Pressable
               onPress={() => Linking.openURL(EXERCISE_INFO_URL)}
               accessibilityRole="link"
@@ -72,36 +54,31 @@ export default function SummaryScreen() {
           <View style={styles.resultsList}>
             <ResultSection
               heading="Average activity hour:"
-              value={
-                answers.activeHours !== undefined
-                  ? `Last week, I was able to stay active for approximately ${answers.activeHours} hours`
-                  : 'No response recorded.'
-              }
+              value={`Last week, I was able to stay active for approximately ${summary.activeHours} hours`}
             />
             <ResultSection
               heading="General Movement:"
               value={
-                answers.generalImpacts && answers.generalImpacts.length > 0
-                  ? answers.generalImpacts.join(' ')
+                summary.generalImpacts.length > 0
+                  ? summary.generalImpacts.join(' ')
                   : 'No impacts reported this week.'
               }
             />
-            <ResultSection heading="Walking:" value={answers.walkingImpact || 'No response recorded.'} />
-            <ResultSection heading="Lifting:" value={answers.liftingImpact || 'No response recorded.'} />
-            <ResultSection heading="Sitting:" value={answers.sittingImpact || 'No response recorded.'} />
-            <ResultSection heading="Standing:" value={answers.standingImpact || 'No response recorded.'} />
+            <ResultSection heading="Walking:" value={summary.walking || 'No response recorded.'} />
+            <ResultSection heading="Lifting:" value={summary.lifting || 'No response recorded.'} />
+            <ResultSection heading="Sitting:" value={summary.sitting || 'No response recorded.'} />
+            <ResultSection heading="Standing:" value={summary.standing || 'No response recorded.'} />
           </View>
 
           <Text style={styles.resultsHeading}>My reflections:</Text>
           <Text style={styles.reflectionText}>
-            {answers.reflection?.trim() || 'No reflection recorded.'}
+            {summary.reflection || 'No reflection recorded.'}
           </Text>
         </ScrollView>
 
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
-            {/* TODO: Persist this report to the Care Journal before showing its saved status. */}
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
               onPress={() => router.replace('/tracker')}
@@ -114,6 +91,64 @@ export default function SummaryScreen() {
           </View>
         </View>
       </View>
+    </View>
+  );
+}
+
+type SummaryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; summary: MovementSummaryData };
+
+// The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
+export default function SummaryScreen() {
+  const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
+  const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
+  const [state, setState] = useState<SummaryState>({ status: 'loading' });
+  const close = () => router.replace('/tracker');
+
+  useEffect(() => {
+    if (!weekStart) return;
+    let cancelled = false;
+    getMovementEntryForWeek(weekStart).then(result => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ status: 'error', message: assessmentSaveMessage(result.error, 'movement') });
+      } else if (!result.data) {
+        setState({ status: 'error', message: 'We could not find your saved entry.' });
+      } else {
+        setState({ status: 'ready', summary: toMovementSummary(result.data) });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart]);
+
+  const view: SummaryState = weekStart
+    ? state
+    : { status: 'error', message: 'We could not find the week to show.' };
+
+  if (view.status === 'ready') {
+    return <MovementSummaryView summary={view.summary} />;
+  }
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      {view.status === 'loading' ? (
+        <ActivityIndicator accessibilityLabel="Loading your summary" />
+      ) : (
+        <>
+          <Text style={styles.errorText}>{view.message}</Text>
+          <Pressable
+            onPress={close}
+            accessibilityRole="button"
+            accessibilityLabel="Close summary"
+            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+          >
+            <Text style={styles.closeButtonText}>Close</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
@@ -158,4 +193,6 @@ const styles = StyleSheet.create({
   closeButton: { minWidth: scaleWidth(105), height: scaleHeight(30), alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#CAC4D0', borderRadius: scaleWidth(100), paddingHorizontal: scaleWidth(16) },
   closeButtonPressed: { backgroundColor: '#F3EDF7' },
   closeButtonText: { color: '#49454F', fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
+  centered: { justifyContent: 'center', alignItems: 'center', gap: scaleHeight(16) },
+  errorText: { color: '#1D1B20', fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
 });

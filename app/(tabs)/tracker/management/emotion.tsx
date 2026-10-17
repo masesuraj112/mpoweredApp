@@ -1,4 +1,6 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { managementSaveMessage } from '@/features/assessments/management/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
@@ -14,6 +16,7 @@ export default function EmotionScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
   const inFlight = useRef(false);
+  const doneBar = useKeyboardDoneBar();
 
   const handleRecord = async () => {
     if (inFlight.current) return;
@@ -37,63 +40,46 @@ export default function EmotionScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Management</Text>
-        <ChoiceCard
-          title="Emotion"
-          prompt={
-            <View style={styles.promptContent}>
-              <Text style={styles.promptText}>
-                Over the past week, did you perform any strategies to manage your stress level or emotion?
-              </Text>
-              <Text style={styles.examples}>
-                Examples: meditation, journaling, meeting people
-              </Text>
-            </View>
-          }
-          questionNumber={4}
-          totalQuestions={4}
-          onPrevious={() => router.push('/tracker/management/exercise')}
-          onRecord={handleRecord}
-          disabled={saving}
-          validationMessage={errorMessage ?? undefined}
-          variant="management"
-          cardHeight={scaleHeight(516)}
-        >
-          <TextInput
-            accessibilityLabel="Emotion management strategies"
-            multiline
-            value={answers.emotionStrategies ?? ''}
-            onChangeText={value => updateAnswer('emotionStrategies', value)}
-            placeholder="Write about any strategies you used to manage your emotions"
-            placeholderTextColor="#B3B3B3"
-            textAlignVertical="top"
-            style={styles.input}
-          />
-        </ChoiceCard>
-      </View>
-    </View>
+    <AssessmentScreen title="My Management">
+      <ChoiceCard
+        title="Emotion"
+        prompt={
+          <View style={styles.promptContent}>
+            <Text style={styles.promptText}>
+              Over the past week, did you perform any strategies to manage your stress level or emotion?
+            </Text>
+            <Text style={styles.examples}>
+              Examples: meditation, journaling, meeting people
+            </Text>
+          </View>
+        }
+        questionNumber={4}
+        totalQuestions={4}
+        onPrevious={() => router.push('/tracker/management/exercise')}
+        onRecord={handleRecord}
+        disabled={saving}
+        validationMessage={errorMessage ?? undefined}
+        variant="management"
+        cardHeight={scaleHeight(516)}
+      >
+        <TextInput
+          accessibilityLabel="Emotion management strategies"
+          multiline
+          inputAccessoryViewID={doneBar.id}
+          value={answers.emotionStrategies ?? ''}
+          onChangeText={value => updateAnswer('emotionStrategies', value)}
+          placeholder="Write about any strategies you used to manage your emotions"
+          placeholderTextColor="#B3B3B3"
+          textAlignVertical="top"
+          style={styles.input}
+        />
+      </ChoiceCard>
+      {doneBar.bar}
+    </AssessmentScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptContent: {
     gap: scaleHeight(12),
   },

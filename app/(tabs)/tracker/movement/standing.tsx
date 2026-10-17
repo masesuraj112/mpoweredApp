@@ -4,15 +4,8 @@ import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { STANDING_OPTIONS } from '@/features/assessments/movement/options';
 
-export const STANDING_OPTIONS = [
-  'I can stand as long as I want without increased pain',
-  'I can stand as long as I want but increased my pain',
-  'Pain prevents me standing more than one hour',
-  'Pain prevents me standing more than 30 minutes',
-  'Pain prevents me from standing more than 10 minutes',
-  'Pain prevents me from standing at all',
-];
 
 // Roughly how many lines an option wraps to (about 34 characters per line at this font size).
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));

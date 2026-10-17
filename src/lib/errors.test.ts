@@ -2,6 +2,7 @@ import { mapError } from '@/lib/errors';
 
 const dbError = (code: string, message: string) => ({ code, message });
 
+
 describe('mapError: Postgres error codes', () => {
   it('a unique violation (23505) means a second submission in the same week', () => {
     expect(mapError(dbError('23505', 'duplicate key value')).code).toBe('DUPLICATE_WEEK');
@@ -40,6 +41,52 @@ describe('mapError: errors raised by save_pain_assessment (P0001)', () => {
 
   it('an unrecognised P0001 message is unknown', () => {
     expect(mapError(dbError('P0001', 'something else')).code).toBe('UNKNOWN');
+  });
+});
+
+describe('mapError: errors raised by create_profile (P0001)', () => {
+  it.each(['PROFILE_EXISTS', 'NO_SESSION', 'INVALID_PHONE'])('%s keeps its own code', (name) => {
+    expect(mapError(dbError('P0001', name))).toEqual({ code: name, message: name });
+  });
+
+  it.each([
+    'INVALID_NAME',
+    'INVALID_SEX',
+    'INVALID_YEAR',
+    'INVALID_USER_TYPE',
+    'INVALID_CONDITION',
+  ])(
+    '%s becomes VALIDATION and keeps the original code in detail',
+    (name) => {
+      expect(mapError(dbError('P0001', name))).toEqual({
+        code: 'VALIDATION',
+        message: name,
+        detail: name,
+      });
+    },
+  );
+});
+
+describe('mapError: Supabase Auth error codes', () => {
+  it('an expired or unusable code (otp_expired) gives OTP_EXPIRED', () => {
+    expect(mapError(dbError('otp_expired', 'Token has expired or is invalid')).code).toBe(
+      'OTP_EXPIRED',
+    );
+  });
+
+  it.each(['over_sms_send_rate_limit', 'over_request_rate_limit'])(
+    '%s gives RATE_LIMITED',
+    (code) => {
+      expect(mapError(dbError(code, 'too many requests')).code).toBe('RATE_LIMITED');
+    },
+  );
+
+  it('sms_send_failed gives SMS_FAILED', () => {
+    expect(mapError(dbError('sms_send_failed', 'Error sending sms')).code).toBe('SMS_FAILED');
+  });
+
+  it('an unrecognised auth code gives UNKNOWN', () => {
+    expect(mapError(dbError('some_new_auth_code', 'boom')).code).toBe('UNKNOWN');
   });
 });
 
