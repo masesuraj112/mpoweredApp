@@ -37,7 +37,7 @@ export default function PlannerScreen() {
       id: 'pain-guide',
       title: 'Explore self-management tips for my ongoing pain',
       actionLabel: 'Explore tips',
-      onPress: () => router.push('/health/pain-guide'),
+      onPress: () => router.push({ pathname: '/health/pain-guide', params: { from: 'planner' } }),
     },
   ];
 
