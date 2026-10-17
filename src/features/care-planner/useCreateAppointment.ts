@@ -27,6 +27,18 @@ export function validateAppointmentForm(input: {
   return errors;
 }
 
+function snapshotOf(
+  dateTime: LocalDateTime | null,
+  practitionerName: string,
+  healthService: string | null,
+): string {
+  return JSON.stringify([
+    dateTime ? formatLocalTimestamp(dateTime) : null,
+    practitionerName.trim(),
+    healthService,
+  ]);
+}
+
 /**
  * The "Plan my appointment" form: its values, validation and saving.
  *
@@ -41,8 +53,10 @@ export function useCreateAppointment() {
   const [appointmentId, setAppointmentId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<AppError | null>(null);
+  // What was last saved, so `dirty` is false once the entered details are in the database.
+  const [savedSnapshot, setSavedSnapshot] = useState(() => snapshotOf(null, '', null));
 
-  const dirty = dateTime !== null || practitionerName.trim() !== '' || healthService !== null;
+  const dirty = snapshotOf(dateTime, practitionerName, healthService) !== savedSnapshot;
 
   const chooseDateTime = useCallback((next: LocalDateTime) => {
     setDateTime(next);
@@ -75,6 +89,7 @@ export function useCreateAppointment() {
     setSaving(false);
     if (result.ok) {
       setAppointmentId(result.data.appointmentId);
+      setSavedSnapshot(snapshotOf(dateTime, practitionerName, healthService));
       return result.data;
     }
     setSaveError(result.error);

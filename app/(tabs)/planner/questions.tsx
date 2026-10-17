@@ -66,7 +66,8 @@ export default function QuestionsScreen() {
     router.back();
   };
 
-  const canSave = load.status === 'ready' && dirty && !questions.saving;
+  // The suggestions arrive ticked, so saving must work without changing a tick.
+  const canSave = load.status === 'ready' && !questions.saving;
 
   const generatedDate =
     load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
@@ -82,9 +83,6 @@ export default function QuestionsScreen() {
             accessibilityLabel={questions.saving ? 'Saving' : 'Save'}
             variant={canSave ? 'primary' : 'outlined'}
             disabled={!canSave}
-            accessibilityHint={
-              canSave || questions.saving ? undefined : 'Tick or untick a question to enable'
-            }
             onPress={save}
           />
         </ActionBar>
