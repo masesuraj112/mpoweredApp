@@ -4,7 +4,7 @@ How to run everything is in the [README Testing section](../README.md#testing). 
 
 **Current results:** see the latest run of the CI workflow on the Actions tab (the badge in the README links to it). Jest, pgTAP and type checks run there; database tests are not run locally.
 
-Pain and social health tests share some file names (`validate.test.ts`, `messages.test.ts`, `summary.test.ts`); the pain ones are in `src/features/assessments/pain/` and the social health ones in `src/features/assessments/social-health/`.
+Pain, social health and management tests share some file names (`validate.test.ts`, `messages.test.ts`, `summary.test.ts`); they are in `src/features/assessments/pain/`, `src/features/assessments/social-health/` and `src/features/assessments/management/`.
 
 ## Traceability
 
@@ -47,6 +47,20 @@ Pain and social health tests share some file names (`validate.test.ts`, `message
 | The social health Summary shows the saved week, the band phrase and the existing result wording | social health `summary.test.ts` | Unit | `unit-tests` |
 | Saving social health sends validated values, bad answers never reach the database, and a lost-response retry succeeds | `social-health.test.ts` | Service | `unit-tests` |
 | Database errors map to app codes (including `MISSING_ANSWER`) and show friendly social health messages | `errors.test.ts`; social health `messages.test.ts` | Unit | `unit-tests` |
+| One management submission per user per week | `060_management_constraints`; `070_save_management_assessment` (23505) | Database | `database-tests` |
+| Management `week_start` is the Monday of the chosen date | `060`, `070` | Database | `database-tests` |
+| Exercise is required and must be one of the five options | management `validate.test.ts`; `060` (23502); `070` (`MISSING_ANSWER`) | Unit, Database | `unit-tests`, `database-tests` |
+| "I didn't take any medication" cannot be combined with a medication | `medication.test.ts`; management `validate.test.ts`; `070` (`MEDICATION_CONFLICT`) | Unit, Database | `unit-tests`, `database-tests` |
+| "None" and "skipped" are stored differently | `070` (`no_medication` true, no names); management `summary.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
+| Medication names are trimmed, de-duplicated, non-blank and at most 100 characters | management `validate.test.ts`; `060` (blank rejected); `070` | Unit, Database | `unit-tests`, `database-tests` |
+| Blank OTC and emotion answers are stored as NULL | management `validate.test.ts`; `070` | Unit, Database | `unit-tests`, `database-tests` |
+| Saving management is atomic: a failing medication name insert leaves no management row | `070` (temporary trigger) | Database | `database-tests` |
+| Users cannot read each other's management data or medication names | `065_management_rls` | Database | `database-tests` |
+| Logged-in users can read and insert management data but not edit or delete it; anon has no access | `066_management_privileges`; `070` (function execute privileges) | Database | `database-tests` |
+| The management save function rejects a future date, a date before the start week and a missing profile | `070_save_management_assessment` | Database | `database-tests` |
+| The management Summary uses the agreed wording for every exercise/medication combination | management `summary.test.ts` | Unit | `unit-tests` |
+| Saving management sends validated values; a lost-response retry succeeds | `management.test.ts` | Service | `unit-tests` |
+| Database errors map to app codes (including `MEDICATION_CONFLICT`) and show friendly management messages | `errors.test.ts`; management `messages.test.ts` | Unit | `unit-tests` |
 | Local numbers become `+614...` and anything that is not an Australian mobile is rejected | `phone.test.ts` (accepted shapes, rejected input, idempotence, display format) | Unit | `unit-tests` |
 | The sign-in code is exactly six digits | `otp.test.ts` | Unit | `unit-tests` |
 | A bad phone number or code never reaches Supabase; verifying returns only a user id | `src/services/auth.test.ts` | Service | `unit-tests` |
@@ -68,6 +82,9 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The social health Record button cannot be double-submitted (UI behaviour; checked by hand).
 - The social health Summary screen rendering and the tips link (no component tests).
 - Social health save atomicity: not applicable, the function makes a single insert.
+- The management Record button cannot be double-submitted (UI behaviour; checked by hand).
+- The medication screen's exclusive tick behaviour on screen (the rule itself is unit-tested in `medication.test.ts`).
+- The management Summary screen rendering and the tips link (no component tests).
 - That an untouched slider writes 0 in the UI (the validator accepts 0; the screen itself is checked by hand).
 - Screens and components in general: there are no component tests.
 - Real SMS delivery and the code's expiry time (test OTP numbers send nothing; checked by hand when Twilio is connected).
@@ -87,6 +104,7 @@ Database tests passing (72 checks across 6 files):
 ![supabase test db passing](screenshots/db-tests-passing.png)
 
 - Social health database tests passing: **TODO**, screenshot of `supabase test db` to be saved as `docs/screenshots/db-tests-social-health.png`.
+- Management database tests passing: **TODO**, screenshot of `supabase test db` with `060`–`070` passing to be saved as `docs/screenshots/db-tests-management.png`.
 - Unit tests passing: **TODO**, screenshot of `npm test` to be saved as `docs/screenshots/unit-tests-passing.png`.
 - Green CI checks on a pull request: **TODO**, `docs/screenshots/ci-green.png`.
 - GitHub Actions run page: **TODO**, `docs/screenshots/ci-run.png`.

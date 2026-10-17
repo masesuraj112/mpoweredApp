@@ -50,6 +50,7 @@ const VALIDATION_MESSAGES = [
   'INVALID_YEAR',
   'INVALID_USER_TYPE',
   'INVALID_CONDITION',
+  'MEDICATION_CONFLICT',
 ] as const;
 
 export function mapError(error: unknown): AppError {
