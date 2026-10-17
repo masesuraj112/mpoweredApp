@@ -36,7 +36,14 @@
       ],
       "expo-sqlite",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "MPowered uses the microphone so you can speak your doctor's answer instead of typing it. Audio is not stored.",
+          "speechRecognitionPermission": "MPowered uses speech recognition to turn your spoken words into text on this device."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
