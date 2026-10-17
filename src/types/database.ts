@@ -623,25 +623,37 @@ export type Database = {
       }
       personal_management: {
         Row: {
+          created_at: string
           date: string
           emotion: string | null
           exercise: string
+          no_medication: boolean
+          otc_medication: string | null
           submission_id: number
           users_id: number
+          week_start: string | null
         }
         Insert: {
+          created_at?: string
           date: string
           emotion?: string | null
           exercise: string
+          no_medication?: boolean
+          otc_medication?: string | null
           submission_id?: never
           users_id: number
+          week_start?: string | null
         }
         Update: {
+          created_at?: string
           date?: string
           emotion?: string | null
           exercise?: string
+          no_medication?: boolean
+          otc_medication?: string | null
           submission_id?: never
           users_id?: number
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -650,6 +662,29 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["users_id"]
+          },
+        ]
+      }
+      personal_management_medication_names: {
+        Row: {
+          medication_name: string
+          submission_id: number
+        }
+        Insert: {
+          medication_name: string
+          submission_id: number
+        }
+        Update: {
+          medication_name?: string
+          submission_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_management_medication_names_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "personal_management"
+            referencedColumns: ["submission_id"]
           },
         ]
       }
@@ -840,6 +875,17 @@ export type Database = {
       }
       patient_id_for_user: {
         Args: { target_users_id: number }
+        Returns: number
+      }
+      save_management_assessment: {
+        Args: {
+          p_date: string
+          p_emotion: string
+          p_exercise: string
+          p_medications: string[]
+          p_no_medication: boolean
+          p_otc_medication: string
+        }
         Returns: number
       }
       save_movement_assessment: {

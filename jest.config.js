@@ -16,6 +16,10 @@ module.exports = {
     'src/features/assessments/social-health/scoring.ts',
     'src/features/assessments/social-health/messages.ts',
     'src/features/assessments/social-health/summary.ts',
+    'src/features/assessments/management/validate.ts',
+    'src/features/assessments/management/medication.ts',
+    'src/features/assessments/management/messages.ts',
+    'src/features/assessments/management/summary.ts',
     'src/features/auth/phone.ts',
     'src/features/auth/otp.ts',
     'src/features/auth/messages.ts',
@@ -26,5 +30,6 @@ module.exports = {
     'src/services/auth.ts',
     'src/services/profile.ts',
     'src/services/social-health.ts',
+    'src/services/management.ts',
   ],
 };
