@@ -1,7 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
+import { authErrorMessage } from '@/features/auth/messages';
+import { sendVerificationCode } from '@/services/auth';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
@@ -14,6 +17,9 @@ export default function PhoneScreen() {
   const { data, updateData } = useOnboarding();
   const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumber(data.phoneNumber.replace(/\D/g, '')));
   const [showPhoneError, setShowPhoneError] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const doneBar = useKeyboardDoneBar();
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
   const { width, height } = useWindowDimensions();
@@ -21,9 +27,18 @@ export default function PhoneScreen() {
   const canvasWidth = 412 * scale;
   const canvasHeight = 823 * scale;
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    if (isSending) return;
     if (!isValidPhoneNumber) {
       setShowPhoneError(true);
+      return;
+    }
+    setSendError(null);
+    setIsSending(true);
+    const result = await sendVerificationCode(phoneNumberDigits);
+    setIsSending(false);
+    if (!result.ok) {
+      setSendError(authErrorMessage(result.error.code));
       return;
     }
     router.push('/(auth)/verify' as any);
@@ -33,11 +48,13 @@ export default function PhoneScreen() {
     const nextPhoneNumberDigits = value.replace(/\D/g, '').slice(0, 10);
     setPhoneNumber(formatPhoneNumber(nextPhoneNumberDigits));
     updateData({ phoneNumber: nextPhoneNumberDigits });
+    setSendError(null);
     if (/^04\d{8}$/.test(nextPhoneNumberDigits)) setShowPhoneError(false);
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <View
         style={[
           styles.canvas,
@@ -87,6 +104,8 @@ export default function PhoneScreen() {
             placeholder="04xx xxx xxx"
             placeholderTextColor="#1D1B20"
             keyboardType="phone-pad"
+            // The iOS phone pad has no return key, so add a Done bar to close it.
+            inputAccessoryViewID={doneBar.id}
             maxLength={12}
             style={[
               styles.input,
@@ -99,6 +118,7 @@ export default function PhoneScreen() {
             ]}
           />
         </View>
+        {doneBar.bar}
 
         <Text
           style={[
@@ -114,10 +134,10 @@ export default function PhoneScreen() {
             },
           ]}
         >
-          We will send the four digit verification codes to this number
+          We will send the six digit verification codes to this number
         </Text>
 
-        {showPhoneError && (
+        {(showPhoneError || sendError !== null) && (
           <Text
             accessibilityRole="alert"
             style={[
@@ -131,13 +151,17 @@ export default function PhoneScreen() {
               },
             ]}
           >
-            Please enter an Australian phone number in the format 04xx xxx xxx
+            {showPhoneError
+              ? 'Please enter an Australian phone number in the format 04xx xxx xxx'
+              : sendError}
           </Text>
         )}
 
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Continue"
+          accessibilityState={{ busy: isSending }}
+          disabled={isSending}
           onPress={handleContinue}
           style={[
             styles.continueButton,
@@ -158,11 +182,11 @@ export default function PhoneScreen() {
               !isValidPhoneNumber && styles.continueTextDisabled,
             ]}
           >
-            Continue
+            {isSending ? 'Sending…' : 'Continue'}
           </Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

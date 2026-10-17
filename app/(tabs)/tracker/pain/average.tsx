@@ -6,7 +6,7 @@ import { savePainEntry } from '@/services/assessments';
 import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
 
 
 export default function CurrePainLevel() {
@@ -42,7 +42,8 @@ export default function CurrePainLevel() {
   };
 
   return (
-    <View style={styles.screen}>
+    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       {/* input component goes here */}
       <Text style={styles.cardTitle}>My Pain</Text>
 
@@ -60,7 +61,7 @@ export default function CurrePainLevel() {
         validationMessage={errorMessage ?? undefined}
         variant="painTracker"
       />
-    </View>
+    </Pressable>
   );
 }
 

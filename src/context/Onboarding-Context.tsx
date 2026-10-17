@@ -36,7 +36,7 @@ const OnboardingContext = createContext<OnboardingContextValue | undefined> (und
 export function OnboardingProvider({ children }: { children: ReactNode }){
     const [data, setData] = useState<OnboardingData>(initData);
     const updateData = (patch: Partial<OnboardingData>) => setData((prev) => ({... prev, ...patch}));
-    const reset = () => () => setData(initData);
+    const reset = () => setData(initData);
 
     return (
         <OnboardingContext.Provider value = {{ data, updateData, reset }}>

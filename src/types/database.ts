@@ -296,6 +296,7 @@ export type Database = {
       movement_assessment: {
         Row: {
           average_active_hours: number
+          created_at: string
           date: string
           lifting_impact: string
           reflection: string | null
@@ -304,9 +305,11 @@ export type Database = {
           submission_id: number
           users_id: number
           walking_impact: string
+          week_start: string | null
         }
         Insert: {
           average_active_hours: number
+          created_at?: string
           date: string
           lifting_impact: string
           reflection?: string | null
@@ -315,9 +318,11 @@ export type Database = {
           submission_id?: never
           users_id: number
           walking_impact: string
+          week_start?: string | null
         }
         Update: {
           average_active_hours?: number
+          created_at?: string
           date?: string
           lifting_impact?: string
           reflection?: string | null
@@ -326,6 +331,7 @@ export type Database = {
           submission_id?: never
           users_id?: number
           walking_impact?: string
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -781,6 +787,7 @@ export type Database = {
           created_at: string
           name: string
           phone_number: string | null
+          user_type: string
           users_id: number
         }
         Insert: {
@@ -788,6 +795,7 @@ export type Database = {
           created_at?: string
           name: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Update: {
@@ -795,6 +803,7 @@ export type Database = {
           created_at?: string
           name?: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Relationships: []
@@ -808,6 +817,18 @@ export type Database = {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
       }
+      create_profile: {
+        Args: {
+          p_conditions: string[]
+          p_name: string
+          p_other_conditions: string
+          p_phone: string
+          p_sex: string
+          p_user_type: string
+          p_year_of_birth: number
+        }
+        Returns: undefined
+      }
       current_users_id: { Args: never; Returns: number }
       is_own_patient_record: {
         Args: { target_patient_id: number }
@@ -819,6 +840,19 @@ export type Database = {
       }
       patient_id_for_user: {
         Args: { target_users_id: number }
+        Returns: number
+      }
+      save_movement_assessment: {
+        Args: {
+          p_active_hours: number
+          p_date: string
+          p_general_impacts: string[]
+          p_lifting: string
+          p_reflection: string
+          p_sitting: string
+          p_standing: string
+          p_walking: string
+        }
         Returns: number
       }
       save_pain_assessment: {

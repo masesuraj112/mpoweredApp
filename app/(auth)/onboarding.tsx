@@ -87,7 +87,7 @@ export default function OnboardingCarousel() {
       <Pressable style={styles.primaryButton} onPress={() => router.push('/(auth)/user-type')}>
         <Text style={styles.primaryButtonText}>Get started →</Text>
       </Pressable>
-      <Pressable onPress={() => router.push('/(auth)/verify')}>
+      <Pressable onPress={() => router.push('/(auth)/phone')}>
         <Text style={styles.signIn}>Sign in</Text>
       </Pressable>
     </View>

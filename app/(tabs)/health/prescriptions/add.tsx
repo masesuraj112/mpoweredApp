@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
@@ -44,6 +45,8 @@ export default function AddPrescriptionScreen() {
   const isEditing = !!id;
 
   const [medicationName, setMedicationName] = useState('');
+  // The iOS number keyboard has no return key, so the number fields share a Done bar to close it.
+  const doneBar = useKeyboardDoneBar();
   const [strength, setStrength] = useState('');
   const [dosage, setDosage] = useState('');
   const [repeatEvery, setRepeatEvery] = useState('1');
@@ -91,6 +94,7 @@ export default function AddPrescriptionScreen() {
               value={strength}
               onChangeText={setStrength}
               keyboardType="numeric"
+              inputAccessoryViewID={doneBar.id}
               placeholder="0"
             />
           </View>
@@ -124,6 +128,7 @@ export default function AddPrescriptionScreen() {
             value={dosage}
             onChangeText={setDosage}
             keyboardType="numeric"
+            inputAccessoryViewID={doneBar.id}
             placeholder="0"
           />
         </View>
@@ -136,6 +141,7 @@ export default function AddPrescriptionScreen() {
               value={repeatEvery}
               onChangeText={setRepeatEvery}
               keyboardType="numeric"
+              inputAccessoryViewID={doneBar.id}
             />
           </View>
           <View style={[styles.field, styles.fieldFixed]}>
@@ -153,6 +159,7 @@ export default function AddPrescriptionScreen() {
           <Text style={styles.saveButtonText}>{isEditing ? 'Save changes' : 'Save medication'}</Text>
         </Pressable>
       </ScrollView>
+      {doneBar.bar}
     </SafeAreaView>
   );
 }
