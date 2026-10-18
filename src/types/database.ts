@@ -858,7 +858,6 @@ export type Database = {
         }
         Returns: number
       }
-
       save_personal_care_assessment: {
         Args: {
           p_date: string
