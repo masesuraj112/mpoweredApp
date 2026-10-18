@@ -56,7 +56,6 @@ export default function GeneralScreen() {
           searchEnabled={false}
           scrollable
           selectedChipsEnabled={false}
-          cardHeight={scaleHeight(558)}
         />
       </View>
     </View>
