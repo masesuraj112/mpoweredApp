@@ -139,6 +139,7 @@ export function MultiChoiceList({
           variant !== 'default' && styles.painTrackerOptionsBox,
           (variant === 'personalCare' || variant === 'management') && styles.personalCareOptionsBox,
           variant === 'management' && listHeight !== undefined && { height: listHeight },
+          variant === 'personalCare' && styles.personalCareMinHeight,
         ]}
       >
         {showScrollable ? (
@@ -316,6 +317,9 @@ const styles = StyleSheet.create({
     width: '96%',
     marginLeft: scaleWidth(4),
     borderRadius: scaleWidth(12),
+  },
+    personalCareMinHeight: {
+    minHeight: scaleHeight(283),
   },
   scrollList: {
     flex: 1,
