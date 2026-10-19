@@ -1,20 +1,22 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { StyleSheet, Text, View } from 'react-native';
 
-interface ErrorStateProps {
+import { Colors, Spacing } from '@/constants/theme';
+
+import { Button } from './Button';
+
+type ErrorStateProps = {
   message: string;
   onRetry?: () => void;
-}
+  retryLabel?: string;
+};
 
-export function ErrorState({ message, onRetry }: ErrorStateProps) {
+export function ErrorState({ message, onRetry, retryLabel = 'Try again' }: ErrorStateProps) {
   return (
-    <View style={styles.container} accessibilityRole="alert">
-      <Text style={styles.message}>{message}</Text>
-      {onRetry && (
-        <Pressable style={styles.button} onPress={onRetry} accessibilityRole="button">
-          <Text style={styles.buttonText}>Try again</Text>
-        </Pressable>
-      )}
+    <View style={styles.container}>
+      <Text accessibilityRole="alert" style={styles.message}>
+        {message}
+      </Text>
+      {onRetry ? <Button label={retryLabel} onPress={onRetry} /> : null}
     </View>
   );
 }
@@ -22,25 +24,14 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingVertical: scaleHeight(48),
-    paddingHorizontal: scaleWidth(24),
+    gap: Spacing.two,
+    padding: Spacing.three,
   },
   message: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
-    color: '#1D1B20',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
     textAlign: 'center',
-  },
-  button: {
-    marginTop: scaleHeight(16),
-    backgroundColor: '#F2F2F7',
-    borderRadius: scaleWidth(12),
-    paddingHorizontal: scaleWidth(20),
-    paddingVertical: scaleHeight(10),
-  },
-  buttonText: {
-    fontSize: scaleFont(14),
-    fontWeight: '600',
-    color: '#1D1B20',
+    color: Colors.light.onSurface,
   },
 });

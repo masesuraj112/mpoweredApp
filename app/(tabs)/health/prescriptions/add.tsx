@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -50,6 +51,8 @@ export default function AddPrescriptionScreen() {
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
+  // The iOS number keyboard has no return key, so the number fields share a Done bar to close it.
+  const doneBar = useKeyboardDoneBar();
 
   const setField = <K extends keyof PrescriptionForm>(key: K) => (value: PrescriptionForm[K]) =>
     setValues((current) => ({ ...current, [key]: value }));
@@ -151,6 +154,7 @@ export default function AddPrescriptionScreen() {
               value={values.strength}
               onChangeText={setField('strength')}
               keyboardType="decimal-pad"
+              inputAccessoryViewID={doneBar.id}
               placeholder="0"
             />
             {errorFor('strength')}
@@ -185,6 +189,7 @@ export default function AddPrescriptionScreen() {
             value={values.amount}
             onChangeText={setField('amount')}
             keyboardType="decimal-pad"
+            inputAccessoryViewID={doneBar.id}
             placeholder="0"
           />
           {errorFor('amount')}
@@ -198,6 +203,7 @@ export default function AddPrescriptionScreen() {
               value={values.repeatsEvery}
               onChangeText={setField('repeatsEvery')}
               keyboardType="number-pad"
+              inputAccessoryViewID={doneBar.id}
             />
             {errorFor('repeatsEvery')}
           </View>
@@ -230,6 +236,7 @@ export default function AddPrescriptionScreen() {
           </Text>
         </Pressable>
       </ScrollView>
+      {doneBar.bar}
     </SafeAreaView>
   );
 }

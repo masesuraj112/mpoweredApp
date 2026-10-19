@@ -17,6 +17,20 @@ export const Colors = {
     outlineStrong: '#AEAEB2',
     onSurface: '#1D1B20',
     onSurfaceVariant: '#49454F',
+    secondary: '#625B71',
+    primaryContainer: '#EADDFF',
+    onPrimary: '#FFFFFF',
+    success: '#4DA32D',
+    backdrop: 'rgba(0, 0, 0, 0.5)',
+    listening: '#6750A4',
+    calendarSelected: '#2C2C2C',
+    onCalendarSelected: '#F5F5F5',
+    textDisabled: '#B3B3B3',
+    error: '#B3261E',
+    secondaryContainer: '#E8DEF8',
+    onSecondaryContainer: '#4A4459',
+    controlBorder: '#3A3A3A',
+    controlChecked: '#5B4A9E',
   },
   dark: {
     text: '#ffffff',
@@ -29,6 +43,20 @@ export const Colors = {
     outlineStrong: '#79747E',
     onSurface: '#E6E1E5',
     onSurfaceVariant: '#CAC4D0',
+    secondary: '#CCC2DC',
+    primaryContainer: '#4F378B',
+    onPrimary: '#381E72',
+    success: '#8BD97A',
+    backdrop: 'rgba(0, 0, 0, 0.6)',
+    listening: '#D0BCFF',
+    calendarSelected: '#E6E1E5',
+    onCalendarSelected: '#1D1B20',
+    textDisabled: '#79747E',
+    error: '#F2B8B5',
+    secondaryContainer: '#4A4458',
+    onSecondaryContainer: '#E8DEF8',
+    controlBorder: '#CAC4D0',
+    controlChecked: '#D0BCFF',
   },
 } as const;
 
@@ -67,6 +95,30 @@ export const Spacing = {
   four: 24,
   five: 32,
   six: 64,
+} as const;
+
+export const Radius = {
+  card: 12,
+  control: 10,
+  pill: 999,
+} as const;
+
+/** Minimum touch target (dp) for interactive elements. */
+export const MinTapTarget = 48;
+
+/**
+ * Text styles from the design (the Material 3 type scale). Spread one into a text style and add a
+ * colour: `{ ...Typography.labelLarge, color: Colors.light.text }`.
+ */
+export const Typography = {
+  /** 14/20 medium: labels and field labels. */
+  labelLarge: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.1 },
+  /** 14/20 semibold: section headings and emphasised labels. */
+  labelLargeBold: { fontSize: 14, lineHeight: 20, fontWeight: '600', letterSpacing: 0.1 },
+  /** 16/24 regular: question text and field values. */
+  bodyLarge: { fontSize: 16, lineHeight: 24, letterSpacing: 0.5 },
+  /** 14/20 medium with wider tracking: short messages and hints. */
+  bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;

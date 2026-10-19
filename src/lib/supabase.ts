@@ -8,7 +8,6 @@ import { authStorage } from './supabaseStorage'
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!
 const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-console.log('URL loaded:', supabaseUrl);
 
 export const supabase = createClient<Database>(supabaseUrl, supabasePublishableKey, {
   auth: {

@@ -1,32 +1,36 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { scaleFont, scaleHeight } from '@/services/scale';
 
-interface LoadingStateProps {
-  /** Read by screen readers, and shown under the spinner when `showLabel` is set */
+import { Colors, Spacing } from '@/constants/theme';
+
+type LoadingStateProps = {
+  /** Read by screen readers; optionally displayed under the spinner. */
   label?: string;
   showLabel?: boolean;
-}
+};
 
 export function LoadingState({ label = 'Loading', showLabel = false }: LoadingStateProps) {
   return (
-    <View style={styles.container}>
-      <ActivityIndicator color={PRIMARY_PURPLE} accessibilityLabel={label} />
-      {showLabel && <Text style={styles.label}>{label}</Text>}
+    <View
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      style={styles.container}
+    >
+      <ActivityIndicator color={Colors.light.primary} />
+      {showLabel ? <Text style={styles.label}>{label}</Text> : null}
     </View>
   );
 }
-
-const PRIMARY_PURPLE = '#6750A4';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: scaleHeight(48),
+    padding: Spacing.three,
   },
   label: {
-    fontSize: scaleFont(14),
-    color: '#49454F',
-    marginTop: scaleHeight(12),
+    marginTop: Spacing.two,
+    fontSize: 14,
+    color: Colors.light.onSurface,
   },
 });
