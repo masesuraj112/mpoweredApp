@@ -34,6 +34,15 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Read functions filter by `week_start` and by the signed-in `auth_id`, and report `NO_SESSION` / `NO_PROFILE` | `assessments.test.ts` (`getPainEntryForWeek`, `getCompletedPainWeeks`, `getUserStartWeek`, `getRecentPainLocations`) | Service | `unit-tests` |
 | Each save failure shows a friendly message, and raw database text is never shown to the user | `messages.test.ts` | Unit | `unit-tests` |
 | The Summary screen shows the Monday to Sunday week, the saved values and the score wording (including 0 and 10) | `summary.test.ts` | Unit | `unit-tests` |
+| The pain profile shows user info, conditions and all five assessments, and marks missing ones as incomplete | `profile.test.ts` | Unit | `unit-tests` |
+| The chart plots the selected metric (Average, Worst, Mildest) for the selected location, oldest week on the left | `tracking.test.ts` | Unit | `unit-tests` |
+| "See more records" loads only older weeks and confirms how many loaded | `health.test.ts` (`getPainEntries` paging); `tracking.test.ts` (`loadMoreMessage`) | Service, Unit | `unit-tests` |
+| History lists every week since the start week, each with all five assessments and their status | `tracking.test.ts` (`toHistoryWeeks`); `health.test.ts` (`getCompletedWeeks`) | Unit, Service | `unit-tests` |
+| PDFs contain the full profile / chart / history and escape user text | `pdf-export.test.ts` | Unit | `unit-tests` |
+| A prescription needs a name, a strength and amount above 0 (decimals allowed) and a whole-number repeat | `prescriptions.test.ts`; `040_prescriptions` | Unit, Database | `unit-tests`, `database-tests` |
+| Saving a prescription writes the medication and dosage together; editing keeps one dosage row | `040_prescriptions` | Database | `database-tests` |
+| Deleting a prescription hides it (deleted_at) without breaking past Management entries; it cannot then be edited | `health.test.ts` (`deletePrescription`); `040_prescriptions` | Service, Database | `unit-tests`, `database-tests` |
+| Users cannot see or edit each other's prescriptions | `040_prescriptions` | Database | `database-tests` |
 | One social health submission per user per week | `040_social_health_constraints` ("a second submission in the same week is rejected"); `050_save_social_health_assessment` ("a second submission in the same week fails with 23505") | Database | `database-tests` |
 | Social health `week_start` is the Monday of the chosen date | `040_social_health_constraints`; `050_save_social_health_assessment` | Database | `database-tests` |
 | Social health slider answers are whole numbers 0 to 10 | social health `validate.test.ts`; `040` and `050` (above 10 rejected) | Unit, Database | `unit-tests`, `database-tests` |

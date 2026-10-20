@@ -9,6 +9,7 @@ export type AppErrorCode =
   | 'NO_PROFILE'
   | 'FUTURE_DATE'
   | 'BEFORE_START'
+  | 'NOT_FOUND'
   | 'INVALID_PHONE'
   | 'INVALID_OTP'
   | 'OTP_EXPIRED'
@@ -21,17 +22,18 @@ export type AppErrorCode =
 export type AppError = {
   code: AppErrorCode;
   message: string;
-  /** For VALIDATION errors raised by save_pain_assessment: the original message code. */
+  /** For VALIDATION errors raised by a save function: the original message code. */
   detail?: string;
   /** For VALIDATION errors raised by the app: the answer that failed (for example 'worstPain'). */
   field?: string;
 };
 
-// P0001 messages raised by save_pain_assessment that keep their own code
+// P0001 messages raised by the save functions that keep their own code
 const PASSTHROUGH_CODES = [
   'NO_PROFILE',
   'FUTURE_DATE',
   'BEFORE_START',
+  'NOT_FOUND',
   'PROFILE_EXISTS',
   'NO_SESSION',
   'INVALID_PHONE',
@@ -51,6 +53,7 @@ const VALIDATION_MESSAGES = [
   'INVALID_USER_TYPE',
   'INVALID_CONDITION',
   'MEDICATION_CONFLICT',
+  'NO_NAME',
 ] as const;
 
 export function mapError(error: unknown): AppError {

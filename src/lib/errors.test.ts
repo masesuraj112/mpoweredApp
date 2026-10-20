@@ -23,12 +23,19 @@ describe('mapError: Postgres error codes', () => {
   });
 });
 
-describe('mapError: errors raised by save_pain_assessment (P0001)', () => {
-  it.each(['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START'])('%s keeps its own code', (name) => {
+describe('mapError: errors raised by the save functions (P0001)', () => {
+  it.each(['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START', 'NOT_FOUND'])('%s keeps its own code', (name) => {
     expect(mapError(dbError('P0001', name))).toEqual({ code: name, message: name });
   });
 
-  it.each(['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'MISSING_ANSWER', 'MEDICATION_CONFLICT'])(
+  it.each([
+    'NO_LOCATION',
+    'NO_CHARACTERISTIC',
+    'VALUE_TOO_LONG',
+    'NO_NAME',
+    'MISSING_ANSWER',
+    'MEDICATION_CONFLICT',
+  ])(
     '%s becomes VALIDATION and keeps the original code in detail',
     (name) => {
       expect(mapError(dbError('P0001', name))).toEqual({

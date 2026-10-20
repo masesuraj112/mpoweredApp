@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     gap: Spacing.two,
+    padding: Spacing.three,
   },
   message: {
     fontSize: 14,
