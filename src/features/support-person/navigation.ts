@@ -11,8 +11,11 @@ export function openAppointmentAction(action: AppointmentActionType, patientId: 
     case 'view-plan':
       router.push({ pathname: '/care-planner/appointment/[appointmentId]', params });
       return;
+    case 'add-answer':
+      router.push({ pathname: '/care-planner/appointment/[appointmentId]', params: { ...params, openAnswer: '1' } });
+      return;
     default:
-      // TODO (commits 11 and 14 of docs/support-person-appointments-now-plan.md): add answers and questions.
+      // TODO (commit 14 of docs/support-person-appointments-now-plan.md): add questions.
       router.push({ pathname: '/care-planner/appointment-action', params: { ...params, action } });
   }
 }

@@ -1,6 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionGroupList } from '@/components/care-planner/QuestionGroupList';
@@ -10,22 +12,60 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
 import { displayOrPlaceholder, formatShortAppointmentDate, isPlanEmpty } from '@/features/care-planner/planDisplay';
+import type { AnswerInput } from '@/features/care-planner/planTypes';
 import { useSupportPerson } from '@/features/support-person/context';
+import { getPlanAccess } from '@/features/support-person/permissions';
 import { useSupportedAppointmentPlan } from '@/features/support-person/useSupportedAppointmentPlan';
+import { saveSupportedAnswers } from '@/services/support-person';
 
 /**
  * A supported patient's appointment plan, laid out like the patient's "Review My Appointment Plan"
- * and built from the same components. Read-only for now.
+ * and built from the same components. What can be changed depends on the patient's permissions.
  */
 export default function SupportedAppointmentPlanScreen() {
-  const params = useLocalSearchParams<{ appointmentId: string; patientId: string }>();
+  // openAnswer: set by "Add doctor's answer" to open the answer box straight away.
+  const params = useLocalSearchParams<{ appointmentId: string; patientId: string; openAnswer?: string }>();
   const appointmentId = Number(params.appointmentId);
   const patient = useSupportPerson().getPatient(params.patientId);
   const state = useSupportedAppointmentPlan(appointmentId);
   const firstName = patient?.name.split(' ')[0] ?? 'The patient';
+  const access = getPlanAccess(patient ?? { canAddQuestions: false, canAddAnswers: false });
+  const { refresh } = state;
+
+  // The answer box opens over this screen on a question, as on the patient's review screen.
+  const [answerQuestionId, setAnswerQuestionId] = useState<number | null>(null);
+  const questions = state.status === 'ready' ? state.plan.questionGroups.flatMap(group => group.questions) : [];
+
+  // "Add doctor's answer": open the box once, on the first question without an answer.
+  const openedFromButton = useRef(false);
+  const firstToAnswer = (questions.find(q => q.doctorAnswer === null) ?? questions[0])?.questionId ?? null;
+  useEffect(() => {
+    if (!params.openAnswer || openedFromButton.current || !access.canEditAnswers || firstToAnswer === null) return;
+    openedFromButton.current = true;
+    setAnswerQuestionId(firstToAnswer);
+  }, [params.openAnswer, access.canEditAnswers, firstToAnswer]);
+
+  const saveAnswers = async (answers: AnswerInput[]): Promise<boolean> => {
+    const result = await saveSupportedAnswers(appointmentId, answers);
+    if (result.ok) refresh();
+    return result.ok;
+  };
 
   return (
-    <PlannerFlowScreen title={patient ? `${patient.name}’s Appointment Plan` : 'Appointment Plan'} titleWeight="regular">
+    <PlannerFlowScreen
+      title={patient ? `${patient.name}’s Appointment Plan` : 'Appointment Plan'}
+      titleWeight="regular"
+      footer={
+        access.canEditAnswers && answerQuestionId !== null && questions.length > 0 ? (
+          <AnswerModal
+            questions={questions}
+            initialQuestionId={answerQuestionId}
+            onSave={saveAnswers}
+            onClose={() => setAnswerQuestionId(null)}
+          />
+        ) : null
+      }
+    >
       {state.status === 'loading' ? <LoadingState label="Loading appointment plan" /> : null}
 
       {state.status === 'error' ? (
@@ -59,7 +99,14 @@ export default function SupportedAppointmentPlanScreen() {
           ) : (
             state.plan.questionGroups
               .filter(group => group.questions.length > 0)
-              .map(group => <QuestionGroupList key={group.groupId} group={group} />)
+              .map(group => (
+                <QuestionGroupList
+                  key={group.groupId}
+                  group={group}
+                  // Without the answers permission the questions are read-only (no pen).
+                  onEditAnswer={access.canEditAnswers ? setAnswerQuestionId : undefined}
+                />
+              ))
           )}
         </Card>
       ) : null}
