@@ -9,22 +9,52 @@ export type AppErrorCode =
   | 'NO_PROFILE'
   | 'FUTURE_DATE'
   | 'BEFORE_START'
+  | 'NOT_FOUND'
+  | 'INVALID_PHONE'
+  | 'INVALID_OTP'
+  | 'OTP_EXPIRED'
+  | 'RATE_LIMITED'
+  | 'PROFILE_EXISTS'
+  | 'SMS_FAILED'
   | 'NETWORK'
   | 'UNKNOWN';
 
 export type AppError = {
   code: AppErrorCode;
   message: string;
-  /** For VALIDATION errors raised by save_pain_assessment: the original message code. */
+  /** For VALIDATION errors raised by a save function: the original message code. */
   detail?: string;
   /** For VALIDATION errors raised by the app: the answer that failed (for example 'worstPain'). */
   field?: string;
 };
 
-// P0001 messages raised by save_pain_assessment that keep their own code
-const PASSTHROUGH_CODES = ['NO_PROFILE', 'FUTURE_DATE', 'BEFORE_START'] as const;
+// P0001 messages raised by the save functions that keep their own code
+const PASSTHROUGH_CODES = [
+  'NO_PROFILE',
+  'FUTURE_DATE',
+  'BEFORE_START',
+  'NOT_FOUND',
+  'PROFILE_EXISTS',
+  'NO_SESSION',
+  'INVALID_PHONE',
+] as const;
 // P0001 messages that the app treats as a validation problem
-const VALIDATION_MESSAGES = ['NO_LOCATION', 'NO_CHARACTERISTIC', 'VALUE_TOO_LONG', 'MISSING_ANSWER'] as const;
+const VALIDATION_MESSAGES = [
+  'NO_LOCATION',
+  'NO_CHARACTERISTIC',
+  'NO_ACTIVITY',
+  'NO_IMPACT',
+  'MISSING_ANSWER',
+  'INVALID_HOURS',
+  'VALUE_TOO_LONG',
+  'INVALID_NAME',
+  'INVALID_SEX',
+  'INVALID_YEAR',
+  'INVALID_USER_TYPE',
+  'INVALID_CONDITION',
+  'MEDICATION_CONFLICT',
+  'NO_NAME',
+] as const;
 
 export function mapError(error: unknown): AppError {
   const { code, message } = readError(error);
@@ -37,6 +67,14 @@ export function mapError(error: unknown): AppError {
       return { code: 'VALIDATION', message };
     case '42501':
       return { code: 'NOT_ALLOWED', message };
+    // Supabase Auth error codes (AuthApiError.code), checked against @supabase/auth-js ErrorCode
+    case 'otp_expired':
+      return { code: 'OTP_EXPIRED', message };
+    case 'over_sms_send_rate_limit':
+    case 'over_request_rate_limit':
+      return { code: 'RATE_LIMITED', message };
+    case 'sms_send_failed':
+      return { code: 'SMS_FAILED', message };
     case 'P0001': {
       const passthrough = PASSTHROUGH_CODES.find((c) => message.includes(c));
       if (passthrough) return { code: passthrough, message };

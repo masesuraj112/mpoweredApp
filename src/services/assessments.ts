@@ -2,17 +2,19 @@
 // The Supabase client is the last optional argument so tests can pass a fake one.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { validateMovementAnswers, type ValidMovementEntry } from '@/features/assessments/movement/validate';
+import type { MovementAssessmentAnswers } from '@/features/assessments/movement/types';
 
 import { dedupe } from '@/features/assessments/pain/normalise';
 import type { PainAssessmentAnswers } from '@/features/assessments/pain/types';
 import { validatePainAnswers, type ValidPainEntry } from '@/features/assessments/pain/validate';
 import { addWeeks, getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { mapError } from '@/lib/errors';
-import { fail, ok, type Result } from '@/lib/result';
+import { fail, ok, run, type Result } from '@/lib/result';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
-type Client = SupabaseClient<Database>;
+export type Client = SupabaseClient<Database>;
 
 /** A saved pain submission with its locations and characteristics. */
 export type PainEntry = {
@@ -27,24 +29,15 @@ export type PainEntry = {
   characteristics: string[];
 };
 
-type PainRow = Database['public']['Tables']['pain_assessment']['Row'] & {
+export type PainRow = Database['public']['Tables']['pain_assessment']['Row'] & {
   pain_location: { pain_location: string }[];
   pain_characteristics: { pain_characteristic: string }[];
 };
 
-const PAIN_ENTRY_SELECT =
+export const PAIN_ENTRY_SELECT =
   '*, pain_location(pain_location), pain_characteristics(pain_characteristic)';
 
-/** Runs a database call and converts both returned errors and thrown ones (for example a lost connection). */
-async function run<T>(call: () => Promise<Result<T>>): Promise<Result<T>> {
-  try {
-    return await call();
-  } catch (error) {
-    return fail(mapError(error));
-  }
-}
-
-function toPainEntry(row: PainRow): PainEntry {
+export function toPainEntry(row: PainRow): PainEntry {
   return {
     submissionId: row.submission_id,
     date: row.date,
@@ -194,5 +187,132 @@ export function getRecentPainLocations(
     if (error) return fail(mapError(error));
     const locations = (data ?? []).flatMap((row) => row.pain_location.map((l) => l.pain_location));
     return ok(dedupe(locations));
+  });
+}
+
+/** Runs a save call and maps its failures. `findIdenticalEntry` is only asked on DUPLICATE_WEEK. */
+function saveEntry(
+  call: () => PromiseLike<{ data: number | null; error: unknown }>,
+  findIdenticalEntry: () => Promise<number | null>,
+): Promise<Result<number>> {
+  return run(async () => {
+    const { data, error } = await call();
+    if (error) {
+      const mapped = mapError(error);
+      if (mapped.code === 'DUPLICATE_WEEK') {
+        const identicalId = await findIdenticalEntry();
+        if (identicalId !== null) return ok(identicalId);
+      }
+      return fail(mapped);
+    }
+    if (typeof data !== 'number') {
+      return fail({ code: 'UNKNOWN', message: 'The save did not return a submission id.' });
+    }
+    return ok(data);
+  });
+}
+
+/** A saved movement submission with its general impacts. */
+export type MovementEntry = {
+  submissionId: number;
+  date: string;
+  weekStart: string;
+  activeHours: number;
+  generalImpacts: string[];
+  walking: string;
+  lifting: string;
+  sitting: string;
+  standing: string;
+  reflection: string | null;
+};
+
+type MovementRow = Database['public']['Tables']['movement_assessment']['Row'] & {
+  movement_general_impacts: { impact_statement: string }[];
+};
+
+const MOVEMENT_SELECT = '*, movement_general_impacts(impact_statement)';
+
+function toMovementEntry(row: MovementRow): MovementEntry {
+  return {
+    submissionId: row.submission_id,
+    date: row.date,
+    weekStart: row.week_start ?? getWeekStart(row.date),
+    // convert explicitly so a numeric value that arrives as text still becomes a number
+    activeHours: Number(row.average_active_hours),
+    generalImpacts: row.movement_general_impacts.map((i) => i.impact_statement),
+    walking: row.walking_impact,
+    lifting: row.lifting_impact,
+    sitting: row.sitting_impact,
+    standing: row.standing_impact,
+    reflection: row.reflection,
+  };
+}
+
+function matchesSavedMovement(existing: MovementEntry, saved: ValidMovementEntry): boolean {
+  return (
+    existing.date === saved.date &&
+    existing.activeHours === saved.activeHours &&
+    existing.walking === saved.walking &&
+    existing.lifting === saved.lifting &&
+    existing.sitting === saved.sitting &&
+    existing.standing === saved.standing &&
+    existing.reflection === saved.reflection &&
+    sameValues(existing.generalImpacts, saved.generalImpacts)
+  );
+}
+
+/**
+ * Validates and saves one movement submission in a single database call.
+ * Returns the new submission_id.
+ */
+export async function saveMovementEntry(
+  answers: MovementAssessmentAnswers,
+  entryDate: string,
+  client: Client = supabase,
+  options: { today?: string; startWeek?: string } = {},
+): Promise<Result<number>> {
+  const validated = validateMovementAnswers(answers, {
+    entryDate,
+    today: options.today ?? getLocalToday(),
+    startWeek: options.startWeek,
+  });
+  if (!validated.ok) return validated;
+  const entry = validated.data;
+
+  return saveEntry(
+    () =>
+      client.rpc('save_movement_assessment', {
+        p_date: entry.date,
+        p_active_hours: entry.activeHours,
+        p_general_impacts: entry.generalImpacts,
+        p_walking: entry.walking,
+        p_lifting: entry.lifting,
+        p_sitting: entry.sitting,
+        p_standing: entry.standing,
+        // the database turns a blank reflection into null
+        p_reflection: entry.reflection ?? '',
+      }),
+    async () => {
+      const existing = await getMovementEntryForWeek(getWeekStart(entry.date), client);
+      return existing.ok && existing.data && matchesSavedMovement(existing.data, entry)
+        ? existing.data.submissionId
+        : null;
+    },
+  );
+}
+
+/** The user's movement entry for the week starting on `weekStart`, or null when there is none. */
+export function getMovementEntryForWeek(
+  weekStart: string,
+  client: Client = supabase,
+): Promise<Result<MovementEntry | null>> {
+  return run(async () => {
+    const { data, error } = await client
+      .from('movement_assessment')
+      .select(MOVEMENT_SELECT)
+      .eq('week_start', weekStart)
+      .maybeSingle();
+    if (error) return fail(mapError(error));
+    return ok(data ? toMovementEntry(data as unknown as MovementRow) : null);
   });
 }

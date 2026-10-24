@@ -6,6 +6,7 @@ import {
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { supabase } from '@/lib/supabase';
+import { signOut } from '@/services/auth';
 import { isFutureDate, parseIsoDate } from '@/services/date';
 import { validateEmail, validatePassword } from '@/services/validation';
 import { useState } from 'react';
@@ -150,8 +151,8 @@ export default function ProfileScreen() {
   };
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) Alert.alert('Sign out failed', error.message);
+    const result = await signOut();
+    if (!result.ok) Alert.alert('Sign out failed', result.error.message);
   };
 
   return (

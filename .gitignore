@@ -50,4 +50,5 @@ supabase/.temp/
 # test coverage output
 coverage/
 
-.claude/
+#Claude
+.claude/settings.local.json

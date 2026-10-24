@@ -1,14 +1,16 @@
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { NO_MEDICATION_OPTION } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
+import { toggleMedicationOption } from '@/features/assessments/management/medication';
 import { SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-const OTHER_MANAGEMENT_OPTION = 'I sit down most of the day because of my pain';
+// TODO: List the user's own prescriptions once the prescriptions backend exists (M5).
 const MEDICATION_OPTIONS = [
   ...SAMPLE_PRESCRIPTION_SCRIPTS.map(script => script.name),
-  OTHER_MANAGEMENT_OPTION,
+  NO_MEDICATION_OPTION,
 ];
 const MEDICATION_SUPPORTING_TEXT = [
   ...SAMPLE_PRESCRIPTION_SCRIPTS.map(script => script.frequency),
@@ -18,15 +20,25 @@ const MEDICATION_SUPPORTING_TEXT = [
 export default function MedicationScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
   const savedMedications = answers.medications ?? [];
+  const noMedication = answers.noMedication === true;
   const selected = MEDICATION_OPTIONS.reduce<number[]>((indices, option, index) => {
-    if (savedMedications.includes(option)) {
+    const isTicked = option === NO_MEDICATION_OPTION ? noMedication : savedMedications.includes(option);
+    if (isTicked) {
       indices.push(index);
     }
     return indices;
   }, []);
 
-  const handleSelectionChange = (selectedIndices: number[]) => {
-    updateAnswer('medications', selectedIndices.map(index => MEDICATION_OPTIONS[index]));
+  // "I didn't take any medication" and the medications exclude each other, so the screen applies
+  // the rule itself instead of the list's default toggle.
+  const handleOptionPress = (index: number) => {
+    const next = toggleMedicationOption(
+      { medications: savedMedications, noMedication },
+      MEDICATION_OPTIONS[index],
+    );
+    updateAnswer('medications', next.medications);
+    updateAnswer('noMedication', next.noMedication);
+    return true;
   };
 
   return (
@@ -47,7 +59,7 @@ export default function MedicationScreen() {
           options={MEDICATION_OPTIONS}
           supportingTexts={MEDICATION_SUPPORTING_TEXT}
           selectedIndices={selected}
-          onSelectionChange={handleSelectionChange}
+          onOptionPress={handleOptionPress}
           questionNumber={1}
           totalQuestions={4}
           onRecord={() => router.push('/tracker/management/otc')}
