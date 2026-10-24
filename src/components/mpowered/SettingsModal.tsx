@@ -45,6 +45,7 @@ type SettingsModalProps = {
  *   SettingsModalGroup       – bordered card that stacks rows with dividers
  *   SettingsModalToggleRow   – label + switch (use inside a Group)
  *   SettingsModalActionRow   – tappable row, optionally destructive with a trailing icon
+ *   SettingsModalInfoRow     – read-only label with a short value on the right
  *   SettingsModalInlineRow   – "Every [3 ▾] [days ▾]" style row
  */
 export function SettingsModal({
@@ -121,7 +122,8 @@ export function SettingsModalText({ children }: { children: ReactNode }) {
 type SettingsModalFieldProps = Omit<TextInputProps, 'style' | 'value' | 'onChangeText'> & {
   label: string;
   value: string;
-  onChangeText: (value: string) => void;
+  /** Leave out for a read-only field (pass `editable={false}` and `showEditIcon={false}` too). */
+  onChangeText?: (value: string) => void;
   /**
    * Password mode: hides the text, turns off auto-capitalise / auto-correct, sets the
    * password autofill hints, and swaps the pencil icon for a Show / Hide toggle.
@@ -301,6 +303,16 @@ export function SettingsModalToggleRow({
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
       <SettingsToggle value={value} onValueChange={onValueChange} accessibilityLabel={label} />
+    </View>
+  );
+}
+
+/** Read-only label with a short grey value on the right, e.g. a permission the user can't change. */
+export function SettingsModalInfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.row} accessible accessibilityLabel={`${label}: ${value}`}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <Text style={styles.rowValue}>{value}</Text>
     </View>
   );
 }
@@ -513,6 +525,11 @@ const styles = StyleSheet.create({
     color: '#1D1B20',
     fontSize: 16,
     lineHeight: 24,
+  },
+  rowValue: {
+    color: '#49454F',
+    fontSize: 14,
+    lineHeight: 20,
   },
   destructiveText: {
     color: '#D32F2F',

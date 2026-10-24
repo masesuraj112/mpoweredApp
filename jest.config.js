@@ -46,5 +46,11 @@ module.exports = {
     'src/services/profile.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
+    'src/features/support-person/appointments.ts',
+    'src/features/support-person/greeting.ts',
+    'src/features/support-person/context.tsx',
+    'src/features/support-person/permissions.ts',
+    'src/services/support-person.ts',
+    'src/features/support-person/useSupportedAppointmentQuestions.ts',
   ],
 };

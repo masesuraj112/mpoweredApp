@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from '../src/context/AuthContext';
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 
 function RootNavigator() {
-  const { session, loading, hasProfile, profileError, refreshProfile } = useAuth();
+  const { session, loading, hasProfile, profile, profileError, refreshProfile } = useAuth();
 
   // Implements a temporary loading screen for the initial session check
   if (loading) return null;
@@ -27,6 +27,8 @@ function RootNavigator() {
   // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
   // would unmount the verify screen in the middle of signing in.
   const canUseApp = !!session && hasProfile === true;
+  // Saved at sign-up (users.user_type). Support persons have no patients row, so never open the tabs.
+  const isSupportPerson = profile?.userType === 'support_person';
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -35,8 +37,13 @@ function RootNavigator() {
       </Stack.Protected>
 
       {/* Without a session and a profile, the tabs group becomes unreachable */}
-      <Stack.Protected guard={canUseApp || bypassAuth}>
+      <Stack.Protected guard={(canUseApp && !isSupportPerson) || bypassAuth}>
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+      <Stack.Protected guard={(canUseApp && isSupportPerson) || bypassAuth}>
+        <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>
   );
