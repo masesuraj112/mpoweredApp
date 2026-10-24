@@ -2,9 +2,9 @@ import { NotificationBell } from '@/components/mpowered/support-person/Notificat
 import { PillButton } from '@/components/mpowered/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
 import { Colors } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
 import { getGreeting } from '@/features/support-person/greeting';
-import { SAMPLE_SUPPORT_PERSON_NAME } from '@/features/support-person/mock-data';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -14,6 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 /** Care Planner home for support persons (Figma 3911-24607, empty state 3896-21458). */
 export default function CarePlannerHomeScreen() {
   const { patients, requests } = useSupportPerson();
+  // Saved at sign-up. Empty only when browsing with BYPASS_AUTH and no account; the greeting then leaves the name out.
+  const name = useAuth().profile?.name ?? '';
 
   const openRequests = () => router.push('/care-planner/requests');
   const openAppointments = (patient: SupportedPatient) =>
@@ -28,7 +30,7 @@ export default function CarePlannerHomeScreen() {
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.greetingRow}>
-          <Text style={styles.greeting}>{getGreeting(SAMPLE_SUPPORT_PERSON_NAME)}</Text>
+          <Text style={styles.greeting}>{getGreeting(name)}</Text>
           <NotificationBell count={requests.length} onPress={openRequests} />
         </View>
 

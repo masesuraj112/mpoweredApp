@@ -71,6 +71,3 @@ export const SAMPLE_SUPPORT_REQUESTS: SupportRequest[] = [
     },
   },
 ];
-
-// TODO: load the signed-in support person's name from their profile.
-export const SAMPLE_SUPPORT_PERSON_NAME = 'Alex';
