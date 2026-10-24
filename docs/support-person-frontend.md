@@ -42,13 +42,11 @@ Create `src/features/support-person/`:
     Expo Router throws an error when two groups contain the same path, and `(tabs)` already uses `/planner` and `/settings`.
 - In `app/_layout.tsx`, add a `Stack.Protected` for `(support)`. Use the account type to decide
   whether `(tabs)` or `(support)` is shown.
-- The account type isn't saved anywhere yet. `user-type.tsx` stores it only in memory
-  (`Onboarding-Context`). For this branch:
-  - Add a dev setting, e.g. `EXPO_PUBLIC_DEV_USER_TYPE=support-person` in `.env`, like the existing
-    `EXPO_PUBLIC_BYPASS_AUTH`, and document it in `.env.example`.
-  - `// TODO: read the account type from Supabase once it's saved at sign-up.`
-- `verification-confirmation.tsx` always sends the user to `/(tabs)/home`. Send support persons to the
-  `(support)` home instead, based on the onboarding user type.
+- **Updated after merging `main` (see `docs/support-person-merge-plan.md`).**
+  - The account type is now saved at sign-up (`users.user_type`).
+  - `getProfile()` in `src/services/auth.ts` loads it with the user's name, and `AuthContext` exposes it as `profile`.
+  - The root layout opens `(support)` when `profile.userType === 'support_person'`.
+  - The temporary `EXPO_PUBLIC_DEV_USER_TYPE` setting and the routing in `verification-confirmation.tsx` / `dev-login.tsx` have been removed. `main`'s root layout now decides where to go after sign-in.
 
 ### 3. Shared components
 Put these in `src/components/mpowered/support-person/` so both the home and appointments screens use them:
@@ -114,12 +112,19 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 
 ### 8. Before opening the PR
 - `npm run lint && npm run typecheck && npm test`
-- Manual test with `EXPO_PUBLIC_DEV_USER_TYPE=support-person`:
+- **Getting into the support person app.** It opens for accounts saved as `support_person`. Locally:
+  1. Run local Supabase. If it was started before the latest migrations, run `supabase db reset` so `users.user_type` exists; otherwise every sign-in shows "We could not load your account".
+  2. In onboarding choose **Support person**, and sign up with the test number **0491 570 007** (code `123456`).
+  3. For a patient account alongside it, use **0491 570 006** (same code).
+  4. With `EXPO_PUBLIC_BYPASS_AUTH=false`, restart with `npx expo start --clear` after changing `.env`.
+- **Quick look without an account:** set `EXPO_PUBLIC_BYPASS_AUTH=true` and go to `/care-planner`. The greeting has no name, because nobody is signed in.
+- Manual test as a support person:
   - Home with patients, and the empty home (clear the placeholder list).
+  - The greeting shows the name entered at sign-up.
   - Accept and reject requests, and check the home updates.
   - Open both patients' appointment screens, and check the buttons match their permissions.
-  - Settings: every row opens, unpair works, and sign out works.
-- Manual test with the setting removed: the patient app is unchanged.
+  - Settings: every row opens, unpair works, and sign out returns to the sign-in screens.
+- Manual test as a patient: the patient app is unchanged, including Settings → Sign out.
 - Check on a small phone and a large phone (the screens use `scaleWidth` / `scaleHeight`).
 
 ## Questions to confirm with the team
