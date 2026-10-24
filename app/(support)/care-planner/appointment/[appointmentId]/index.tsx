@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
@@ -6,6 +6,8 @@ import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionGroupList } from '@/components/care-planner/QuestionGroupList';
+import { ActionBar } from '@/components/ui/ActionBar';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -56,14 +58,30 @@ export default function SupportedAppointmentPlanScreen() {
       title={patient ? `${patient.name}’s Appointment Plan` : 'Appointment Plan'}
       titleWeight="regular"
       footer={
-        access.canEditAnswers && answerQuestionId !== null && questions.length > 0 ? (
-          <AnswerModal
-            questions={questions}
-            initialQuestionId={answerQuestionId}
-            onSave={saveAnswers}
-            onClose={() => setAnswerQuestionId(null)}
-          />
-        ) : null
+        <>
+          {access.canEditQuestions ? (
+            <ActionBar>
+              <Button
+                label="Modify questions"
+                onPress={() =>
+                  router.push({
+                    pathname: '/care-planner/appointment/[appointmentId]/questions',
+                    params: { appointmentId: String(appointmentId), patientId: params.patientId },
+                  })
+                }
+              />
+            </ActionBar>
+          ) : null}
+
+          {access.canEditAnswers && answerQuestionId !== null && questions.length > 0 ? (
+            <AnswerModal
+              questions={questions}
+              initialQuestionId={answerQuestionId}
+              onSave={saveAnswers}
+              onClose={() => setAnswerQuestionId(null)}
+            />
+          ) : null}
+        </>
       }
     >
       {state.status === 'loading' ? <LoadingState label="Loading appointment plan" /> : null}
