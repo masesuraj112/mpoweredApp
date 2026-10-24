@@ -1,6 +1,6 @@
 # Support person frontend: merging main and removing workarounds
 
-Branch: `feature/support-person-frontend`. Status: **plan, waiting for approval.**
+Branch: `feature/support-person-frontend`. Status: **done.** Commits 0 to 16 are on the branch (commit 0 is the plan itself).
 
 This branch was built before the app could sign people in or remember whether they're a patient
 or a support person, so it used a few stand-ins. `main` now has both (PR #31, onboarding login

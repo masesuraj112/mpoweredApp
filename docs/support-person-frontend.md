@@ -4,6 +4,14 @@ Frontend only. Build the screens a support person sees after signing in, using p
 No Supabase calls in this branch: anything that would save or load data is marked with a TODO,
 the same way the Settings frontend did it.
 
+**Status (after merging `main`, see `docs/support-person-merge-plan.md`):**
+- **Real:** the account type and name, loaded from `users` at sign-in.
+- **Still placeholder:**
+  - the patients, requests and appointments (`src/features/support-person/mock-data.ts`)
+  - accept, reject and unpair (in memory only)
+  - the Add/View questions and answers screen
+- **Why still placeholder:** nothing links a support person's account to a patient yet (`support_persons.users_id` is never set), there's no pending-request state, and `main`'s Planner data is itself placeholder data.
+
 ## Figma screens
 
 File: [MHA platform (Copy)](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-)
@@ -62,7 +70,7 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 
 ### 4. Care Planner home (`app/(support)/care-planner/index.tsx`)
 - Greeting: "Good morning / afternoon / evening, <first name>", based on the time of day.
-  Use a placeholder name: `// TODO: load the name from the profile.`
+  The name comes from the signed-in user's profile (`useAuth().profile.name`).
 - The bell opens the requests screen and shows how many requests are waiting.
 - "Your support makes a difference" heading and the intro text.
 - **People you support** list. Each card shows:
@@ -137,7 +145,7 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 | Designer | What does the requests screen show when there are no requests? (Currently: "You don’t have any support person requests right now.") |
 | Designer | The requests screen has no Back button, unlike the appointments screen. Should it have one? (Currently: swipe back, Android back, or tap the Care Planner tab.) |
 | Designer | Are there designs for "Add questions" / "View doctor's answer" from a support person's view? |
-| Sign-up owner | Do support persons go through the same onboarding questions as patients (sex, year of birth, health conditions)? At the moment `user-type.tsx` leads into all of them. |
-| Sign-up owner | Where will the account type be saved, so the app can pick `(tabs)` or `(support)` after login? |
+| Sign-up owner | ~~Do support persons go through the same onboarding questions as patients?~~ **Answered:** no. `consent.tsx` sends support persons straight to `login-bridge`, skipping sex, year of birth and conditions. |
+| Sign-up owner | ~~Where will the account type be saved?~~ **Answered:** `users.user_type` (`'patient'` / `'support_person'`), saved by `create_profile`. Now used to choose the app. |
 | Planner owner | Will the support person reuse the Planner's question and answer screens, or get their own? |
-| Backend | Requests need a "pending" state on `support_persons` (accepted or not). Who adds it? This also changes the patient's "Add support person" flow in Settings. |
+| Backend | Requests need a "pending" state on `support_persons` (accepted or not). Who adds it? This also changes the patient's "Add support person" flow in Settings. The login teammate's handover note lists the related gaps (linking `users_id`, `email` NOT NULL, `access_type` values, privileges). See "Still open" in `docs/support-person-merge-plan.md`. |
