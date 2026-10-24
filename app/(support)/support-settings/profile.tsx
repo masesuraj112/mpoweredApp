@@ -1,7 +1,13 @@
-import { SettingsModal, SettingsModalGroup, SettingsModalInfoRow } from '@/components/mpowered/SettingsModal';
+import {
+  SettingsModal,
+  SettingsModalGroup,
+  SettingsModalInfoRow,
+  SettingsModalText,
+} from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
+import { formatForDisplay } from '@/features/auth/phone';
 import { signOut } from '@/services/auth';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
@@ -37,7 +43,15 @@ export default function SupportAccountScreen() {
       >
         <SettingsModalGroup>
           <SettingsModalInfoRow label="Name" value={profile?.name ?? 'Not available'} />
+          <SettingsModalInfoRow
+            label="Phone number"
+            value={profile?.phone ? formatForDisplay(profile.phone) : 'Not provided'}
+          />
         </SettingsModalGroup>
+        {/* Users can't update their own users row yet, and a new phone number needs SMS re-verification. */}
+        <SettingsModalText>
+          These are the details you signed up with. They can’t be changed in the app yet.
+        </SettingsModalText>
       </SettingsModal>
     </SettingsSubpage>
   );
