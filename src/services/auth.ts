@@ -108,6 +108,8 @@ export function hasProfile(client: Client = supabase): Promise<Result<boolean>> 
 export type UserProfile = {
   userType: 'patient' | 'support_person';
   name: string;
+  /** E.164, e.g. +61491570006, as saved at sign-up. Null on rows created before phone sign-in. */
+  phone: string | null;
 };
 
 /**
@@ -123,13 +125,13 @@ export function getProfile(client: Client = supabase): Promise<Result<UserProfil
 
     const { data, error } = await client
       .from('users')
-      .select('user_type, name')
+      .select('user_type, name, phone_number')
       .eq('auth_id', userId)
       .maybeSingle();
     if (error) return fail(mapError(error));
     if (!data) return ok(null);
     // chk_users_user_type only allows these two values.
     const userType = data.user_type === 'support_person' ? 'support_person' : 'patient';
-    return ok({ userType, name: data.name });
+    return ok({ userType, name: data.name, phone: data.phone_number });
   });
 }

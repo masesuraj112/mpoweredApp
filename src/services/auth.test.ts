@@ -219,28 +219,36 @@ describe('getProfile', () => {
     // users_select also returns a patient's row to their support persons, so the filter matters.
     const { from, select, eq, client } = clientWith(
       { user: { id: 'u-1' } },
-      { data: { user_type: 'patient', name: 'Sam' }, error: null },
+      { data: { user_type: 'patient', name: 'Sam', phone_number: '+61491570006' }, error: null },
     );
     await getProfile(client);
     expect(from).toHaveBeenCalledWith('users');
-    expect(select).toHaveBeenCalledWith('user_type, name');
+    expect(select).toHaveBeenCalledWith('user_type, name, phone_number');
     expect(eq).toHaveBeenCalledWith('auth_id', 'u-1');
   });
 
   it('returns a patient profile', async () => {
     const { client } = clientWith(
       { user: { id: 'u-1' } },
-      { data: { user_type: 'patient', name: 'Sam' }, error: null },
+      { data: { user_type: 'patient', name: 'Sam', phone_number: '+61491570006' }, error: null },
     );
-    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'patient', name: 'Sam' } });
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'patient', name: 'Sam', phone: '+61491570006' } });
   });
 
   it('returns a support person profile', async () => {
     const { client } = clientWith(
       { user: { id: 'u-2' } },
-      { data: { user_type: 'support_person', name: 'Alex' }, error: null },
+      { data: { user_type: 'support_person', name: 'Alex', phone_number: '+61491570007' }, error: null },
     );
-    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'support_person', name: 'Alex' } });
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'support_person', name: 'Alex', phone: '+61491570007' } });
+  });
+
+  it('passes through a missing phone number (rows made before phone sign-in)', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-3' } },
+      { data: { user_type: 'patient', name: 'Old', phone_number: null }, error: null },
+    );
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'patient', name: 'Old', phone: null } });
   });
 
   it('is null when there is no users row yet', async () => {
