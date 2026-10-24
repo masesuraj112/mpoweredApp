@@ -35,11 +35,11 @@ export type PlanAccess = {
  * The single place that decides what a support person may change on an appointment plan, from the
  * access the patient gave them (US18, requirement 2.2.2).
  *
- * Decisions for now (docs/support-person-appointments-now-plan.md), easy to change here:
+ * Decisions for now (docs/support-person.md, section 4.3), easy to change here:
  * - Answers can still be added to past appointments, because doctors' answers are often typed up later.
  * - Recording consent is never signed by a support person (the plan screen shows it read-only).
  *
- * Only the app enforces this until the database checks access_type (see the later plan, P5).
+ * Only the app enforces this until the database checks access_type (docs/support-person.md, P5).
  */
 export function getPlanAccess(patient: Pick<SupportedPatient, 'canAddQuestions' | 'canAddAnswers'>): PlanAccess {
   return {

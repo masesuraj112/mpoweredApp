@@ -1,6 +1,6 @@
 // Data access for the support person app. Every function returns a Result and never throws to the UI.
 // MOCK: serves local sample data kept in memory (lost when the app restarts). The Supabase version
-// will keep the same signatures; see docs/support-person-appointments-plan.md for what it needs.
+// will keep the same signatures; see docs/support-person.md (section 4.2) for what it needs.
 
 import type { AnswerInput, AppointmentPlan, QuestionGroup } from '@/features/care-planner/planTypes';
 import type { QuestionSuggestions, SuggestedQuestionGroup } from '@/features/care-planner/suggestionTypes';
@@ -160,7 +160,7 @@ export async function unpairFromPatient(patientId: string): Promise<Result<void>
 
 /**
  * Suggested questions served by the mock. The real ones will come from the patient's own
- * assessments, generated on the back end (see docs/support-person-appointments-plan.md, P6).
+ * assessments, generated on the back end (see docs/support-person.md, P6).
  */
 const MOCK_SUGGESTED_GROUPS: SuggestedQuestionGroup[] = [
   {
