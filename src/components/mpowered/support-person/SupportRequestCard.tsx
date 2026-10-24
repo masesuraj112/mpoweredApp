@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   reject: {
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.primaryContainer,
   },
   accept: {
     backgroundColor: Colors.light.primary,
