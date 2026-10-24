@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import { hasProfile as fetchHasProfile } from '../services/auth';
+import { getProfile, type UserProfile } from '../services/auth';
 import type { AppError } from '../lib/errors';
 
 type AuthContextType = {
@@ -10,6 +10,8 @@ type AuthContextType = {
   loading: boolean;
   /** Whether the signed-in user has a profile row. null while it is being checked. */
   hasProfile: boolean | null;
+  /** The signed-in user's own profile (type and name). null while checking or when there is none. */
+  profile: UserProfile | null;
   /** Set when the profile check failed (for example no connection); cleared by refreshProfile. */
   profileError: AppError | null;
   /** Checks again whether the signed-in user has a profile. */
@@ -24,11 +26,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
     // The profile check is stored with the user it was made for, so it never applies to a
     // different user.
-    const [profile, setProfile] = useState<{ userId: string; value: boolean } | null>(null);
+    const [profile, setProfile] = useState<{ userId: string; value: UserProfile | null } | null>(null);
     const [profileFailure, setProfileFailure] = useState<{ userId: string; error: AppError } | null>(null);
     const [profileCheck, setProfileCheck] = useState(0);
     const userId = session?.user?.id ?? null;
-    const hasProfile = userId === null ? false : profile?.userId === userId ? profile.value : null;
+    const currentProfile = userId !== null && profile?.userId === userId ? profile : null;
+    const hasProfile = userId === null ? false : currentProfile ? currentProfile.value !== null : null;
     const profileError = profileFailure?.userId === userId ? profileFailure.error : null;
 
     useEffect(() => {
@@ -62,10 +65,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (loading || userId === null) return;
         let cancelled = false;
-        fetchHasProfile(supabase).then((result) => {
+        getProfile(supabase).then((result) => {
             if (cancelled) return;
             if (result.ok || result.error.code === 'NO_SESSION') {
-                setProfile({ userId, value: result.ok ? result.data : false });
+                setProfile({ userId, value: result.ok ? result.data : null });
                 setProfileFailure(null);
             } else {
                 setProfileFailure({ userId, error: result.error });
@@ -81,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         loading,
         hasProfile,
+        profile: currentProfile?.value ?? null,
         profileError,
         refreshProfile,
     };
