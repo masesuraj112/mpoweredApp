@@ -1,6 +1,6 @@
 # Support person appointments: what can be built now (frontend only)
 
-Branch: `feature/support-person-frontend`. Status: **plan, waiting for approval.**
+Branch: `feature/support-person-frontend`. Status: **done.** Commits 1 to 17 are on the branch.
 
 Companion to `docs/support-person-appointments-plan.md`, which covers the full feature once the
 backend exists. This plan builds **everything that doesn't need the backend**, on placeholder data,

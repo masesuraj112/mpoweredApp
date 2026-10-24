@@ -3,6 +3,11 @@
 Branch: a new branch from `main` once `feature/support-person-frontend` has merged (e.g.
 `feature/support-person-appointments`). Status: **plan only. Don't start until the prerequisites below are met.**
 
+**Update:** phases B to D (the plan and Add questions screens, permission rules, refresh) and most of phase A
+(the service shapes, loading and error states) are already built on placeholder data. See
+`docs/support-person-appointments-now-plan.md`. Once P1 to P6 are done, the remaining work is replacing the inside of
+`src/services/support-person.ts` with real queries. Its function signatures already match what the screens need.
+
 ## Goal
 
 A support person sees a supported patient's appointment the same way the patient does: the

@@ -7,7 +7,7 @@ the same way the Settings frontend did it.
 **Status (after merging `main`, see `docs/support-person-merge-plan.md`):**
 - **Real:** the account type and name, loaded from `users` at sign-in.
 - **Still placeholder:**
-  - the patients, requests and appointments (`src/features/support-person/mock-data.ts`)
+  - the patients, requests, appointments and appointment plans (`src/services/support-person.ts`, marked `MOCK:` like `src/services/care-planner.ts`)
   - accept, reject and unpair (in memory only)
   - the Add/View questions and answers screen
 - **Why still placeholder:** nothing links a support person's account to a patient yet (`support_persons.users_id` is never set), there's no pending-request state, and `main`'s Planner data is itself placeholder data.
@@ -94,9 +94,12 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
 - **Upcoming appointments**: "Add questions" if allowed, "Add doctor's answer" if allowed.
 - **Past appointments**: "View questions" if allowed, "View doctor's answer" if allowed.
 - If the patient has no upcoming or no past appointments, hide that section or show a short message.
-- The four action buttons open placeholder screens for now. The Planner's `questions.tsx` and `answer.tsx`
-  are still "coming soon" placeholders as well.
-  - `// TODO: link to the real question and answer screens once the Planner builds them.`
+- **Updated (see `docs/support-person-appointments-now-plan.md`):** the buttons open the support person's own
+  **appointment plan** (`appointment/[appointmentId]/index.tsx`) and **Add questions** (`appointment/[appointmentId]/questions.tsx`)
+  screens. They're built from the Planner's components, so they look like the patient's "Review My Appointment Plan" and "Add Questions".
+  - Answers can be edited only with "Add doctor's answers", and questions only with "Add questions".
+  - Answered questions can't be removed without the answers permission.
+  - Without either permission there's a "View appointment" button (SRS edge case 3.3).
 
 ### 7. Settings
 - **Settings home** (`app/(support)/support-settings/index.tsx`): Account, People you support, Privacy/Data and Legal,
@@ -131,6 +134,16 @@ Put these in `src/components/mpowered/support-person/` so both the home and appo
   - The greeting shows the name entered at sign-up.
   - Accept and reject requests, and check the home updates.
   - Open both patients' appointment screens, and check the buttons match their permissions.
+  - **Jane (questions only):**
+    - "Add questions" saves.
+    - Unticking an answered question on a past appointment is blocked with a message.
+    - The plan shows answers with no pen.
+  - **Steven (both):**
+    - "View doctor's answer" lets you edit answers.
+    - "Modify questions" works.
+    - Unticking an answered question asks first.
+  - **Tom (answers only, accept his request first):** "Add doctor's answer" opens the answer box, and there's no "Modify questions".
+  - The patient's own Planner doesn't show these changes yet: the two use separate placeholder data until the backend exists.
   - Settings: every row opens, unpair works, and sign out returns to the sign-in screens.
 - Manual test as a patient: the patient app is unchanged, including Settings → Sign out.
 - Check on a small phone and a large phone (the screens use `scaleWidth` / `scaleHeight`).
