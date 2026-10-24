@@ -12,10 +12,9 @@ the end (section 7).
 - **Real data:** whether someone is a support person, and their name, come from Supabase (`users.user_type`, `users.name`).
 - **Placeholder data:** everything else (patients, requests, appointments, plans) comes from `src/services/support-person.ts`, marked `MOCK:`, the same way the Planner uses `src/services/care-planner.ts`. The screens, hooks and permission rules are final. Only the inside of that service changes once the backend exists.
 - **Next:**
-  1. Fix the support person's Account page (section 4.2a), which can be done now.
-  2. The backend prerequisites (section 4.1), owned by the backend team.
-  3. Then replace the placeholder service, function by function (section 4.2).
-  4. Settle the open questions (section 4.4) along the way.
+  1. The backend prerequisites (section 4.1), owned by the backend team.
+  2. Then replace the placeholder service, function by function (section 4.2).
+  3. Settle the open questions (section 4.4) along the way, including editing Account details (end of section 4.2a).
 
 ## 2. What's built
 
@@ -40,7 +39,8 @@ person could still call patient APIs directly (backend gap B4).
 | Appointment plan | `care-planner/appointment/[appointmentId]/index.tsx` | No design: matches the patient's "Review My Appointment Plan" | Overview, questions, answers. Recording consent is shown read-only |
 | Add questions | `care-planner/appointment/[appointmentId]/questions.tsx` | No design: matches the patient's "Add Questions" | Only with the questions permission |
 | Settings home | `support-settings/index.tsx` | [3896-21559](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3896-21559&m=dev) | Shared `SettingsHome` with support person rows |
-| Account, Privacy/Data and Legal, Privacy | `support-settings/profile.tsx`, `legal.tsx`, `privacy.tsx` | [3896-21629](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3896-21629&m=dev), [3896-21792](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3896-21792&m=dev) | One-line re-exports of the patient screens |
+| Account | `support-settings/profile.tsx` | [3896-21629](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3896-21629&m=dev) | Its own page: Personal details (real name and phone, read-only) and Sign out. No Change password or FaceID, because support persons sign in by SMS (section 4.2a) |
+| Privacy/Data and Legal, Privacy | `support-settings/legal.tsx`, `privacy.tsx` | [3896-21792](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3896-21792&m=dev) | One-line re-exports of the patient screens |
 | People you support (with the Unpair popup) | `support-settings/people-you-support.tsx` | [3911-24201](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3911-24201&m=dev), [3911-24318](https://www.figma.com/design/cpKssx0T2KuOeNoTh7YmKU/MHA-platform--Copy-?node-id=3911-24318&m=dev) | Permissions shown read-only, and Unpair with confirmation |
 
 Every screen that loads data has loading and error states. Accept, reject, unpair, and saving answers
@@ -79,7 +79,7 @@ The placeholder service also refuses changes that aren't allowed, as the databas
 - `app/(tabs)/settings/legal.tsx`: the privacy link is relative (`./privacy`), so each app opens its own privacy page
 - `SettingsModal.tsx`: new `SettingsModalInfoRow`, and `onChangeText` is optional
 - `src/constants/theme.ts`: added `surfaceContainer`
-- `src/services/auth.ts`: added `getProfile()`; `hasProfile()` is unchanged
+- `src/services/auth.ts`: added `getProfile()` (type, name and phone number); `hasProfile()` is unchanged
 - `src/context/AuthContext.tsx`: exposes `profile`
 - `app/_layout.tsx`: the `(support)` group
 - `supabase/config.toml`: a second local test number
@@ -130,6 +130,7 @@ name, and sign-out doesn't move you anywhere, because bypass keeps every screen 
   - the plan updates after coming back from Add questions
 - **Settings:**
   - every row opens
+  - Account → Personal details shows the name and phone number from sign-up, and there's no Change password or FaceID
   - Unpair (popup, confirmation, the patient disappears from the home)
   - Sign out returns to the sign-in screens
 - **Patient app:** unchanged, including Settings → Sign out.
@@ -178,7 +179,7 @@ A new branch from `main`, after this one merges. Small commits, each passing lin
 8. **Optional, with the Planner owner:** merge `useSupportedAppointmentPlan` / `useSupportedAppointmentQuestions` with the Planner's `useAppointmentPlan` / `useAppointmentQuestions`, now that both read the same data.
 9. **Test by hand with two real accounts** (patient and support person), every permission combination. Check that the patient sees questions and answers added by the support person.
 
-### 4.2a Fix the support person's Account page (frontend, can be done now)
+### 4.2a Fix the support person's Account page ✅ done (`ea005a7` to `27db477`)
 
 **The problem.** `support-settings/profile.tsx` re-exports the patient's Account page, which doesn't match how
 support persons sign up and sign in:
@@ -267,6 +268,7 @@ backend work (`feature/settings-backend`, open decisions L16 on password and Fac
 | 15 Oct | Merged `main` | `8b199b2` |
 | 24 Oct | Merged `main` again. Replaced the dev setting (`EXPO_PUBLIC_DEV_USER_TYPE`) with the saved `user_type`, added `getProfile()`, the real name greeting, the second test number, and theme tokens | `0feef11` to `4283a18` (merge `3b37c96`) |
 | 24 Oct | Appointment plan and Add questions screens, the placeholder service, loading and error states, permission rules. Removed the "coming soon" screen | `9cdbbd0` to `18c4c31` |
+| 24 Oct | Replaced the completed plans with this doc. Gave support persons their own Account page (real name and phone, no password or FaceID) | `733818f` to `27db477` |
 
 The removed plan files (`support-person-frontend.md`, `support-person-merge-plan.md`,
 `support-person-appointments-now-plan.md`, `support-person-appointments-plan.md`) are still in the git history
