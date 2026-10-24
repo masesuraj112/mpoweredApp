@@ -12,9 +12,10 @@ the end (section 7).
 - **Real data:** whether someone is a support person, and their name, come from Supabase (`users.user_type`, `users.name`).
 - **Placeholder data:** everything else (patients, requests, appointments, plans) comes from `src/services/support-person.ts`, marked `MOCK:`, the same way the Planner uses `src/services/care-planner.ts`. The screens, hooks and permission rules are final. Only the inside of that service changes once the backend exists.
 - **Next:**
-  1. The backend prerequisites (section 4.1), owned by the backend team.
-  2. Then replace the placeholder service, function by function (section 4.2).
-  3. Settle the open questions (section 4.4) along the way.
+  1. Fix the support person's Account page (section 4.2a), which can be done now.
+  2. The backend prerequisites (section 4.1), owned by the backend team.
+  3. Then replace the placeholder service, function by function (section 4.2).
+  4. Settle the open questions (section 4.4) along the way.
 
 ## 2. What's built
 
@@ -177,6 +178,44 @@ A new branch from `main`, after this one merges. Small commits, each passing lin
 8. **Optional, with the Planner owner:** merge `useSupportedAppointmentPlan` / `useSupportedAppointmentQuestions` with the Planner's `useAppointmentPlan` / `useAppointmentQuestions`, now that both read the same data.
 9. **Test by hand with two real accounts** (patient and support person), every permission combination. Check that the patient sees questions and answers added by the support person.
 
+### 4.2a Fix the support person's Account page (frontend, can be done now)
+
+**The problem.** `support-settings/profile.tsx` re-exports the patient's Account page, which doesn't match how
+support persons sign up and sign in:
+
+| Account page shows | Support persons actually have |
+| --- | --- |
+| Hardcoded "Sarah McLachlan", a date of birth, and an email | Only a name and a phone number (`users.name`, `users.phone_number`, saved by `create_profile`) |
+| Change password, which checks it by signing in with email and password | No password: they sign in with an SMS code, so this always fails |
+| Enable FaceID | A toggle that does nothing (biometric sign-in is a "Won't" in the MoSCoW table) |
+
+**The fix:** give support persons their own small Account page, showing only what they have. The
+patient's page isn't changed: it has the same problem, but it belongs to the paused patient Settings
+backend work (`feature/settings-backend`, open decisions L16 on password and FaceID for phone users, and L17 on changing the phone number).
+
+**Commits:**
+1. **`getProfile()` also returns the phone number.**
+   - It adds `phone_number` to the existing `users` query (still filtered by `auth_id`), and `AuthContext` passes it through as `profile.phone`.
+   - Tests.
+   - Read-only, with no backend change, because `authenticated` already has `select` on `users`.
+2. **A support person Account page of its own.** `support-settings/profile.tsx` stops re-exporting the patient page. It has **Personal details** and **Sign out** only, with no Change password and no FaceID, using the same `SettingsSubpage` / `SettingsOption` components.
+3. **Personal details shows the real details, read-only:**
+   - Name (`profile.name`) and phone number (`formatForDisplay(profile.phone)`), using `SettingsModalInfoRow`
+   - a note that the details can't be changed in the app yet
+
+   Editing is blocked by the backend: `authenticated` has no `update` on `users`.
+4. **Docs:** update section 2.2 and the questions in 4.4.
+
+**Will it break anything?**
+- **Patient app:** no change.
+- **`getProfile()`:** gains one field. `hasProfile`, `verify.tsx` and the login teammate's screens are unaffected.
+- **Account deletion and Export my data** on the shared Privacy page still do nothing, as on the patient side.
+
+**Later, needs others:**
+- **Editing the name** needs an `update` grant on `users.name` (backend).
+- **Changing the phone number** needs a re-verify-by-SMS flow (L17).
+- **Account design:** ask the designer whether the support person's Account design (3896-21629) should drop Change password and FaceID, because it currently shows both.
+
 ### 4.3 Decisions made while building (revisit when the team answers)
 
 | Question | Built as | Where to change it |
@@ -198,6 +237,8 @@ A new branch from `main`, after this one merges. Small commits, each passing lin
 | Designer | Designs for the support person's plan and Add questions screens, or keep the patient's layout? |
 | Designer | The "Manage person you support" popup (3911-24318) shows the patient's four tabs, and says "Stevie Nicks" while the list says "Steven Harper". Placeholder mix-ups? |
 | Designer | How should a missing permission look in that popup? |
+| Designer | The support person's Account design (3896-21629) shows Change password and Enable FaceID, but support persons sign in with an SMS code and have no password. Remove both? (section 4.2a) |
+| Backend | Allow support persons to edit their name (`update` on `users.name`)? How should a phone number change work (L17)? |
 | Designer | Wording for the empty requests screen? Should the requests screen have a Back button? (Today: swipe back, Android back, or the Care Planner tab) |
 | Designer | The cards' "Tuesday, 10 June 2026" is wrong (it's a Wednesday). The app works the day out itself |
 | Product / team | There are no user stories from the support person's point of view: accepting or rejecting requests, unpairing, viewing the people you support and their appointments. Add a support person epic (e.g. *"As a support person, I want to accept or decline a patient's request so that I only see the care of people I've agreed to support."*) |
