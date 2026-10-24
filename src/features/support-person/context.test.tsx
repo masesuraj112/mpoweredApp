@@ -90,6 +90,55 @@ describe('useSupportPerson', () => {
     expect(result.current.getPatient(patient.id)).toBeUndefined();
   });
 
+  it('keeps the request when accepting fails, and returns the error', async () => {
+    const { result } = await setup();
+    jest
+      .spyOn(service, 'acceptSupportRequest')
+      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    const request = SAMPLE_SUPPORT_REQUESTS[0];
+
+    let error: unknown;
+    await act(async () => {
+      error = await result.current.acceptRequest(request.id);
+    });
+
+    expect(error).toEqual({ code: 'NETWORK', message: 'offline' });
+    expect(result.current.requests.map(r => r.id)).toContain(request.id);
+    expect(result.current.patients.map(p => p.id)).not.toContain(request.patient.id);
+  });
+
+  it('keeps the request when rejecting fails', async () => {
+    const { result } = await setup();
+    jest
+      .spyOn(service, 'rejectSupportRequest')
+      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    const request = SAMPLE_SUPPORT_REQUESTS[0];
+
+    await act(() => result.current.rejectRequest(request.id));
+
+    expect(result.current.requests.map(r => r.id)).toContain(request.id);
+  });
+
+  it('keeps the patient when unpairing fails', async () => {
+    const { result } = await setup();
+    jest
+      .spyOn(service, 'unpairFromPatient')
+      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    const patient = SAMPLE_SUPPORTED_PATIENTS[0];
+
+    await act(() => result.current.unpair(patient.id));
+
+    expect(result.current.getPatient(patient.id)).toBeDefined();
+  });
+
+  it('saves changes through the service, so they are still there after a reload', async () => {
+    const { result } = await setup();
+    await act(() => result.current.unpair(SAMPLE_SUPPORTED_PATIENTS[0].id));
+    await act(() => result.current.reload());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(result.current.getPatient(SAMPLE_SUPPORTED_PATIENTS[0].id)).toBeUndefined();
+  });
+
   it('throws when used outside the provider', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     await expect(renderHook(() => useSupportPerson())).rejects.toThrow(/SupportPersonProvider/);

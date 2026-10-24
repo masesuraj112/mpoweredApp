@@ -23,12 +23,23 @@ const permissionText = (allowed: boolean) => (allowed ? 'Allowed' : 'Not allowed
 export default function PeopleYouSupportScreen() {
   const { status, reload, patients, unpair } = useSupportPerson();
   const [selected, setSelected] = useState<SupportedPatient | null>(null);
+  const [unpairError, setUnpairError] = useState('');
+
+  const open = (patient: SupportedPatient) => {
+    setUnpairError('');
+    setSelected(patient);
+  };
 
   const confirmUnpair = (patient: SupportedPatient) => {
     const firstName = patient.name.split(' ')[0];
     const message = `You'll no longer see ${firstName}'s appointments. ${firstName} would need to send a new request to add you again.`;
-    const doUnpair = () => {
-      unpair(patient.id);
+    // The popup only closes once the unpair has saved; otherwise it stays open with the error.
+    const doUnpair = async () => {
+      const error = await unpair(patient.id);
+      if (error) {
+        setUnpairError('We could not unpair. Please check your connection and try again.');
+        return;
+      }
       setSelected(null);
     };
 
@@ -55,12 +66,18 @@ export default function PeopleYouSupportScreen() {
         <Text style={settingsSubpageStyles.placeholder}>You aren’t supporting anyone yet.</Text>
       ) : (
         patients.map(patient => (
-          <SettingsOption key={patient.id} icon={accountIcon} label={patient.name} onPress={() => setSelected(patient)} />
+          <SettingsOption key={patient.id} icon={accountIcon} label={patient.name} onPress={() => open(patient)} />
         ))
       )}
 
       {selected && (
-        <SettingsModal visible title="Manage person you support" scrollable onClose={() => setSelected(null)}>
+        <SettingsModal
+          visible
+          title="Manage person you support"
+          scrollable
+          onClose={() => setSelected(null)}
+          errorMessage={unpairError}
+        >
           <SettingsModalField label="Name" value={selected.name} editable={false} showEditIcon={false} />
           {/* Only the patient can change these, so they're shown read-only. */}
           <SettingsModalSection title="Your access permissions">

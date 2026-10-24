@@ -1,7 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import type { AppError } from '@/lib/errors';
-import { listSupportedPatients, listSupportRequests } from '@/services/support-person';
+import {
+  acceptSupportRequest,
+  listSupportedPatients,
+  listSupportRequests,
+  rejectSupportRequest,
+  unpairFromPatient,
+} from '@/services/support-person';
 
 import type { SupportedPatient, SupportRequest } from './types';
 
@@ -17,9 +23,10 @@ type SupportPersonContextType = {
   patients: SupportedPatient[];
   requests: SupportRequest[];
   getPatient: (id: string) => SupportedPatient | undefined;
-  acceptRequest: (requestId: string) => void;
-  rejectRequest: (requestId: string) => void;
-  unpair: (patientId: string) => void;
+  /** These resolve to the error when saving failed (nothing changes on screen), or null when saved. */
+  acceptRequest: (requestId: string) => Promise<AppError | null>;
+  rejectRequest: (requestId: string) => Promise<AppError | null>;
+  unpair: (patientId: string) => Promise<AppError | null>;
 };
 
 const SupportPersonContext = createContext<SupportPersonContextType | undefined>(undefined);
@@ -61,21 +68,28 @@ export function SupportPersonProvider({ children }: { children: ReactNode }) {
 
   const getPatient = (id: string) => patients.find(patient => patient.id === id);
 
-  const acceptRequest = (requestId: string) => {
-    const request = requests.find(r => r.id === requestId);
-    if (!request) return;
+  // Each change is saved first and only then shown, so a failed save leaves the screen as it was.
+  const acceptRequest = async (requestId: string) => {
+    const result = await acceptSupportRequest(requestId);
+    if (!result.ok) return result.error;
+    const patient = result.data;
     setRequests(current => current.filter(r => r.id !== requestId));
-    setPatients(current =>
-      current.some(p => p.id === request.patient.id) ? current : [...current, request.patient],
-    );
+    setPatients(current => (current.some(p => p.id === patient.id) ? current : [...current, patient]));
+    return null;
   };
 
-  const rejectRequest = (requestId: string) => {
+  const rejectRequest = async (requestId: string) => {
+    const result = await rejectSupportRequest(requestId);
+    if (!result.ok) return result.error;
     setRequests(current => current.filter(r => r.id !== requestId));
+    return null;
   };
 
-  const unpair = (patientId: string) => {
+  const unpair = async (patientId: string) => {
+    const result = await unpairFromPatient(patientId);
+    if (!result.ok) return result.error;
     setPatients(current => current.filter(p => p.id !== patientId));
+    return null;
   };
 
   return (

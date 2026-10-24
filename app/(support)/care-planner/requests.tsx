@@ -13,19 +13,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function SupportRequestsScreen() {
   const { status, reload, requests, acceptRequest, rejectRequest } = useSupportPerson();
 
+  // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
+  const showError = (title: string, message: string) => {
+    if (Platform.OS === 'web') window.alert(`${title}\n${message}`);
+    else Alert.alert(title, message);
+  };
+
+  const accept = async (request: SupportRequest) => {
+    const error = await acceptRequest(request.id);
+    if (error) showError('Could not accept the request', 'Please check your connection and try again.');
+  };
+
+  const reject = async (request: SupportRequest) => {
+    const error = await rejectRequest(request.id);
+    if (error) showError('Could not reject the request', 'Please check your connection and try again.');
+  };
+
   // Rejecting can't be undone (the patient would have to send a new request), so confirm first.
   const confirmReject = (request: SupportRequest) => {
     const message = `${request.patient.name} won't be able to share their appointments with you unless they send a new request.`;
 
     // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
     if (Platform.OS === 'web') {
-      if (window.confirm(message)) rejectRequest(request.id);
+      if (window.confirm(message)) reject(request);
       return;
     }
 
     Alert.alert(`Reject ${request.patient.name}'s request?`, message, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Reject', style: 'destructive', onPress: () => rejectRequest(request.id) },
+      { text: 'Reject', style: 'destructive', onPress: () => reject(request) },
     ]);
   };
 
@@ -52,7 +68,7 @@ export default function SupportRequestsScreen() {
             <SupportRequestCard
               key={request.id}
               patientName={request.patient.name}
-              onAccept={() => acceptRequest(request.id)}
+              onAccept={() => accept(request)}
               onReject={() => confirmReject(request)}
             />
           ))
