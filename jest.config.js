@@ -51,5 +51,6 @@ module.exports = {
     'src/features/support-person/context.tsx',
     'src/features/support-person/permissions.ts',
     'src/services/support-person.ts',
+    'src/features/support-person/useSupportedAppointmentQuestions.ts',
   ],
 };
