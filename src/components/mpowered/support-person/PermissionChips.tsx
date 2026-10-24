@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     height: scaleHeight(23),
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.surfaceContainer,
   },
   chipDisabled: {

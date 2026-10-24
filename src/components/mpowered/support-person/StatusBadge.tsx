@@ -1,3 +1,4 @@
+import { Radius } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     height: scaleHeight(27),
     paddingHorizontal: scaleWidth(10),
     justifyContent: 'center',
-    borderRadius: 999,
+    borderRadius: Radius.pill,
   },
   label: {
     fontSize: scaleFont(11),

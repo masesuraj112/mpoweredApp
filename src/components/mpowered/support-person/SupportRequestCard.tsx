@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.light.outline,
-    borderRadius: 100,
+    borderRadius: Radius.pill,
   },
   pressed: {
     opacity: 0.8,

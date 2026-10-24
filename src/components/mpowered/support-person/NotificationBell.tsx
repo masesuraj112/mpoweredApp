@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { scaleFont } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     backgroundColor: '#FF3B30',
   },
   badgeText: {
