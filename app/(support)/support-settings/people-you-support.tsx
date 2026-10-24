@@ -7,6 +7,8 @@ import {
   SettingsModalSection,
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportedPatient } from '@/features/support-person/types';
 import { useState } from 'react';
@@ -19,7 +21,7 @@ const permissionText = (allowed: boolean) => (allowed ? 'Allowed' : 'Not allowed
 
 /** The patients this support person supports, with a popup to see access and unpair (Figma 3911-24201, 3911-24318). */
 export default function PeopleYouSupportScreen() {
-  const { patients, unpair } = useSupportPerson();
+  const { status, reload, patients, unpair } = useSupportPerson();
   const [selected, setSelected] = useState<SupportedPatient | null>(null);
 
   const confirmUnpair = (patient: SupportedPatient) => {
@@ -45,7 +47,11 @@ export default function PeopleYouSupportScreen() {
   return (
     <SettingsSubpage title="People you support">
       <Text style={styles.sectionTitle}>Manage people you support</Text>
-      {patients.length === 0 ? (
+      {status === 'loading' ? (
+        <LoadingState label="Loading the people you support" />
+      ) : status === 'error' ? (
+        <ErrorState message="We could not load the people you support." onRetry={reload} />
+      ) : patients.length === 0 ? (
         <Text style={settingsSubpageStyles.placeholder}>You aren’t supporting anyone yet.</Text>
       ) : (
         patients.map(patient => (

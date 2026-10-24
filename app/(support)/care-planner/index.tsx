@@ -1,6 +1,8 @@
 import { NotificationBell } from '@/components/mpowered/support-person/NotificationBell';
 import { PillButton } from '@/components/mpowered/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -13,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 /** Care Planner home for support persons (Figma 3911-24607, empty state 3896-21458). */
 export default function CarePlannerHomeScreen() {
-  const { patients, requests } = useSupportPerson();
+  const { status, reload, patients, requests } = useSupportPerson();
   // Saved at sign-up. Empty only when browsing with BYPASS_AUTH and no account; the greeting then leaves the name out.
   const name = useAuth().profile?.name ?? '';
 
@@ -39,7 +41,11 @@ export default function CarePlannerHomeScreen() {
         </Text>
         <Text style={styles.body}>Help prepare for upcoming appointments by reviewing and adding questions for the doctor</Text>
 
-        {patients.length > 0 ? (
+        {status === 'loading' ? (
+          <LoadingState label="Loading the people you support" />
+        ) : status === 'error' ? (
+          <ErrorState message="We could not load the people you support." onRetry={reload} />
+        ) : patients.length > 0 ? (
           <>
             <Text style={styles.sectionTitle} accessibilityRole="header">
               People you support

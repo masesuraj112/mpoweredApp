@@ -3,6 +3,8 @@ import { AppointmentCard } from '@/components/mpowered/support-person/Appointmen
 import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
 import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
 import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -15,7 +17,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
-  const { getPatient } = useSupportPerson();
+  const { status, reload, getPatient } = useSupportPerson();
   const patient = getPatient(patientId);
 
   const header = (
@@ -28,6 +30,19 @@ export default function PatientAppointmentsScreen() {
       }}
     />
   );
+
+  if (status !== 'ready') {
+    return (
+      <View style={styles.screen}>
+        {header}
+        {status === 'loading' ? (
+          <LoadingState label="Loading appointments" />
+        ) : (
+          <ErrorState message="We could not load this person's appointments." onRetry={reload} />
+        )}
+      </View>
+    );
+  }
 
   // e.g. the support person unpaired from this patient in Settings, or followed an old link.
   if (!patient) {

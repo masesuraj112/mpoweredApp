@@ -1,20 +1,53 @@
-import { act, renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
+
+import * as service from '@/services/support-person';
 
 import { SupportPersonProvider, useSupportPerson } from './context';
 import { SAMPLE_SUPPORTED_PATIENTS, SAMPLE_SUPPORT_REQUESTS } from './mock-data';
 
 const wrapper = ({ children }: { children: ReactNode }) => <SupportPersonProvider>{children}</SupportPersonProvider>;
 
+/** Renders the store and waits until it has finished loading. */
 async function setup() {
-  return renderHook(() => useSupportPerson(), { wrapper });
+  const hook = await renderHook(() => useSupportPerson(), { wrapper });
+  await waitFor(() => expect(hook.result.current.status).not.toBe('loading'));
+  return hook;
 }
 
+beforeEach(() => service.resetMockSupportPerson());
+afterEach(() => jest.restoreAllMocks());
+
 describe('useSupportPerson', () => {
-  it('starts with the sample patients and requests', async () => {
+  it('loads the patients and requests from the service', async () => {
     const { result } = await setup();
+    expect(result.current.status).toBe('ready');
+    expect(result.current.error).toBeNull();
     expect(result.current.patients).toHaveLength(SAMPLE_SUPPORTED_PATIENTS.length);
     expect(result.current.requests).toHaveLength(SAMPLE_SUPPORT_REQUESTS.length);
+  });
+
+  it('shows an error, with nothing loaded, when the service fails', async () => {
+    jest
+      .spyOn(service, 'listSupportedPatients')
+      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    const { result } = await setup();
+    expect(result.current.status).toBe('error');
+    expect(result.current.error?.code).toBe('NETWORK');
+    expect(result.current.patients).toEqual([]);
+  });
+
+  it('loads again on reload', async () => {
+    const failing = jest
+      .spyOn(service, 'listSupportedPatients')
+      .mockResolvedValueOnce({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    const { result } = await setup();
+    expect(result.current.status).toBe('error');
+
+    failing.mockRestore();
+    await act(() => result.current.reload());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(result.current.patients).toHaveLength(SAMPLE_SUPPORTED_PATIENTS.length);
   });
 
   it('accepting a request adds the patient and removes the request', async () => {

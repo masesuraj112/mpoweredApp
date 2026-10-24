@@ -1,5 +1,7 @@
 import { NotificationBell } from '@/components/mpowered/support-person/NotificationBell';
 import { SupportRequestCard } from '@/components/mpowered/support-person/SupportRequestCard';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
@@ -9,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 /** Pending requests from patients to add this user as their support person (Figma 3911-24738). */
 export default function SupportRequestsScreen() {
-  const { requests, acceptRequest, rejectRequest } = useSupportPerson();
+  const { status, reload, requests, acceptRequest, rejectRequest } = useSupportPerson();
 
   // Rejecting can't be undone (the patient would have to send a new request), so confirm first.
   const confirmReject = (request: SupportRequest) => {
@@ -38,7 +40,11 @@ export default function SupportRequestsScreen() {
           <NotificationBell count={requests.length} />
         </View>
 
-        {requests.length === 0 ? (
+        {status === 'loading' ? (
+          <LoadingState label="Loading support person requests" />
+        ) : status === 'error' ? (
+          <ErrorState message="We could not load your support person requests." onRetry={reload} />
+        ) : requests.length === 0 ? (
           // Not in the designs: wording to confirm with the designer.
           <Text style={styles.empty}>You don’t have any support person requests right now.</Text>
         ) : (
