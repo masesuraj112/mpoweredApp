@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { supabase } from '@/lib/supabase';
+import { signOut } from '@/services/auth';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -23,9 +23,9 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        Alert.alert('Sign out failed', error.message);
+      const result = await signOut();
+      if (!result.ok) {
+        Alert.alert('Sign out failed', result.error.message);
       }
     } finally {
       setIsSigningOut(false);
