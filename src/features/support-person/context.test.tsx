@@ -2,9 +2,9 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
 import * as service from '@/services/support-person';
+import { MOCK_SUPPORT_REQUESTS, MOCK_SUPPORTED_PATIENTS } from '@/services/support-person';
 
 import { SupportPersonProvider, useSupportPerson } from './context';
-import { SAMPLE_SUPPORTED_PATIENTS, SAMPLE_SUPPORT_REQUESTS } from './mock-data';
 
 const wrapper = ({ children }: { children: ReactNode }) => <SupportPersonProvider>{children}</SupportPersonProvider>;
 
@@ -23,8 +23,8 @@ describe('useSupportPerson', () => {
     const { result } = await setup();
     expect(result.current.status).toBe('ready');
     expect(result.current.error).toBeNull();
-    expect(result.current.patients).toHaveLength(SAMPLE_SUPPORTED_PATIENTS.length);
-    expect(result.current.requests).toHaveLength(SAMPLE_SUPPORT_REQUESTS.length);
+    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
+    expect(result.current.requests).toHaveLength(MOCK_SUPPORT_REQUESTS.length);
   });
 
   it('shows an error, with nothing loaded, when the service fails', async () => {
@@ -47,12 +47,12 @@ describe('useSupportPerson', () => {
     failing.mockRestore();
     await act(() => result.current.reload());
     await waitFor(() => expect(result.current.status).toBe('ready'));
-    expect(result.current.patients).toHaveLength(SAMPLE_SUPPORTED_PATIENTS.length);
+    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
   });
 
   it('accepting a request adds the patient and removes the request', async () => {
     const { result } = await setup();
-    const request = SAMPLE_SUPPORT_REQUESTS[0];
+    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.acceptRequest(request.id));
 
@@ -63,7 +63,7 @@ describe('useSupportPerson', () => {
 
   it('rejecting a request removes it without adding the patient', async () => {
     const { result } = await setup();
-    const request = SAMPLE_SUPPORT_REQUESTS[0];
+    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.rejectRequest(request.id));
 
@@ -76,13 +76,13 @@ describe('useSupportPerson', () => {
 
     await act(() => result.current.acceptRequest('does-not-exist'));
 
-    expect(result.current.patients).toHaveLength(SAMPLE_SUPPORTED_PATIENTS.length);
-    expect(result.current.requests).toHaveLength(SAMPLE_SUPPORT_REQUESTS.length);
+    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
+    expect(result.current.requests).toHaveLength(MOCK_SUPPORT_REQUESTS.length);
   });
 
   it('unpairing removes the patient', async () => {
     const { result } = await setup();
-    const patient = SAMPLE_SUPPORTED_PATIENTS[0];
+    const patient = MOCK_SUPPORTED_PATIENTS[0];
 
     await act(() => result.current.unpair(patient.id));
 
@@ -95,7 +95,7 @@ describe('useSupportPerson', () => {
     jest
       .spyOn(service, 'acceptSupportRequest')
       .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const request = SAMPLE_SUPPORT_REQUESTS[0];
+    const request = MOCK_SUPPORT_REQUESTS[0];
 
     let error: unknown;
     await act(async () => {
@@ -112,7 +112,7 @@ describe('useSupportPerson', () => {
     jest
       .spyOn(service, 'rejectSupportRequest')
       .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const request = SAMPLE_SUPPORT_REQUESTS[0];
+    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.rejectRequest(request.id));
 
@@ -124,7 +124,7 @@ describe('useSupportPerson', () => {
     jest
       .spyOn(service, 'unpairFromPatient')
       .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const patient = SAMPLE_SUPPORTED_PATIENTS[0];
+    const patient = MOCK_SUPPORTED_PATIENTS[0];
 
     await act(() => result.current.unpair(patient.id));
 
@@ -133,10 +133,10 @@ describe('useSupportPerson', () => {
 
   it('saves changes through the service, so they are still there after a reload', async () => {
     const { result } = await setup();
-    await act(() => result.current.unpair(SAMPLE_SUPPORTED_PATIENTS[0].id));
+    await act(() => result.current.unpair(MOCK_SUPPORTED_PATIENTS[0].id));
     await act(() => result.current.reload());
     await waitFor(() => expect(result.current.status).toBe('ready'));
-    expect(result.current.getPatient(SAMPLE_SUPPORTED_PATIENTS[0].id)).toBeUndefined();
+    expect(result.current.getPatient(MOCK_SUPPORTED_PATIENTS[0].id)).toBeUndefined();
   });
 
   it('throws when used outside the provider', async () => {
