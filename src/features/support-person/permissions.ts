@@ -22,3 +22,26 @@ export function getAppointmentActions(
   if (patient.canAddAnswers) actions.push(isUpcoming ? 'add-answer' : 'view-answer');
   return actions;
 }
+
+/** What a support person may change on a patient's appointment plan. Viewing is always allowed. */
+export type PlanAccess = {
+  canEditQuestions: boolean;
+  canEditAnswers: boolean;
+};
+
+/**
+ * The single place that decides what a support person may change on an appointment plan, from the
+ * access the patient gave them (US18, requirement 2.2.2).
+ *
+ * Decisions for now (docs/support-person-appointments-now-plan.md), easy to change here:
+ * - Answers can still be added to past appointments, because doctors' answers are often typed up later.
+ * - Recording consent is never signed by a support person (the plan screen shows it read-only).
+ *
+ * Only the app enforces this until the database checks access_type (see the later plan, P5).
+ */
+export function getPlanAccess(patient: Pick<SupportedPatient, 'canAddQuestions' | 'canAddAnswers'>): PlanAccess {
+  return {
+    canEditQuestions: patient.canAddQuestions,
+    canEditAnswers: patient.canAddAnswers,
+  };
+}

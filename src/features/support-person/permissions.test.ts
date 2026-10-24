@@ -1,4 +1,4 @@
-import { getAppointmentActions } from './permissions';
+import { getAppointmentActions, getPlanAccess } from './permissions';
 
 const both = { canAddQuestions: true, canAddAnswers: true };
 const questionsOnly = { canAddQuestions: true, canAddAnswers: false };
@@ -27,5 +27,16 @@ describe('getAppointmentActions', () => {
   it('shows no buttons without either permission', () => {
     expect(getAppointmentActions(neither, true)).toEqual([]);
     expect(getAppointmentActions(neither, false)).toEqual([]);
+  });
+});
+
+describe('getPlanAccess', () => {
+  it.each([
+    ['no permissions', neither, { canEditQuestions: false, canEditAnswers: false }],
+    ['questions only', questionsOnly, { canEditQuestions: true, canEditAnswers: false }],
+    ['answers only', answersOnly, { canEditQuestions: false, canEditAnswers: true }],
+    ['both', both, { canEditQuestions: true, canEditAnswers: true }],
+  ])('%s', (_name, patient, expected) => {
+    expect(getPlanAccess(patient)).toEqual(expected);
   });
 });
