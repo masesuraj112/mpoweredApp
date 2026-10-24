@@ -1,12 +1,27 @@
 import { formatAppointmentTime, getInitials, getNextAppointment, splitAppointments } from './appointments';
 import type { Appointment } from './types';
 
-const at = (id: string, startsAt: string): Appointment => ({
-  id,
-  startsAt,
-  practitioner: 'Dr. Test',
+// Readable names for the test appointments, which have number ids like the real ones.
+const IDS: Record<string, number> = {
+  'past-old': 1,
+  'future-late': 2,
+  'past-recent': 3,
+  'future-soon': 4,
+  now: 5,
+  a: 6,
+  b: 7,
+  old: 8,
+};
+const NAMES = Object.fromEntries(Object.entries(IDS).map(([name, id]) => [id, name]));
+
+const at = (name: string, dateTime: string): Appointment => ({
+  appointmentId: IDS[name],
+  dateTime,
+  practitionerName: 'Dr. Test',
   healthService: 'General Practitioner',
+  status: 'saved',
 });
+const names = (appointments: Appointment[]) => appointments.map(a => NAMES[a.appointmentId]);
 
 const NOW = new Date(2026, 5, 10, 12, 0); // 10 June 2026, 12:00pm local
 
@@ -19,16 +34,16 @@ describe('splitAppointments', () => {
   ];
 
   it('puts upcoming appointments soonest first', () => {
-    expect(splitAppointments(appointments, NOW).upcoming.map(a => a.id)).toEqual(['future-soon', 'future-late']);
+    expect(names(splitAppointments(appointments, NOW).upcoming)).toEqual(['future-soon', 'future-late']);
   });
 
   it('puts past appointments most recent first', () => {
-    expect(splitAppointments(appointments, NOW).past.map(a => a.id)).toEqual(['past-recent', 'past-old']);
+    expect(names(splitAppointments(appointments, NOW).past)).toEqual(['past-recent', 'past-old']);
   });
 
   it('treats an appointment starting right now as upcoming', () => {
     const { upcoming } = splitAppointments([at('now', '2026-06-10T12:00:00')], NOW);
-    expect(upcoming.map(a => a.id)).toEqual(['now']);
+    expect(names(upcoming)).toEqual(['now']);
   });
 
   it('does not reorder the list it was given', () => {
@@ -41,7 +56,7 @@ describe('splitAppointments', () => {
 describe('getNextAppointment', () => {
   it('returns the soonest upcoming appointment', () => {
     const next = getNextAppointment([at('b', '2026-07-01T10:30:00'), at('a', '2026-06-11T10:30:00')], NOW);
-    expect(next?.id).toBe('a');
+    expect(next && NAMES[next.appointmentId]).toBe('a');
   });
 
   it('returns null when only past appointments exist', () => {

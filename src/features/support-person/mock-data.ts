@@ -12,12 +12,14 @@ function daysFromToday(days: number): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T10:30:00`;
 }
 
-function appointment(id: string, days: number): Appointment {
+// Ids start at 101 so they can never be mistaken for the patient Planner's sample appointments (1, 2).
+function appointment(appointmentId: number, days: number): Appointment {
   return {
-    id,
-    startsAt: daysFromToday(days),
-    practitioner: 'Dr. Maximiliano Prinzi',
+    appointmentId,
+    dateTime: daysFromToday(days),
+    practitionerName: 'Dr. Maximiliano Prinzi',
     healthService: 'General Practitioner',
+    status: 'saved',
   };
 }
 
@@ -31,10 +33,10 @@ export const SAMPLE_SUPPORTED_PATIENTS: SupportedPatient[] = [
     canAddQuestions: true,
     canAddAnswers: false,
     appointments: [
-      appointment('jane-1', 7),
-      appointment('jane-2', -14),
-      appointment('jane-3', -42),
-      appointment('jane-4', -70),
+      appointment(101, 7),
+      appointment(102, -14),
+      appointment(103, -42),
+      appointment(104, -70),
     ],
   },
   {
@@ -43,7 +45,7 @@ export const SAMPLE_SUPPORTED_PATIENTS: SupportedPatient[] = [
     condition: 'Chronic Back Pain',
     canAddQuestions: true,
     canAddAnswers: true,
-    appointments: [appointment('steven-1', -21), appointment('steven-2', -49), appointment('steven-3', -77)],
+    appointments: [appointment(111, -21), appointment(112, -49), appointment(113, -77)],
   },
 ];
 
@@ -56,7 +58,7 @@ export const SAMPLE_SUPPORT_REQUESTS: SupportRequest[] = [
       condition: 'Osteoarthritis',
       canAddQuestions: true,
       canAddAnswers: true,
-      appointments: [appointment('maria-1', 3), appointment('maria-2', -28)],
+      appointments: [appointment(121, 3), appointment(122, -28)],
     },
   },
   {

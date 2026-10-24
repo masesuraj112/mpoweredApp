@@ -23,7 +23,7 @@ export default function CarePlannerHomeScreen() {
   const openAddQuestions = (patient: SupportedPatient, appointment: Appointment) =>
     router.push({
       pathname: '/care-planner/appointment-action',
-      params: { action: 'add-questions', patientId: patient.id, appointmentId: appointment.id },
+      params: { action: 'add-questions', patientId: patient.id, appointmentId: String(appointment.appointmentId) },
     });
 
   return (

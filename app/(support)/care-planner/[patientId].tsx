@@ -97,14 +97,14 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
       ) : (
         appointments.map(appointment => (
           <AppointmentCard
-            key={appointment.id}
+            key={appointment.appointmentId}
             appointment={appointment}
             actions={actionTypes.map(action => ({
               label: APPOINTMENT_ACTION_LABELS[action],
               onPress: () =>
                 router.push({
                   pathname: '/care-planner/appointment-action',
-                  params: { action, patientId: patient.id, appointmentId: appointment.id },
+                  params: { action, patientId: patient.id, appointmentId: String(appointment.appointmentId) },
                 }),
             }))}
           />

@@ -1,6 +1,7 @@
 import type { Appointment } from './types';
 
-const byStart = (a: Appointment, b: Appointment) => a.startsAt.localeCompare(b.startsAt);
+// dateTime is local wall-clock `YYYY-MM-DDTHH:mm:ss`, so comparing the strings sorts by time.
+const byStart = (a: Appointment, b: Appointment) => a.dateTime.localeCompare(b.dateTime);
 
 /**
  * Splits appointments into upcoming (soonest first) and past (most recent first).
@@ -10,8 +11,8 @@ export function splitAppointments(
   appointments: Appointment[],
   now: Date = new Date(),
 ): { upcoming: Appointment[]; past: Appointment[] } {
-  const upcoming = appointments.filter(a => new Date(a.startsAt) >= now).sort(byStart);
-  const past = appointments.filter(a => new Date(a.startsAt) < now).sort((a, b) => byStart(b, a));
+  const upcoming = appointments.filter(a => new Date(a.dateTime) >= now).sort(byStart);
+  const past = appointments.filter(a => new Date(a.dateTime) < now).sort((a, b) => byStart(b, a));
   return { upcoming, past };
 }
 
@@ -21,8 +22,9 @@ export function getNextAppointment(appointments: Appointment[], now: Date = new 
 }
 
 /** "Wednesday, 10 June 2026 at 10:30am", as shown on the appointment cards. */
-export function formatAppointmentTime(startsAt: string): string {
-  const date = new Date(startsAt);
+export function formatAppointmentTime(dateTime: string): string {
+  // No time zone suffix, so this is read as local time (never convert it to UTC).
+  const date = new Date(dateTime);
   // Formatted in two parts because en-AU leaves out the comma after the weekday.
   const weekday = date.toLocaleDateString('en-AU', { weekday: 'long' });
   const day = `${weekday}, ${date.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`;

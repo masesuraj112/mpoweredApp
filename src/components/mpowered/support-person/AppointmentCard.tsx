@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/theme';
+import { displayOrPlaceholder } from '@/features/care-planner/planDisplay';
 import { formatAppointmentTime } from '@/features/support-person/appointments';
 import type { Appointment } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -25,7 +26,7 @@ export function AppointmentCard({ appointment, actions = [] }: AppointmentCardPr
     <View style={styles.card}>
       <View style={styles.row}>
         <Image source={calendarIcon} style={styles.calendarIcon} contentFit="contain" accessibilityLabel="" />
-        <Text style={styles.date}>{formatAppointmentTime(appointment.startsAt)}</Text>
+        <Text style={styles.date}>{formatAppointmentTime(appointment.dateTime)}</Text>
       </View>
 
       <View style={styles.body}>
@@ -33,13 +34,13 @@ export function AppointmentCard({ appointment, actions = [] }: AppointmentCardPr
           <View style={styles.row}>
             <Image source={personIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
             <Text style={styles.detailText} numberOfLines={1}>
-              {appointment.practitioner}
+              {displayOrPlaceholder(appointment.practitionerName)}
             </Text>
           </View>
           <View style={styles.row}>
             <Image source={stethoscopeIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
             <Text style={styles.detailText} numberOfLines={1}>
-              {appointment.healthService}
+              {displayOrPlaceholder(appointment.healthService)}
             </Text>
           </View>
         </View>

@@ -1,10 +1,7 @@
-export type Appointment = {
-  id: string;
-  /** ISO date-time, e.g. 2026-06-10T10:30:00. */
-  startsAt: string;
-  practitioner: string;
-  healthService: string;
-};
+import type { Appointment } from '@/features/care-planner/types';
+
+// The same appointment shape as the patient's Planner, so both can share screens and services.
+export type { Appointment };
 
 /** A patient the signed-in support person has accepted, with the access that patient gave them. */
 export type SupportedPatient = {
