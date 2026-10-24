@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { Button, Text, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
+import { accountType } from '../src/features/support-person/account-type';
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
@@ -27,6 +28,7 @@ function RootNavigator() {
   // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
   // would unmount the verify screen in the middle of signing in.
   const canUseApp = !!session && hasProfile === true;
+  const isSupportPerson = accountType === 'support-person';
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -35,8 +37,13 @@ function RootNavigator() {
       </Stack.Protected>
 
       {/* Without a session and a profile, the tabs group becomes unreachable */}
-      <Stack.Protected guard={canUseApp || bypassAuth}>
+      <Stack.Protected guard={(canUseApp && !isSupportPerson) || bypassAuth}>
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+      <Stack.Protected guard={(canUseApp && isSupportPerson) || bypassAuth}>
+        <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>
   );
