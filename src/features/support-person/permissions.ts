@@ -1,17 +1,19 @@
 import type { SupportedPatient } from './types';
 
-export type AppointmentActionType = 'add-questions' | 'add-answer' | 'view-questions' | 'view-answer';
+export type AppointmentActionType = 'add-questions' | 'add-answer' | 'view-questions' | 'view-answer' | 'view-plan';
 
 export const APPOINTMENT_ACTION_LABELS: Record<AppointmentActionType, string> = {
   'add-questions': 'Add questions',
   'add-answer': 'Add doctor’s answer',
   'view-questions': 'View questions',
   'view-answer': 'View doctor’s answer',
+  'view-plan': 'View appointment',
 };
 
 /**
  * The buttons a support person sees on one of the patient's appointments (Figma 3911-25095, 3911-24852).
  * Upcoming appointments let them add, past ones let them view, and each permission adds one button.
+ * Without either permission they can still view the plan (SRS edge case 3.3), so they get "View appointment".
  */
 export function getAppointmentActions(
   patient: Pick<SupportedPatient, 'canAddQuestions' | 'canAddAnswers'>,
@@ -20,7 +22,7 @@ export function getAppointmentActions(
   const actions: AppointmentActionType[] = [];
   if (patient.canAddQuestions) actions.push(isUpcoming ? 'add-questions' : 'view-questions');
   if (patient.canAddAnswers) actions.push(isUpcoming ? 'add-answer' : 'view-answer');
-  return actions;
+  return actions.length > 0 ? actions : ['view-plan'];
 }
 
 /** What a support person may change on a patient's appointment plan. Viewing is always allowed. */

@@ -7,6 +7,7 @@ import { Colors } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
 import { getGreeting } from '@/features/support-person/greeting';
+import { openAppointmentAction } from '@/features/support-person/navigation';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -23,10 +24,7 @@ export default function CarePlannerHomeScreen() {
   const openAppointments = (patient: SupportedPatient) =>
     router.push({ pathname: '/care-planner/[patientId]', params: { patientId: patient.id } });
   const openAddQuestions = (patient: SupportedPatient, appointment: Appointment) =>
-    router.push({
-      pathname: '/care-planner/appointment-action',
-      params: { action: 'add-questions', patientId: patient.id, appointmentId: String(appointment.appointmentId) },
-    });
+    openAppointmentAction('add-questions', patient.id, appointment.appointmentId);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>

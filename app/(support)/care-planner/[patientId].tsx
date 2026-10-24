@@ -8,6 +8,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
+import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -116,11 +117,7 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
             appointment={appointment}
             actions={actionTypes.map(action => ({
               label: APPOINTMENT_ACTION_LABELS[action],
-              onPress: () =>
-                router.push({
-                  pathname: '/care-planner/appointment-action',
-                  params: { action, patientId: patient.id, appointmentId: String(appointment.appointmentId) },
-                }),
+              onPress: () => openAppointmentAction(action, patient.id, appointment.appointmentId),
             }))}
           />
         ))

@@ -24,9 +24,9 @@ describe('getAppointmentActions', () => {
     expect(getAppointmentActions(answersOnly, false)).toEqual(['view-answer']);
   });
 
-  it('shows no buttons without either permission', () => {
-    expect(getAppointmentActions(neither, true)).toEqual([]);
-    expect(getAppointmentActions(neither, false)).toEqual([]);
+  it('still lets a support person without either permission view the plan (SRS edge case 3.3)', () => {
+    expect(getAppointmentActions(neither, true)).toEqual(['view-plan']);
+    expect(getAppointmentActions(neither, false)).toEqual(['view-plan']);
   });
 });
 
