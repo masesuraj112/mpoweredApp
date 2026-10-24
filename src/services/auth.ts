@@ -103,3 +103,33 @@ export function hasProfile(client: Client = supabase): Promise<Result<boolean>> 
     return ok(data !== null);
   });
 }
+
+/** The signed-in user's own profile: what the app needs to choose and greet them. */
+export type UserProfile = {
+  userType: 'patient' | 'support_person';
+  name: string;
+};
+
+/**
+ * The signed-in user's profile, or null when they have no users row yet. Like hasProfile, it
+ * filters by auth_id, because users_select also returns a patient's row to their support persons.
+ */
+export function getProfile(client: Client = supabase): Promise<Result<UserProfile | null>> {
+  return run(async () => {
+    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    if (sessionError) return fail(mapError(sessionError));
+    const userId = sessionData.session?.user?.id;
+    if (!userId) return fail({ code: 'NO_SESSION', message: 'There is no signed-in user.' });
+
+    const { data, error } = await client
+      .from('users')
+      .select('user_type, name')
+      .eq('auth_id', userId)
+      .maybeSingle();
+    if (error) return fail(mapError(error));
+    if (!data) return ok(null);
+    // chk_users_user_type only allows these two values.
+    const userType = data.user_type === 'support_person' ? 'support_person' : 'patient';
+    return ok({ userType, name: data.name });
+  });
+}
