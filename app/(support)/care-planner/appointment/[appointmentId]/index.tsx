@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
@@ -33,6 +33,19 @@ export default function SupportedAppointmentPlanScreen() {
   const firstName = patient?.name.split(' ')[0] ?? 'The patient';
   const access = getPlanAccess(patient ?? { canAddQuestions: false, canAddAnswers: false });
   const { refresh } = state;
+
+  // Questions are changed on their own screen, and the patient may change the plan too. Re-read it
+  // when coming back, as the patient's review screen does.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) {
+        firstFocus.current = false;
+        return;
+      }
+      refresh();
+    }, [refresh]),
+  );
 
   // The answer box opens over this screen on a question, as on the patient's review screen.
   const [answerQuestionId, setAnswerQuestionId] = useState<number | null>(null);
