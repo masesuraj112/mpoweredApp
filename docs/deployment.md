@@ -109,9 +109,17 @@ Why the workflow is manual: [deploy-db.yml](../.github/workflows/deploy-db.yml) 
 
 ## Known gaps
 
-- iPhone not tested on a physical device (above).
-- The app, splash and favicon images are Expo's **placeholders**. Real MPowered branding is needed.
+### Must be addressed
+- **The Android install link expires.** EAS build artifacts expire about two weeks after the build (the first APK: 8 November 2026). Download the `.apk` and keep it somewhere stable, or build again shortly before it is needed.
+- **The end-to-end path is not proven.** Not yet confirmed: the APK installs and runs, the first automatic publish to the `preview` branch works after a merge to `main`, and an installed app receives that update. Do one rehearsed release and record the result.
+- **The Android signing key is not backed up.** Expo holds it. Download a copy (`npx eas-cli credentials`, Android) and store it securely. Losing it means every user must uninstall and reinstall.
+- **iPhone is untested on a physical device.** The iOS-only behaviour (swipe-back "Discard?" prompt, header appearance, share sheet) is unverified.
+- **The client has not agreed the delivery method** (who installs, which devices, who approves). See [client-signoff.md](deployment/client-signoff.md).
+- **Database changes are applied by hand.** If a migration is merged and not applied to the hosted project, the app and the database disagree.
+- **The app, splash and favicon images are Expo's placeholders.** Real MPowered branding is needed before it is shared widely.
+
+### Lower priority
+- Whether a tester needs an Expo account, or membership of the `mpowered-mha` organisation, to open a QR code is unverified.
 - No production Supabase project; all EAS environments use the test project.
 - `npm audit` reports 6 high findings inside Expo's own build tooling (`node-forge`, `zod`). The only offered fix downgrades Expo, so they are left in place.
 - No crash or error monitoring.
-- The client has not yet signed off the delivery method: see [client-signoff.md](deployment/client-signoff.md).
