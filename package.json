@@ -7,7 +7,6 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.1",
     "@supabase/supabase-js": "^2.112.4",
-    "docker": "^1.0.0",
     "expo": "^58.0.0",
     "expo-constants": "~58.0.13",
     "expo-device": "~58.0.5",
