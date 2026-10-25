@@ -86,9 +86,10 @@ Rolling back an update does not roll back the database.
 
 ```
 supabase link --project-ref <test project ref>
-supabase db push --dry-run     # check exactly what would be applied
-supabase db push
+supabase db push --include-all --dry-run     # check exactly what would be applied
+supabase db push --include-all
 ```
+`--include-all` is needed because feature branches add migrations in parallel, so a pending migration can have an older timestamp than one already applied. Plain `db push` refuses that case; CI has already proved the whole set applies in version order. The command still refuses to run if the hosted history has versions that `main` lacks.
 
 Do this **before** testing the new app version, or the app and the database will disagree.
 
