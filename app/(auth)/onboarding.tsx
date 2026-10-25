@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SLIDES = [
   {
@@ -31,6 +32,8 @@ const SLIDES = [
 export default function OnboardingCarousel() {
   const [index, setIndex] = useState(0);
   const { width, height } = useWindowDimensions();
+  // Android draws behind the system buttons, so keep the bottom controls above them.
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const scale = Math.min(width / 412, height / 823);
   const canvasWidth = 412 * scale;
   const canvasLeft = (width - canvasWidth) / 2;
@@ -44,7 +47,7 @@ export default function OnboardingCarousel() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: bottomInset }]}>
       <ScrollView
         horizontal
         pagingEnabled
