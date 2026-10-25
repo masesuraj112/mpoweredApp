@@ -82,6 +82,20 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Resetting the onboarding answers clears them | `__tests__/onboarding-context.test.tsx` | Unit | `unit-tests` |
 | The generated types match the migrations | CI step "Generated types match the migrations" (`supabase gen types --local` compared with `src/types/database.ts`) | Static | `database-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
+| One Movement entry per user per week | `041_movement_constraints`; `070_save_movement_assessment` (second save fails with 23505) | Database | `database-tests` |
+| One Personal Care entry per user per week | `040_personal_care_constraints`; `060_save_personal_care_assessment` (second save fails with 23505) | Database | `database-tests` |
+| Movement active hours are between 0 and 24, and 0 is a real answer | `041_movement_constraints`; `070_save_movement_assessment` (`INVALID_HOURS`); `movement/validate.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
+| Users cannot read or write each other's Movement data, including the impact rows | `043_movement_rls` | Database | `database-tests` |
+| Users cannot read or write each other's Personal Care data, including the activity rows | `047_personal_care_rls` | Database | `database-tests` |
+| Movement tables: signed-in users can only select and insert; anonymous users have no access | `042_movement_privileges`; `070_save_movement_assessment` (execute privileges) | Database | `database-tests` |
+| Personal Care tables: signed-in users can only select and insert; anonymous users have no access | `046_personal_care_privileges`; `060_save_personal_care_assessment` (execute privileges) | Database | `database-tests` |
+| The Movement save function rejects a future date, a date before the start week, a missing profile, no impact, a blank single answer, a value over 100 characters and bad hours; a blank reflection is stored as null; saving is atomic | `070_save_movement_assessment` | Database | `database-tests` |
+| The Personal Care save function rejects a future date, a date before the start week, a missing profile, no activity, a blank single answer and a value over 100 characters; a blank reflection is stored as null; saving is atomic | `060_save_personal_care_assessment` | Database | `database-tests` |
+| Movement and Personal Care answers must be one of the listed options, and a bad answer never reaches the database | `movement/validate.test.ts`; `personal-care/validate.test.ts`; `assessments.test.ts` (`saveMovementEntry`, `savePersonalCareEntry`) | Unit, Service | `unit-tests` |
+| A Movement or Personal Care reflection is limited to 200 words | `reflection.test.ts`; `movement/validate.test.ts`; `personal-care/validate.test.ts` | Unit | `unit-tests` |
+| A retry after a lost response is treated as success for Movement and Personal Care | `assessments.test.ts` | Service | `unit-tests` |
+| The Movement score is impacts ticked plus the positions of four answers (bands 5, 10, 15) | `movement/summary.test.ts` | Unit | `unit-tests` |
+| The Personal Care score is activities ticked plus the care and sleep positions (bands 0-3, 4-7, 8-11, 12-15) | `personal-care/summary.test.ts` | Unit | `unit-tests` |
 
 ## Not automated
 
@@ -98,6 +112,7 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - Screens and components in general: there are no component tests.
 - Real SMS delivery and the code's expiry time (test OTP numbers send nothing; checked by hand when Twilio is connected).
 - The verify screen layout, the routing between the auth screens and the tabs, the root guard, and sign-out resetting onboarding (manual checklist in `docs/backend/login-backend-build-plan.md` section 5).
+- The reflection word counter, the disabled Record button, and the Summary screens for Movement and Personal Care are checked by hand on a phone (see docs/test-plans/)
 
 ## Not tested / deferred
 
