@@ -11,7 +11,7 @@ Mismatched versions are a common source of "it works on my machine" bugs.
 | -------- | ----------- |
 | Node.js  | v24.20.0    |
 | npm      | 11.19.0     |
-| Expo SDK | 57.0.1 |
+| Expo SDK | 58.0.0 |
 
 > React Native's version is managed automatically by Expo. You don't install or track it separately.
 
@@ -65,6 +65,7 @@ Scan the QR code with the **Expo Go** app on your phone (App Store / Play Store)
 
 1. Re-check `node --version` / `npm --version` against the table above
 2. Ask in the Teams channel before debugging alone for more than ~10 minutes. Version mismatches are usually quick to spot with a second pair of eyes
+3. If Expo Go says the project needs a different SDK, update Expo Go from the App Store. Expo Go only runs the one SDK version it ships with, so a mismatch means the project and Expo Go are on different SDKs (this project is on SDK 58). Then run `npm ci` and `npx expo start -c`
 
 ### 6. Install the Supabase CLI
 

@@ -9,6 +9,7 @@ import {
   type AccessibilityActionEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type ScrollViewInstance,
 } from 'react-native';
 
 import { Colors, Radius } from '@/constants/theme';
@@ -30,7 +31,7 @@ const VISIBLE_ROWS = 3;
  * scrolling, by tapping it, or by a screen reader's increment and decrement actions.
  */
 export function TimeWheel({ label, items, selectedIndex, onChange }: TimeWheelProps) {
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   // Rows grow with the system font size so large text is not clipped.
   const rowHeight = Math.min(96, Math.max(48, Math.round(48 * PixelRatio.getFontScale())));
 

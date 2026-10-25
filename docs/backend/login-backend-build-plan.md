@@ -1,7 +1,7 @@
 # MPowered Login & Onboarding Back-End: Build Plan
 
 **Owner:** Mohammad  |  **Repo:** `masesuraj112/mpoweredApp`  |  **Revision:** 2 (2026-10-14)
-**Stack:** Expo SDK 57 (Expo Router) · Supabase (Postgres, Auth, RLS) · supabase-js ^2.112.4 · TypeScript strict · Jest (`jest-expo`) · pgTAP · GitHub Actions
+**Stack:** Expo SDK 58 (Expo Router) · Supabase (Postgres, Auth, RLS) · supabase-js ^2.112.4 · TypeScript strict · Jest (`jest-expo`) · pgTAP · GitHub Actions
 **Companion file:** `testing-and-cicd.md` (CI-only testing, CI/CD, and how to drive Claude Code)
 
 ---
