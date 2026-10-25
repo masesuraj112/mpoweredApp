@@ -2,6 +2,7 @@
   "expo": {
     "name": "mpowered-app",
     "slug": "mpowered-app",
+    "owner": "mpowered-mha",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,9 +10,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.anonymous.mpowered-app"
+      "bundleIdentifier": "au.org.mpowered.app"
     },
     "android": {
+      "package": "au.org.mpowered.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -49,6 +51,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/456dc2a0-9327-43b1-b5e5-a5a348c15d08"
     },
     "extra": {
       "router": {},
