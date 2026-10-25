@@ -48,10 +48,11 @@ All three EAS environments currently point at the **same test database**, becaus
 | Who | How |
 | --- | --- |
 | **Android** | Install the APK from the link or QR code on the build's page in the Expo dashboard (Builds). It then updates itself from the `preview` channel. |
-| **iPhone** | Install **Expo Go** from the App Store, sign in with an Expo account that is a member of the `mpowered-mha` organisation, and open the QR code from the pull request comment (or the update's page on the dashboard). |
+| **iPhone** | Install **Expo Go** from the App Store and open the QR code from the pull request comment (or the update's page on the dashboard). Whether the tester needs an Expo account, or membership of the `mpowered-mha` organisation, **has not been confirmed** for published updates (see below). |
 
 Things to know:
 - Expo Go only runs **one SDK version**. The app is on SDK 58. When Expo Go moves to a newer SDK, iPhones that update it can no longer open this app until the project is upgraded. This already happened once (SDK 57 to 58).
+- **Expo account requirement is unverified.** Expo says the iOS Expo Go requires a login to run a project in development mode (`npx expo start`). We have not tested whether opening a *published update* from a QR code needs a login or organisation membership. Test it with a phone that is logged out of Expo Go, or logged in to an account outside `mpowered-mha`, and record the result here.
 - In Expo Go, voice dictation shows "Dictation isn't available in this build". That is expected: dictation needs the Android build.
 - **iPhone has not been verified on a physical device.** It was assumed to work because the JavaScript is shared with Android, and Android was tested. The iOS-only areas (swipe-back "Discard?" prompt, header styling, share sheet) are untested.
 
