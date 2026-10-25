@@ -106,12 +106,13 @@ Why the workflow is manual: [deploy-db.yml](../.github/workflows/deploy-db.yml) 
 | An update never reaches an installed app | Runtime version mismatch (native code changed), or the channel points at another branch. Check `npx eas-cli channel:view preview` and rebuild if native code changed. |
 | EAS Update workflow fails at the first step | `EXPO_TOKEN` is missing or expired. Create a new token and update the GitHub secret. |
 | Database deploy fails with "network is unreachable" | IPv6 problem described under Database. Use the session pooler. |
+| "App not installed" when installing the APK on a phone | Seen on a Galaxy A20 with about 800 MB free: the phone's own installer failed, but installing from a PC worked. Likely low free storage (not proven). Free up space, or install from a PC with Android platform-tools: turn on USB debugging, plug the phone in, then run `adb install -r mpowered.apk`. |
 
 ## Known gaps
 
 ### Must be addressed
 - **The Android install link expires.** EAS build artifacts expire about two weeks after the build (the first APK: 8 November 2026). Download the `.apk` and keep it somewhere stable, or build again shortly before it is needed.
-- **The end-to-end path is not proven.** Not yet confirmed: the APK installs and runs, the first automatic publish to the `preview` branch works after a merge to `main`, and an installed app receives that update. Do one rehearsed release and record the result.
+- **The end-to-end path is not proven.** Verified: the APK installs (Galaxy A20, via `adb`). Not yet confirmed: the app runs and signs in on the installed APK, the first automatic publish to the `preview` branch works after a merge to `main`, and an installed app receives that update. Do one rehearsed release and record the result.
 - **The Android signing key is not backed up.** Expo holds it. Download a copy (`npx eas-cli credentials`, Android) and store it securely. Losing it means every user must uninstall and reinstall.
 - **iPhone is untested on a physical device.** The iOS-only behaviour (swipe-back "Discard?" prompt, header appearance, share sheet) is unverified.
 - **The client has not agreed the delivery method** (who installs, which devices, who approves). See [client-signoff.md](deployment/client-signoff.md).
