@@ -8,7 +8,7 @@ How MPowered is shared with testers and the client. **There is no App Store or P
  pull request --> CI (lint, types, tests, database tests)
       |             '-> EAS Update (branch pr-<number>) --> QR code comment on the PR --> Expo Go
       v
-   merge to main --> CI --> EAS Update (branch main) --> "preview" channel --> installed Android app
+   merge to main --> CI --> EAS Update (branch preview) --> "preview" channel --> installed Android app
                                                     '--------------------> Expo Go (iPhone, Android)
 
    Android APK: built once with "eas build" (profile preview), installed from a link; it then receives
@@ -59,7 +59,7 @@ Things to know:
 
 ### A change (most of the time)
 1. Open a pull request. CI runs. The **EAS Update** workflow publishes the change to a branch named `pr-<number>` and comments a QR code on the pull request, so anyone (including the client) can try it in Expo Go before it merges.
-2. Merge to `main`. After CI passes, the workflow publishes to the `main` update branch. Installed Android apps receive it the next time they open.
+2. Merge to `main`. After CI passes, the workflow publishes to the `preview` update branch, which the `preview` channel follows. Installed Android apps receive it the next time they open.
 
 An update only reaches builds with a **matching runtime version** (the project uses the `fingerprint` policy, so it changes when native code or native dependencies change). If a change touches native dependencies, publish an update **and** build a new APK.
 
@@ -70,14 +70,11 @@ npx eas-cli build --platform android --profile preview
 ```
 It builds in Expo's cloud and gives an install link. Builds use the Expo build quota, so build only when needed.
 
-**One-time setup after the first build:** the `preview` channel is created pointing at a branch also called `preview`. The workflow publishes to `main`, so point the channel at it once:
-```
-npx eas-cli channel:edit preview --branch main
-```
+The first build created the `preview` channel linked to an update branch of the same name, and the workflow publishes to that branch, so there is nothing to configure. The Android signing key is generated and held by Expo. Download a backup with `npx eas-cli credentials` (Android, then the build profile) and store it somewhere safe: losing it means users must reinstall.
 
 ### Rolling back a bad update
-- Find the last good update: `npx eas-cli update:list --branch main`.
-- Republish it: `npx eas-cli update:republish --branch main` (choose the earlier update), or use the Updates page on the Expo dashboard.
+- Find the last good update: `npx eas-cli update:list --branch preview`.
+- Republish it: `npx eas-cli update:republish --branch preview` (choose the earlier update), or use the Updates page on the Expo dashboard.
 - Or `npx eas-cli update:rollback` to go back to the version inside the installed app.
 
 Rolling back an update does not roll back the database.

@@ -2,7 +2,7 @@ name: EAS Update
 
 # Publishes the app's JavaScript to Expo so testers can open it in Expo Go or receive it over the air.
 #   - pull request: a per-PR update, with a QR code commented on the PR
-#   - main (after CI passes): the "main" branch, which the "preview" channel points at
+#   - main (after CI passes): the "preview" branch, which the "preview" channel (the Android build) follows
 # Needs the EXPO_TOKEN repository secret. See docs/deployment.md.
 on:
   pull_request:
@@ -61,4 +61,4 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - run: npm ci
       # The message comes through an environment variable so a commit message cannot inject shell.
-      - run: eas update --branch main --environment preview --message "${COMMIT_MESSAGE:-manual run}" --non-interactive
+      - run: eas update --branch preview --environment preview --message "${COMMIT_MESSAGE:-manual run}" --non-interactive
