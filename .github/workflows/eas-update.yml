@@ -1,0 +1,64 @@
+name: EAS Update
+
+# Publishes the app's JavaScript to Expo so testers can open it in Expo Go or receive it over the air.
+#   - pull request: a per-PR update, with a QR code commented on the PR
+#   - main (after CI passes): the "main" branch, which the "preview" channel points at
+# Needs the EXPO_TOKEN repository secret. See docs/deployment.md.
+on:
+  pull_request:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview-pr:
+    runs-on: ubuntu-latest
+    # Forks cannot read the secret, so only PRs from this repository publish.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    concurrency:
+      group: eas-update-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: npm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+      - uses: expo/expo-github-action/preview@v8
+        with:
+          command: eas update --branch pr-${{ github.event.pull_request.number }} --environment preview --message "PR ${{ github.event.pull_request.number }}" --non-interactive
+
+  publish-main:
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || github.event.workflow_run.conclusion == 'success'
+    concurrency:
+      group: eas-update-main
+      cancel-in-progress: false
+    env:
+      COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: npm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+      # The message comes through an environment variable so a commit message cannot inject shell.
+      - run: eas update --branch main --environment preview --message "${COMMIT_MESSAGE:-manual run}" --non-interactive
