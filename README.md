@@ -120,6 +120,10 @@ You'll be prompted to select the project: choose the **dev** project (not produc
 
 Set your code editor (VS Code) to format automatically using the prettier config already set-up in the repo: install the "Prettier" extension in VS Code, and optionally enable "format on save".
 
+## Deployment
+
+How the app is built, shared with testers and updated (Expo EAS, GitHub Actions, Supabase), with release, rollback and troubleshooting steps: [docs/deployment.md](docs/deployment.md).
+
 ## Testing
 
 [![CI](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml/badge.svg)](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml)
