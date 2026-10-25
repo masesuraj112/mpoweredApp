@@ -27,15 +27,18 @@ function RootNavigator() {
   // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
   // would unmount the verify screen in the middle of signing in.
   const canUseApp = !!session && hasProfile === true;
+  // A failed guard redirects, it no longer hides the group. The default target is the first group
+  // that is allowed, which is the bare path "/(tabs)": it has no index route, so it is "unmatched".
+  // Each guard therefore names where to go.
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!canUseApp || bypassAuth}>
+      <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo="/home">
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
 
       {/* Without a session and a profile, the tabs group becomes unreachable */}
-      <Stack.Protected guard={canUseApp || bypassAuth}>
+      <Stack.Protected guard={canUseApp || bypassAuth} redirectTo="/">
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>
     </Stack>
