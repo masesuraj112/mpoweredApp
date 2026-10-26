@@ -2,7 +2,7 @@
 
 # MPowered app: instructions for Claude
 
-React Native 0.86 + Expo SDK 57 + Expo Router + TypeScript (strict) + Supabase. Path alias: `@/` means `src/`.
+React Native 0.88 + Expo SDK 58 + Expo Router + TypeScript (strict) + Supabase. Path alias: `@/` means `src/`.
 
 ## Layout
 - Routes: `app/(auth)`, `app/(tabs)/{home,health,planner,tracker,settings}`. Keep screens thin: compose components and hooks, no business logic.

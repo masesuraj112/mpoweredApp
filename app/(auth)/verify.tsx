@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
 
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
@@ -32,7 +32,7 @@ export default function VerifyScreen() {
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
-  const codeInputRef = useRef<TextInput>(null);
+  const codeInputRef = useRef<TextInputInstance>(null);
   const doneBar = useKeyboardDoneBar();
   const { width, height } = useWindowDimensions();
   const scale = Math.min(1, width / 412, height / 823);

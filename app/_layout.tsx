@@ -27,22 +27,34 @@ function RootNavigator() {
   // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
   // would unmount the verify screen in the middle of signing in.
   const canUseApp = !!session && hasProfile === true;
+  // A failed guard redirects, it no longer hides the group. The default target is the first group
+  // that is allowed, which is the bare path "/(tabs)": it has no index route, so it is "unmatched".
+  // Each guard therefore names where to go.
+
   // Saved at sign-up (users.user_type). Support persons have no patients row, so never open the tabs.
   const isSupportPerson = profile?.userType === 'support_person';
+  // Where a signed-in user belongs: the patient tabs, or the support person app.
+  const homePath = isSupportPerson ? '/care-planner' : '/home';
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!canUseApp || bypassAuth}>
+      <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo={homePath}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
 
       {/* Without a session and a profile, the tabs group becomes unreachable */}
-      <Stack.Protected guard={(canUseApp && !isSupportPerson) || bypassAuth}>
+      <Stack.Protected
+        guard={(canUseApp && !isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>
 
       {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
-      <Stack.Protected guard={(canUseApp && isSupportPerson) || bypassAuth}>
+      <Stack.Protected
+        guard={(canUseApp && isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
         <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>

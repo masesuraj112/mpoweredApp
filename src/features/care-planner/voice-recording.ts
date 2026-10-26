@@ -7,6 +7,7 @@
 // The package is a native module, so it is loaded lazily and guarded: where it is missing (for
 // example in Expo Go) the status is `unavailable` and nothing crashes.
 
+import { requireOptionalNativeModule } from 'expo';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
@@ -52,9 +53,14 @@ type Engine = {
 
 function loadEngine(): Engine | null {
   if (Platform.OS === 'web') return null;
+  // Check the native side first. A try/catch around `require` is not enough: Metro reports an
+  // error thrown while a module initialises as a fatal error (the red screen in development), so
+  // it never reaches the catch. In Expo Go there is no native module and the package throws as
+  // soon as it is imported.
+  if (!requireOptionalNativeModule('ExpoSpeechRecognition')) return null;
   try {
     // The package is a native module: it is required lazily so a build without it (Expo Go)
-    // does not crash when this file is imported.
+    // does not run its initialisation when this file is imported.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const speech = require('expo-speech-recognition');
     return (speech?.ExpoSpeechRecognitionModule as Engine | undefined) ?? null;
