@@ -11,7 +11,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
-import { needsRemovalConfirmation } from '@/features/care-planner/suggestionSelection';
+import { carePlannerMessage } from '@/features/care-planner/messages';
+import {
+  canSaveSelection,
+  MIN_QUESTION_MESSAGE,
+  needsRemovalConfirmation,
+} from '@/features/care-planner/suggestionSelection';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentQuestions } from '@/features/care-planner/useAppointmentQuestions';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
@@ -66,8 +71,12 @@ export default function QuestionsScreen() {
     router.back();
   };
 
-  // The suggestions arrive ticked, so saving must work without changing a tick.
-  const canSave = load.status === 'ready' && !questions.saving;
+  // The suggestions arrive ticked, so saving must work without changing a tick. A plan keeps at
+  // least one question, so Save is off while every question is unticked.
+  const hasSuggestions =
+    load.status === 'ready' && load.suggestions.groups.some((group) => group.questions.length > 0);
+  const noneChosen = hasSuggestions && !canSaveSelection(questions.selectedIds, hasSuggestions);
+  const canSave = load.status === 'ready' && !questions.saving && !noneChosen;
 
   const generatedDate =
     load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn ?? '') : null;
@@ -131,9 +140,15 @@ export default function QuestionsScreen() {
             )}
           </Card>
 
+          {noneChosen ? (
+            <Text style={styles.minQuestion} accessibilityRole="alert">
+              {MIN_QUESTION_MESSAGE}
+            </Text>
+          ) : null}
+
           {questions.saveError ? (
             <ErrorState
-              message="We could not save your questions."
+              message={carePlannerMessage(questions.saveError)}
               onRetry={save}
               retryLabel="Try saving again"
             />
@@ -154,6 +169,12 @@ const styles = StyleSheet.create({
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
+  },
+  minQuestion: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+    color: Colors.light.onSurface,
   },
   generatedOn: {
     fontSize: 12,

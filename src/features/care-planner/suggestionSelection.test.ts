@@ -1,4 +1,5 @@
 import {
+  canSaveSelection,
   getSuggestionLabel,
   hasSelectionChanged,
   needsRemovalConfirmation,
@@ -63,5 +64,16 @@ describe('getSuggestionLabel', () => {
     expect(getSuggestionLabel('What can I do?')).toBe(
       'Add to my appointment plan: What can I do?',
     );
+  });
+});
+
+describe('canSaveSelection', () => {
+  it('needs at least one question when there are suggestions', () => {
+    expect(canSaveSelection([], true)).toBe(false);
+    expect(canSaveSelection([4], true)).toBe(true);
+  });
+
+  it('allows saving when there are no suggestions to choose from', () => {
+    expect(canSaveSelection([], false)).toBe(true);
   });
 });
