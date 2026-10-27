@@ -12,6 +12,7 @@ import {
   listAppointments,
   listMySupportPersons,
   markAppointmentSaved,
+  previewGeneratedQuestions,
   saveAnswers,
   saveAppointmentQuestions,
   saveRecordingConsent,
@@ -771,5 +772,50 @@ describe('saveAnswers', () => {
       fakeClient({ rpc: jest.fn().mockRejectedValue(new TypeError('Network request failed')) }),
     );
     expect(lost).toMatchObject({ ok: false, error: { code: 'NETWORK' } });
+  });
+});
+
+describe('previewGeneratedQuestions', () => {
+  beforeEach(() => mockGetAssessments.mockReset());
+
+  it('groups the generated questions and stores nothing', async () => {
+    const base = { submissionId: 1, date: '2026-10-20', weekStart: '2026-10-19' };
+    mockGetAssessments.mockResolvedValue({
+      ok: true,
+      data: {
+        pain: { ...base, current: 0, mildest: 2, worst: 9, average: 7, locations: ['neck'], characteristics: [] },
+        movement: { ...base, averageActiveHours: 3, generalImpacts: [], walking: 'a', lifting: 'a', sitting: 'a', standing: 'a' },
+        personalCare: { ...base, generalActivities: [], washingDressing: 'a', sleeping: 'a' },
+        socialHealth: { ...base, socialLife: 'a', travelling: 'a', mood: 3, relationWithOthers: 3, enjoymentOfLife: 3, moodOverall: 'a' },
+        management: { ...base, exercise: 'a', emotion: null, medications: [] },
+      },
+    });
+    const rpc = rpcResult(true);
+    const from = jest.fn();
+    const result = await previewGeneratedQuestions(fakeClient({ rpc, from }));
+    expect(result.ok && result.data.map((g) => g.groupId)).toEqual([
+      'pain-location',
+      'pain-intensity',
+      'pain-impact',
+      'management',
+    ]);
+    expect(rpc).not.toHaveBeenCalled();
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it('is empty until the assessments are completed', async () => {
+    mockGetAssessments.mockResolvedValue({
+      ok: true,
+      data: { pain: null, movement: null, personalCare: null, socialHealth: null, management: null },
+    });
+    expect(await previewGeneratedQuestions(fakeClient({}))).toEqual({ ok: true, data: [] });
+  });
+
+  it('passes on a failure to read the assessments', async () => {
+    mockGetAssessments.mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'x' } });
+    expect(await previewGeneratedQuestions(fakeClient({}))).toMatchObject({
+      ok: false,
+      error: { code: 'NETWORK' },
+    });
   });
 });

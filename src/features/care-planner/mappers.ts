@@ -179,3 +179,26 @@ export function mapAppointmentPlan(
     questionGroups,
   };
 }
+
+/**
+ * Generated questions that are not stored against an appointment, grouped for display. The ids
+ * are only positions in the list: they identify a row on screen and nothing in the database.
+ */
+export function mapGeneratedQuestionGroups(
+  questions: readonly { groupKey: string; question: string }[],
+): SuggestedQuestionGroup[] {
+  const countByGroup = new Map<string, number>();
+  const rows: QuestionRow[] = questions.map((q, index) => {
+    const position = (countByGroup.get(q.groupKey) ?? 0) + 1;
+    countByGroup.set(q.groupKey, position);
+    return {
+      question_id: index + 1,
+      group_key: q.groupKey,
+      sort_order: position,
+      question: q.question,
+      is_selected: false,
+      answer: null,
+    };
+  });
+  return mapQuestionSuggestions({ status: 'draft', suggestions_generated_on: null }, rows).groups;
+}

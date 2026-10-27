@@ -1,6 +1,7 @@
 import {
   mapAppointment,
   mapAppointmentPlan,
+  mapGeneratedQuestionGroups,
   mapQuestionSuggestions,
   mapSupportPeopleFromLinks,
   mapSupportPerson,
@@ -178,5 +179,27 @@ describe('support people', () => {
       { support_persons: row },
     ]);
     expect(people.map((p) => p.name)).toEqual(['Bron', 'Sam']);
+  });
+});
+
+describe('mapGeneratedQuestionGroups', () => {
+  it('groups in display order and numbers the questions by position', () => {
+    const groups = mapGeneratedQuestionGroups([
+      { groupKey: 'management', question: 'M1' },
+      { groupKey: 'pain-location', question: 'L1' },
+      { groupKey: 'pain-location', question: 'L2' },
+    ]);
+    expect(groups.map((g) => [g.groupId, g.title])).toEqual([
+      ['pain-location', 'Pain location'],
+      ['management', 'Management'],
+    ]);
+    expect(groups[0].questions).toEqual([
+      { questionId: 2, text: 'L1' },
+      { questionId: 3, text: 'L2' },
+    ]);
+  });
+
+  it('gives no groups for no questions', () => {
+    expect(mapGeneratedQuestionGroups([])).toEqual([]);
   });
 });

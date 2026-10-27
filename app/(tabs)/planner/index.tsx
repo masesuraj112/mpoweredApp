@@ -31,7 +31,7 @@ export default function PlannerScreen() {
       id: 'questions',
       title: 'Explore questions generated for me',
       actionLabel: 'Explore questions',
-      onPress: () => router.push('/planner/questions'),
+      onPress: () => router.push('/planner/explore-questions'),
     },
     {
       id: 'pain-guide',
