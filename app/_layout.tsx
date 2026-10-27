@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from '../src/context/AuthContext';
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 
 function RootNavigator() {
-  const { session, loading, hasProfile, profileError, refreshProfile } = useAuth();
+  const { session, loading, hasProfile, profile, profileError, refreshProfile } = useAuth();
 
   // Implements a temporary loading screen for the initial session check
   if (loading) return null;
@@ -31,15 +31,31 @@ function RootNavigator() {
   // that is allowed, which is the bare path "/(tabs)": it has no index route, so it is "unmatched".
   // Each guard therefore names where to go.
 
+  // Saved at sign-up (users.user_type). Support persons have no patients row, so never open the tabs.
+  const isSupportPerson = profile?.userType === 'support_person';
+  // Where a signed-in user belongs: the patient tabs, or the support person app.
+  const homePath = isSupportPerson ? '/care-planner' : '/home';
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo="/home">
+      <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo={homePath}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
 
       {/* Without a session and a profile, the tabs group becomes unreachable */}
-      <Stack.Protected guard={canUseApp || bypassAuth} redirectTo="/">
+      <Stack.Protected
+        guard={(canUseApp && !isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+      <Stack.Protected
+        guard={(canUseApp && isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
+        <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>
   );

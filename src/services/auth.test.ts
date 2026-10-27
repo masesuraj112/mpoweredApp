@@ -1,6 +1,6 @@
 jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
 
-import { hasProfile, sendVerificationCode, signOut, verifyCode } from '@/services/auth';
+import { getProfile, hasProfile, sendVerificationCode, signOut, verifyCode } from '@/services/auth';
 
 const fakeClient = (parts: Record<string, unknown>) => parts as never;
 
@@ -191,6 +191,77 @@ describe('hasProfile', () => {
       { data: null, error: { code: '42501', message: 'permission denied' } },
     );
     const result = await hasProfile(client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NOT_ALLOWED');
+  });
+});
+
+describe('getProfile', () => {
+  const clientWith = (session: unknown, row: { data: unknown; error: unknown }) => {
+    const eq = jest.fn();
+    const maybeSingle = jest.fn().mockResolvedValue(row);
+    const select = jest.fn(() => ({ eq }));
+    eq.mockReturnValue({ maybeSingle });
+    const from = jest.fn(() => ({ select }));
+    const getSession = jest.fn().mockResolvedValue({ data: { session }, error: null });
+    return { from, select, eq, getSession, client: fakeClient({ auth: { getSession }, from }) };
+  };
+
+  it('returns NO_SESSION and does not query when nobody is signed in', async () => {
+    const { from, client } = clientWith(null, { data: null, error: null });
+    const result = await getProfile(client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('NO_SESSION');
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it("looks up only the signed-in user's own row, by auth_id", async () => {
+    // users_select also returns a patient's row to their support persons, so the filter matters.
+    const { from, select, eq, client } = clientWith(
+      { user: { id: 'u-1' } },
+      { data: { user_type: 'patient', name: 'Sam', phone_number: '+61491570006' }, error: null },
+    );
+    await getProfile(client);
+    expect(from).toHaveBeenCalledWith('users');
+    expect(select).toHaveBeenCalledWith('user_type, name, phone_number');
+    expect(eq).toHaveBeenCalledWith('auth_id', 'u-1');
+  });
+
+  it('returns a patient profile', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-1' } },
+      { data: { user_type: 'patient', name: 'Sam', phone_number: '+61491570006' }, error: null },
+    );
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'patient', name: 'Sam', phone: '+61491570006' } });
+  });
+
+  it('returns a support person profile', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-2' } },
+      { data: { user_type: 'support_person', name: 'Alex', phone_number: '+61491570007' }, error: null },
+    );
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'support_person', name: 'Alex', phone: '+61491570007' } });
+  });
+
+  it('passes through a missing phone number (rows made before phone sign-in)', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-3' } },
+      { data: { user_type: 'patient', name: 'Old', phone_number: null }, error: null },
+    );
+    expect(await getProfile(client)).toEqual({ ok: true, data: { userType: 'patient', name: 'Old', phone: null } });
+  });
+
+  it('is null when there is no users row yet', async () => {
+    const { client } = clientWith({ user: { id: 'u-1' } }, { data: null, error: null });
+    expect(await getProfile(client)).toEqual({ ok: true, data: null });
+  });
+
+  it('maps a database error', async () => {
+    const { client } = clientWith(
+      { user: { id: 'u-1' } },
+      { data: null, error: { code: '42501', message: 'permission denied' } },
+    );
+    const result = await getProfile(client);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('NOT_ALLOWED');
   });
