@@ -1,8 +1,8 @@
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 
 const PAIN_TIPS_URL = 'https://muscha.org/pain-guide/';
 
@@ -88,8 +88,8 @@ export default function SummaryScreen() {
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
-            {/* TODO: Persist this report to the Care Journal before showing its saved status. */}
-            <Text style={styles.savedText}>Saved to Care Journal</Text>
+            {/* TODO: Persist this report to the My Health before showing its saved status. */}
+            <Text style={styles.savedText}>Saved to My Health</Text>
             <Pressable
               onPress={close}
               accessibilityRole="button"
