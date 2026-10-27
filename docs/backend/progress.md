@@ -92,3 +92,69 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 | L15 | Production config record | ✅ settled: docs/backend/production-auth-checklist.md |
 | L16 | Password / Face ID login | ❓ |
 | L17 | Phone change | ⏳ |
+
+# Care Planner (patient side) progress
+
+Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Branch `feature/care-planner-backend`. Status key as above; `[!]` blocked.
+
+## Phase 0: Admin
+- [x] 0.1 Branch
+- [x] 0.2 Read the decisions
+
+## Phase 1: Recon
+- [x] 1.1 Schema and policy recon (matches the plan)
+- [x] 1.2 Stub inventory (`care-planner-stub-inventory.md`)
+
+## Phase 2: Pure foundations
+- [ ] 2.1 Error codes and messages
+- [ ] 2.2 Access type and phone helpers
+- [ ] 2.3 Row mappers
+- [ ] 2.4 Signature guard
+- [ ] 2.5 Question generator (needs M2, M3)
+- [ ] 2.6 Friendly messages
+
+## Phase 3: Migrations, pgTAP, generated types
+- [ ] 3.1 A1 appointment_status
+- [ ] 3.2 A2 appointment_questions_plan_columns
+- [ ] 3.3 A3 support_persons_align
+- [ ] 3.4 A4 care_planner_privileges_policies
+- [ ] 3.5 A5 rpc_appointment_details
+- [ ] 3.6 A6 rpc_suggestions_questions
+- [ ] 3.7 A7 rpc_support_people
+- [ ] 3.8 A8 rpc_consent_answers_save
+
+## Phase 4: Services
+- [ ] 4.1 Appointments
+- [ ] 4.2 Support people
+- [ ] 4.3 Questions
+- [ ] 4.4 Consent and answers
+- [ ] 4.5 Service tests
+
+## Phase 5: Settings > Support Persons
+- [ ] 5.1 Real support persons
+
+## Phase 6: Front-end deltas
+- [ ] 6.1 Require one question
+- [ ] 6.2 Cap two support people
+- [ ] 6.3 Consent before answers
+- [ ] 6.4 Health service options (blocked on M1)
+- [ ] 6.5 Explore-questions shortcut (needs a decision)
+- [ ] 6.6 Types for real data
+
+## Phase 7: Stub removal
+- [ ] 7.1 Remove stub data
+
+## Phase 8: Docs, checks, QA
+- [ ] 8.1 Docs
+- [ ] 8.2 Full checks
+- [ ] 8.3 Manual QA
+
+## Open care planner decisions
+| ID | Decision | Status |
+| --- | --- | --- |
+| M1 | Health service list (MHA) | ❓ |
+| M2 | Generation rule content beyond the 17 design questions (MHA clinical review) | ❓ |
+| M3 | Generation gate: all five assessments completed | ❓ |
+| M4 | Data retention / account deletion (deleting a patient fails while appointments exist) | ❓ out of scope |
+| M5 | No server rule on past/future appointment dates | ❓ optional |
+| M6 | Draft appointments are never cleaned up | ❓ optional |
