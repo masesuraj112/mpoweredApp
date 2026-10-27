@@ -83,12 +83,14 @@ export function MultiChoiceList({
     onSelectionChange?.(next);
   };
 
+  // ChoiceCard puts a non-string prompt straight into a View, and React Native throws on a bare
+  // string there (the "\n"), so the pieces share one wrapping Text.
   const fullPrompt = subPrompt ? (
-    <>
+    <Text>
       <Text style={styles.promptBold}>{prompt}</Text>
       {'\n'}
       <Text style={styles.promptSub}>{subPrompt}</Text>
-    </>
+    </Text>
   ) : (
     prompt
   );

@@ -80,7 +80,8 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="settings" focused={focused} />,
         }}
       />
-      <Tabs.Screen name="tracker" options={{ href: null }} />
+      {/* The assessment screens live here but have no tab. `href: null` makes the whole group unreachable on SDK 58, so every push to /tracker/* bounced back to Home. */}
+      <Tabs.Screen name="tracker" options={{ tabBarItemStyle: { display: 'none' } }} />
     </Tabs>
   );
 }
