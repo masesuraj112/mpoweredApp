@@ -950,6 +950,14 @@ export type Database = {
         Args: { p_appointment_id: number; p_question_ids: number[] }
         Returns: undefined
       }
+      save_appointment_suggestions: {
+        Args: {
+          p_appointment_id: number
+          p_generated_on: string
+          p_questions: Json
+        }
+        Returns: boolean
+      }
       save_appointment_support_people: {
         Args: { p_appointment_id: number; p_people: Json }
         Returns: {
@@ -967,14 +975,6 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
-      }
-      save_appointment_suggestions: {
-        Args: {
-          p_appointment_id: number
-          p_generated_on: string
-          p_questions: Json
-        }
-        Returns: boolean
       }
       save_management_assessment: {
         Args: {
