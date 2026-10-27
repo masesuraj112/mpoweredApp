@@ -43,6 +43,9 @@ export type Database = {
           practitioner_name: string | null
           recording_consent_at: string | null
           recording_consent_signature: string | null
+          saved_at: string | null
+          status: string
+          suggestions_generated_on: string | null
         }
         Insert: {
           appointment_id?: never
@@ -52,6 +55,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Update: {
           appointment_id?: never
@@ -61,6 +67,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Relationships: [
           {
