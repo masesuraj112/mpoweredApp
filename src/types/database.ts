@@ -907,6 +907,24 @@ export type Database = {
           status: string
         }[]
       }
+      list_my_support_persons: {
+        Args: never
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       patient_id_for_user: {
         Args: { target_users_id: number }
         Returns: number
@@ -923,6 +941,24 @@ export type Database = {
       save_appointment_questions: {
         Args: { p_appointment_id: number; p_question_ids: number[] }
         Returns: undefined
+      }
+      save_appointment_support_people: {
+        Args: { p_appointment_id: number; p_people: Json }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       save_appointment_suggestions: {
         Args: {
@@ -993,6 +1029,30 @@ export type Database = {
           p_travelling: string
         }
         Returns: number
+      }
+      save_support_person: {
+        Args: {
+          p_access_type: string
+          p_email: string
+          p_name: string
+          p_phone: string
+          p_support_person_id?: number
+        }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
