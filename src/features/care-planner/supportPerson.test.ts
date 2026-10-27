@@ -3,7 +3,9 @@ import {
   describeContact,
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
+  canAddAnotherPerson,
   isDraftEmpty,
+  MAX_SUPPORT_PEOPLE,
   MOBILE_REQUIRED_MESSAGE,
   NAME_REQUIRED_MESSAGE,
   toSupportPerson,
@@ -148,5 +150,14 @@ describe('phone display round-trip', () => {
   it('shows what was typed (in local format) after being stored as E.164', () => {
     const person = toSupportPerson(draft({ name: 'Bron', phone: '0400 000 000' }));
     expect(describeContact(person)).toBe('0400 000 000');
+  });
+});
+
+describe('canAddAnotherPerson', () => {
+  it('allows up to two support people', () => {
+    expect(MAX_SUPPORT_PEOPLE).toBe(2);
+    expect(canAddAnotherPerson(0)).toBe(true);
+    expect(canAddAnotherPerson(1)).toBe(true);
+    expect(canAddAnotherPerson(2)).toBe(false);
   });
 });

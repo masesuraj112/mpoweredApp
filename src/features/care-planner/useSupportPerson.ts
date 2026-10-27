@@ -4,6 +4,7 @@ import type { AppError } from '@/lib/errors';
 import { getSupportPeople, saveSupportPeople } from '@/services/care-planner';
 
 import {
+  canAddAnotherPerson,
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
   isDraftEmpty,
@@ -72,6 +73,7 @@ export function useSupportPerson(appointmentId: number) {
 
   /** Adds the form's person to the list and clears the form for the next one. */
   const addAnother = useCallback((): boolean => {
+    if (!canAddAnotherPerson(people.length)) return false;
     if (isDraftEmpty(draft)) {
       setErrors({ name: NAME_REQUIRED_MESSAGE });
       return false;
@@ -113,6 +115,7 @@ export function useSupportPerson(appointmentId: number) {
   const save = useCallback(async (): Promise<boolean> => {
     let list = people;
     if (!isDraftEmpty(draft)) {
+      if (!canAddAnotherPerson(people.length)) return false;
       const found = validateSupportPerson(draft);
       setErrors(found);
       if (hasErrors(found)) return false;
@@ -138,6 +141,8 @@ export function useSupportPerson(appointmentId: number) {
     skip,
     saving,
     saveError,
+    /** True once the appointment has the most support people it can hold. */
+    atLimit: !canAddAnotherPerson(people.length),
     dirty: !isDraftEmpty(draft) || !sameList(people, baselinePeople),
   };
 }

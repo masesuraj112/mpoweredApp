@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { AccessibilityInfo, StyleSheet } from 'react-native';
+import { AccessibilityInfo, StyleSheet, Text } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
@@ -11,7 +11,9 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { carePlannerMessage } from '@/features/care-planner/messages';
+import { SUPPORT_PEOPLE_LIMIT_MESSAGE } from '@/features/care-planner/supportPerson';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/care-planner/useSupportPerson';
@@ -81,27 +83,33 @@ export default function SupportPersonScreen() {
         <>
           <SupportPersonList people={form.people} onRemove={form.removePerson} />
 
-          <Card variant="outlined" style={styles.card}>
-            <SupportPersonForm
-              draft={form.draft}
-              errors={form.errors}
-              onChange={form.updateDraft}
-              onBlurField={form.blurField}
-            />
-            <Button
-              label="Add another person"
-              variant="elevated"
-              disabled={form.saving}
-              onPress={form.addAnother}
-              style={styles.addAnother}
-            />
-          </Card>
+          {form.atLimit ? (
+            <Text style={styles.limit} accessibilityRole="alert">
+              {SUPPORT_PEOPLE_LIMIT_MESSAGE}
+            </Text>
+          ) : (
+            <Card variant="outlined" style={styles.card}>
+              <SupportPersonForm
+                draft={form.draft}
+                errors={form.errors}
+                onChange={form.updateDraft}
+                onBlurField={form.blurField}
+              />
+              <Button
+                label="Add another person"
+                variant="elevated"
+                disabled={form.saving}
+                onPress={form.addAnother}
+                style={styles.addAnother}
+              />
+            </Card>
+          )}
         </>
       ) : null}
 
       {form.saveError ? (
         <ErrorState
-          message="We could not save the support person."
+          message={carePlannerMessage(form.saveError)}
           onRetry={save}
           retryLabel="Try saving again"
         />
@@ -117,5 +125,11 @@ const styles = StyleSheet.create({
   },
   addAnother: {
     alignSelf: 'stretch',
+  },
+  limit: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+    color: Colors.light.onSurface,
   },
 });

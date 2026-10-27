@@ -30,8 +30,18 @@ export const EMPTY_SUPPORT_PERSON_DRAFT: SupportPersonDraft = {
   canAddAnswers: false,
 };
 
+/** The most support people one appointment can have (the database enforces the same limit). */
+export const MAX_SUPPORT_PEOPLE = 2;
+export const SUPPORT_PEOPLE_LIMIT_MESSAGE =
+  'You can add up to two support people to an appointment. Remove one to add someone else.';
+
 export const NAME_REQUIRED_MESSAGE = 'Please enter a name.';
 export const MOBILE_REQUIRED_MESSAGE = 'Please enter an Australian mobile number, e.g. 0400 000 000.';
+
+/** True while another support person can still be added to an appointment with `count` people. */
+export function canAddAnotherPerson(count: number): boolean {
+  return count < MAX_SUPPORT_PEOPLE;
+}
 
 /** True when nothing has been typed or ticked (whitespace does not count). */
 export function isDraftEmpty(draft: SupportPersonDraft): boolean {

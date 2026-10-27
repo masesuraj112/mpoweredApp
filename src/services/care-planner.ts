@@ -19,6 +19,7 @@ import {
 } from '@/features/care-planner/mappers';
 import type { AnswerInput, AppointmentPlan } from '@/features/care-planner/planTypes';
 import { generateQuestions } from '@/features/care-planner/question-generation';
+import { MAX_SUPPORT_PEOPLE } from '@/features/care-planner/supportPerson';
 import { isSignatureWithinLimit } from '@/features/care-planner/signature';
 import type { QuestionSuggestions } from '@/features/care-planner/suggestionTypes';
 import type {
@@ -37,7 +38,6 @@ import { type Client } from './assessments';
 import { getAssessments } from './health';
 
 export const MAX_PRACTITIONER_NAME_LENGTH = 100;
-export const MAX_SUPPORT_PEOPLE_PER_APPOINTMENT = 2;
 export const MAX_ANSWER_LENGTH = 4000;
 
 const LOCAL_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
@@ -188,7 +188,7 @@ export function saveSupportPeople(
   client: Client = supabase,
 ): Promise<Result<SupportPerson[]>> {
   return run(async () => {
-    if (people.length > MAX_SUPPORT_PEOPLE_PER_APPOINTMENT) {
+    if (people.length > MAX_SUPPORT_PEOPLE) {
       return fail(invalid('TOO_MANY_SUPPORT_PEOPLE'));
     }
     for (const person of people) {
