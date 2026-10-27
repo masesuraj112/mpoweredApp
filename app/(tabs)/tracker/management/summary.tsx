@@ -55,8 +55,16 @@ function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummar
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
-            <Text style={styles.savedText}>Saved to Care Journal</Text>
-            <CloseButton onPress={onClose} />
+            {/* TODO: Persist this report to the My Health before showing its saved status. */}
+            <Text style={styles.savedText}>Saved to My Health</Text>
+            <Pressable
+              onPress={close}
+              accessibilityRole="button"
+              accessibilityLabel="Close summary"
+              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -74,7 +82,7 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/tracker');
+  const close = () => router.replace('/(tabs)/home');
 
   useEffect(() => {
     if (!weekStart) return;

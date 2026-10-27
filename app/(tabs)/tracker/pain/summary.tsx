@@ -1,10 +1,11 @@
-import { ActivityIndicator, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { ActivityIndicator, Alert, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain/summary';
 import { getPainEntryForWeek } from '@/services/assessments';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 
 interface PainSummaryProps {
   summary: PainSummaryData;
@@ -78,7 +79,19 @@ export default function PainSummary() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/tracker');
+  const close = async () => {
+    if (state.status !== 'ready') {
+      router.replace('/(tabs)/home');
+      return;
+    }
+    try {
+      await markAssessmentCompleted('pain');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.error('[PainSummary] Failed to save weekly assessment progress:', error);
+      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (!weekStart) return;

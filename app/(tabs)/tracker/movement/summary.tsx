@@ -79,9 +79,10 @@ function MovementSummaryView({ summary }: { summary: MovementSummaryData }) {
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
-            <Text style={styles.savedText}>Saved to Care Journal</Text>
+            {/* TODO: Persist this report to the My Health before showing its saved status. */}
+            <Text style={styles.savedText}>Saved to My Health</Text>
             <Pressable
-              onPress={() => router.replace('/tracker')}
+              onPress={close}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
@@ -105,7 +106,7 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/tracker');
+  const close = () => router.replace('/(tabs)/home');
 
   useEffect(() => {
     if (!weekStart) return;
