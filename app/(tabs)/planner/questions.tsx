@@ -70,7 +70,7 @@ export default function QuestionsScreen() {
   const canSave = load.status === 'ready' && !questions.saving;
 
   const generatedDate =
-    load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
+    load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn ?? '') : null;
 
   return (
     <PlannerFlowScreen
