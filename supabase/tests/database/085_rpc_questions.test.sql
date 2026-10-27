@@ -132,6 +132,7 @@ select ok(
 
 -- removing a question removes its answer
 reset role;
+update public.appointment set recording_consent_at = now() where appointment_id = (select v from ctx where k = 'a1');
 update public.appointment_questions set answer = 'ans3' where question = 'Q3';
 set local role authenticated;
 select set_config('request.jwt.claims',

@@ -35,6 +35,7 @@ export function useSupportPerson(appointmentId: number) {
   // this list cannot be loaded the step still works: it just offers no one.
   const loadSaved = useCallback(() => listMySupportPersons(), []);
   const { state: savedState } = useAsyncResult(loadSaved);
+  const savedPeopleList = savedState.status === 'ready' ? savedState.data : [];
 
   // The list as edited on this screen (null until it is changed) and as last saved by it (null
   // until a save). Both fall back to what was loaded, so there is no copy to keep in sync.
@@ -84,13 +85,13 @@ export function useSupportPerson(appointmentId: number) {
       setErrors({ name: NAME_REQUIRED_MESSAGE });
       return false;
     }
-    const found = validateSupportPerson(draft);
+    const found = validateSupportPerson(draft, [...savedPeopleList, ...people]);
     setErrors(found);
     if (hasErrors(found)) return false;
     setEditedPeople([...people, toSupportPerson(draft)]);
     setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
     return true;
-  }, [draft, people]);
+  }, [draft, people, savedPeopleList]);
 
   /** Adds a saved support person to this appointment's list. */
   const addExisting = useCallback(
@@ -131,13 +132,13 @@ export function useSupportPerson(appointmentId: number) {
     let list = people;
     if (!isDraftEmpty(draft)) {
       if (!canAddAnotherPerson(people.length)) return false;
-      const found = validateSupportPerson(draft);
+      const found = validateSupportPerson(draft, [...savedPeopleList, ...people]);
       setErrors(found);
       if (hasErrors(found)) return false;
       list = [...people, toSupportPerson(draft)];
     }
     return persist(list);
-  }, [people, draft, persist]);
+  }, [people, draft, persist, savedPeopleList]);
 
   /** Skips the step: no support person is saved for this appointment. */
   const skip = useCallback(async (): Promise<boolean> => persist([]), [persist]);
@@ -153,10 +154,7 @@ export function useSupportPerson(appointmentId: number) {
     addAnother,
     addExisting,
     /** Saved support people who are not on this appointment yet. */
-    availablePeople: availableSupportPeople(
-      savedState.status === 'ready' ? savedState.data : [],
-      people,
-    ),
+    availablePeople: availableSupportPeople(savedPeopleList, people),
     removePerson,
     save,
     skip,

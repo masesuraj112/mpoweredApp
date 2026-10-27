@@ -33,8 +33,10 @@ The Care Planner back end is on branch `feature/care-planner-backend` (about 30 
 | `20261027013040_rpc_support_people` | `save_support_person`, `save_appointment_support_people`, `list_my_support_persons` |
 | `20261027013140_rpc_consent_answers_save` | `save_recording_consent`, `save_appointment_answers`, `save_appointment` |
 | `20261027013240_support_people_relink_and_link_policy` | **new since version 1**: fixes `save_appointment_support_people` (re-saving two people failed because `ahsp_limit_two` fires before `on conflict do nothing`), and restricts the `ahsp_insert` policy so a link can only join a patient's own appointment to that patient's own support person |
+| `20261027013340_enforce_care_planner_rules` | **new since the last revision:** triggers so the consent rule (a non-empty answer needs `recording_consent_at`) and the `NO_QUESTIONS` rule on save also apply to direct table writes; a row lock in the two-person limit and in `save_appointment_support_people`; a numeric check on `support_person_id` |
 
-pgTAP files `080`–`088` exist, so **your pgTAP files `090`–`092` remain free**.
+
+pgTAP files `080`–`089` exist, so **your pgTAP files `090`–`092` remain free**.
 
 **Things your migrations must stay compatible with**
 
@@ -42,6 +44,7 @@ pgTAP files `080`–`088` exist, so **your pgTAP files `090`–`092` remain free
 - A9 adds `status` and `responded_at` to `support_persons`. The Care Planner functions that return `support_persons` rows (`list_my_support_persons`, `save_appointment_support_people`, `save_support_person`) therefore return the new columns too once A9 is applied; the Care Planner mappers ignore extra columns, so nothing breaks, but the generated types change.
 - A10 must not recreate the old `ahsp_insert` policy (it does not touch it; leave it alone). The other `ahsp_*`, `aq_*`, `appointment_*`, `patients_*`, `users_select` and `support_persons_select/update` policies are the ones A10 replaces. After A10, the Care Planner's own tests (`083`, `086`, `088`) still hold because they only exercise the owning patient.
 - The Care Planner trigger `ahsp_limit_two` and the existing trigger `support_persons_protect_access_type` stay.
+- The Care Planner triggers from `enforce_care_planner_rules` apply to **every** writer, including your `security definer` functions: `appointment_questions_answer_needs_consent` refuses a non-empty answer when the appointment has no `recording_consent_at` (`CONSENT_REQUIRED`), and `appointment_save_needs_question` refuses saving an appointment with suggested questions but none on the plan (`NO_QUESTIONS`). They match the rules A11 already enforces, so Appendix C should still pass, but when you write pgTAP fixtures that put an answer on a question, record consent on the appointment first (the Care Planner's `081` and `085` fixtures show how). The decision to keep consent mandatory (US12's third criterion is **not** followed) was taken by the owner; do not relax it in A11.
 - A1–A3 hosted-data effects (appointments marked `saved`, non-mobile phones nulled, unknown access types set to `none`) are already in the Care Planner migrations; they are not yours to redo.
 
 **Application code now on `main`** (reuse it; do not write a second copy)

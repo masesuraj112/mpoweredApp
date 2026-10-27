@@ -54,16 +54,44 @@ export function isDraftEmpty(draft: SupportPersonDraft): boolean {
   );
 }
 
+/** Shown when a typed number already belongs to a saved support person. */
+export const duplicateNumberMessage = (name: string) =>
+  `This mobile number is already saved for ${name}.`;
+
+/** The saved person with this mobile number, if any. `ignoreId` skips the person being edited. */
+export function findPersonWithPhone(
+  people: readonly SupportPerson[],
+  phoneInput: string,
+  ignoreId?: number,
+): SupportPerson | undefined {
+  const entered = toE164(phoneInput);
+  if (!entered.ok) return undefined;
+  return people.find(
+    (person) =>
+      person.phone === entered.data &&
+      (ignoreId === undefined || person.supportPersonId !== ignoreId),
+  );
+}
+
 /**
  * Checks a draft that has something in it. The name is required; phone and email are optional,
- * but whichever is filled in must be valid. The phone must be an Australian mobile, because only
+ * but whichever is filled in must be valid. `knownPeople` are the patient's saved support people:
+ * a number that is already one of theirs is reported instead of silently renaming that person. The phone must be an Australian mobile, because only
  * mobiles can sign in by SMS (the support person's login is matched to this number later).
  */
-export function validateSupportPerson(draft: SupportPersonDraft): SupportPersonErrors {
+export function validateSupportPerson(
+  draft: SupportPersonDraft,
+  knownPeople: readonly SupportPerson[] = [],
+  ignoreSupportPersonId?: number,
+): SupportPersonErrors {
   const errors: SupportPersonErrors = {};
   if (draft.name.trim() === '') errors.name = NAME_REQUIRED_MESSAGE;
   if (draft.phone.trim() !== '' && !isValidAuMobile(draft.phone)) {
     errors.phone = MOBILE_REQUIRED_MESSAGE;
+  } else {
+    // Saving a number that is already saved would rename that person, so ask first.
+    const existing = findPersonWithPhone(knownPeople, draft.phone, ignoreSupportPersonId);
+    if (existing) errors.phone = duplicateNumberMessage(existing.name);
   }
   const emailError = validateEmail(draft.email, { required: false });
   if (emailError) errors.email = emailError;

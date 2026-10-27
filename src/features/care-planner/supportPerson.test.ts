@@ -1,7 +1,9 @@
 import {
   describeAccess,
   describeContact,
+  duplicateNumberMessage,
   EMPTY_SUPPORT_PERSON_DRAFT,
+  findPersonWithPhone,
   hasErrors,
   availableSupportPeople,
   canAddAnotherPerson,
@@ -192,5 +194,45 @@ describe('availableSupportPeople', () => {
     expect(availableSupportPeople(saved, [person(undefined, 'Typed in')]).map((p) => p.name)).toEqual([
       'Bron',
     ]);
+  });
+});
+
+describe('saved numbers are not silently reused', () => {
+  const dad = {
+    supportPersonId: 1,
+    name: 'Dad',
+    phone: '+61411111111',
+    email: null,
+    canAddQuestions: false,
+    canAddAnswers: false,
+  };
+
+  it('finds a saved person by the number as it is typed', () => {
+    expect(findPersonWithPhone([dad], '0411 111 111')).toBe(dad);
+    expect(findPersonWithPhone([dad], '+61 411 111 111')).toBe(dad);
+    expect(findPersonWithPhone([dad], '0422 222 222')).toBeUndefined();
+    expect(findPersonWithPhone([dad], '')).toBeUndefined();
+    expect(findPersonWithPhone([dad], 'not a number')).toBeUndefined();
+  });
+
+  it('skips the person being edited', () => {
+    expect(findPersonWithPhone([dad], '0411 111 111', 1)).toBeUndefined();
+    expect(findPersonWithPhone([dad], '0411 111 111', 2)).toBe(dad);
+  });
+
+  it('reports a number that already belongs to someone else', () => {
+    const errors = validateSupportPerson(draft({ name: 'Mum', phone: '0411 111 111' }), [dad]);
+    expect(errors.phone).toBe(duplicateNumberMessage('Dad'));
+  });
+
+  it('accepts the same number when editing that person, and a different number for a new one', () => {
+    expect(validateSupportPerson(draft({ name: 'Dad', phone: '0411 111 111' }), [dad], 1).phone).toBeUndefined();
+    expect(validateSupportPerson(draft({ name: 'Mum', phone: '0422 222 222' }), [dad]).phone).toBeUndefined();
+  });
+
+  it('still reports an invalid number as invalid, not as a duplicate', () => {
+    expect(validateSupportPerson(draft({ name: 'Mum', phone: '12345' }), [dad]).phone).toBe(
+      MOBILE_REQUIRED_MESSAGE,
+    );
   });
 });

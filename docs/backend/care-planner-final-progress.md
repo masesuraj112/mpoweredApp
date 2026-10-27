@@ -7,8 +7,8 @@ Branch `feature/care-planner-backend` (from `main` at `f2e60f1`). Written 27 Oct
 | Area | State |
 |---|---|
 | Plan phases 0–8 | Done, except 6.4 (blocked on the client) and 8.3 (manual QA, not done) |
-| Migrations | 9 written and committed (8 from the plan plus 1 added during review) |
-| pgTAP files | 9 written (`080`–`088`). **Pass in CI** after one test fix (`3042afc`: a phone value longer than the `varchar(12)` column) |
+| Migrations | 10 written and committed (8 from the plan plus 2 added during review) |
+| pgTAP files | 10 written (`080`–`089`). `080`–`088` **pass in CI** after one test fix (`3042afc`: a phone value longer than the `varchar(12)` column) |
 | Generated types (`src/types/database.ts`) | Written by hand; CI's types diff found one ordering difference, fixed in `29c7d3e`. **Now matches the generator** |
 | Typecheck | Clean |
 | Lint | 0 errors (about 28 warnings, mostly the existing `import/first` pattern in test files) |
@@ -30,6 +30,8 @@ Branch `feature/care-planner-backend` (from `main` at `f2e60f1`). Written 27 Oct
 | `20261027013040_rpc_support_people` | `save_support_person`, `save_appointment_support_people`, `list_my_support_persons` |
 | `20261027013140_rpc_consent_answers_save` | `save_recording_consent` (server time), `save_appointment_answers` (needs consent, all-or-nothing), `save_appointment` |
 | `20261027013240_support_people_relink_and_link_policy` | **added during review:** fixes re-saving two support people, and makes `ahsp_insert` owner-only |
+| `20261027013340_enforce_care_planner_rules` | **added after review:** triggers so the consent rule (a non-empty answer needs `recording_consent_at`) and the `NO_QUESTIONS` rule on save also apply to direct table writes; a row lock in the two-person limit and in `save_appointment_support_people`; a numeric check on `support_person_id` |
+
 
 All functions are `security invoker`, derive the caller from the session, raise `P0001` message codes, and are executable by `authenticated` only. The tests are `supabase/tests/database/080`–`088`.
 
@@ -84,6 +86,7 @@ The commits after this record add the updated support person plan and this docum
 | Step 6.5 "Explore questions" shortcut | New read-only screen that needs no appointment (the owner's choice) |
 | M2 / M3 | Not answered. Only the 17 design questions are generated, with the all-five-assessments gate |
 | Pushing | Allowed; the branch was pushed at the end of each phase |
+| US12 third criterion (answer without consent) | **Decided: keep consent blocked** (plan decision D3). The acceptance criterion's wording needs to be updated to match |
 
 ## 5. Differences from the plan
 
@@ -92,6 +95,8 @@ The commits after this record add the updated support person plan and this docum
 - `SupportPerson.status` is not added; it belongs to the support person plan.
 - Added beyond the plan (found while checking the work):
   - the ninth migration and `088_support_people_relink`;
+  - the tenth migration `enforce_care_planner_rules` and `089_direct_write_rules` (review feedback: the rules also hold for direct table writes);
+  - a check in Settings and the support person step that a typed mobile number is not already saved for someone else (it would silently rename them);
   - the questions step continuing when no questions exist;
   - the saved-people list in the support person step;
   - the shared suggestions load.

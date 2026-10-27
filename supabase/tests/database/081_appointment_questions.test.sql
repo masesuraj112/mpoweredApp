@@ -7,8 +7,9 @@ insert into auth.users (id) values ('00000000-0000-0000-0000-00000000000a');
 insert into public.users (name, auth_id) values ('Test A', '00000000-0000-0000-0000-00000000000a');
 insert into public.patients (sex, users_id)
   values ('Female', (select users_id from public.users where name = 'Test A'));
-insert into public.appointment (patient_id, date_time)
-  values ((select patient_id from public.patients limit 1), '2026-11-05 14:30');
+-- consent is recorded, so answers can be stored (answers without consent are refused by a trigger)
+insert into public.appointment (patient_id, date_time, recording_consent_at)
+  values ((select patient_id from public.patients limit 1), '2026-11-05 14:30', now());
 
 -- columns
 select has_column('public', 'appointment_questions', 'group_key', 'group_key column exists');

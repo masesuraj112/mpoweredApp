@@ -91,7 +91,9 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Support-person phone numbers are stored as Australian mobiles in E.164; the same number is not added twice for one patient | `082_support_persons`; `086_rpc_support_people`; `supportPerson.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
 | Access type values are exactly `none`, `questions`, `answers`, `questions,answers` and convert to the two permissions | `082_support_persons`; `accessType.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
 | The doctor's signature needs a valid shape and the consent time is the server's | `087_rpc_consent_answers`; `signature.test.ts`; `care-planner.test.ts` | Database, Unit, Service | `database-tests`, `unit-tests` |
-| **A doctor's answer cannot be saved without recording consent** | `087_rpc_consent_answers` | Database | `database-tests` |
+| **A doctor's answer cannot be saved without recording consent, through the function or a direct table write** | `087_rpc_consent_answers`; `089_direct_write_rules` | Database | `database-tests` |
+| An appointment with suggested questions cannot be saved with none on the plan, even by a direct update | `087_rpc_consent_answers`; `089_direct_write_rules` | Database | `database-tests` |
+| A typed support person number that is already saved for someone else is reported instead of renaming them | `supportPerson.test.ts` | Unit | `unit-tests` |
 | Saving answers is all-or-nothing, text only, at most 4000 characters | `087_rpc_consent_answers`; `081_appointment_questions` | Database | `database-tests` |
 | The logged-in role has only the table privileges it needs on the care planner tables; anon has none | `083_care_planner_privileges` | Database | `database-tests` |
 | Care Planner functions refuse a support person and anonymous callers | `084`–`087` | Database | `database-tests` |
@@ -140,7 +142,7 @@ Database tests passing (72 checks across 6 files):
 - Unit tests passing: **TODO**, screenshot of `npm test` to be saved as `docs/screenshots/unit-tests-passing.png`.
 - Green CI checks on a pull request: **TODO**, `docs/screenshots/ci-green.png`.
 - GitHub Actions run page: **TODO**, `docs/screenshots/ci-run.png`.
-- Care Planner database tests passing: **TODO**, screenshot of `supabase test db` with `080`–`088` passing to be saved as `docs/screenshots/db-tests-care-planner.png` (from the CI run).
+- Care Planner database tests passing: **TODO**, screenshot of `supabase test db` with `080`–`089` passing to be saved as `docs/screenshots/db-tests-care-planner.png` (from the CI run).
 - Care Planner unit tests passing: **TODO**, `docs/screenshots/unit-tests-care-planner.png`.
 - Green CI on the Care Planner pull request, including the types diff, `db lint` and `migrations-immutable`: **TODO**, `docs/screenshots/ci-care-planner.png`.
 - The manual journey (section 8.3 of the Care Planner plan) written up in the pull request description with the result of each numbered check.

@@ -67,7 +67,7 @@ export default function SupportPersonsScreen() {
 
   const save = async () => {
     if (!draft) return;
-    const found = validateSupportPerson(draft);
+    const found = validateSupportPerson(draft, people, draft.supportPersonId);
     const problem = found.name ?? found.phone ?? found.email;
     if (problem) {
       setError(problem);
