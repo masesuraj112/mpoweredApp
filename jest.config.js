@@ -22,6 +22,7 @@ module.exports = {
     'src/features/care-planner/accessType.ts',
     'src/features/care-planner/mappers.ts',
     'src/features/care-planner/messages.ts',
+    'src/features/care-planner/question-generation.ts',
     'src/features/care-planner/reviewMode.ts',
     'src/services/care-planner.ts',
     'src/features/assessments/social-health/mood.ts',
