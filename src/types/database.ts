@@ -897,8 +897,27 @@ export type Database = {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
       }
+      list_my_appointments: {
+        Args: never
+        Returns: {
+          appointment_id: number
+          date_time: string
+          health_service: string
+          practitioner_name: string
+          status: string
+        }[]
+      }
       patient_id_for_user: {
         Args: { target_users_id: number }
+        Returns: number
+      }
+      save_appointment_details: {
+        Args: {
+          p_appointment_id?: number
+          p_date_time: string
+          p_health_service: string
+          p_practitioner_name: string
+        }
         Returns: number
       }
       save_management_assessment: {
