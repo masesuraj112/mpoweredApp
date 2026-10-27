@@ -5,6 +5,7 @@ import {
   GENERATION_REQUIRES_ALL_ASSESSMENTS,
   generateQuestions,
   MAX_GENERATED_QUESTIONS,
+  missingAssessments,
   MAX_QUESTION_LENGTH,
 } from './question-generation';
 
@@ -183,5 +184,28 @@ describe('generateQuestions', () => {
     it('gives nothing when there is no pain entry', () => {
       expect(generateQuestions(complete(null))).toEqual([]);
     });
+  });
+});
+
+describe('missingAssessments', () => {
+  it('lists every assessment when none is completed', () => {
+    expect(missingAssessments(EMPTY)).toEqual([
+      'pain',
+      'movement',
+      'personalCare',
+      'socialHealth',
+      'management',
+    ]);
+  });
+
+  it('lists only the ones still missing, in the app order', () => {
+    expect(missingAssessments({ ...complete(), movement: null, management: null })).toEqual([
+      'movement',
+      'management',
+    ]);
+  });
+
+  it('is empty when all five are completed', () => {
+    expect(missingAssessments(complete())).toEqual([]);
   });
 });

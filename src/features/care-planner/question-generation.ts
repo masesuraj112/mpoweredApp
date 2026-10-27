@@ -2,6 +2,7 @@
 // The app generates them; the database only validates and stores them (decision D1).
 // Pure module: no imports from @/lib/supabase, react-native or expo-*.
 
+import { ASSESSMENT_TYPES, type AssessmentType } from '@/features/health-profile/assessment-types';
 import type { AssessmentSet } from '@/services/health';
 
 /**
@@ -234,4 +235,13 @@ export function generateQuestions(assessments: AssessmentSet): GeneratedQuestion
     });
   }
   return questions.slice(0, MAX_GENERATED_QUESTIONS);
+}
+
+/**
+ * The assessments that still have no entry and so stop questions being generated. Empty when the
+ * generation gate is off or every assessment has been completed.
+ */
+export function missingAssessments(assessments: AssessmentSet): AssessmentType[] {
+  if (!GENERATION_REQUIRES_ALL_ASSESSMENTS) return [];
+  return ASSESSMENT_TYPES.filter((type) => !assessments[type]);
 }

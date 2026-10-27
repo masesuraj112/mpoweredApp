@@ -1,3 +1,5 @@
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
@@ -7,6 +9,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
+import { missingAssessmentsMessage } from '@/features/care-planner/messages';
 import { useGeneratedQuestions } from '@/features/care-planner/useGeneratedQuestions';
 
 const SUBHEAD =
@@ -14,7 +17,19 @@ const SUBHEAD =
 
 /** Browse the questions generated for you. It needs no appointment and nothing here can be changed. */
 export default function ExploreQuestionsScreen() {
-  const { state, reload } = useGeneratedQuestions();
+  const { state, reload, refresh } = useGeneratedQuestions();
+
+  // Assessments are completed on other screens. Read again when coming back, so the list is not stale.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) {
+        firstFocus.current = false;
+        return;
+      }
+      refresh();
+    }, [refresh]),
+  );
 
   return (
     <PlannerFlowScreen title="Questions Generated for Me">
@@ -28,10 +43,10 @@ export default function ExploreQuestionsScreen() {
         <>
           <Text style={styles.subhead}>{SUBHEAD}</Text>
           <Card variant="outlined" style={styles.card}>
-            {state.data.length === 0 ? (
-              <EmptyState message="There are no suggested questions yet. They appear once you have completed all of your assessments." />
+            {state.data.groups.length === 0 ? (
+              <EmptyState message={missingAssessmentsMessage(state.data.missing)} />
             ) : (
-              state.data.map((group) => <QuestionPreviewGroup key={group.groupId} group={group} />)
+              state.data.groups.map((group) => <QuestionPreviewGroup key={group.groupId} group={group} />)
             )}
           </Card>
         </>

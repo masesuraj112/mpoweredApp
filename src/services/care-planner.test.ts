@@ -826,22 +826,29 @@ describe('previewGeneratedQuestions', () => {
     const rpc = rpcResult(true);
     const from = jest.fn();
     const result = await previewGeneratedQuestions(fakeClient({ rpc, from }));
-    expect(result.ok && result.data.map((g) => g.groupId)).toEqual([
+    expect(result.ok && result.data.groups.map((g) => g.groupId)).toEqual([
       'pain-location',
       'pain-intensity',
       'pain-impact',
       'management',
     ]);
+    expect(result.ok && result.data.missing).toEqual([]);
     expect(rpc).not.toHaveBeenCalled();
     expect(from).not.toHaveBeenCalled();
   });
 
-  it('is empty until the assessments are completed', async () => {
+  it('is empty, and names what is missing, until the assessments are completed', async () => {
     mockGetAssessments.mockResolvedValue({
       ok: true,
       data: { pain: null, movement: null, personalCare: null, socialHealth: null, management: null },
     });
-    expect(await previewGeneratedQuestions(fakeClient({}))).toEqual({ ok: true, data: [] });
+    expect(await previewGeneratedQuestions(fakeClient({}))).toEqual({
+      ok: true,
+      data: {
+        groups: [],
+        missing: ['pain', 'movement', 'personalCare', 'socialHealth', 'management'],
+      },
+    });
   });
 
   it('passes on a failure to read the assessments', async () => {

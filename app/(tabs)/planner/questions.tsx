@@ -125,7 +125,7 @@ export default function QuestionsScreen() {
             <View style={styles.divider} />
 
             {load.suggestions.groups.every((group) => group.questions.length === 0) ? (
-              <EmptyState message="There are no suggested questions yet." />
+              <EmptyState message="There are no suggested questions yet. They appear once you have completed all five assessments in the Tracker." />
             ) : (
               load.suggestions.groups
                 .filter((group) => group.questions.length > 0)

@@ -1,3 +1,5 @@
+import type { AssessmentType } from '@/features/health-profile/assessment-types';
+
 import type { AppointmentStatus } from './types';
 
 /** A question suggested for the appointment. */
@@ -24,4 +26,11 @@ export type QuestionSuggestions = {
   selectedQuestionIds: number[];
   /** Chosen questions that already have a doctor's answer (removing these needs confirming). */
   answeredQuestionIds: number[];
+};
+
+/** The questions generated for browsing without an appointment, and what is stopping more. */
+export type GeneratedQuestionsPreview = {
+  groups: SuggestedQuestionGroup[];
+  /** Assessments still to complete before questions can be generated (empty when none). */
+  missing: AssessmentType[];
 };

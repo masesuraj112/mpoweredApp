@@ -2,6 +2,7 @@
 // message codes are never shown.
 // Pure module: no imports from @/lib/supabase, react-native or expo-*.
 
+import { ASSESSMENT_LABELS, type AssessmentType } from '@/features/health-profile/assessment-types';
 import type { AppError } from '@/lib/errors';
 
 export const FALLBACK_MESSAGE = 'Something went wrong. Please try again.';
@@ -51,4 +52,11 @@ export function carePlannerMessage(error: AppError): string {
     default:
       return FALLBACK_MESSAGE;
   }
+}
+
+/** Shown instead of the questions while some assessments are still to complete. */
+export function missingAssessmentsMessage(missing: readonly AssessmentType[]): string {
+  if (missing.length === 0) return 'There are no suggested questions yet.';
+  const names = missing.map((type) => ASSESSMENT_LABELS[type]).join(', ');
+  return `Complete all five assessments in the Tracker to see your suggested questions. Still to do: ${names}.`;
 }

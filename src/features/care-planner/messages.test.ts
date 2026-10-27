@@ -1,6 +1,6 @@
 import type { AppError, AppErrorCode } from '@/lib/errors';
 
-import { carePlannerMessage, FALLBACK_MESSAGE } from './messages';
+import { carePlannerMessage, FALLBACK_MESSAGE, missingAssessmentsMessage } from './messages';
 
 const RAW = 'raw database text P0001';
 
@@ -99,5 +99,17 @@ describe('carePlannerMessage', () => {
   it('uses the fallback for codes it has no message for', () => {
     expect(carePlannerMessage(error('UNKNOWN'))).toBe(FALLBACK_MESSAGE);
     expect(carePlannerMessage(error('DUPLICATE_WEEK'))).toBe(FALLBACK_MESSAGE);
+  });
+});
+
+describe('missingAssessmentsMessage', () => {
+  it('names the assessments still to do, using the names shown in the app', () => {
+    const message = missingAssessmentsMessage(['personalCare', 'management']);
+    expect(message).toContain('Personal Care, Management');
+    expect(message).toMatch(/Tracker/);
+  });
+
+  it('falls back to a plain message when nothing is missing', () => {
+    expect(missingAssessmentsMessage([])).toBe('There are no suggested questions yet.');
   });
 });

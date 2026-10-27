@@ -19,12 +19,15 @@ import {
   type SupportPersonRow,
 } from '@/features/care-planner/mappers';
 import type { AnswerInput, AppointmentPlan } from '@/features/care-planner/planTypes';
-import { generateQuestions } from '@/features/care-planner/question-generation';
+import {
+  generateQuestions,
+  missingAssessments,
+} from '@/features/care-planner/question-generation';
 import { MAX_SUPPORT_PEOPLE } from '@/features/care-planner/supportPerson';
 import { isSignatureWithinLimit } from '@/features/care-planner/signature';
 import type {
+  GeneratedQuestionsPreview,
   QuestionSuggestions,
-  SuggestedQuestionGroup,
 } from '@/features/care-planner/suggestionTypes';
 import type {
   Appointment,
@@ -369,15 +372,19 @@ export function getQuestionSuggestions(
 
 /**
  * The questions generated from the person's latest assessments, for browsing without an
- * appointment. Nothing is stored. Empty until the assessments needed to generate them are done.
+ * appointment. Nothing is stored. The groups are empty until the assessments needed to generate
+ * them are done, and `missing` names the ones still to do.
  */
 export function previewGeneratedQuestions(
   client: Client = supabase,
-): Promise<Result<SuggestedQuestionGroup[]>> {
+): Promise<Result<GeneratedQuestionsPreview>> {
   return run(async () => {
     const assessments = await getAssessments({ kind: 'latest' }, client);
     if (!assessments.ok) return fail(assessments.error);
-    return ok(mapGeneratedQuestionGroups(generateQuestions(assessments.data)));
+    return ok({
+      groups: mapGeneratedQuestionGroups(generateQuestions(assessments.data)),
+      missing: missingAssessments(assessments.data),
+    });
   });
 }
 
