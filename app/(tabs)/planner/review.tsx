@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Alert, StyleSheet, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
@@ -19,7 +19,7 @@ import {
   isPlanEmpty,
 } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
-import { FIRST_TIME_ANSWERS_HINT, getReviewMode } from '@/features/care-planner/reviewMode';
+import { CONSENT_NEEDED_MESSAGE, FIRST_TIME_ANSWERS_HINT, getReviewMode } from '@/features/care-planner/reviewMode';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
 import { markAppointmentSaved, saveAnswers } from '@/services/care-planner';
@@ -72,10 +72,26 @@ export default function ReviewScreen() {
   // The answer box opens over this screen on a question, so this screen stays mounted below it.
   const [answerQuestionId, setAnswerQuestionId] = useState<number | null>(null);
 
+  // The doctor's answers can only be saved once the doctor has consented to the recording.
+  const askForConsent = () =>
+    Alert.alert('Consent needed first', CONSENT_NEEDED_MESSAGE, [
+      { text: 'Not now', style: 'cancel' },
+      { text: 'Get consent', onPress: openConsent },
+    ]);
+
   const saveAnswersFromBox = async (answers: AnswerInput[]): Promise<boolean> => {
     const result = await saveAnswers(appointmentId, answers);
-    if (result.ok) refresh();
-    return result.ok;
+    if (result.ok) {
+      refresh();
+      return true;
+    }
+    if (result.error.code === 'CONSENT_REQUIRED') {
+      // consent changed since this screen loaded: read the plan again and send them to sign
+      setAnswerQuestionId(null);
+      refresh();
+      askForConsent();
+    }
+    return false;
   };
 
   const answerableQuestions =
@@ -143,7 +159,9 @@ export default function ReviewScreen() {
                 <QuestionGroupList
                   key={group.groupId}
                   group={group}
-                  onEditAnswer={firstTime ? undefined : setAnswerQuestionId}
+                  onEditAnswer={
+                    firstTime ? undefined : consented ? setAnswerQuestionId : askForConsent
+                  }
                 />
               ))
           )}
