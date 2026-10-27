@@ -19,6 +19,9 @@ export type Appointment = {
   status: AppointmentStatus;
 };
 
+/** Identifies a stored appointment, as returned when its details are saved. */
+export type AppointmentRef = { appointmentId: number };
+
 /**
  * What the "Plan my appointment" form produces. `dateTime` is local wall-clock time
  * (`YYYY-MM-DDTHH:mm:ss`, no zone). The name and service are null when left empty.

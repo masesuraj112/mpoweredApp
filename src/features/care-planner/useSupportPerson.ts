@@ -99,7 +99,8 @@ export function useSupportPerson(appointmentId: number) {
         setSaveError(result.error);
         return false;
       }
-      setSavedPeople(list);
+      // the saved list comes back with the ids the database gave each person
+      setSavedPeople(result.data);
       setEditedPeople(null);
       setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
       setErrors({});

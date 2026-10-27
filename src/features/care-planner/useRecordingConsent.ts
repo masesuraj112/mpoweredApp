@@ -28,8 +28,6 @@ export function useRecordingConsent(appointmentId: number) {
     const result = await saveRecordingConsent({
       appointmentId,
       signature: serializeSignature(signature),
-      // timestamptz column: a UTC instant is correct here (unlike appointment date/times).
-      consentedAt: new Date().toISOString(),
     });
     if (result.ok) {
       setStatus('idle');
