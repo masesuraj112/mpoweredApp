@@ -570,6 +570,39 @@ describe('getQuestionSuggestions', () => {
     expect(result.ok && result.data.selectedQuestionIds).toEqual([1]);
   });
 
+  it('shares one load when the same appointment is asked for twice at once', async () => {
+    mockGetAssessments.mockResolvedValue({ ok: true, data: completeAssessments() });
+    const appointment = table(
+      {
+        data: { appointment_id: 7, status: 'draft', suggestions_generated_on: null, appointment_questions: [] },
+        error: null,
+      },
+      {
+        data: {
+          appointment_id: 7,
+          status: 'draft',
+          suggestions_generated_on: '2026-10-27',
+          appointment_questions: [questionRow(1, { question: 'What could be causing pain in my lower back, neck, and knee?' })],
+        },
+        error: null,
+      },
+    );
+    const rpc = jest.fn<Promise<{ data: unknown; error: null }>, [string, unknown?]>(async (name) =>
+      name === 'save_appointment_suggestions' ? { data: true, error: null } : { data: null, error: null },
+    );
+    const client = fakeClient({ from: fromTables({ appointment }), rpc });
+
+    const [first, second] = await Promise.all([
+      getQuestionSuggestions(7, client),
+      getQuestionSuggestions(7, client),
+    ]);
+
+    expect(rpc.mock.calls.filter(([name]) => name === 'save_appointment_suggestions')).toHaveLength(1);
+    expect(first).toEqual(second);
+    expect(first.ok && first.data.selectedQuestionIds).toEqual([1]);
+    expect(second.ok && second.data.selectedQuestionIds).toEqual([1]);
+  });
+
   it('stores nothing when no questions can be generated yet', async () => {
     mockGetAssessments.mockResolvedValue({
       ok: true,

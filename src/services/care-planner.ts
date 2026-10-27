@@ -335,16 +335,23 @@ async function generateAndStoreQuestions(
   });
 }
 
+/** Loads in progress, so a screen that asks twice at once (a remount) shares one load. */
+const suggestionsInFlight = new Map<number, Promise<Result<QuestionSuggestions>>>();
+
 /**
  * The suggested questions for an appointment, with which are chosen and which have answers. The
  * first time, they are generated from the latest assessments and stored; after that the stored
- * ones are returned unchanged.
+ * ones are returned unchanged. Two loads of the same appointment at the same time share one, so
+ * the default ticks are never lost to a second call that finds the questions already stored.
  */
 export function getQuestionSuggestions(
   appointmentId: number,
   client: Client = supabase,
 ): Promise<Result<QuestionSuggestions>> {
-  return run(async () => {
+  const running = suggestionsInFlight.get(appointmentId);
+  if (running) return running;
+
+  const load = run(async () => {
     const row = await readSuggestionsRow(client, appointmentId);
     if (!row.ok) return row;
     if (row.data.appointment_questions.length > 0) {
@@ -355,7 +362,9 @@ export function getQuestionSuggestions(
     if (!generated.ok) return generated;
     const source = generated.data ?? row.data;
     return ok(mapQuestionSuggestions(source, source.appointment_questions));
-  });
+  }).finally(() => suggestionsInFlight.delete(appointmentId));
+  suggestionsInFlight.set(appointmentId, load);
+  return load;
 }
 
 /**
