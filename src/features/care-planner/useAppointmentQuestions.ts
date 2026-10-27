@@ -45,8 +45,13 @@ export function useAppointmentQuestions(appointmentId: number) {
     [selectedIds],
   );
 
+  // With no suggestions (nothing could be generated yet) there is nothing to choose or save.
+  const hasSuggestions =
+    state.status === 'ready' && state.data.groups.some((group) => group.questions.length > 0);
+
   /** Resolves true when the choices were saved. */
   const save = useCallback(async (): Promise<boolean> => {
+    if (!hasSuggestions) return true;
     setSaving(true);
     setSaveError(null);
     const result = await saveAppointmentQuestions(appointmentId, selectedIds);
@@ -58,7 +63,7 @@ export function useAppointmentQuestions(appointmentId: number) {
     }
     setSaveError(result.error);
     return false;
-  }, [appointmentId, selectedIds]);
+  }, [appointmentId, selectedIds, hasSuggestions]);
 
   const loadState: LoadState =
     state.status === 'ready' ? { status: 'ready', suggestions: state.data } : state;
