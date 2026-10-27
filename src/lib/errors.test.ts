@@ -74,6 +74,56 @@ describe('mapError: errors raised by create_profile (P0001)', () => {
   );
 });
 
+describe('mapError: errors raised by the Care Planner functions (P0001)', () => {
+  it('CONSENT_REQUIRED keeps its own code', () => {
+    expect(mapError(dbError('P0001', 'CONSENT_REQUIRED'))).toEqual({
+      code: 'CONSENT_REQUIRED',
+      message: 'CONSENT_REQUIRED',
+    });
+  });
+
+  it('NOT_A_PATIENT means not allowed', () => {
+    expect(mapError(dbError('P0001', 'NOT_A_PATIENT'))).toEqual({
+      code: 'NOT_ALLOWED',
+      message: 'NOT_A_PATIENT',
+    });
+  });
+
+  it.each([
+    'NO_DATE_TIME',
+    'TOO_MANY_SUPPORT_PEOPLE',
+    'INVALID_SUPPORT_PERSON',
+    'UNKNOWN_QUESTION',
+    'QUESTION_NOT_ON_PLAN',
+    'NO_QUESTIONS',
+    'INVALID_SIGNATURE',
+    'INVALID_QUESTION',
+    'INVALID_ANSWER',
+    'APPOINTMENT_NOT_SAVED',
+    'INVALID_ACCESS_TYPE',
+    'DUPLICATE_SUPPORT_PERSON',
+  ])('%s becomes VALIDATION and keeps the original code in detail', (name) => {
+    expect(mapError(dbError('P0001', name))).toEqual({
+      code: 'VALIDATION',
+      message: name,
+      detail: name,
+    });
+  });
+
+  it('codes that already existed still map as before', () => {
+    expect(mapError(dbError('P0001', 'VALUE_TOO_LONG')).detail).toBe('VALUE_TOO_LONG');
+    expect(mapError(dbError('P0001', 'INVALID_PHONE')).code).toBe('INVALID_PHONE');
+    expect(mapError(dbError('P0001', 'FUTURE_DATE')).code).toBe('FUTURE_DATE');
+    expect(mapError(dbError('P0001', 'NOT_FOUND')).code).toBe('NOT_FOUND');
+    expect(mapError(dbError('P0001', 'NO_PROFILE')).code).toBe('NO_PROFILE');
+    expect(mapError(dbError('P0001', 'NO_SESSION')).code).toBe('NO_SESSION');
+  });
+
+  it('an unrecognised P0001 message is still unknown', () => {
+    expect(mapError(dbError('P0001', 'NOT_A_THING')).code).toBe('UNKNOWN');
+  });
+});
+
 describe('mapError: Supabase Auth error codes', () => {
   it('an expired or unusable code (otp_expired) gives OTP_EXPIRED', () => {
     expect(mapError(dbError('otp_expired', 'Token has expired or is invalid')).code).toBe(
