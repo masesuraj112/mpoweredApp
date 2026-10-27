@@ -1,12 +1,22 @@
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
 export default function SummaryScreen() {
   const { answers } = usePersonalCareAssessment();
+  const close = async () => {
+    try {
+      await markAssessmentCompleted('personalCare');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.error('[PersonalCareSummary] Failed to save weekly assessment progress:', error);
+      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+    }
+  };
 
   return (
     <View style={styles.screen}>
@@ -73,7 +83,7 @@ export default function SummaryScreen() {
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={() => router.replace('/tracker')}
+              onPress={close}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
