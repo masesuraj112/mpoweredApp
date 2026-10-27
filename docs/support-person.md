@@ -144,13 +144,13 @@ Points marked "B" come from the login teammate's handover note, *"Support person
 
 | # | Needed | Why it blocks the frontend | Today |
 | --- | --- | --- | --- |
-| P1 | The Planner's appointment service reads and writes Supabase | The support person plan functions will call it | `src/services/care-planner.ts` is placeholder data |
+| P1 | The Planner's appointment service reads and writes Supabase | The support person plan functions will call it | Done: `src/services/care-planner.ts` now reads and writes Supabase (Care Planner back-end plan) |
 | P2 | Link support persons to patients: set `support_persons.users_id`, add a pending/accepted state (B1) | Patients, requests, accept and reject | Nothing sets `users_id`. Matching by phone is likely, but `phone_number` isn't unique |
-| P3 | Define the `access_type` values (B7) | Converting to `canAddQuestions` / `canAddAnswers` | Free text. `is_support_person_for_patient` matches with `LIKE '%…%'` |
+| P3 | Define the `access_type` values (B7) | Converting to `canAddQuestions` / `canAddAnswers` | Values defined (`none`, `questions`, `answers`, `questions,answers`) and enforced by a check constraint; `accessType.ts` converts them. `is_support_person_for_patient` still matches with `LIKE` until the support person plan replaces it |
 | P4 | Privileges on `support_persons` (B6) | The app can't read the table | `authenticated` has none |
 | P5 | Database rules check permissions for questions and answers | Otherwise only the app enforces them | `appointment_questions` rules use `can_access_patient(patient_id)` without a required access level, so any linked support person can change questions and answers |
 | P6 | Where suggested questions come from for a support person | The Add questions screen | Placeholder data. Recommended: generate them on the server and store them with the appointment, rather than letting support persons read the patient's assessments |
-| B2 | `support_persons.email` is NOT NULL | Support persons sign up with phone and name only | Make it nullable |
+| B2 | `support_persons.email` is NOT NULL | Support persons sign up with phone and name only | Done: nullable (Care Planner back-end plan, migration `support_persons_align`) |
 | B4 | Database checks on `user_type` for patient-only features | The app guards them, but direct API calls aren't blocked | No checks |
 | B5 | pgTAP tests: support person access, the `support_persons` table, and each permission | Proves P2 to P5 | None |
 | — | What unpairing does to `appointment_has_support_persons` links | No foreign key has `ON DELETE CASCADE`, so deleting a linked support person fails | Decide: delete the links first, or block it |

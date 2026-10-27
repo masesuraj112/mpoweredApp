@@ -124,28 +124,28 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 - [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written: CI types-diff must confirm; pgTAP not run locally)
 
 ## Phase 4: Services
-- [ ] 4.1 Appointments
-- [ ] 4.2 Support people
-- [ ] 4.3 Questions
-- [ ] 4.4 Consent and answers
-- [ ] 4.5 Service tests
+- [x] 4.1 Appointments
+- [x] 4.2 Support people
+- [x] 4.3 Questions
+- [x] 4.4 Consent and answers (4.1 to 4.4 and 4.5 are one commit: the service was rewritten as one file)
+- [x] 4.5 Service tests
 
 ## Phase 5: Settings > Support Persons
-- [ ] 5.1 Real support persons
+- [x] 5.1 Real support persons
 
 ## Phase 6: Front-end deltas
-- [ ] 6.1 Require one question
-- [ ] 6.2 Cap two support people
-- [ ] 6.3 Consent before answers
-- [ ] 6.4 Health service options (blocked on M1)
-- [ ] 6.5 Explore-questions shortcut (needs a decision)
-- [ ] 6.6 Types for real data
+- [x] 6.1 Require one question
+- [x] 6.2 Cap two support people
+- [x] 6.3 Consent before answers
+- [!] 6.4 Health service options (blocked on M1: placeholder list kept, MHA has not confirmed)
+- [x] 6.5 Explore-questions shortcut (new read-only screen `planner/explore-questions`, no appointment needed)
+- [x] 6.6 Types for real data (`supportPersonId`, nullable `generatedOn`, local-format phones, saved list used; `status` belongs to the support person plan)
 
 ## Phase 7: Stub removal
-- [ ] 7.1 Remove stub data
+- [x] 7.1 Remove stub data
 
 ## Phase 8: Docs, checks, QA
-- [ ] 8.1 Docs
+- [x] 8.1 Docs (the plan file itself still needs copying to `docs/backend/care-planner-build-plan.md`)
 - [ ] 8.2 Full checks
 - [ ] 8.3 Manual QA
 

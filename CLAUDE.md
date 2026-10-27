@@ -68,6 +68,7 @@ React Native 0.88 + Expo SDK 58 + Expo Router + TypeScript (strict) + Supabase. 
 - Build plan: `docs/backend/login-backend-build-plan.md` (section 1 = guardrails, section 2 = decisions register, Phases 1-10 = steps)
 - Testing and CI: `docs/backend/testing-and-cicd.md` (CI-only testing rules)
 - Progress tracker: `docs/backend/progress.md` (resume a new session from here)
+- Care Planner (patient side) back end: `docs/backend/care-planner-build-plan.md` (same rules; its checklist is in the progress tracker)
 
 ## 3. Working agreement
 
