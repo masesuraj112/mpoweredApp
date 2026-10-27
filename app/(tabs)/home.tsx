@@ -1,6 +1,10 @@
+import {
+  getCompletedAssessments,
+  getWeeklyReflection,
+  type WeeklyAssessmentId,
+} from '@/features/assessments/homeProgress';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Platform,
   Pressable,
@@ -9,11 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {
-  getCompletedAssessments,
-  getWeeklyReflection,
-  type WeeklyAssessmentId,
-} from '@/features/assessments/homeProgress';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Assessment = {
   id: WeeklyAssessmentId;

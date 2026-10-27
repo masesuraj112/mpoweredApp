@@ -71,7 +71,7 @@
 - [ ] Linter/formatter clean
 
 ## Reviewer Verification (must complete before merge)
-- [ ] Pulled branch and ran locally
+- [ ] CI is green; reviewed the diff
 - [ ] Manually tested happy path
 - [ ] Manually tested at least one edge case (describe below)
 - [ ] Screenshot/GIF attached showing working feature

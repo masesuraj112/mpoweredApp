@@ -2,20 +2,52 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PainTrendChart, type PainTrendPoint } from '@/components/mpowered/PainTrendChart';
+import { PainTrendChart } from '@/components/mpowered/PainTrendChart';
+import { ASSESSMENT_TYPES } from '@/features/health-profile/assessment-types';
+import { healthLoadMessage } from '@/features/health-profile/messages';
+import { completedCount, formatLongDate, lastUpdated } from '@/features/health-profile/profile';
+import { painTrendMessage, toChartPoints, toWeeklyRecords } from '@/features/health-profile/tracking';
+import { useFocusedQuery } from '@/hooks/useFocusedQuery';
+import { ok, run } from '@/lib/result';
+import { getAssessments, getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
 
-// TODO: replace with a Supabase query once tracking data is wired up, e.g.
-// supabase.from('pain_assessment').select('date, average_pain_level').eq('users_id', userId).order('date')
-const FAKE_PAIN_TREND: PainTrendPoint[] = [
-  { label: '25/05', value: 5 },
-  { label: '01/06', value: 5 },
-  { label: '08/06', value: 7 },
-];
+const TREND_WEEKS = 6;
+
+function loadOverview() {
+  return run(async () => {
+    const [latest, pain] = await Promise.all([
+      getAssessments({ kind: 'latest' }),
+      getPainEntries({ limit: TREND_WEEKS }),
+    ]);
+    if (!latest.ok) return latest;
+    if (!pain.ok) return pain;
+    return ok({ latest: latest.data, trend: toChartPoints(toWeeklyRecords(pain.data), 'average') });
+  });
+}
 
 export default function HealthScreen() {
+  const { state } = useFocusedQuery(loadOverview);
+  const overview = state.status === 'ready' ? state.data : null;
+
+  const updated = overview ? lastUpdated(overview.latest) : null;
+  const completed = overview ? completedCount(overview.latest) : 0;
+  const trend = overview?.trend ?? [];
+
+  let profileTitle = 'Loading your Mpowered Health Profile…';
+  let profileUpdated = '';
+  if (state.status === 'error') {
+    profileTitle = healthLoadMessage(state.error);
+  } else if (overview && updated) {
+    profileTitle = 'Your Mpowered Health Profile has been created';
+    profileUpdated = `Updated by ${formatLongDate(updated)} · ${completed} of ${ASSESSMENT_TYPES.length} assessments completed`;
+  } else if (overview) {
+    profileTitle = 'Your Mpowered Health Profile has not been created yet';
+    profileUpdated = 'Not updated yet';
+  }
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -26,8 +58,8 @@ export default function HealthScreen() {
           style={styles.profileCard}
           onPress={() => router.push('/health/pain-profile')}
         >
-          <Text style={styles.profileTitle}>Your Mpowered Health Profile has been created</Text>
-          <Text style={styles.profileUpdated}>Updated by 18 Feb 2026</Text>
+          <Text style={styles.profileTitle}>{profileTitle}</Text>
+          {profileUpdated !== '' && <Text style={styles.profileUpdated}>{profileUpdated}</Text>}
 
           <View style={styles.profileRow}>
             <Image source={painProfileIcon} style={styles.profileIcon} contentFit="contain" />
@@ -64,11 +96,18 @@ export default function HealthScreen() {
             <Text style={[styles.trendInsight, styles.trendInsightSuperscript]}>powered</Text>
             <Text style={styles.trendInsight}> plan.</Text>
           </View>
-          <Text style={styles.trendSubtitle}>Your average pain increased</Text>
+          <Text style={styles.trendSubtitle}>
+            {painTrendMessage(trend) ??
+              (trend.length === 1
+                ? 'Record your pain again next week to see your trend.'
+                : 'Record your pain in the Tracker to see your trend.')}
+          </Text>
 
-          <View style={styles.trendChart}>
-            <PainTrendChart data={FAKE_PAIN_TREND} height={styles.trendChart.height} />
-          </View>
+          {trend.length > 0 && (
+            <View style={styles.trendChart}>
+              <PainTrendChart data={trend} height={styles.trendChart.height} />
+            </View>
+          )}
 
           <View style={styles.actionRow}>
             <Pressable

@@ -1,24 +1,61 @@
 import { Stack } from 'expo-router';
+import { Button, Text, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 
 function RootNavigator() {
-  const { session, loading } = useAuth();
+  const { session, loading, hasProfile, profile, profileError, refreshProfile } = useAuth();
 
   // Implements a temporary loading screen for the initial session check
   if (loading) return null;
 
+  // Signed in, but we could not tell whether there is a profile (for example no connection)
+  if (session && profileError) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <Text style={{ textAlign: 'center', marginBottom: 16 }}>
+          We could not load your account. Check your connection and try again.
+        </Text>
+        <Button title="Try again" onPress={refreshProfile} />
+      </View>
+    );
+  }
+
+  // The app itself needs both a session and a profile; everything else stays in (auth). While
+  // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
+  // would unmount the verify screen in the middle of signing in.
+  const canUseApp = !!session && hasProfile === true;
+  // A failed guard redirects, it no longer hides the group. The default target is the first group
+  // that is allowed, which is the bare path "/(tabs)": it has no index route, so it is "unmatched".
+  // Each guard therefore names where to go.
+
+  // Saved at sign-up (users.user_type). Support persons have no patients row, so never open the tabs.
+  const isSupportPerson = profile?.userType === 'support_person';
+  // Where a signed-in user belongs: the patient tabs, or the support person app.
+  const homePath = isSupportPerson ? '/care-planner' : '/home';
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!session || bypassAuth}>
+      <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo={homePath}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
 
-      {/* When there is no session, tabs group becomes unreachable */}
-      <Stack.Protected guard={!!session || bypassAuth}>
+      {/* Without a session and a profile, the tabs group becomes unreachable */}
+      <Stack.Protected
+        guard={(canUseApp && !isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+      <Stack.Protected
+        guard={(canUseApp && isSupportPerson) || bypassAuth}
+        redirectTo={canUseApp ? homePath : '/'}
+      >
+        <Stack.Screen name="(support)" />
       </Stack.Protected>
     </Stack>
   );

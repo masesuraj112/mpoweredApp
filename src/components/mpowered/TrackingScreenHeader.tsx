@@ -1,11 +1,15 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
   activeTab: TrackingTab;
+  /** Generates the PDF of the current tab; the chip is disabled when not given */
+  onPrintPdf?: () => void;
+  /** Shows a loading indicator on the chip while the PDF is being made */
+  printing?: boolean;
 }
 
 const SECONDARY_CONTAINER = '#E8DEF8';
@@ -13,7 +17,7 @@ const PRIMARY_PURPLE = '#6750A4';
 const ON_SURFACE_VARIANT = '#49454F';
 const OUTLINE_VARIANT = '#CAC4D0';
 
-export function TrackingScreenHeader({ activeTab }: TrackingScreenHeaderProps) {
+export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
   return (
     <View>
       <View style={styles.topBar}>
@@ -30,9 +34,20 @@ export function TrackingScreenHeader({ activeTab }: TrackingScreenHeaderProps) {
 
       <View style={styles.titleRow}>
         <Text style={styles.title}>My Health Tracking Records</Text>
-        <View style={styles.printChip}>
-          <Text style={styles.printChipText}>Print PDF</Text>
-        </View>
+        <Pressable
+          style={[styles.printChip, !onPrintPdf && styles.printChipDisabled]}
+          onPress={onPrintPdf}
+          disabled={!onPrintPdf || printing}
+          accessibilityRole="button"
+          accessibilityLabel="Print PDF"
+          accessibilityState={{ disabled: !onPrintPdf || printing, busy: printing }}
+        >
+          {printing ? (
+            <ActivityIndicator size="small" color={ON_SURFACE_VARIANT} accessibilityLabel="Creating PDF" />
+          ) : (
+            <Text style={styles.printChipText}>Print PDF</Text>
+          )}
+        </Pressable>
       </View>
 
       <View style={styles.tabsRow}>
@@ -102,6 +117,11 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(16),
     paddingHorizontal: scaleWidth(12),
     paddingVertical: scaleHeight(6),
+    minWidth: scaleWidth(76),
+    alignItems: 'center',
+  },
+  printChipDisabled: {
+    opacity: 0.5,
   },
   printChipText: {
     fontSize: scaleFont(12),

@@ -1,31 +1,16 @@
-import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
-import { useManagementAssessment } from '@/features/assessments/management/context';
+import { MANAGEMENT_TIPS_URL } from '@/constants/managementOptions';
+import { managementSaveMessage } from '@/features/assessments/management/messages';
+import {
+  toManagementSummary,
+  type ManagementSummaryData,
+} from '@/features/assessments/management/summary';
+import { getManagementEntryForWeek } from '@/services/management';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
-import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const PAIN_TIPS_URL = 'https://muscha.org/pain-guide/';
-
-export default function SummaryScreen() {
-  const { answers } = useManagementAssessment();
-  const close = async () => {
-    try {
-      await markAssessmentCompleted('management');
-      router.replace('/(tabs)/home');
-    } catch (error) {
-      console.error('[ManagementSummary] Failed to save weekly assessment progress:', error);
-      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
-    }
-  };
-  const medicationNames = [
-    ...(answers.medications ?? []),
-    ...(answers.otcMedication?.trim() ? [answers.otcMedication.trim()] : []),
-  ];
-  const summaryHighlights = [
-    answers.exerciseDays ? `You exercised for ${answers.exerciseDays} to help manage your pain.` : '',
-    medicationNames.length > 0 ? `You reported taking ${medicationNames.join(', ')}.` : '',
-  ].filter(Boolean);
-
+function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummaryData; onClose: () => void }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -36,8 +21,7 @@ export default function SummaryScreen() {
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportTitle}>My Management</Text>
-          {/* TODO: Use the selected assessment's recorded week when submissions include dates. */}
-          <Text style={styles.period}>Period: 18-24 May</Text>
+          <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
 
@@ -48,13 +32,9 @@ export default function SummaryScreen() {
         >
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
-            <Text style={styles.guidanceText}>
-              {summaryHighlights.length > 0
-                ? summaryHighlights.join(' ')
-                : 'Your responses are summarized below to support a conversation with your doctor.'}
-            </Text>
+            <Text style={styles.guidanceText}>{summary.summarySentence}</Text>
             <Pressable
-              onPress={() => Linking.openURL(PAIN_TIPS_URL)}
+              onPress={() => Linking.openURL(MANAGEMENT_TIPS_URL)}
               accessibilityRole="link"
               accessibilityLabel="Explore tips on managing pain"
               style={({ pressed }) => [styles.tipsButton, pressed && styles.tipsButtonPressed]}
@@ -66,22 +46,9 @@ export default function SummaryScreen() {
 
           <Text style={styles.resultsHeading}>My results:</Text>
           <View style={styles.resultsList}>
-            <ResultSection
-              heading="Medication:"
-              value={medicationNames.length > 0
-                ? `You consumed ${medicationNames.join(', ')} this week.`
-                : 'No medications recorded this week.'}
-            />
-            <ResultSection
-              heading="Exercise:"
-              value={answers.exerciseDays
-                ? `You exercised for ${answers.exerciseDays} this week.`
-                : 'No response recorded.'}
-            />
-            <ResultSection
-              heading="Emotion:"
-              value={answers.emotionStrategies?.trim() || 'No response recorded.'}
-            />
+            <ResultSection heading="Medication:" value={summary.medicationResult} />
+            <ResultSection heading="Exercise:" value={summary.exerciseResult} />
+            <ResultSection heading="Emotion:" value={summary.emotionResult} />
           </View>
         </ScrollView>
 
@@ -105,6 +72,71 @@ export default function SummaryScreen() {
   );
 }
 
+type SummaryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; summary: ManagementSummaryData };
+
+// The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
+export default function SummaryScreen() {
+  const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
+  const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
+  const [state, setState] = useState<SummaryState>({ status: 'loading' });
+  const close = () => router.replace('/(tabs)/home');
+
+  useEffect(() => {
+    if (!weekStart) return;
+    let cancelled = false;
+    getManagementEntryForWeek(weekStart).then(result => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ status: 'error', message: managementSaveMessage(result.error) });
+      } else if (!result.data) {
+        setState({ status: 'error', message: 'We could not find your saved entry.' });
+      } else {
+        setState({ status: 'ready', summary: toManagementSummary(result.data) });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart]);
+
+  const view: SummaryState = weekStart
+    ? state
+    : { status: 'error', message: 'We could not find the week to show.' };
+
+  if (view.status === 'ready') {
+    return <ManagementSummaryView summary={view.summary} onClose={close} />;
+  }
+
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      {view.status === 'loading' ? (
+        <ActivityIndicator accessibilityLabel="Loading your summary" />
+      ) : (
+        <>
+          <Text style={styles.resultText}>{view.message}</Text>
+          <CloseButton onPress={close} />
+        </>
+      )}
+    </View>
+  );
+}
+
+function CloseButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Close summary"
+      style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+    >
+      <Text style={styles.closeButtonText}>Close</Text>
+    </Pressable>
+  );
+}
+
 function ResultSection({ heading, value }: { heading: string; value: string }) {
   return (
     <View style={styles.resultSection}>
@@ -115,6 +147,11 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleHeight(16),
+  },
   screen: {
     flex: 1,
     paddingHorizontal: scaleWidth(24),
