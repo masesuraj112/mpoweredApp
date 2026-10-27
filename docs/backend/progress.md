@@ -124,7 +124,7 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 - [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written; CI types diff matched after one ordering fix; pgTAP passes in CI)
 
 - [x] 3.9 Extra: `support_people_relink_and_link_policy` (re-save of two support people; owner-only link policy; test 088)
-- [x] 3.10 Extra (review feedback): `enforce_care_planner_rules` (consent and NO_QUESTIONS rules also for direct writes, row locks, numeric id check; test 089). Not yet seen in CI
+- [x] 3.10 Extra (review feedback): `enforce_care_planner_rules` (consent and NO_QUESTIONS rules also for direct writes, row locks, numeric id check; test 089). Passes in CI (after one test-fixture fix in 089)
 
 ## Phase 4: Services
 - [x] 4.1 Appointments

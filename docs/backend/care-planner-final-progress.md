@@ -8,7 +8,7 @@ Branch `feature/care-planner-backend` (from `main` at `f2e60f1`). Written 27 Oct
 |---|---|
 | Plan phases 0–8 | Done, except 6.4 (blocked on the client) and 8.3 (manual QA, not done) |
 | Migrations | 10 written and committed (8 from the plan plus 2 added during review) |
-| pgTAP files | 10 written (`080`–`089`). `080`–`088` **pass in CI** after one test fix (`3042afc`: a phone value longer than the `varchar(12)` column) |
+| pgTAP files | 10 written (`080`–`089`). `080`–`089` **pass in CI** after two test fixes (`3042afc`: a phone value longer than the `varchar(12)` column; `0283130`: a draft appointment used where a saved one was needed) |
 | Generated types (`src/types/database.ts`) | Written by hand; CI's types diff found one ordering difference, fixed in `29c7d3e`. **Now matches the generator** |
 | Typecheck | Clean |
 | Lint | 0 errors (about 28 warnings, mostly the existing `import/first` pattern in test files) |
