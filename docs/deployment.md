@@ -47,7 +47,7 @@ All three EAS environments currently point at the **same test database**, becaus
 
 | Who | How |
 | --- | --- |
-| **Android** | Install the APK from the link or QR code on the build's page in the Expo dashboard (Builds). It then updates itself from the `preview` channel. |
+| **Android** | Install the APK from the link or QR code on the build's page in the Expo dashboard (Builds). It then updates itself from the `preview` channel, but only if the build's runtime version matches the updates (see Releasing). The first build (`3f16a706`, 25 October 2026) does not match, so install a newer build. Step by step: [install guide](install-guide.md). |
 | **iPhone** | Install **Expo Go** from the App Store and open the QR code from the pull request comment (or the update's page on the dashboard). Whether the tester needs an Expo account, or membership of the `mpowered-mha` organisation, **has not been confirmed** for published updates (see below). |
 
 Things to know:
@@ -70,6 +70,13 @@ npx eas-cli login
 npx eas-cli build --platform android --profile preview
 ```
 It builds in Expo's cloud and gives an install link. Builds use the Expo build quota, so build only when needed.
+
+After every build, check that the build and the updates agree, or the installed app will never receive an update:
+```
+npx eas-cli build:view <build id>              # Runtime Version
+npx eas-cli update:list --branch preview       # Runtime Version of the latest android update
+```
+The two Android runtime versions must be identical.
 
 The first build created the `preview` channel linked to an update branch of the same name, and the workflow publishes to that branch, so there is nothing to configure. The Android signing key is generated and held by Expo. Download a backup with `npx eas-cli credentials` (Android, then the build profile) and store it somewhere safe: losing it means users must reinstall.
 
@@ -113,8 +120,9 @@ Why the workflow is manual: [deploy-db.yml](../.github/workflows/deploy-db.yml) 
 
 ### Must be addressed
 - **The Android install link expires.** EAS build artifacts expire about two weeks after the build (the first APK: 8 November 2026). Download the `.apk` and keep it somewhere stable, or build again shortly before it is needed.
-- **The end-to-end path is not proven.** Verified: the APK installs (Galaxy A20, via `adb`). Not yet confirmed: the app runs and signs in on the installed APK, the first automatic publish to the `preview` branch works after a merge to `main`, and an installed app receives that update. Do one rehearsed release and record the result.
+- **An installed app has not yet received an update.** Verified: the APK installs and opens on a Galaxy A20 (via `adb`), and merging to `main` publishes to the `preview` branch automatically (25 October 2026, both platforms). Not verified: sign-in on the installed APK, and an installed app receiving an update. The first build (`3f16a706`) can never receive one because its runtime version differs from the updates'. Build again once the runtime fix is merged, check that the versions match (see Releasing), then merge a small change and record that it arrived.
 - **The Android signing key is not backed up.** Expo holds it. Download a copy (`npx eas-cli credentials`, Android) and store it securely. Losing it means every user must uninstall and reinstall.
+- **Only the onboarding screen keeps its buttons above the Android navigation bar.** The other screens in `app/(auth)` use fixed-size layouts with no safe-area padding, so their bottom buttons can sit under the phone's home and back buttons (seen on the sign-in screen). Fix them the same way as `onboarding.tsx`.
 - **iPhone is untested on a physical device.** The iOS-only behaviour (swipe-back "Discard?" prompt, header appearance, share sheet) is unverified.
 - **The client has not agreed the delivery method** (who installs, which devices, who approves). See [client-signoff.md](deployment/client-signoff.md).
 - **Database changes are applied by hand.** If a migration is merged and not applied to the hosted project, the app and the database disagree.
