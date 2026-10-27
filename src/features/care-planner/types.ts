@@ -19,6 +19,9 @@ export type Appointment = {
   status: AppointmentStatus;
 };
 
+/** Identifies a stored appointment, as returned when its details are saved. */
+export type AppointmentRef = { appointmentId: number };
+
 /**
  * What the "Plan my appointment" form produces. `dateTime` is local wall-clock time
  * (`YYYY-MM-DDTHH:mm:ss`, no zone). The name and service are null when left empty.
@@ -30,10 +33,13 @@ export type NewAppointmentInput = {
 };
 
 /**
- * Someone nominated to help with an appointment. Phone and email are optional for now; the
+ * Someone nominated to help with an appointment. Phone (an Australian mobile in E.164, +614...)
+ * and email are optional; the
  * access flags match the settings screen's support person (can add questions / answers).
  */
 export type SupportPerson = {
+  /** Set once the person is stored; absent for someone added on screen and not saved yet. */
+  supportPersonId?: number;
   name: string;
   phone: string | null;
   email: string | null;

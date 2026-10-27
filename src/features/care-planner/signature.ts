@@ -73,6 +73,14 @@ export function serializeSignature(signature: SignatureData): string {
   });
 }
 
+/** The database rejects a serialised signature longer than this (see `save_recording_consent`). */
+export const MAX_SIGNATURE_LENGTH = 60000;
+
+/** True when a serialised signature is short enough for the database to accept. */
+export function isSignatureWithinLimit(serialized: string): boolean {
+  return serialized.length <= MAX_SIGNATURE_LENGTH;
+}
+
 /** The inverse of `serializeSignature`. Returns null for anything that is not a valid signature. */
 export function parseSignature(value: string | null | undefined): SignatureData | null {
   if (!value) return null;

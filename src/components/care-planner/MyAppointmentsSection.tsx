@@ -70,7 +70,7 @@ export function MyAppointmentsSection({
 
       {state.status === 'ready' && state.appointments.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <EmptyState message="You have not planned any appointments.">
+          <EmptyState message="You have no upcoming appointments.">
             {addButtonProminent}
             {prepareButton}
           </EmptyState>

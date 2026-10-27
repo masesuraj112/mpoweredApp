@@ -5,7 +5,7 @@ import { createAppointment, updateAppointmentDetails } from '@/services/care-pla
 
 import { formatLocalTimestamp, type LocalDateTime } from './dateTime';
 import { toOptionalText } from './text';
-import type { Appointment, NewAppointmentInput } from './types';
+import type { AppointmentRef, NewAppointmentInput } from './types';
 
 export const MAX_PRACTITIONER_NAME_LENGTH = 100;
 
@@ -68,8 +68,8 @@ export function useCreateAppointment() {
     setErrors((current) => ({ ...current, practitionerName: undefined }));
   }, []);
 
-  /** Validates and saves. Resolves with the new appointment, or null when it did not save. */
-  const submit = useCallback(async (): Promise<Appointment | null> => {
+  /** Validates and saves. Resolves with the appointment's id, or null when it did not save. */
+  const submit = useCallback(async (): Promise<AppointmentRef | null> => {
     const found = validateAppointmentForm({ dateTime, practitionerName });
     setErrors(found);
     if (found.dateTime || found.practitionerName || !dateTime) return null;

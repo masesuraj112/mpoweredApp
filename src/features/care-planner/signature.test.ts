@@ -1,5 +1,7 @@
 import {
   isSignatureEmpty,
+  isSignatureWithinLimit,
+  MAX_SIGNATURE_LENGTH,
   parseSignature,
   pathDataToPoints,
   serializeSignature,
@@ -115,5 +117,21 @@ describe('serializeSignature and parseSignature', () => {
     expect(parseSignature('{"w":0,"h":10,"paths":[]}')).toBeNull();
     expect(parseSignature('{"w":10,"h":10,"paths":[1]}')).toBeNull();
     expect(parseSignature('[1,2]')).toBeNull();
+  });
+});
+
+describe('isSignatureWithinLimit', () => {
+  it('matches the 60000 character database limit', () => {
+    expect(MAX_SIGNATURE_LENGTH).toBe(60000);
+  });
+
+  it('accepts a signature of exactly the limit and rejects one more character', () => {
+    expect(isSignatureWithinLimit('x'.repeat(60000))).toBe(true);
+    expect(isSignatureWithinLimit('x'.repeat(60001))).toBe(false);
+  });
+
+  it('accepts a normal drawn signature', () => {
+    const text = serializeSignature({ w: 313, h: 200, paths: [strokeToPathData(line(40))] });
+    expect(isSignatureWithinLimit(text)).toBe(true);
   });
 });

@@ -73,7 +73,7 @@ export default function SupportedQuestionsScreen() {
   };
 
   const canSave = access.canEditQuestions && load.status === 'ready' && !questions.saving;
-  const generatedDate = load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn) : null;
+  const generatedDate = load.status === 'ready' ? parseIsoDate(load.suggestions.generatedOn ?? '') : null;
 
   return (
     <PlannerFlowScreen

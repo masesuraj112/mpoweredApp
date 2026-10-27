@@ -43,6 +43,9 @@ export type Database = {
           practitioner_name: string | null
           recording_consent_at: string | null
           recording_consent_signature: string | null
+          saved_at: string | null
+          status: string
+          suggestions_generated_on: string | null
         }
         Insert: {
           appointment_id?: never
@@ -52,6 +55,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Update: {
           appointment_id?: never
@@ -61,6 +67,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Relationships: [
           {
@@ -106,20 +115,29 @@ export type Database = {
         Row: {
           answer: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id: number
+          sort_order: number
         }
         Insert: {
           answer?: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id?: never
+          sort_order: number
         }
         Update: {
           answer?: string | null
           appointment_id?: number
+          group_key?: string
+          is_selected?: boolean
           question?: string
           question_id?: never
+          sort_order?: number
         }
         Relationships: [
           {
@@ -780,28 +798,28 @@ export type Database = {
       support_persons: {
         Row: {
           access_type: string
-          email: string
+          email: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number: string | null
           support_person_id: number
           users_id: number | null
         }
         Insert: {
           access_type: string
-          email: string
+          email?: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
         Update: {
           access_type?: string
-          email?: string
+          email?: string | null
           name?: string
           patient_id?: number
-          phone_number?: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
@@ -879,9 +897,84 @@ export type Database = {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
       }
+      list_my_appointments: {
+        Args: never
+        Returns: {
+          appointment_id: number
+          date_time: string
+          health_service: string
+          practitioner_name: string
+          status: string
+        }[]
+      }
+      list_my_support_persons: {
+        Args: never
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       patient_id_for_user: {
         Args: { target_users_id: number }
         Returns: number
+      }
+      save_appointment: {
+        Args: { p_appointment_id: number }
+        Returns: undefined
+      }
+      save_appointment_answers: {
+        Args: { p_answers: Json; p_appointment_id: number }
+        Returns: undefined
+      }
+      save_appointment_details: {
+        Args: {
+          p_appointment_id?: number
+          p_date_time: string
+          p_health_service: string
+          p_practitioner_name: string
+        }
+        Returns: number
+      }
+      save_appointment_questions: {
+        Args: { p_appointment_id: number; p_question_ids: number[] }
+        Returns: undefined
+      }
+      save_appointment_suggestions: {
+        Args: {
+          p_appointment_id: number
+          p_generated_on: string
+          p_questions: Json
+        }
+        Returns: boolean
+      }
+      save_appointment_support_people: {
+        Args: { p_appointment_id: number; p_people: Json }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       save_management_assessment: {
         Args: {
@@ -932,6 +1025,10 @@ export type Database = {
         }
         Returns: number
       }
+      save_recording_consent: {
+        Args: { p_appointment_id: number; p_signature: string }
+        Returns: string
+      }
       save_social_health_assessment: {
         Args: {
           p_date: string
@@ -944,6 +1041,30 @@ export type Database = {
           p_travelling: string
         }
         Returns: number
+      }
+      save_support_person: {
+        Args: {
+          p_access_type: string
+          p_email: string
+          p_name: string
+          p_phone: string
+          p_support_person_id?: number
+        }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

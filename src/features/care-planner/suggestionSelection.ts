@@ -31,3 +31,14 @@ export function needsRemovalConfirmation(
 export function getSuggestionLabel(questionText: string): string {
   return `Add to my appointment plan: ${questionText}`;
 }
+
+/** Shown when every suggested question has been unticked. */
+export const MIN_QUESTION_MESSAGE = 'Choose at least one question to keep on your plan.';
+
+/**
+ * A plan keeps at least one question once suggestions exist. When there are no suggestions at all
+ * there is nothing to choose, so saving is still allowed.
+ */
+export function canSaveSelection(selectedIds: readonly number[], hasSuggestions: boolean): boolean {
+  return !hasSuggestions || selectedIds.length > 0;
+}

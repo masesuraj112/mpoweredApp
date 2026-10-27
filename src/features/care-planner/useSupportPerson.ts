@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react';
 
 import type { AppError } from '@/lib/errors';
-import { getSupportPeople, saveSupportPeople } from '@/services/care-planner';
+import { getSupportPeople, listMySupportPersons, saveSupportPeople } from '@/services/care-planner';
 
 import {
+  availableSupportPeople,
+  canAddAnotherPerson,
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
   isDraftEmpty,
@@ -28,6 +30,12 @@ const sameList = (a: readonly SupportPerson[], b: readonly SupportPerson[]) =>
 export function useSupportPerson(appointmentId: number) {
   const load = useCallback(() => getSupportPeople(appointmentId), [appointmentId]);
   const { state, reload: reloadPeople } = useAsyncResult(load);
+
+  // The patient's saved support people (from Settings), offered so nobody is typed in twice. If
+  // this list cannot be loaded the step still works: it just offers no one.
+  const loadSaved = useCallback(() => listMySupportPersons(), []);
+  const { state: savedState } = useAsyncResult(loadSaved);
+  const savedPeopleList = savedState.status === 'ready' ? savedState.data : [];
 
   // The list as edited on this screen (null until it is changed) and as last saved by it (null
   // until a save). Both fall back to what was loaded, so there is no copy to keep in sync.
@@ -72,17 +80,27 @@ export function useSupportPerson(appointmentId: number) {
 
   /** Adds the form's person to the list and clears the form for the next one. */
   const addAnother = useCallback((): boolean => {
+    if (!canAddAnotherPerson(people.length)) return false;
     if (isDraftEmpty(draft)) {
       setErrors({ name: NAME_REQUIRED_MESSAGE });
       return false;
     }
-    const found = validateSupportPerson(draft);
+    const found = validateSupportPerson(draft, [...savedPeopleList, ...people]);
     setErrors(found);
     if (hasErrors(found)) return false;
     setEditedPeople([...people, toSupportPerson(draft)]);
     setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
     return true;
-  }, [draft, people]);
+  }, [draft, people, savedPeopleList]);
+
+  /** Adds a saved support person to this appointment's list. */
+  const addExisting = useCallback(
+    (person: SupportPerson) => {
+      if (!canAddAnotherPerson(people.length)) return;
+      setEditedPeople([...people, person]);
+    },
+    [people],
+  );
 
   const removePerson = useCallback(
     (index: number) => setEditedPeople(people.filter((_, i) => i !== index)),
@@ -99,7 +117,8 @@ export function useSupportPerson(appointmentId: number) {
         setSaveError(result.error);
         return false;
       }
-      setSavedPeople(list);
+      // the saved list comes back with the ids the database gave each person
+      setSavedPeople(result.data);
       setEditedPeople(null);
       setDraft(EMPTY_SUPPORT_PERSON_DRAFT);
       setErrors({});
@@ -112,13 +131,14 @@ export function useSupportPerson(appointmentId: number) {
   const save = useCallback(async (): Promise<boolean> => {
     let list = people;
     if (!isDraftEmpty(draft)) {
-      const found = validateSupportPerson(draft);
+      if (!canAddAnotherPerson(people.length)) return false;
+      const found = validateSupportPerson(draft, [...savedPeopleList, ...people]);
       setErrors(found);
       if (hasErrors(found)) return false;
       list = [...people, toSupportPerson(draft)];
     }
     return persist(list);
-  }, [people, draft, persist]);
+  }, [people, draft, persist, savedPeopleList]);
 
   /** Skips the step: no support person is saved for this appointment. */
   const skip = useCallback(async (): Promise<boolean> => persist([]), [persist]);
@@ -132,11 +152,16 @@ export function useSupportPerson(appointmentId: number) {
     updateDraft,
     blurField,
     addAnother,
+    addExisting,
+    /** Saved support people who are not on this appointment yet. */
+    availablePeople: availableSupportPeople(savedPeopleList, people),
     removePerson,
     save,
     skip,
     saving,
     saveError,
+    /** True once the appointment has the most support people it can hold. */
+    atLimit: !canAddAnotherPerson(people.length),
     dirty: !isDraftEmpty(draft) || !sameList(people, baselinePeople),
   };
 }

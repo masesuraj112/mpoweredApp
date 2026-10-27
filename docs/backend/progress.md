@@ -92,3 +92,72 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 | L15 | Production config record | ✅ settled: docs/backend/production-auth-checklist.md |
 | L16 | Password / Face ID login | ❓ |
 | L17 | Phone change | ⏳ |
+
+# Care Planner (patient side) progress
+
+Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Branch `feature/care-planner-backend`. Status key as above; `[!]` blocked.
+
+## Phase 0: Admin
+- [x] 0.1 Branch
+- [x] 0.2 Read the decisions
+
+## Phase 1: Recon
+- [x] 1.1 Schema and policy recon (matches the plan)
+- [x] 1.2 Stub inventory (`care-planner-stub-inventory.md`)
+
+## Phase 2: Pure foundations
+- [x] 2.1 Error codes and messages
+- [x] 2.2 Access type and phone helpers
+- [x] 2.3 Row mappers
+- [x] 2.4 Signature guard
+- [x] 2.5 Question generator (design questions only; M2 and M3 still open, conditions marked PROPOSED)
+- [x] 2.6 Friendly messages
+
+## Phase 3: Migrations, pgTAP, generated types
+- [x] 3.1 A1 appointment_status
+- [x] 3.2 A2 appointment_questions_plan_columns
+- [x] 3.3 A3 support_persons_align
+- [x] 3.4 A4 care_planner_privileges_policies
+- [x] 3.5 A5 rpc_appointment_details
+- [x] 3.6 A6 rpc_suggestions_questions
+- [x] 3.7 A7 rpc_support_people
+- [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written; CI types diff matched after one ordering fix; pgTAP passes in CI)
+
+- [x] 3.9 Extra: `support_people_relink_and_link_policy` (re-save of two support people; owner-only link policy; test 088)
+- [x] 3.10 Extra (review feedback): `enforce_care_planner_rules` (consent and NO_QUESTIONS rules also for direct writes, row locks, numeric id check; test 089). Passes in CI (after one test-fixture fix in 089)
+
+## Phase 4: Services
+- [x] 4.1 Appointments
+- [x] 4.2 Support people
+- [x] 4.3 Questions
+- [x] 4.4 Consent and answers (4.1 to 4.4 and 4.5 are one commit: the service was rewritten as one file)
+- [x] 4.5 Service tests
+
+## Phase 5: Settings > Support Persons
+- [x] 5.1 Real support persons
+
+## Phase 6: Front-end deltas
+- [x] 6.1 Require one question
+- [x] 6.2 Cap two support people
+- [x] 6.3 Consent before answers
+- [!] 6.4 Health service options (blocked on M1: placeholder list kept, MHA has not confirmed)
+- [x] 6.5 Explore-questions shortcut (new read-only screen `planner/explore-questions`, no appointment needed)
+- [x] 6.6 Types for real data (`supportPersonId`, nullable `generatedOn`, local-format phones, saved list used; `status` belongs to the support person plan)
+
+## Phase 7: Stub removal
+- [x] 7.1 Remove stub data
+
+## Phase 8: Docs, checks, QA
+- [x] 8.1 Docs
+- [x] 8.2 Full checks run locally (typecheck, lint, 64 tracked jest suites). CI is green (pgTAP, `db lint`, types diff)
+- [!] 8.3 Manual QA (needs two test patients on a device with the dev project; not done)
+
+## Open care planner decisions
+| ID | Decision | Status |
+| --- | --- | --- |
+| M1 | Health service list (MHA) | ❓ |
+| M2 | Generation rule content beyond the 17 design questions (MHA clinical review) | ❓ |
+| M3 | Generation gate: all five assessments completed | ❓ |
+| M4 | Data retention / account deletion (deleting a patient fails while appointments exist) | ❓ out of scope |
+| M5 | No server rule on past/future appointment dates | ❓ optional |
+| M6 | Draft appointments are never cleaned up | ❓ optional |

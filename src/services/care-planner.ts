@@ -1,59 +1,68 @@
-// Data access for the care planner. Every function returns a Result and never throws to the UI.
-// MOCK: serves local sample data. The Supabase version will keep the same signature and take the
-// client as its last optional argument.
+// Data access for the patient's Care Planner. Every function returns a Result and never throws to
+// the UI. The Supabase client is the last optional argument so tests can pass a fake one.
+// The caller is always worked out by the database from the session: no patient or user id is sent.
 
+import { accessTypeToDb } from '@/features/care-planner/accessType';
 import type { RecordingConsentInput } from '@/features/care-planner/consentTypes';
+import {
+  mapAppointment,
+  mapAppointmentPlan,
+  mapGeneratedQuestionGroups,
+  mapQuestionSuggestions,
+  mapSupportPeopleFromLinks,
+  mapSupportPerson,
+  type AppointmentPlanRow,
+  type AppointmentRow,
+  type QuestionRow,
+  type SuggestionsRow,
+  type SupportPersonLinkRow,
+  type SupportPersonRow,
+} from '@/features/care-planner/mappers';
+import type { AnswerInput, AppointmentPlan } from '@/features/care-planner/planTypes';
+import {
+  generateQuestions,
+  missingAssessments,
+} from '@/features/care-planner/question-generation';
+import { MAX_SUPPORT_PEOPLE } from '@/features/care-planner/supportPerson';
+import { isSignatureWithinLimit } from '@/features/care-planner/signature';
 import type {
-  AnswerInput,
-  AppointmentPlan,
-  QuestionGroup,
-} from '@/features/care-planner/planTypes';
-import type {
+  GeneratedQuestionsPreview,
   QuestionSuggestions,
-  SuggestedQuestionGroup,
 } from '@/features/care-planner/suggestionTypes';
 import type {
   Appointment,
+  AppointmentRef,
   NewAppointmentInput,
   SupportPerson,
 } from '@/features/care-planner/types';
+import { isValidAuMobile } from '@/features/auth/phone';
 import { mapError, type AppError } from '@/lib/errors';
-import { fail, ok, type Result } from '@/lib/result';
+import { fail, ok, run, type Result } from '@/lib/result';
+import { supabase } from '@/lib/supabase';
+import { toIsoDate } from '@/services/date';
 
-/**
- * Sample appointments served by the mock `listAppointments`.
- * Set this to `[]` to see the empty state on the Care Planner screen.
- */
-export const MOCK_APPOINTMENTS: Appointment[] = [
-  {
-    appointmentId: 1,
-    dateTime: '2026-06-10T09:30:00',
-    practitionerName: 'Dr. Maximiliano Prinzi',
-    healthService: 'Pain Clinic',
-    status: 'saved',
-  },
-  {
-    appointmentId: 2,
-    dateTime: '2026-07-26T14:00:00',
-    practitionerName: 'Ms Linda Ho',
-    healthService: 'Physiotherapy',
-    status: 'saved',
-  },
-];
+import { type Client } from './assessments';
+import { getAssessments } from './health';
 
-/** Runs a call and converts thrown errors (for example a lost connection) into a failed Result. */
-async function run<T>(call: () => Promise<Result<T>>): Promise<Result<T>> {
-  try {
-    return await call();
-  } catch (error) {
-    return fail(mapError(error));
-  }
-}
+export const MAX_PRACTITIONER_NAME_LENGTH = 100;
+export const MAX_ANSWER_LENGTH = 4000;
 
-const APPOINTMENT_NOT_FOUND: AppError = { code: 'UNKNOWN', message: 'APPOINTMENT_NOT_FOUND' };
-
-const MAX_PRACTITIONER_NAME_LENGTH = 100;
 const LOCAL_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+
+const NOT_FOUND: AppError = { code: 'NOT_FOUND', message: 'NOT_FOUND' };
+
+/** A validation problem the app found itself, shaped like one the database would raise. */
+const invalid = (detail: string): AppError => ({ code: 'VALIDATION', message: detail, detail });
+
+const APPOINTMENT_PLAN_SELECT = `appointment_id, date_time, practitioner_name, health_service, status,
+  recording_consent_at,
+  appointment_questions(question_id, group_key, sort_order, question, is_selected, answer),
+  appointment_has_support_persons(support_persons(support_person_id, name, phone_number, email, access_type))`;
+
+const APPOINTMENT_SUGGESTIONS_SELECT = `appointment_id, status, suggestions_generated_on,
+  appointment_questions(question_id, group_key, sort_order, question, is_selected, answer)`;
+
+const SUPPORT_PERSON_COLUMNS = 'support_person_id, name, phone_number, email, access_type';
 
 /** What is wrong with an appointment's details, or null when they are fine. */
 function appointmentInputError(input: NewAppointmentInput): AppError | null {
@@ -69,349 +78,406 @@ function appointmentInputError(input: NewAppointmentInput): AppError | null {
   return null;
 }
 
-/** Appointments created through `createAppointment`, kept in memory by the mock. */
-const createdAppointments: Appointment[] = [];
-/** Changes made to any appointment (details edited, saved), keyed by appointment id. */
-const appointmentOverrides = new Map<number, Appointment>();
-/** Support people chosen for each appointment, kept in memory by the mock. */
-const supportPeople = new Map<number, SupportPerson[]>();
+/** The arguments for `save_appointment_details`. The function stores blank values as NULL. */
+function detailsArgs(input: NewAppointmentInput) {
+  return {
+    p_date_time: input.dateTime,
+    p_practitioner_name: input.practitionerName ?? '',
+    p_health_service: input.healthService ?? '',
+  };
+}
 
-/** The people the sample appointments start with, so the review screen has something to show. */
-const SAMPLE_SUPPORT_PEOPLE: SupportPerson[] = [
-  { name: 'Bron', phone: null, email: null, canAddQuestions: false, canAddAnswers: false },
-];
+// ---------------------------------------------------------------- appointments
 
-/** Every appointment the mock knows about, drafts included. */
-const allAppointments = (): Appointment[] =>
-  [...MOCK_APPOINTMENTS, ...createdAppointments].map(
-    (appointment) => appointmentOverrides.get(appointment.appointmentId) ?? appointment,
-  );
-
-const findAppointment = (appointmentId: number): Appointment | undefined =>
-  allAppointments().find((a) => a.appointmentId === appointmentId);
-
-/** Runs `action` with the appointment, or fails with "not found" when there is no such one. */
-function withAppointment<T>(
-  appointmentId: number,
-  action: (appointment: Appointment) => Result<T>,
-): Promise<Result<T>> {
+/** The signed-in patient's saved appointments. Drafts are not listed. Unsorted: callers sort. */
+export function listAppointments(client: Client = supabase): Promise<Result<Appointment[]>> {
   return run(async () => {
-    const appointment = findAppointment(appointmentId);
-    return appointment ? action(appointment) : fail<T>(APPOINTMENT_NOT_FOUND);
+    const { data, error } = await client.rpc('list_my_appointments');
+    if (error) return fail(mapError(error));
+    return ok((data ?? []).map((row) => mapAppointment(row as AppointmentRow)));
   });
 }
 
-/** The appointment's support people (the samples start with one, new appointments with none). */
-function supportPeopleFor(appointmentId: number): SupportPerson[] {
-  const isSample = MOCK_APPOINTMENTS.some((a) => a.appointmentId === appointmentId);
-  return supportPeople.get(appointmentId) ?? (isSample ? SAMPLE_SUPPORT_PEOPLE : []);
-}
-
-/** Test helper: forget everything created or changed through the mock. */
-export function clearMockCreatedAppointments(): void {
-  createdAppointments.length = 0;
-  appointmentOverrides.clear();
-  supportPeople.clear();
-}
-
 /**
- * The signed-in user's saved appointments. Drafts (still being created in the wizard) are not
- * listed. Unsorted: callers use `sortAppointments`.
+ * Creates a draft appointment. `dateTime` is local wall-clock `YYYY-MM-DDTHH:mm:ss`; it is sent
+ * as it is, never converted.
  */
-export async function listAppointments(): Promise<Result<Appointment[]>> {
-  return run(async () => ok(allAppointments().filter((a) => a.status === 'saved')));
-}
-
-/**
- * Creates an appointment. `dateTime` is local wall-clock `YYYY-MM-DDTHH:mm:ss`.
- * MOCK: kept in memory; it will insert a row into `appointment`.
- */
-export async function createAppointment(input: NewAppointmentInput): Promise<Result<Appointment>> {
+export function createAppointment(
+  input: NewAppointmentInput,
+  client: Client = supabase,
+): Promise<Result<AppointmentRef>> {
   return run(async () => {
     const problem = appointmentInputError(input);
     if (problem) return fail(problem);
-    const nextId = Math.max(0, ...allAppointments().map((a) => a.appointmentId)) + 1;
-    const appointment: Appointment = {
-      appointmentId: nextId,
-      dateTime: input.dateTime,
-      practitionerName: input.practitionerName,
-      healthService: input.healthService,
-      status: 'draft',
-    };
-    createdAppointments.push(appointment);
-    return ok({ ...appointment });
+    const { data, error } = await client.rpc('save_appointment_details', detailsArgs(input));
+    if (error) return fail(mapError(error));
+    return ok({ appointmentId: data });
   });
 }
 
 /**
  * Changes an appointment's details (the wizard goes back and forward, so it must not create a
- * second record). MOCK: kept in memory; it will update the `appointment` row.
+ * second record).
  */
-export async function updateAppointmentDetails(
+export function updateAppointmentDetails(
   appointmentId: number,
   input: NewAppointmentInput,
-): Promise<Result<Appointment>> {
-  return withAppointment(appointmentId, (existing) => {
+  client: Client = supabase,
+): Promise<Result<AppointmentRef>> {
+  return run(async () => {
     const problem = appointmentInputError(input);
     if (problem) return fail(problem);
-    const updated: Appointment = {
-      ...existing,
-      dateTime: input.dateTime,
-      practitionerName: input.practitionerName,
-      healthService: input.healthService,
-    };
-    appointmentOverrides.set(appointmentId, updated);
-    return ok({ ...updated });
+    const { data, error } = await client.rpc('save_appointment_details', {
+      ...detailsArgs(input),
+      p_appointment_id: appointmentId,
+    });
+    if (error) return fail(mapError(error));
+    return ok({ appointmentId: data });
   });
 }
 
-/** Marks a draft appointment as saved, so it appears in My Appointments. */
-export async function markAppointmentSaved(appointmentId: number): Promise<Result<void>> {
-  return withAppointment(appointmentId, (existing) => {
-    appointmentOverrides.set(appointmentId, { ...existing, status: 'saved' });
+/** Marks a draft appointment as saved, so it appears in My Appointments. Saving again is fine. */
+export function markAppointmentSaved(
+  appointmentId: number,
+  client: Client = supabase,
+): Promise<Result<void>> {
+  return run(async () => {
+    const { error } = await client.rpc('save_appointment', { p_appointment_id: appointmentId });
+    if (error) return fail(mapError(error));
     return ok(undefined);
   });
 }
 
+// ---------------------------------------------------------------- support people
+
 /** The support people chosen for an appointment (none for a new one). */
-export async function getSupportPeople(appointmentId: number): Promise<Result<SupportPerson[]>> {
-  return withAppointment(appointmentId, () =>
-    ok(supportPeopleFor(appointmentId).map((person) => ({ ...person }))),
-  );
+export function getSupportPeople(
+  appointmentId: number,
+  client: Client = supabase,
+): Promise<Result<SupportPerson[]>> {
+  return run(async () => {
+    const { data, error } = await client
+      .from('appointment_has_support_persons')
+      .select(`support_persons(${SUPPORT_PERSON_COLUMNS})`)
+      .eq('appointment_id', appointmentId);
+    if (error) return fail(mapError(error));
+    return ok(mapSupportPeopleFromLinks((data ?? []) as unknown as SupportPersonLinkRow[]));
+  });
+}
+
+/** What is wrong with a support person about to be saved, or null when it is fine. */
+function supportPersonError(person: SupportPerson): AppError | null {
+  if (person.name.trim() === '') return invalid('INVALID_SUPPORT_PERSON');
+  if (person.phone !== null && person.phone.trim() !== '' && !isValidAuMobile(person.phone)) {
+    return { code: 'INVALID_PHONE', message: 'INVALID_PHONE' };
+  }
+  return null;
+}
+
+/** The arguments for `save_support_person`. The function stores blank values as NULL. */
+function supportPersonArgs(person: SupportPerson) {
+  return {
+    p_name: person.name,
+    p_phone: person.phone ?? '',
+    p_email: person.email ?? '',
+    p_access_type: accessTypeToDb(person),
+  };
 }
 
 /**
  * Saves the support people for an appointment. This REPLACES the earlier list, so going back and
- * saving again never duplicates anyone. An empty list means "no support person".
- * MOCK: kept in memory; it will map to `support_persons` and `appointment_has_support_persons`.
+ * saving again never duplicates anyone. An empty list means "no support person". Returns the
+ * saved list, with ids.
  */
-export async function saveSupportPeople(
+export function saveSupportPeople(
   appointmentId: number,
   people: SupportPerson[],
-): Promise<Result<void>> {
-  return withAppointment(appointmentId, () => {
-    supportPeople.set(
-      appointmentId,
-      people.map((person) => ({ ...person })),
+  client: Client = supabase,
+): Promise<Result<SupportPerson[]>> {
+  return run(async () => {
+    if (people.length > MAX_SUPPORT_PEOPLE) {
+      return fail(invalid('TOO_MANY_SUPPORT_PEOPLE'));
+    }
+    for (const person of people) {
+      // a person who is already stored is only linked, so their details are not checked again
+      const problem = person.supportPersonId === undefined ? supportPersonError(person) : null;
+      if (problem) return fail(problem);
+    }
+
+    const items = people.map((person) =>
+      person.supportPersonId === undefined
+        ? {
+            name: person.name,
+            phone: person.phone ?? '',
+            email: person.email ?? '',
+            access_type: accessTypeToDb(person),
+          }
+        : { support_person_id: person.supportPersonId },
     );
-    return ok(undefined);
+    const { data, error } = await client.rpc('save_appointment_support_people', {
+      p_appointment_id: appointmentId,
+      p_people: items,
+    });
+    if (error) return fail(mapError(error));
+    return ok(((data ?? []) as SupportPersonRow[]).map(mapSupportPerson));
+  });
+}
+
+/** Every support person the signed-in patient has added (the Settings > Support Persons list). */
+export function listMySupportPersons(
+  client: Client = supabase,
+): Promise<Result<SupportPerson[]>> {
+  return run(async () => {
+    const { data, error } = await client.rpc('list_my_support_persons');
+    if (error) return fail(mapError(error));
+    return ok(((data ?? []) as SupportPersonRow[]).map(mapSupportPerson));
   });
 }
 
 /**
- * Suggested questions served by the mock, with the wording from the design.
- * The real ones will be generated on the back end.
+ * Adds a support person, or edits one when `person.supportPersonId` is set. Adding a mobile
+ * number the patient already has updates that person.
  */
-const MOCK_SUGGESTED_GROUPS: SuggestedQuestionGroup[] = [
-  {
-    groupId: 'pain-location',
-    title: 'Pain location',
-    questions: [
-      { questionId: 1, text: 'What could be causing pain in my lower back, neck, and knee?' },
-      { questionId: 2, text: 'Are these areas related, or are they likely separate issues?' },
-    ],
-  },
-  {
-    groupId: 'pain-intensity',
-    title: 'Pain intensity',
-    questions: [
-      {
-        questionId: 3,
-        text: 'My average pain over the past two weeks has been around 7 — what does this indicate?',
-      },
-      {
-        questionId: 4,
-        text: 'Even though I don’t have pain right now, I’ve had severe pain at times (up to 9). What could explain these flare-ups?',
-      },
-      {
-        questionId: 5,
-        text: 'Is it normal for pain to vary between mild (2) and very severe (9)?',
-      },
-      { questionId: 6, text: 'What can I do to better manage days when the pain is high?' },
-    ],
-  },
-  {
-    groupId: 'pain-impact',
-    title: 'Pain impact',
-    questions: [
-      { questionId: 7, text: 'What treatments or therapies could help improve my mobility?' },
-      {
-        questionId: 8,
-        text: 'Would physiotherapy or a specific exercise program be appropriate for me?',
-      },
-      { questionId: 9, text: 'Are there movements or activities I should avoid right now?' },
-      {
-        questionId: 10,
-        text: 'My pain is making it hard to take care of myself independently — what can we do to improve this?',
-      },
-      {
-        questionId: 11,
-        text: 'Are there strategies, aids, or supports that could help with daily tasks?',
-      },
-      {
-        questionId: 12,
-        text: 'Should we adjust my treatment plan given how much this is affecting my independence?',
-      },
-      { questionId: 13, text: 'Is this level of impact typical for my condition?' },
-      { questionId: 14, text: 'What options are available to improve my quality of life?' },
-    ],
-  },
-  {
-    groupId: 'management',
-    title: 'Management',
-    questions: [
-      { questionId: 15, text: 'Are there additional investigations or referrals that might help?' },
-      { questionId: 16, text: 'How can I prevent the pain from becoming severe again?' },
-      {
-        questionId: 17,
-        text: 'What are realistic goals for improving my function and independence?',
-      },
-    ],
-  },
-];
+export function saveSupportPerson(
+  person: SupportPerson,
+  client: Client = supabase,
+): Promise<Result<SupportPerson>> {
+  return run(async () => {
+    const problem = supportPersonError(person);
+    if (problem) return fail(problem);
+    const { data, error } = await client.rpc('save_support_person', {
+      ...supportPersonArgs(person),
+      ...(person.supportPersonId === undefined
+        ? {}
+        : { p_support_person_id: person.supportPersonId }),
+    });
+    if (error) return fail(mapError(error));
+    return ok(mapSupportPerson(data as SupportPersonRow));
+  });
+}
 
-/** Date the mock suggestions were "generated", as a calendar date. */
-const MOCK_SUGGESTIONS_GENERATED_ON = '2026-05-25';
+/** Deletes a support person. Their links to appointments go with them. */
+export function deleteSupportPerson(
+  supportPersonId: number,
+  client: Client = supabase,
+): Promise<Result<void>> {
+  return run(async () => {
+    const { error } = await client
+      .from('support_persons')
+      .delete()
+      .eq('support_person_id', supportPersonId);
+    if (error) return fail(mapError(error));
+    return ok(undefined);
+  });
+}
 
-/** The questions ticked at the start (as drawn in the design). Applies to every appointment. */
-const MOCK_DEFAULT_SELECTED_IDS = [1, 2, 3, 4, 6, 7, 9, 15];
+// ---------------------------------------------------------------- questions
 
-/** Doctor's answers already noted, keyed by question id. Set to `{}` to see no answered questions. */
-const MOCK_DOCTOR_ANSWERS: Record<number, string> = {
-  2: 'They are likely linked through posture. We will review this at the next visit.',
+type SuggestionsAppointmentRow = SuggestionsRow & {
+  appointment_questions: QuestionRow[];
 };
 
-/** Questions chosen for each appointment, kept in memory by the mock. Lost on app restart. */
-const selectedQuestionIds = new Map<number, number[]>();
-/** Doctor's answers kept in memory by the mock, keyed by appointment id then question id. */
-const doctorAnswers = new Map<number, Record<number, string>>();
-
-const allSuggestedQuestionIds = () =>
-  MOCK_SUGGESTED_GROUPS.flatMap((group) => group.questions.map((q) => q.questionId));
-
-const selectedIdsFor = (appointmentId: number): number[] =>
-  selectedQuestionIds.get(appointmentId) ?? MOCK_DEFAULT_SELECTED_IDS;
-
-const answersFor = (appointmentId: number): Record<number, string> =>
-  doctorAnswers.get(appointmentId) ?? MOCK_DOCTOR_ANSWERS;
-
-/** The suggested questions for an appointment, with which are chosen and which have answers. */
-export async function getQuestionSuggestions(
+async function readSuggestionsRow(
+  client: Client,
   appointmentId: number,
+): Promise<Result<SuggestionsAppointmentRow>> {
+  const { data, error } = await client
+    .from('appointment')
+    .select(APPOINTMENT_SUGGESTIONS_SELECT)
+    .eq('appointment_id', appointmentId)
+    .maybeSingle();
+  if (error) return fail(mapError(error));
+  if (!data) return fail(NOT_FOUND);
+  return ok(data as unknown as SuggestionsAppointmentRow);
+}
+
+/**
+ * Generates the questions from the person's latest assessments, stores them, and puts the
+ * default ones on the plan. Resolves with the stored rows, or null when nothing was generated.
+ */
+async function generateAndStoreQuestions(
+  client: Client,
+  appointmentId: number,
+): Promise<Result<SuggestionsAppointmentRow | null>> {
+  const assessments = await getAssessments({ kind: 'latest' }, client);
+  if (!assessments.ok) return fail(assessments.error);
+  const generated = generateQuestions(assessments.data);
+  if (generated.length === 0) return ok(null);
+
+  const stored = await client.rpc('save_appointment_suggestions', {
+    p_appointment_id: appointmentId,
+    // the person's local calendar date, not a UTC one
+    p_generated_on: toIsoDate(new Date()),
+    p_questions: generated.map((q) => ({ group_key: q.groupKey, question: q.question })),
+  });
+  if (stored.error) return fail(mapError(stored.error));
+
+  const reread = await readSuggestionsRow(client, appointmentId);
+  if (!reread.ok) return reread;
+  // false: another call stored them first, so its choices stand
+  if (stored.data !== true) return ok(reread.data);
+
+  const defaultTexts = new Set(generated.filter((q) => q.preselected).map((q) => q.question));
+  const defaultIds = reread.data.appointment_questions
+    .filter((row) => defaultTexts.has(row.question))
+    .map((row) => row.question_id);
+  if (defaultIds.length === 0) return ok(reread.data);
+
+  const chosen = await client.rpc('save_appointment_questions', {
+    p_appointment_id: appointmentId,
+    p_question_ids: defaultIds,
+  });
+  if (chosen.error) return fail(mapError(chosen.error));
+  const keep = new Set(defaultIds);
+  return ok({
+    ...reread.data,
+    appointment_questions: reread.data.appointment_questions.map((row) => ({
+      ...row,
+      is_selected: keep.has(row.question_id),
+    })),
+  });
+}
+
+/** Loads in progress, so a screen that asks twice at once (a remount) shares one load. */
+const suggestionsInFlight = new Map<number, Promise<Result<QuestionSuggestions>>>();
+
+/**
+ * The suggested questions for an appointment, with which are chosen and which have answers. The
+ * first time, they are generated from the latest assessments and stored; after that the stored
+ * ones are returned unchanged. Two loads of the same appointment at the same time share one, so
+ * the default ticks are never lost to a second call that finds the questions already stored.
+ */
+export function getQuestionSuggestions(
+  appointmentId: number,
+  client: Client = supabase,
 ): Promise<Result<QuestionSuggestions>> {
-  return withAppointment(appointmentId, (appointment) => {
-    const selected = selectedIdsFor(appointmentId);
-    const answers = answersFor(appointmentId);
+  const running = suggestionsInFlight.get(appointmentId);
+  if (running) return running;
+
+  const load = run(async () => {
+    const row = await readSuggestionsRow(client, appointmentId);
+    if (!row.ok) return row;
+    if (row.data.appointment_questions.length > 0) {
+      return ok(mapQuestionSuggestions(row.data, row.data.appointment_questions));
+    }
+
+    const generated = await generateAndStoreQuestions(client, appointmentId);
+    if (!generated.ok) return generated;
+    const source = generated.data ?? row.data;
+    return ok(mapQuestionSuggestions(source, source.appointment_questions));
+  }).finally(() => suggestionsInFlight.delete(appointmentId));
+  suggestionsInFlight.set(appointmentId, load);
+  return load;
+}
+
+/**
+ * The questions generated from the person's latest assessments, for browsing without an
+ * appointment. Nothing is stored. The groups are empty until the assessments needed to generate
+ * them are done, and `missing` names the ones still to do.
+ */
+export function previewGeneratedQuestions(
+  client: Client = supabase,
+): Promise<Result<GeneratedQuestionsPreview>> {
+  return run(async () => {
+    const assessments = await getAssessments({ kind: 'latest' }, client);
+    if (!assessments.ok) return fail(assessments.error);
     return ok({
-      appointmentStatus: appointment.status,
-      generatedOn: MOCK_SUGGESTIONS_GENERATED_ON,
-      groups: MOCK_SUGGESTED_GROUPS.map((group) => ({
-        ...group,
-        questions: group.questions.map((question) => ({ ...question })),
-      })),
-      selectedQuestionIds: [...selected],
-      answeredQuestionIds: selected.filter((id) => Boolean(answers[id])),
+      groups: mapGeneratedQuestionGroups(generateQuestions(assessments.data)),
+      missing: missingAssessments(assessments.data),
     });
   });
 }
 
 /**
  * Saves which suggested questions are on the appointment plan. A question that is removed loses
- * its doctor's answer. MOCK: kept in memory; it will map to rows of `appointment_questions`.
+ * its doctor's answer. At least one must stay.
  */
-export async function saveAppointmentQuestions(
+export function saveAppointmentQuestions(
   appointmentId: number,
   questionIds: number[],
+  client: Client = supabase,
 ): Promise<Result<void>> {
-  return withAppointment(appointmentId, () => {
-    const known = new Set(allSuggestedQuestionIds());
-    if (!questionIds.every((id) => known.has(id))) {
-      return fail({ code: 'VALIDATION', message: 'UNKNOWN_QUESTION' });
-    }
-    const keep = new Set(questionIds);
-    const remaining: Record<number, string> = {};
-    Object.entries(answersFor(appointmentId)).forEach(([id, answer]) => {
-      if (keep.has(Number(id))) remaining[Number(id)] = answer;
+  return run(async () => {
+    if (questionIds.length === 0) return fail(invalid('NO_QUESTIONS'));
+    const { error } = await client.rpc('save_appointment_questions', {
+      p_appointment_id: appointmentId,
+      p_question_ids: questionIds,
     });
-    selectedQuestionIds.set(appointmentId, [...questionIds]);
-    doctorAnswers.set(appointmentId, remaining);
+    if (error) return fail(mapError(error));
     return ok(undefined);
   });
 }
 
-/** The chosen questions, grouped, with any doctor's answers: what the review screen shows. */
-function buildPlanGroups(appointmentId: number): QuestionGroup[] {
-  const selected = new Set(selectedIdsFor(appointmentId));
-  const answers = answersFor(appointmentId);
-  return MOCK_SUGGESTED_GROUPS.map((group) => ({
-    groupId: group.groupId,
-    title: group.title,
-    questions: group.questions
-      .filter((question) => selected.has(question.questionId))
-      .map((question) => ({
-        questionId: question.questionId,
-        text: question.text,
-        doctorAnswer: answers[question.questionId] ?? null,
-      })),
-  })).filter((group) => group.questions.length > 0);
-}
-
-/** Signed consents held in memory by the mock, keyed by appointment id. Lost on app restart. */
-const savedConsents = new Map<number, { signature: string; consentedAt: string }>();
+// ---------------------------------------------------------------- consent, plan, answers
 
 /**
- * Saves the signed recording consent for an appointment.
- * MOCK: keeps it in memory. It will map to the appointment columns `recording_consent_signature`
- * and `recording_consent_at`.
+ * Saves the doctor's signature that allows the consultation to be recorded. Resolves with the
+ * time the server recorded (a UTC instant as ISO text); the phone's clock is not used.
  */
-export async function saveRecordingConsent(input: RecordingConsentInput): Promise<Result<void>> {
-  return withAppointment(input.appointmentId, () => {
-    savedConsents.set(input.appointmentId, {
-      signature: input.signature,
-      consentedAt: input.consentedAt,
+export function saveRecordingConsent(
+  input: RecordingConsentInput,
+  client: Client = supabase,
+): Promise<Result<string>> {
+  return run(async () => {
+    if (!isSignatureWithinLimit(input.signature)) return fail(invalid('INVALID_SIGNATURE'));
+    const { data, error } = await client.rpc('save_recording_consent', {
+      p_appointment_id: input.appointmentId,
+      p_signature: input.signature,
     });
-    return ok(undefined);
+    if (error) return fail(mapError(error));
+    return ok(data);
   });
 }
 
-/** The names of an appointment's support people as one line, or null when there are none. */
-function supportNamesFor(appointmentId: number): string | null {
-  const people = supportPeopleFor(appointmentId);
-  return people.length > 0 ? people.map((person) => person.name).join(', ') : null;
-}
-
-/** The plan for one appointment: its details, support person and questions. */
-export async function getAppointmentPlan(appointmentId: number): Promise<Result<AppointmentPlan>> {
-  return withAppointment(appointmentId, (appointment) =>
-    ok({
-      appointment,
-      supportPersonName: supportNamesFor(appointmentId),
-      recordingConsentedAt: savedConsents.get(appointmentId)?.consentedAt ?? null,
-      questionGroups: buildPlanGroups(appointmentId),
-    }),
-  );
+/** The plan for one appointment: its details, support people, consent and chosen questions. */
+export function getAppointmentPlan(
+  appointmentId: number,
+  client: Client = supabase,
+): Promise<Result<AppointmentPlan>> {
+  return run(async () => {
+    const { data, error } = await client
+      .from('appointment')
+      .select(APPOINTMENT_PLAN_SELECT)
+      .eq('appointment_id', appointmentId)
+      .maybeSingle();
+    if (error) return fail(mapError(error));
+    if (!data) return fail(NOT_FOUND);
+    const row = data as unknown as AppointmentPlanRow & {
+      appointment_questions: QuestionRow[];
+      appointment_has_support_persons: SupportPersonLinkRow[];
+    };
+    return ok(
+      mapAppointmentPlan(
+        row,
+        row.appointment_questions,
+        mapSupportPeopleFromLinks(row.appointment_has_support_persons),
+      ),
+    );
+  });
 }
 
 /**
- * Saves doctor's answers (plain text). An empty answer text clears the answer.
- * MOCK: kept in memory; it will map to `appointment_questions.answer`.
+ * Saves doctor's answers (plain text). An empty answer text clears the answer. All or nothing,
+ * and the doctor must have consented to the recording first.
  */
-export async function saveAnswers(
+export function saveAnswers(
   appointmentId: number,
   answers: AnswerInput[],
+  client: Client = supabase,
 ): Promise<Result<void>> {
-  return withAppointment(appointmentId, () => {
-    const onPlan = new Set(selectedIdsFor(appointmentId));
-    if (!answers.every((answer) => onPlan.has(answer.questionId))) {
-      return fail({ code: 'VALIDATION', message: 'QUESTION_NOT_ON_PLAN' });
+  return run(async () => {
+    if (answers.length === 0) return ok(undefined);
+    if (answers.some((answer) => answer.answerText.trim().length > MAX_ANSWER_LENGTH)) {
+      return fail(invalid('VALUE_TOO_LONG'));
     }
-    const next = { ...answersFor(appointmentId) };
-    answers.forEach(({ questionId, answerText }) => {
-      const text = answerText.trim();
-      if (text) next[questionId] = text;
-      else delete next[questionId];
+    const { error } = await client.rpc('save_appointment_answers', {
+      p_appointment_id: appointmentId,
+      p_answers: answers.map(({ questionId, answerText }) => ({
+        question_id: questionId,
+        answer_text: answerText,
+      })),
     });
-    doctorAnswers.set(appointmentId, next);
+    if (error) return fail(mapError(error));
     return ok(undefined);
   });
 }

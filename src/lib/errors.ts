@@ -15,6 +15,7 @@ export type AppErrorCode =
   | 'OTP_EXPIRED'
   | 'RATE_LIMITED'
   | 'PROFILE_EXISTS'
+  | 'CONSENT_REQUIRED'
   | 'SMS_FAILED'
   | 'NETWORK'
   | 'UNKNOWN';
@@ -28,6 +29,9 @@ export type AppError = {
   field?: string;
 };
 
+// P0001 messages that mean the caller may not do this. Checked first: a later validation message
+// can be a substring of one of these (the mapper matches with `includes`).
+const NOT_ALLOWED_MESSAGES = ['NOT_A_PATIENT'] as const;
 // P0001 messages raised by the save functions that keep their own code
 const PASSTHROUGH_CODES = [
   'NO_PROFILE',
@@ -37,6 +41,7 @@ const PASSTHROUGH_CODES = [
   'PROFILE_EXISTS',
   'NO_SESSION',
   'INVALID_PHONE',
+  'CONSENT_REQUIRED',
 ] as const;
 // P0001 messages that the app treats as a validation problem
 const VALIDATION_MESSAGES = [
@@ -54,6 +59,18 @@ const VALIDATION_MESSAGES = [
   'INVALID_CONDITION',
   'MEDICATION_CONFLICT',
   'NO_NAME',
+  'NO_DATE_TIME',
+  'TOO_MANY_SUPPORT_PEOPLE',
+  'INVALID_SUPPORT_PERSON',
+  'UNKNOWN_QUESTION',
+  'QUESTION_NOT_ON_PLAN',
+  'NO_QUESTIONS',
+  'INVALID_SIGNATURE',
+  'INVALID_QUESTION',
+  'INVALID_ANSWER',
+  'APPOINTMENT_NOT_SAVED',
+  'INVALID_ACCESS_TYPE',
+  'DUPLICATE_SUPPORT_PERSON',
 ] as const;
 
 export function mapError(error: unknown): AppError {
@@ -76,6 +93,9 @@ export function mapError(error: unknown): AppError {
     case 'sms_send_failed':
       return { code: 'SMS_FAILED', message };
     case 'P0001': {
+      if (NOT_ALLOWED_MESSAGES.some((c) => message.includes(c))) {
+        return { code: 'NOT_ALLOWED', message };
+      }
       const passthrough = PASSTHROUGH_CODES.find((c) => message.includes(c));
       if (passthrough) return { code: passthrough, message };
       const validation = VALIDATION_MESSAGES.find((c) => message.includes(c));
