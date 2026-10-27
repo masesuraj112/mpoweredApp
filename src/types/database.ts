@@ -115,20 +115,29 @@ export type Database = {
         Row: {
           answer: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id: number
+          sort_order: number
         }
         Insert: {
           answer?: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id?: never
+          sort_order: number
         }
         Update: {
           answer?: string | null
           appointment_id?: number
+          group_key?: string
+          is_selected?: boolean
           question?: string
           question_id?: never
+          sort_order?: number
         }
         Relationships: [
           {
