@@ -146,8 +146,8 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 
 ## Phase 8: Docs, checks, QA
 - [x] 8.1 Docs (the plan file itself still needs copying to `docs/backend/care-planner-build-plan.md`)
-- [ ] 8.2 Full checks
-- [ ] 8.3 Manual QA
+- [x] 8.2 Full checks run locally (typecheck, lint, 64 tracked jest suites). CI not yet seen: no pull request, so pgTAP, `db lint` and the types diff have not run
+- [!] 8.3 Manual QA (needs two test patients on a device with the dev project; not done)
 
 ## Open care planner decisions
 | ID | Decision | Status |
