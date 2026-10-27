@@ -5,7 +5,7 @@ select plan(20);
 -- fixtures (inserted as the superuser): patient A (the signed-in patient), patient B.
 --   a1: draft, no consent, questions Q1 (on the plan) and Q2 (off it)
 --   a2: draft, no consent, one question that is off the plan
---   a3: draft, consent recorded, question Q3 on the plan
+--   a3: saved, consent recorded, question Q3 on the plan
 --   a4: draft, no questions at all
 insert into auth.users (id) values
   ('00000000-0000-0000-0000-00000000000a'),
@@ -15,16 +15,16 @@ insert into public.users (name, auth_id, user_type) values
   ('Test B', '00000000-0000-0000-0000-00000000000b', 'patient');
 insert into public.patients (sex, users_id)
   select 'Female', users_id from public.users;
-insert into public.appointment (patient_id, date_time, recording_consent_at)
-  select p.patient_id, d.dt, d.consent
+insert into public.appointment (patient_id, date_time, recording_consent_at, status, saved_at)
+  select p.patient_id, d.dt, d.consent, d.st, d.sat
     from public.patients p
     join public.users u using (users_id)
     cross join (values
-      ('2026-11-05 14:30'::timestamp, null::timestamptz),
-      ('2026-11-06 09:00', null),
-      ('2026-11-07 09:00', now()),
-      ('2026-11-08 09:00', null)
-    ) as d(dt, consent)
+      ('2026-11-05 14:30'::timestamp, null::timestamptz, 'draft', null::timestamptz),
+      ('2026-11-06 09:00', null, 'draft', null),
+      ('2026-11-07 09:00', now(), 'saved', now()),
+      ('2026-11-08 09:00', null, 'draft', null)
+    ) as d(dt, consent, st, sat)
    where u.name = 'Test A';
 
 create temp table ctx (k text primary key, v int);
