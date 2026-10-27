@@ -121,7 +121,7 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 - [x] 3.5 A5 rpc_appointment_details
 - [x] 3.6 A6 rpc_suggestions_questions
 - [x] 3.7 A7 rpc_support_people
-- [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written: CI types-diff must confirm; pgTAP not run locally)
+- [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written; CI types diff matched after one ordering fix; pgTAP passes in CI)
 
 - [x] 3.9 Extra: `support_people_relink_and_link_policy` (re-save of two support people; owner-only link policy; test 088)
 
@@ -148,7 +148,7 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 
 ## Phase 8: Docs, checks, QA
 - [x] 8.1 Docs
-- [x] 8.2 Full checks run locally (typecheck, lint, 64 tracked jest suites). CI not yet seen: no pull request, so pgTAP, `db lint` and the types diff have not run
+- [x] 8.2 Full checks run locally (typecheck, lint, 64 tracked jest suites). CI is green (pgTAP, `db lint`, types diff)
 - [!] 8.3 Manual QA (needs two test patients on a device with the dev project; not done)
 
 ## Open care planner decisions

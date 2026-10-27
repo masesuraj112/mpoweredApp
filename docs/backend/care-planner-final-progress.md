@@ -8,12 +8,12 @@ Branch `feature/care-planner-backend` (from `main` at `f2e60f1`). Written 27 Oct
 |---|---|
 | Plan phases 0–8 | Done, except 6.4 (blocked on the client) and 8.3 (manual QA, not done) |
 | Migrations | 9 written and committed (8 from the plan plus 1 added during review) |
-| pgTAP files | 9 written (`080`–`088`), assertion counts checked against each `plan(N)`. **Never run.** |
-| Generated types (`src/types/database.ts`) | **Hand-written.** CI's types-diff step has not confirmed them |
+| pgTAP files | 9 written (`080`–`088`). **Pass in CI** after one test fix (`3042afc`: a phone value longer than the `varchar(12)` column) |
+| Generated types (`src/types/database.ts`) | Written by hand; CI's types diff found one ordering difference, fixed in `29c7d3e`. **Now matches the generator** |
 | Typecheck | Clean |
 | Lint | 0 errors (about 28 warnings, mostly the existing `import/first` pattern in test files) |
 | Jest (tracked tests) | 65 suites, 900 tests, all passing |
-| CI | **Never run on this branch.** CI only runs on pull requests and pushes to `main`, and no pull request has been opened |
+| CI | **Green** on the pull request (`database-tests` including pgTAP, `db lint` and the types diff). One early run failed on a runner port clash (54324) before any test ran, and passed on re-run |
 | Pushed | Yes, to `origin/feature/care-planner-backend` |
 
 ## 2. What was built
@@ -100,8 +100,8 @@ The commits after this record add the updated support person plan and this docum
 
 ## 6. Not verified / known open items
 
-1. **CI has not run.** Open a pull request, then check `database-tests` (pgTAP `080`–`088`, `supabase db lint`, the types diff), `migrations-immutable`, `unit-tests` and `static-checks`. If the types diff fails, copy the generated file from the log. The entries for `list_my_support_persons`, `save_appointment_support_people` and `save_support_person` (the functions returning `support_persons` rows) are the likeliest to differ.
-2. **pgTAP is untested.** The assertions were written by hand without running them. Expect some wording or ordering fixes on first run, and fix them in new commits.
+1. **CI is green** (fixed along the way: a phone test value that exceeded `varchar(12)`, and the order of one entry in the generated types).
+2. **pgTAP now runs in CI and passes.** The only failure on first run was the phone test above.
 3. **Manual QA (plan 8.3) not done.** It needs two test patients on a device with the dev project (`0491 570 006` and a second account, code `123456`).
 4. **Client decisions open:** M1 (health service list), M2 (extra question rules and the "past two weeks" wording), M3 (generation gate). Also optional hardening: M4 (account deletion), M5 (no rule on past/future appointment dates), M6 (draft appointments are never cleaned up).
 5. **Hosted data will change on deploy.** Existing appointments become `saved`; support-person phones that are not `+614…` mobiles become NULL; unknown `access_type` values become `none`; existing question rows get group `other`.

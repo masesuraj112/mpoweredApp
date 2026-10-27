@@ -225,5 +225,5 @@ The first push of each migration fails the types diff; copy the generated file f
 - **No questions to choose.** When no questions can be generated yet (the generation gate is not met), the questions step continues without saving, instead of rejecting an empty selection.
 - **One suggestions load at a time.** Two loads of the same appointment at once share one, so the default ticks are not lost.
 - **`SupportPerson.status`** belongs to the support-person plan and is not added here.
-- **Generated types were hand-written** for these migrations because Docker and the CI logs were not available; the CI types-diff step must confirm them.
+- **Generated types were hand-written** for these migrations because Docker and the CI logs were not available. The CI types diff reported one ordering difference (`save_appointment_suggestions` before `save_appointment_support_people`), which was fixed; everything else matched.
 - **Appendix A (migration SQL) and Appendix B (behaviour script)** are the migration files in `supabase/migrations/` and the pgTAP files `080`–`088`.

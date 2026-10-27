@@ -4,7 +4,7 @@
 > **Starts after the Care Planner back end (`care-planner-build-plan.md`, branch `feature/care-planner-backend`) has merged to `main`.** Do not begin earlier (see section 0).
 > Mirrors `login-backend-build-plan.md`: guardrails, decisions register, phases, one commit per step, tests with each step.
 > **Revision 2.** This revision updates the first version against what the Care Planner branch actually delivered (section 0.2 lists every difference). The SQL in Appendices A and C is unchanged except for notes.
-> **Status of the SQL:** A9–A11 were applied in order on top of the 29 repo migrations and the Care Planner's migrations, in a local Postgres 16. The behaviour suite in Appendix C passed and was mutation-checked: re-creating the old `appointment_select` policy makes it fail. **pgTAP itself has not been run** (Docker is never run locally); you translate Appendix C into pgTAP files (section 6) and CI runs them. Note that the Care Planner's own pgTAP files and generated types have not been through CI yet either (section 0.1).
+> **Status of the SQL:** A9–A11 were applied in order on top of the 29 repo migrations and the Care Planner's migrations, in a local Postgres 16. The behaviour suite in Appendix C passed and was mutation-checked: re-creating the old `appointment_select` policy makes it fail. **pgTAP itself has not been run** (Docker is never run locally); you translate Appendix C into pgTAP files (section 6) and CI runs them. The Care Planner's own pgTAP files (`080`–`088`) and generated types have been through CI and pass (section 0.1).
 
 ---
 
@@ -12,10 +12,10 @@
 
 ### 0.1 Before you start: the Care Planner branch must be merged and green
 
-The Care Planner back end is on branch `feature/care-planner-backend` (about 30 commits; see `care-planner-final-progress.md`). It has been checked locally (typecheck, lint, 65 Jest suites) but **its database side has never run in CI**: no pull request had been opened when this plan was written. Before writing anything:
+The Care Planner back end is on branch `feature/care-planner-backend` (about 30 commits; see `care-planner-final-progress.md`). It passed typecheck, lint, 65 Jest suites and the CI `database-tests` job (pgTAP `080`–`088`, `db lint`, the types diff) on its pull request. Before writing anything:
 
 1. Confirm the Care Planner pull request is merged to `main` and that CI was green, including `database-tests` (pgTAP `080`–`088`, `supabase db lint`, and the step "Generated types match the migrations").
-2. **`src/types/database.ts` was edited by hand for those migrations** (Docker and CI logs were not available). If CI's types diff failed and the file was regenerated, you start from the regenerated one; if it was never regenerated, run `supabase gen types typescript --local > src/types/database.ts` via CI as described in `testing-and-cicd.md` before continuing. The three functions that return `support_persons` rows (`list_my_support_persons`, `save_appointment_support_people`, `save_support_person`) are the entries most likely to have differed.
+2. **`src/types/database.ts` was edited by hand for those migrations** (Docker and CI logs were not available); CI's types diff then matched after one ordering fix, so it equals the generator's output. If the file on `main` ever differs, run `supabase gen types typescript --local > src/types/database.ts` via CI as described in `testing-and-cicd.md` before continuing.
 3. If anything in 0.2 is not true in the repo you have, **stop and tell the owner** (guardrail 15).
 
 ### 0.2 What the Care Planner branch delivered (and how it differs from what version 1 of this plan assumed)
