@@ -267,6 +267,8 @@ max_frequency = "5s"
 # DEV/CI ONLY. Never push this to production.
 [auth.sms.test_otp]
 61491570006 = "123456"
+# A second number so a patient and a support person account can exist side by side locally.
+61491570007 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]

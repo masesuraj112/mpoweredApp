@@ -1,0 +1,3 @@
+# Keep .gitignore out of the update runtime version (fingerprint). Its line endings differ between a
+# Windows checkout (CRLF) and the GitHub runner (LF), so a build made on Windows would never match updates.
+.gitignore
