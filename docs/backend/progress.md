@@ -106,12 +106,12 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 - [x] 1.2 Stub inventory (`care-planner-stub-inventory.md`)
 
 ## Phase 2: Pure foundations
-- [ ] 2.1 Error codes and messages
-- [ ] 2.2 Access type and phone helpers
-- [ ] 2.3 Row mappers
-- [ ] 2.4 Signature guard
-- [ ] 2.5 Question generator (needs M2, M3)
-- [ ] 2.6 Friendly messages
+- [x] 2.1 Error codes and messages
+- [x] 2.2 Access type and phone helpers
+- [x] 2.3 Row mappers
+- [x] 2.4 Signature guard
+- [x] 2.5 Question generator (design questions only; M2 and M3 still open, conditions marked PROPOSED)
+- [x] 2.6 Friendly messages
 
 ## Phase 3: Migrations, pgTAP, generated types
 - [ ] 3.1 A1 appointment_status
