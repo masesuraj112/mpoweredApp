@@ -65,8 +65,8 @@ select throws_ok(
 select throws_ok(
   $$insert into public.support_persons (patient_id, name, phone_number, access_type)
     values ((select p.patient_id from public.patients p join public.users u using (users_id)
-             where u.name = 'Test A'), 'Spaced', '+61 411 111 112', 'none')$$,
-  '23514', null, 'a number with spaces is rejected');
+             where u.name = 'Test A'), 'Spaced', '+61 41111111', 'none')$$,
+  '23514', null, 'a number with a space is rejected (12 characters, so it fits the column)');
 
 -- access type rule
 select throws_ok(
