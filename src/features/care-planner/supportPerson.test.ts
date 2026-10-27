@@ -3,6 +3,7 @@ import {
   describeContact,
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
+  availableSupportPeople,
   canAddAnotherPerson,
   isDraftEmpty,
   MAX_SUPPORT_PEOPLE,
@@ -159,5 +160,37 @@ describe('canAddAnotherPerson', () => {
     expect(canAddAnotherPerson(0)).toBe(true);
     expect(canAddAnotherPerson(1)).toBe(true);
     expect(canAddAnotherPerson(2)).toBe(false);
+  });
+});
+
+describe('availableSupportPeople', () => {
+  const person = (id: number | undefined, name: string) => ({
+    supportPersonId: id,
+    name,
+    phone: null,
+    email: null,
+    canAddQuestions: false,
+    canAddAnswers: false,
+  });
+
+  it('offers the saved people who are not on the appointment yet', () => {
+    const saved = [person(1, 'Bron'), person(2, 'Sam'), person(3, 'Alex')];
+    expect(availableSupportPeople(saved, [person(2, 'Sam')]).map((p) => p.name)).toEqual([
+      'Bron',
+      'Alex',
+    ]);
+  });
+
+  it('offers everyone when nobody is chosen, and nobody when all are', () => {
+    const saved = [person(1, 'Bron'), person(2, 'Sam')];
+    expect(availableSupportPeople(saved, [])).toHaveLength(2);
+    expect(availableSupportPeople(saved, saved)).toEqual([]);
+  });
+
+  it('does not offer a person who has no id, and ignores chosen people without one', () => {
+    const saved = [person(undefined, 'Unsaved'), person(1, 'Bron')];
+    expect(availableSupportPeople(saved, [person(undefined, 'Typed in')]).map((p) => p.name)).toEqual([
+      'Bron',
+    ]);
   });
 });

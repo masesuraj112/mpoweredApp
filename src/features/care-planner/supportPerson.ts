@@ -112,3 +112,19 @@ export function describeAccess(person: SupportPerson): string {
   if (person.canAddAnswers) access.push('Add doctor’s answer');
   return access.length > 0 ? access.join(', ') : 'No access chosen';
 }
+
+/**
+ * The patient's saved support people who are not yet on this appointment, so they can be added
+ * without typing them again. Only people already stored (with an id) can be offered.
+ */
+export function availableSupportPeople(
+  saved: readonly SupportPerson[],
+  chosen: readonly SupportPerson[],
+): SupportPerson[] {
+  const chosenIds = new Set(
+    chosen.flatMap((person) => (person.supportPersonId === undefined ? [] : [person.supportPersonId])),
+  );
+  return saved.filter(
+    (person) => person.supportPersonId !== undefined && !chosenIds.has(person.supportPersonId),
+  );
+}

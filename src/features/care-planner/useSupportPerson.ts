@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 
 import type { AppError } from '@/lib/errors';
-import { getSupportPeople, saveSupportPeople } from '@/services/care-planner';
+import { getSupportPeople, listMySupportPersons, saveSupportPeople } from '@/services/care-planner';
 
 import {
+  availableSupportPeople,
   canAddAnotherPerson,
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
@@ -29,6 +30,11 @@ const sameList = (a: readonly SupportPerson[], b: readonly SupportPerson[]) =>
 export function useSupportPerson(appointmentId: number) {
   const load = useCallback(() => getSupportPeople(appointmentId), [appointmentId]);
   const { state, reload: reloadPeople } = useAsyncResult(load);
+
+  // The patient's saved support people (from Settings), offered so nobody is typed in twice. If
+  // this list cannot be loaded the step still works: it just offers no one.
+  const loadSaved = useCallback(() => listMySupportPersons(), []);
+  const { state: savedState } = useAsyncResult(loadSaved);
 
   // The list as edited on this screen (null until it is changed) and as last saved by it (null
   // until a save). Both fall back to what was loaded, so there is no copy to keep in sync.
@@ -86,6 +92,15 @@ export function useSupportPerson(appointmentId: number) {
     return true;
   }, [draft, people]);
 
+  /** Adds a saved support person to this appointment's list. */
+  const addExisting = useCallback(
+    (person: SupportPerson) => {
+      if (!canAddAnotherPerson(people.length)) return;
+      setEditedPeople([...people, person]);
+    },
+    [people],
+  );
+
   const removePerson = useCallback(
     (index: number) => setEditedPeople(people.filter((_, i) => i !== index)),
     [people],
@@ -136,6 +151,12 @@ export function useSupportPerson(appointmentId: number) {
     updateDraft,
     blurField,
     addAnother,
+    addExisting,
+    /** Saved support people who are not on this appointment yet. */
+    availablePeople: availableSupportPeople(
+      savedState.status === 'ready' ? savedState.data : [],
+      people,
+    ),
     removePerson,
     save,
     skip,

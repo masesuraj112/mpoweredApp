@@ -4,6 +4,7 @@ import { AccessibilityInfo, StyleSheet, Text } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
+import { ExistingSupportPeople } from '@/components/care-planner/ExistingSupportPeople';
 import { SupportPersonForm } from '@/components/care-planner/SupportPersonForm';
 import { SupportPersonList } from '@/components/care-planner/SupportPersonList';
 import { ActionBar } from '@/components/ui/ActionBar';
@@ -82,6 +83,14 @@ export default function SupportPersonScreen() {
       {form.loadStatus === 'ready' ? (
         <>
           <SupportPersonList people={form.people} onRemove={form.removePerson} />
+
+          {!form.atLimit && form.availablePeople.length > 0 ? (
+            <ExistingSupportPeople
+              people={form.availablePeople}
+              disabled={form.saving}
+              onAdd={form.addExisting}
+            />
+          ) : null}
 
           {form.atLimit ? (
             <Text style={styles.limit} accessibilityRole="alert">
