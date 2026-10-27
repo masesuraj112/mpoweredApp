@@ -4,6 +4,7 @@ import {
   EMPTY_SUPPORT_PERSON_DRAFT,
   hasErrors,
   isDraftEmpty,
+  MOBILE_REQUIRED_MESSAGE,
   NAME_REQUIRED_MESSAGE,
   toSupportPerson,
   validateField,
@@ -39,12 +40,21 @@ describe('validateSupportPerson', () => {
   });
 
   it('rejects a bad phone number only when one is entered', () => {
-    expect(validateSupportPerson(draft({ name: 'Bron', phone: '12345' })).phone).toMatch(/phone/i);
+    expect(validateSupportPerson(draft({ name: 'Bron', phone: '12345' })).phone).toBe(
+      MOBILE_REQUIRED_MESSAGE,
+    );
     expect(validateSupportPerson(draft({ name: 'Bron', phone: '' })).phone).toBeUndefined();
   });
 
-  it('accepts an Australian number with spaces', () => {
+  it('accepts an Australian mobile with spaces or in +61 form', () => {
     expect(validateSupportPerson(draft({ name: 'Bron', phone: '0400 000 000' })).phone).toBeUndefined();
+    expect(validateSupportPerson(draft({ name: 'Bron', phone: '+61 400 000 000' })).phone).toBeUndefined();
+  });
+
+  it('rejects a landline: only mobiles can sign in', () => {
+    expect(validateSupportPerson(draft({ name: 'Bron', phone: '02 9999 9999' })).phone).toBe(
+      MOBILE_REQUIRED_MESSAGE,
+    );
   });
 
   it('rejects a bad email only when one is entered', () => {
@@ -70,18 +80,18 @@ describe('validateField', () => {
   });
 
   it('checks the phone and email on their own', () => {
-    expect(validateField('phone', draft({ name: 'Bron', phone: '1' }))).toMatch(/phone/i);
+    expect(validateField('phone', draft({ name: 'Bron', phone: '1' }))).toBe(MOBILE_REQUIRED_MESSAGE);
     expect(validateField('email', draft({ name: 'Bron', email: 'a@b' }))).toMatch(/email/i);
   });
 });
 
 describe('toSupportPerson', () => {
-  it('trims, removes phone separators and turns empty into null', () => {
+  it('trims, sends the phone as E.164 and turns empty into null', () => {
     expect(
       toSupportPerson(draft({ name: '  Bron  ', phone: ' 0400 000-000 ', email: '   ' })),
     ).toEqual({
       name: 'Bron',
-      phone: '0400000000',
+      phone: '+61400000000',
       email: null,
       canAddQuestions: false,
       canAddAnswers: false,
@@ -101,17 +111,23 @@ describe('toSupportPerson', () => {
   });
 });
 
+describe('toSupportPerson: blank phone', () => {
+  it('stays null', () => {
+    expect(toSupportPerson(draft({ name: 'Bron', phone: '   ' })).phone).toBeNull();
+  });
+});
+
 describe('describeContact and describeAccess', () => {
-  it('joins the details that exist', () => {
+  it('joins the details that exist, showing the phone in local format', () => {
     expect(
       describeContact({
         name: 'B',
-        phone: '0400000000',
+        phone: '+61400000000',
         email: 'b@example.com',
         canAddQuestions: false,
         canAddAnswers: false,
       }),
-    ).toBe('0400000000 · b@example.com');
+    ).toBe('0400 000 000 · b@example.com');
     expect(
       describeContact({ name: 'B', phone: null, email: null, canAddQuestions: false, canAddAnswers: false }),
     ).toBe('');
@@ -125,5 +141,12 @@ describe('describeContact and describeAccess', () => {
     expect(describeAccess({ ...base, canAddQuestions: false, canAddAnswers: false })).toBe(
       'No access chosen',
     );
+  });
+});
+
+describe('phone display round-trip', () => {
+  it('shows what was typed (in local format) after being stored as E.164', () => {
+    const person = toSupportPerson(draft({ name: 'Bron', phone: '0400 000 000' }));
+    expect(describeContact(person)).toBe('0400 000 000');
   });
 });

@@ -30,10 +30,13 @@ export type NewAppointmentInput = {
 };
 
 /**
- * Someone nominated to help with an appointment. Phone and email are optional for now; the
+ * Someone nominated to help with an appointment. Phone (an Australian mobile in E.164, +614...)
+ * and email are optional; the
  * access flags match the settings screen's support person (can add questions / answers).
  */
 export type SupportPerson = {
+  /** Set once the person is stored; absent for someone added on screen and not saved yet. */
+  supportPersonId?: number;
   name: string;
   phone: string | null;
   email: string | null;

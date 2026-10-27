@@ -19,6 +19,7 @@ module.exports = {
     'src/features/care-planner/dictation.ts',
     'src/features/care-planner/dateTime.ts',
     'src/features/care-planner/supportPerson.ts',
+    'src/features/care-planner/accessType.ts',
     'src/features/care-planner/reviewMode.ts',
     'src/services/care-planner.ts',
     'src/features/assessments/social-health/mood.ts',

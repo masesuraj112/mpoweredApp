@@ -1,7 +1,8 @@
 // Pure helpers for the support person form.
 // Pure module: no imports from @/lib/supabase, react-native or expo-*.
 
-import { normalisePhone, validateEmail, validatePhone } from '@/services/validation';
+import { formatForDisplay, isValidAuMobile, toE164 } from '@/features/auth/phone';
+import { validateEmail } from '@/services/validation';
 
 import { toOptionalText } from './text';
 import type { SupportPerson } from './types';
@@ -30,6 +31,7 @@ export const EMPTY_SUPPORT_PERSON_DRAFT: SupportPersonDraft = {
 };
 
 export const NAME_REQUIRED_MESSAGE = 'Please enter a name.';
+export const MOBILE_REQUIRED_MESSAGE = 'Please enter an Australian mobile number, e.g. 0400 000 000.';
 
 /** True when nothing has been typed or ticked (whitespace does not count). */
 export function isDraftEmpty(draft: SupportPersonDraft): boolean {
@@ -44,13 +46,15 @@ export function isDraftEmpty(draft: SupportPersonDraft): boolean {
 
 /**
  * Checks a draft that has something in it. The name is required; phone and email are optional,
- * but whichever is filled in must be valid (same rules as the settings support persons screen).
+ * but whichever is filled in must be valid. The phone must be an Australian mobile, because only
+ * mobiles can sign in by SMS (the support person's login is matched to this number later).
  */
 export function validateSupportPerson(draft: SupportPersonDraft): SupportPersonErrors {
   const errors: SupportPersonErrors = {};
   if (draft.name.trim() === '') errors.name = NAME_REQUIRED_MESSAGE;
-  const phoneError = validatePhone(draft.phone, { required: false });
-  if (phoneError) errors.phone = phoneError;
+  if (draft.phone.trim() !== '' && !isValidAuMobile(draft.phone)) {
+    errors.phone = MOBILE_REQUIRED_MESSAGE;
+  }
   const emailError = validateEmail(draft.email, { required: false });
   if (emailError) errors.email = emailError;
   return errors;
@@ -72,21 +76,23 @@ export function validateField(
   return validateSupportPerson(draft)[field];
 }
 
-/** A valid draft as a saved person: trimmed, phone separators removed, empty becomes null. */
+/** A valid draft as a saved person: trimmed, phone in E.164 (+614...), empty becomes null. */
 export function toSupportPerson(draft: SupportPersonDraft): SupportPerson {
   const phone = toOptionalText(draft.phone);
+  const e164 = phone === null ? null : toE164(phone);
   return {
     name: draft.name.trim(),
-    phone: phone === null ? null : normalisePhone(phone),
+    phone: e164 !== null && e164.ok ? e164.data : null,
     email: toOptionalText(draft.email),
     canAddQuestions: draft.canAddQuestions,
     canAddAnswers: draft.canAddAnswers,
   };
 }
 
-/** One line of contact details for a list row, e.g. "0400000000 · name@example.com". */
+/** One line of contact details for a list row, e.g. "0400 000 000 · name@example.com". */
 export function describeContact(person: SupportPerson): string {
-  return [person.phone, person.email].filter(Boolean).join(' · ');
+  const phone = person.phone === null ? null : formatForDisplay(person.phone);
+  return [phone, person.email].filter(Boolean).join(' · ');
 }
 
 /** What access this person has, in words. */
