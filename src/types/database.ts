@@ -929,6 +929,14 @@ export type Database = {
         Args: { target_users_id: number }
         Returns: number
       }
+      save_appointment: {
+        Args: { p_appointment_id: number }
+        Returns: undefined
+      }
+      save_appointment_answers: {
+        Args: { p_answers: Json; p_appointment_id: number }
+        Returns: undefined
+      }
       save_appointment_details: {
         Args: {
           p_appointment_id?: number
@@ -1016,6 +1024,10 @@ export type Database = {
           p_unit_of_time: string
         }
         Returns: number
+      }
+      save_recording_consent: {
+        Args: { p_appointment_id: number; p_signature: string }
+        Returns: string
       }
       save_social_health_assessment: {
         Args: {

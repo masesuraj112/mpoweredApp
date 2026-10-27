@@ -114,14 +114,14 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 - [x] 2.6 Friendly messages
 
 ## Phase 3: Migrations, pgTAP, generated types
-- [ ] 3.1 A1 appointment_status
-- [ ] 3.2 A2 appointment_questions_plan_columns
-- [ ] 3.3 A3 support_persons_align
-- [ ] 3.4 A4 care_planner_privileges_policies
-- [ ] 3.5 A5 rpc_appointment_details
-- [ ] 3.6 A6 rpc_suggestions_questions
-- [ ] 3.7 A7 rpc_support_people
-- [ ] 3.8 A8 rpc_consent_answers_save
+- [x] 3.1 A1 appointment_status
+- [x] 3.2 A2 appointment_questions_plan_columns
+- [x] 3.3 A3 support_persons_align
+- [x] 3.4 A4 care_planner_privileges_policies
+- [x] 3.5 A5 rpc_appointment_details
+- [x] 3.6 A6 rpc_suggestions_questions
+- [x] 3.7 A7 rpc_support_people
+- [x] 3.8 A8 rpc_consent_answers_save (generated types hand-written: CI types-diff must confirm; pgTAP not run locally)
 
 ## Phase 4: Services
 - [ ] 4.1 Appointments
