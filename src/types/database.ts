@@ -798,28 +798,28 @@ export type Database = {
       support_persons: {
         Row: {
           access_type: string
-          email: string
+          email: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number: string | null
           support_person_id: number
           users_id: number | null
         }
         Insert: {
           access_type: string
-          email: string
+          email?: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
         Update: {
           access_type?: string
-          email?: string
+          email?: string | null
           name?: string
           patient_id?: number
-          phone_number?: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
