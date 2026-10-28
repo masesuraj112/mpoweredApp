@@ -5,7 +5,7 @@ Status: done / blocked / skipped / todo.
 
 ## Phase T: code and docs
 - [x] T1 Resend interval 60 s, `formatResendWait` helper, docs updated
-- [ ] T2 Error handling for real SMS failures
+- [x] T2 Error handling for real SMS failures
 - [ ] T3 Guard test for test numbers, Twilio disabled in config, secret scan
 - [ ] T4 Docs after Phase B (blocked until Phase B is done)
 
