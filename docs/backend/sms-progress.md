@@ -21,7 +21,7 @@ Status: done / blocked / skipped / todo.
 - [~] A5 Not needed: values are copied straight from the Twilio console into Supabase at B1 (nothing stored elsewhere)
 
 ## Phase B: Supabase dashboard (user)
-- [ ] B1 Phone provider: Twilio, three values entered in the dashboard only
+- [x] B1 Phone provider: Twilio, three values entered in the dashboard only
 - [ ] B2 OTP length 6, expiry 120 s, message template
 - [ ] B3 Test numbers `0491 570 006` and `0491 570 007` present with `123456`
 - [ ] B4 Rate limits: SMS per hour low, OTP interval 60 s
