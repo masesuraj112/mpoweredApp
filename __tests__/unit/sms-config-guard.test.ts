@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // Guard for the Twilio SMS work (docs/backend/twilio-otp-integration-guide.md, section 3).
 // Reads supabase/config.toml and the tracked source files. Fails if a developer test login is
 // removed, if the local Twilio provider is switched on, or if a Twilio secret is committed.
