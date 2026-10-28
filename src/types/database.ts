@@ -1018,6 +1018,16 @@ export type Database = {
         }
         Returns: number
       }
+      save_personal_care_assessment: {
+        Args: {
+          p_date: string
+          p_general_activities: string[]
+          p_reflection: string
+          p_sleeping: string
+          p_washing_dressing: string
+        }
+        Returns: number
+      }
       save_prescription: {
         Args: {
           p_amount: number
@@ -1034,16 +1044,6 @@ export type Database = {
       save_recording_consent: {
         Args: { p_appointment_id: number; p_signature: string }
         Returns: string
-      }
-      save_personal_care_assessment: {
-        Args: {
-          p_date: string
-          p_general_activities: string[]
-          p_reflection: string
-          p_sleeping: string
-          p_washing_dressing: string
-        }
-        Returns: number
       }
       save_social_health_assessment: {
         Args: {
