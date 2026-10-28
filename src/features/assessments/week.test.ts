@@ -1,6 +1,7 @@
 import {
   addDays,
   addWeeks,
+  formatDayMonth,
   formatWeekEndLabel,
   formatWeekRange,
   getLocalToday,
@@ -88,6 +89,13 @@ describe('formatWeekRange (Monday to Sunday)', () => {
 
   it('accepts any day of the week and formats that whole week', () => {
     expect(formatWeekRange('2026-05-21')).toBe('18–24 May 2026');
+  });
+});
+
+describe('formatDayMonth', () => {
+  it('shows the day without a leading zero and the short month', () => {
+    expect(formatDayMonth('2026-10-27')).toBe('27 Oct');
+    expect(formatDayMonth('2026-01-05')).toBe('5 Jan');
   });
 });
 
