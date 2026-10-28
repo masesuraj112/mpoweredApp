@@ -17,7 +17,7 @@ Status: done / blocked / skipped / todo.
 - [x] A1 Create the Twilio account (named mpowered-test, personal account)
 - [~] A2 Skipped for now: upgrade asks for ID and tax details, so staying on trial; revisit only if B6 is blocked (trial prefix or template limits)
 - [x] A3 Geo permissions: Australia only (Twilio default also had Cocos and Christmas Island, same +61 code)
-- [ ] A4 Messaging Service
+- [x] A4 Messaging Service (MPowered Test OTP) with a US trial-credit number as sender, for the plumbing test only; AU delivery unverified until B6
 - [ ] A5 Store Account SID, Auth Token, Messaging Service SID in a password manager
 
 ## Phase B: Supabase dashboard (user)
