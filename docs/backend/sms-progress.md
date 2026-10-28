@@ -3,6 +3,9 @@
 Guide: `docs/backend/twilio-otp-integration-guide.md` (steps in section 7). Resume a new session from here.
 Status: done / blocked / skipped / todo.
 
+## Decisions recorded during the walkthrough
+- D4 (29 Oct 2026): the Twilio account is a personal one made by Mohammad, because the team has no shared email. Plumbing only: no alphanumeric sender ID, no purchased or KYC'd AU number, no real patient sign-ins. MHA must own the account before launch (moving later means replacing the three dashboard values). Do not record the account email here.
+
 ## Phase T: code and docs
 - [x] T1 Resend interval 60 s, `formatResendWait` helper, docs updated
 - [x] T2 Error handling for real SMS failures
