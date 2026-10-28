@@ -22,7 +22,7 @@ Status: done / blocked / skipped / todo.
 
 ## Phase B: Supabase dashboard (user)
 - [x] B1 Phone provider: Twilio, three values entered in the dashboard only
-- [ ] B2 OTP length 6, expiry 120 s, message template
+- [x] B2 OTP length 6, expiry 120 s, message template
 - [ ] B3 Test numbers `0491 570 006` and `0491 570 007` present with `123456`
 - [ ] B4 Rate limits: SMS per hour low, OTP interval 60 s
 - [ ] B5 Developer-login check (no SMS sent)
