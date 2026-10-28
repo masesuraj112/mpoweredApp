@@ -9,6 +9,7 @@ import { authErrorMessage } from '@/features/auth/messages';
 import {
   OTP_LENGTH,
   RESEND_SECONDS,
+  formatResendWait,
   isCodeComplete as isOtpComplete,
   sanitiseCode,
 } from '@/features/auth/otp';
@@ -41,7 +42,7 @@ export default function VerifyScreen() {
   const isCodeComplete = isOtpComplete(code);
   const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
   const hasResentCode = resendSecondsRemaining !== null;
-  const resendMinutes = Math.round(RESEND_SECONDS / 60);
+  const resendWait = formatResendWait(RESEND_SECONDS);
   const normalisedPhone = toE164(data.phoneNumber);
   const displayPhone = normalisedPhone.ok ? formatForDisplay(normalisedPhone.data) : '';
 
@@ -307,7 +308,7 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              You can resend codes in {resendMinutes} {resendMinutes === 1 ? 'minute' : 'minutes'}
+              You can resend codes in {resendWait}
             </Text>
           </>
         )}

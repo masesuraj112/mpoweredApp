@@ -34,8 +34,8 @@ Items marked **(verify)** are facts I could not confirm from the repo; check the
 ## 5. Rate limits and abuse
 
 - [ ] **SMS sent per hour** (`sms_sent`): set to a value the budget can absorb. Local value is 30.
-- [ ] **Minimum interval between OTP requests** (`max_frequency`): decided together with the UI countdown (`RESEND_SECONDS` in `src/features/auth/otp.ts`, currently 120 s). Decision L3.
-- [ ] **OTP expiry:** the dev project shows 60 s. Confirm the production value and make sure the resend countdown and the expiry make sense together (L3).
+- [ ] **Minimum interval between OTP requests** (`max_frequency`): decided together with the UI countdown (`RESEND_SECONDS` in `src/features/auth/otp.ts`, currently 60 s). Decision L3 (settled: 60 s resend).
+- [ ] **OTP expiry:** set to 120 s in the dashboard (L3, settled). Confirm the production value matches and that the 60 s resend countdown and the 120 s expiry still make sense together.
 - [ ] **Captcha** decision recorded (hCaptcha or Turnstile, or "not now" with the reason).
 - [ ] Request/verification rate limits left at least as strict as the defaults.
 
