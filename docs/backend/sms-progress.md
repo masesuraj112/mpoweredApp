@@ -14,7 +14,7 @@ Status: done / blocked / skipped / todo.
 
 ## Phase A: Twilio (user)
 - [ ] A0 Send MHA the confirmations email (not blocking)
-- [ ] A1 Create the Twilio account
+- [x] A1 Create the Twilio account (named mpowered-test, personal account)
 - [ ] A2 Upgrade out of trial, small balance, auto-recharge off, usage alert
 - [ ] A3 Geo permissions: Australia only
 - [ ] A4 Messaging Service
