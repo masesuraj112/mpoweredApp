@@ -1,4 +1,5 @@
 import { assessmentSaveMessage } from '@/features/assessments/messages';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 import {
   toPersonalCareSummary,
   type PersonalCareSummaryData,
@@ -9,6 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -18,6 +20,16 @@ import {
 } from 'react-native';
 
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
+
+async function closeAndMarkDone() {
+  try {
+    await markAssessmentCompleted('personalCare');
+    router.replace('/(tabs)/home');
+  } catch (error) {
+    console.error('[PersonalCareSummary] Failed to save weekly assessment progress:', error);
+    Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+  }
+}
 
 function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
   return (
@@ -82,7 +94,7 @@ function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={() => router.replace('/tracker')}
+              onPress={closeAndMarkDone}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
@@ -106,7 +118,7 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/tracker');
+  const close = () => router.replace('/(tabs)/home');
 
   useEffect(() => {
     if (!weekStart) return;

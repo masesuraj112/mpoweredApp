@@ -8,7 +8,8 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { getSocialHealthEntryForWeek } from '@/services/social-health';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 
 function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSummaryData; onClose: () => void }) {
   const impact = summary.impactPhrase;
@@ -96,7 +97,19 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/tracker');
+  const close = async () => {
+    if (state.status !== 'ready') {
+      router.replace('/(tabs)/home');
+      return;
+    }
+    try {
+      await markAssessmentCompleted('socialHealth');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.error('[SocialHealthSummary] Failed to save weekly assessment progress:', error);
+      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (!weekStart) return;

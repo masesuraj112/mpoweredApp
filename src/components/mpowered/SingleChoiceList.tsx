@@ -147,7 +147,8 @@ const optionStyles = StyleSheet.create({
     overflow: 'hidden',
   },
   personalCareListFixedHeight: {
-    height: scaleHeight(340),
+    flex: 1,
+    minHeight: 0,
   },
   personalCareRow: {
     minHeight: scaleHeight(56),

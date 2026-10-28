@@ -4,32 +4,59 @@ import { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
-
-// TODO: replace with a Supabase query once prescriptions are wired up, e.g.
-// supabase.from('prescriptions').select('*').eq('users_id', userId)
-import { PrescriptionScript, SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { healthLoadMessage } from '@/features/health-profile/messages';
+import {
+  formatFrequency,
+  formatPrescriptionName,
+  prescriptionErrorMessage,
+  type Prescription,
+} from '@/features/health-profile/prescriptions';
+import { useFocusedQuery } from '@/hooks/useFocusedQuery';
+import { deletePrescription, getPrescriptions } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
 
+function showMessage(title: string, message: string) {
+  // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
+  if (Platform.OS === 'web') window.alert(message);
+  else Alert.alert(title, message);
+}
+
+const loadPrescriptions = () => getPrescriptions();
+
 export default function PrescriptionsScreen() {
-  const [prescriptions, setPrescriptions] = useState(SAMPLE_PRESCRIPTION_SCRIPTS);
-  const isEmpty = prescriptions.length === 0;
+  const { state, setState, reload } = useFocusedQuery(loadPrescriptions);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const prescriptions = state.status === 'ready' ? state.data : [];
+  const isEmpty = state.status === 'ready' && prescriptions.length === 0;
 
-  const handleEdit = (prescription: PrescriptionScript) => {
-    router.push({ pathname: '/health/prescriptions/add', params: { id: prescription.id } });
+  const handleEdit = (prescription: Prescription) => {
+    router.push({ pathname: '/health/prescriptions/add', params: { id: String(prescription.id) } });
   };
 
-  const removePrescription = (id: string) => {
-    // TODO: also delete from Supabase once prescriptions are wired up, e.g.
-    // supabase.from('prescriptions').delete().eq('id', id)
-    setPrescriptions((current) => current.filter((prescription) => prescription.id !== id));
+  const removePrescription = async (id: number) => {
+    setDeletingId(id);
+    const result = await deletePrescription(id);
+    setDeletingId(null);
+    if (!result.ok && result.error.code !== 'NOT_FOUND') {
+      showMessage('Prescription not deleted', prescriptionErrorMessage(result.error));
+      return;
+    }
+    // NOT_FOUND means it is already gone, so removing it from the list is still right
+    setState((current) =>
+      current.status === 'ready'
+        ? { status: 'ready', data: current.data.filter((prescription) => prescription.id !== id) }
+        : current,
+    );
   };
 
-  const handleDelete = (prescription: PrescriptionScript) => {
-    const message = `Remove ${prescription.name} from your prescriptions?`;
+  const handleDelete = (prescription: Prescription) => {
+    const message = `Remove ${formatPrescriptionName(prescription)} from your prescriptions?`;
 
     // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
     if (Platform.OS === 'web') {
@@ -48,7 +75,12 @@ export default function PrescriptionsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <PrescriptionsHeader title="My Prescriptions" />
 
-        {isEmpty ? (
+        {state.status === 'loading' && <LoadingState label="Loading your prescriptions" />}
+        {state.status === 'error' && (
+          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+        )}
+
+        {state.status !== 'ready' ? null : isEmpty ? (
           <View style={styles.emptyState}>
             <View style={styles.pillIconFrame}>
               <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" />
@@ -66,26 +98,30 @@ export default function PrescriptionsScreen() {
             <View style={styles.listFrame}>
               <View style={styles.list}>
                 {prescriptions.map((prescription) => (
-                  <View key={prescription.id} style={styles.listItem}>
+                  <View
+                    key={prescription.id}
+                    style={[styles.listItem, deletingId === prescription.id && styles.listItemDeleting]}
+                  >
                     <View style={styles.listItemTextColumn}>
-                      <Text style={styles.name}>{prescription.name}</Text>
-                      <Text style={styles.frequency}>{prescription.frequency}</Text>
+                      <Text style={styles.name}>{formatPrescriptionName(prescription)}</Text>
+                      <Text style={styles.frequency}>{formatFrequency(prescription)}</Text>
                     </View>
                     <Pressable
                       style={styles.iconButton}
                       onPress={() => handleEdit(prescription)}
                       hitSlop={scaleWidth(8)}
                       accessibilityRole="button"
-                      accessibilityLabel={`Edit ${prescription.name}`}
+                      accessibilityLabel={`Edit ${formatPrescriptionName(prescription)}`}
                     >
                       <Image source={editIcon} style={styles.icon} contentFit="contain" />
                     </Pressable>
                     <Pressable
                       style={styles.iconButton}
                       onPress={() => handleDelete(prescription)}
+                      disabled={deletingId !== null}
                       hitSlop={scaleWidth(8)}
                       accessibilityRole="button"
-                      accessibilityLabel={`Delete ${prescription.name}`}
+                      accessibilityLabel={`Delete ${formatPrescriptionName(prescription)}`}
                     >
                       <Image source={deleteIcon} style={styles.icon} contentFit="contain" />
                     </Pressable>
@@ -184,6 +220,9 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(8),
     borderBottomWidth: 1,
     borderBottomColor: OUTLINE_VARIANT,
+  },
+  listItemDeleting: {
+    opacity: 0.4,
   },
   listItemTextColumn: {
     flex: 1,

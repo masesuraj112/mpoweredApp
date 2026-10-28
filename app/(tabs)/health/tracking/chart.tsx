@@ -1,107 +1,207 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Dropdown } from '@/components/mpowered/Dropdown';
 import { PainIntensityChart } from '@/components/mpowered/PainIntensityChart';
 import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { getLocalToday } from '@/features/assessments/week';
+import { healthLoadMessage } from '@/features/health-profile/messages';
+import { buildTrackingChartHtml } from '@/features/health-profile/pdf-export';
+import { formatLongDate } from '@/features/health-profile/profile';
+import {
+  PAIN_METRICS,
+  filterByLocation,
+  loadMoreMessage,
+  painLocations,
+  toChartPoints,
+  toWeeklyRecords,
+  type PainMetric,
+  type WeeklyPainRecord,
+} from '@/features/health-profile/tracking';
+import { usePdfExport } from '@/hooks/usePdfExport';
+import type { AppError } from '@/lib/errors';
+import { getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-type PainMetric = 'average' | 'highest' | 'lowest';
+const PAGE_SIZE = 5;
+const ALL_LOCATIONS = '__all__';
 
-interface WeeklyPainRecord {
-  id: string;
-  rangeLabel: string;
-  chartLabel: string;
-  average: number;
-  highest: number;
-  lowest: number;
-}
-
-// TODO: replace with a Supabase query once tracking data is wired up, e.g.
-// supabase.from('pain_assessment').select('week_start, average_pain_level, highest_pain_level, lowest_pain_level')
-//   .eq('users_id', userId).order('week_start', { ascending: false })
-const FAKE_WEEKLY_RECORDS: WeeklyPainRecord[] = [
-  { id: 'w1', rangeLabel: '18–24 May 2026', chartLabel: '24/05', average: 7, highest: 9, lowest: 6 },
-  { id: 'w2', rangeLabel: '11–17 May 2026', chartLabel: '17/05', average: 8, highest: 9, lowest: 6 },
-  { id: 'w3', rangeLabel: '04–10 May 2026', chartLabel: '10/05', average: 8, highest: 9, lowest: 7 },
-  { id: 'w4', rangeLabel: '27 Apr–03 May 2026', chartLabel: '03/05', average: 7, highest: 8, lowest: 5 },
-  { id: 'w5', rangeLabel: '20–26 Apr 2026', chartLabel: '26/04', average: 5, highest: 7, lowest: 3 },
-  { id: 'w6', rangeLabel: '13–19 Apr 2026', chartLabel: '19/04', average: 5, highest: 7, lowest: 3 },
-  { id: 'w7', rangeLabel: '06–12 Apr 2026', chartLabel: '12/04', average: 5, highest: 7, lowest: 3 },
-  { id: 'w8', rangeLabel: '30 Mar–05 Apr 2026', chartLabel: '05/04', average: 4, highest: 6, lowest: 2 },
-];
-
-const VISIBLE_RECORDS_COUNT = 5;
-
-const METRICS: { key: PainMetric; label: string }[] = [
-  { key: 'average', label: 'Average' },
-  { key: 'highest', label: 'Highest' },
-  { key: 'lowest', label: 'Lowest' },
-];
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'error'; error: AppError }
+  | { status: 'ready' };
 
 export default function TrackingChartScreen() {
   const [selectedMetric, setSelectedMetric] = useState<PainMetric>('average');
-  const [showAllRecords, setShowAllRecords] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string>(ALL_LOCATIONS);
+  const [records, setRecords] = useState<WeeklyPainRecord[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' });
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreNotice, setLoadMoreNotice] = useState<{ text: string; isError: boolean } | null>(null);
+  const pdf = usePdfExport();
 
-  const chartData = [...FAKE_WEEKLY_RECORDS]
-    .reverse()
-    .map((record) => ({ label: record.chartLabel, value: record[selectedMetric] }));
+  const fetchFirstPage = (isCancelled: () => boolean = () => false) =>
+    getPainEntries({ limit: PAGE_SIZE }).then((result) => {
+      if (isCancelled()) return;
+      if (!result.ok) return setLoadState({ status: 'error', error: result.error });
+      setRecords(toWeeklyRecords(result.data));
+      setHasMore(result.data.length === PAGE_SIZE);
+      setLoadState({ status: 'ready' });
+    });
 
-  const visibleRecords = showAllRecords
-    ? FAKE_WEEKLY_RECORDS
-    : FAKE_WEEKLY_RECORDS.slice(0, VISIBLE_RECORDS_COUNT);
+  const retry = () => {
+    setLoadState({ status: 'loading' });
+    fetchFirstPage();
+  };
+
+  // Loads once on mount; "See more records" loads the older pages.
+  useEffect(() => {
+    let cancelled = false;
+    fetchFirstPage(() => cancelled);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const loadMore = async () => {
+    const oldest = records[records.length - 1];
+    if (!oldest || loadingMore) return;
+    setLoadingMore(true);
+    setLoadMoreNotice(null);
+    const result = await getPainEntries({ limit: PAGE_SIZE, beforeWeek: oldest.weekStart });
+    setLoadingMore(false);
+    if (!result.ok) {
+      setLoadMoreNotice({ text: healthLoadMessage(result.error), isError: true });
+      return;
+    }
+    setRecords((current) => [...current, ...toWeeklyRecords(result.data)]);
+    setHasMore(result.data.length === PAGE_SIZE);
+    setLoadMoreNotice({ text: loadMoreMessage(result.data.length), isError: false });
+  };
+
+  const locations = painLocations(records);
+  const location = selectedLocation === ALL_LOCATIONS ? null : selectedLocation;
+  const visibleRecords = filterByLocation(records, location);
+  const chartData = toChartPoints(visibleRecords, selectedMetric);
+  const metricLabel = PAIN_METRICS.find((m) => m.key === selectedMetric)?.label ?? '';
+  const locationOptions = [
+    { value: ALL_LOCATIONS, label: 'All locations' },
+    ...locations.map((value) => ({ value, label: value })),
+  ];
+
+  const printPdf = () =>
+    pdf.run('print', () =>
+      buildTrackingChartHtml({
+        records: visibleRecords,
+        points: chartData,
+        metric: selectedMetric,
+        metricLabel,
+        location,
+        generated: formatLongDate(getLocalToday()),
+      }),
+    );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <TrackingScreenHeader activeTab="chart" />
+        <TrackingScreenHeader
+          activeTab="chart"
+          onPrintPdf={loadState.status === 'ready' && records.length > 0 ? printPdf : undefined}
+          printing={pdf.busy !== null}
+        />
 
-        <View style={styles.card}>
-          <View style={styles.cardHeaderRow}>
-            <Text style={styles.cardTitle}>Pain Intensity</Text>
-            <View style={styles.filterChip}>
-              <Text style={styles.filterChipText}>Back, Knee ▾</Text>
+        {loadState.status === 'loading' && <LoadingState label="Loading your tracking records" />}
+        {loadState.status === 'error' && (
+          <ErrorState message={healthLoadMessage(loadState.error)} onRetry={retry} />
+        )}
+        {loadState.status === 'ready' && records.length === 0 && (
+          <Text style={styles.emptyText}>
+            You have no pain records yet. Complete the Pain tracker to see your chart here.
+          </Text>
+        )}
+
+        {loadState.status === 'ready' && records.length > 0 && (
+          <View style={styles.card}>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.cardTitle}>Pain Intensity</Text>
+              <Dropdown
+                value={selectedLocation}
+                options={locationOptions}
+                onChange={setSelectedLocation}
+                accessibilityLabel="Pain location"
+                style={styles.filterChip}
+              />
             </View>
-          </View>
 
-          <PainIntensityChart data={chartData} height={scaleHeight(270)} />
+            {chartData.length > 0 ? (
+              <PainIntensityChart data={chartData} height={scaleHeight(270)} />
+            ) : (
+              <Text style={styles.emptyText}>No records for this location in the loaded weeks.</Text>
+            )}
 
-          <View style={styles.metricRow}>
-            {METRICS.map((metric) => {
-              const isActive = metric.key === selectedMetric;
-              return (
-                <Pressable
-                  key={metric.key}
-                  style={[styles.metricButton, isActive && styles.metricButtonActive]}
-                  onPress={() => setSelectedMetric(metric.key)}
-                >
-                  <Text style={[styles.metricButtonText, isActive && styles.metricButtonTextActive]}>
-                    {metric.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+            <View style={styles.metricRow}>
+              {PAIN_METRICS.map((metric) => {
+                const isActive = metric.key === selectedMetric;
+                return (
+                  <Pressable
+                    key={metric.key}
+                    style={[styles.metricButton, isActive && styles.metricButtonActive]}
+                    onPress={() => setSelectedMetric(metric.key)}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: isActive }}
+                  >
+                    <Text style={[styles.metricButtonText, isActive && styles.metricButtonTextActive]}>
+                      {metric.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
 
-          <View style={styles.table}>
-            {visibleRecords.map((record, index) => (
-              <View
-                key={record.id}
-                style={[styles.tableRow, index === visibleRecords.length - 1 && styles.tableRowLast]}
-              >
-                <Text style={styles.tableDate}>{record.rangeLabel}</Text>
-                <Text style={styles.tableValue}>{record.average}</Text>
-                <Text style={styles.tableValue}>{record.highest}</Text>
-                <Text style={styles.tableValue}>{record.lowest}</Text>
+            {visibleRecords.length > 0 && (
+              <View style={styles.table}>
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableDate, styles.tableHeader]}>Week</Text>
+                  <Text style={[styles.tableValue, styles.tableHeader]}>{metricLabel} pain</Text>
+                </View>
+                {visibleRecords.map((record, index) => (
+                  <View
+                    key={record.weekStart}
+                    style={[styles.tableRow, index === visibleRecords.length - 1 && styles.tableRowLast]}
+                  >
+                    <Text style={styles.tableDate}>{record.rangeLabel}</Text>
+                    <Text style={styles.tableValue}>{record[selectedMetric]}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            )}
 
-          {!showAllRecords && FAKE_WEEKLY_RECORDS.length > VISIBLE_RECORDS_COUNT && (
-            <Pressable style={styles.seeMoreButton} onPress={() => setShowAllRecords(true)}>
-              <Text style={styles.seeMoreButtonText}>See more records</Text>
-            </Pressable>
-          )}
-        </View>
+            {hasMore && (
+              <Pressable
+                style={styles.seeMoreButton}
+                onPress={loadMore}
+                disabled={loadingMore}
+                accessibilityRole="button"
+                accessibilityState={{ busy: loadingMore }}
+              >
+                <Text style={styles.seeMoreButtonText}>
+                  {loadingMore ? 'Loading…' : 'See more records'}
+                </Text>
+              </Pressable>
+            )}
+            {loadMoreNotice && (
+              <Text
+                style={[styles.notice, loadMoreNotice.isError && styles.noticeError]}
+                accessibilityLiveRegion="polite"
+              >
+                {loadMoreNotice.text}
+              </Text>
+            )}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -140,11 +240,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(6),
     backgroundColor: '#F5F5F5',
+    maxWidth: '55%',
   },
-  filterChipText: {
-    fontSize: scaleFont(13),
-    fontWeight: '500',
+  emptyText: {
+    fontSize: scaleFont(14),
+    lineHeight: scaleFont(20),
     color: '#49454F',
+    textAlign: 'center',
+    marginHorizontal: scaleWidth(24),
+    marginVertical: scaleHeight(32),
+  },
+  tableHeader: {
+    fontWeight: '600',
+    color: '#49454F',
+  },
+  notice: {
+    fontSize: scaleFont(12),
+    color: '#2E7D32',
+    textAlign: 'center',
+    marginTop: scaleHeight(10),
+  },
+  noticeError: {
+    color: '#B3261E',
   },
   metricRow: {
     flexDirection: 'row',

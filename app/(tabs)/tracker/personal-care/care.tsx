@@ -33,7 +33,6 @@ export default function CareScreen() {
           onPrevious={() => router.push('/tracker/personal-care/general')}
           onRecord={handleNext}
           variant="personalCare"
-          cardHeight={scaleHeight(558)}
         />
       </View>
     </View>

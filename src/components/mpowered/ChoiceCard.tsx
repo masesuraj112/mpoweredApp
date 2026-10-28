@@ -69,7 +69,7 @@ export function ChoiceCard({
     <View
       style={[
         styles.container,
-        isAssessment && styles.painTrackerContainer,
+        isAssessment && (isPersonalCare ? styles.personalCareContainer : styles.painTrackerContainer),
         cardHeight !== undefined && { height: cardHeight },
         style,
       ]}
@@ -255,6 +255,16 @@ const styles = StyleSheet.create({
   },
   painTrackerContainer: {
     height: scaleHeight(572),
+    borderColor: '#AEAEB2',
+    borderRadius: scaleWidth(12),
+    paddingTop: scaleHeight(16),
+    paddingHorizontal: scaleWidth(19),
+    paddingBottom: scaleHeight(12),
+    backgroundColor: '#FFFFFF',
+  },
+  personalCareContainer: {
+    flex: 1,
+    minHeight: 0,
     borderColor: '#AEAEB2',
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),

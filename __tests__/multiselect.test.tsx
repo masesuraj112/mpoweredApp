@@ -9,13 +9,19 @@ jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn(), re
 
 const checkedStates = () => screen.getAllByRole('checkbox').map(box => !!box.props.accessibilityState?.checked);
 
-// Jest doesn't run layout, so check the style that broke it: on native, any `flex > 0` on the
-// fixed-height options box makes Yoga ignore its `height` and collapse it to 0 (invisible list).
+// Jest doesn't run layout, so verify the list's intended sizing mode directly.
 const expectOptionsBoxKeepsItsHeight = () => {
   const optionsBox = screen.getByTestId('multi-choice-options');
   const style = StyleSheet.flatten(optionsBox.props.style);
   expect(style.height).toBeGreaterThan(0);
   expect(style.flex ?? 0).toBeLessThanOrEqual(0);
+};
+
+const expectOptionsBoxUsesAvailableSpace = () => {
+  const optionsBox = screen.getByTestId('multi-choice-options');
+  const style = StyleSheet.flatten(optionsBox.props.style);
+  expect(style.flex).toBeGreaterThan(0);
+  expect(style.height).toBeUndefined();
 };
 
 describe('Management medication', () => {
@@ -41,13 +47,13 @@ describe('Management medication', () => {
 });
 
 describe('Personal care general activities', () => {
-  it('keeps its options box visible on native', async () => {
+  it('uses the available card space for its scrollable options', async () => {
     await render(
       <PersonalCareAssessmentProvider>
         <GeneralScreen />
       </PersonalCareAssessmentProvider>,
     );
-    expectOptionsBoxKeepsItsHeight();
+    expectOptionsBoxUsesAvailableSpace();
   });
 
   it('selects more than one option', async () => {

@@ -11,7 +11,7 @@ Mismatched versions are a common source of "it works on my machine" bugs.
 | -------- | ----------- |
 | Node.js  | v24.20.0    |
 | npm      | 11.19.0     |
-| Expo SDK | 57.0.1 |
+| Expo SDK | 58.0.0 |
 
 > React Native's version is managed automatically by Expo. You don't install or track it separately.
 
@@ -65,6 +65,7 @@ Scan the QR code with the **Expo Go** app on your phone (App Store / Play Store)
 
 1. Re-check `node --version` / `npm --version` against the table above
 2. Ask in the Teams channel before debugging alone for more than ~10 minutes. Version mismatches are usually quick to spot with a second pair of eyes
+3. If Expo Go says the project needs a different SDK, update Expo Go from the App Store. Expo Go only runs the one SDK version it ships with, so a mismatch means the project and Expo Go are on different SDKs (this project is on SDK 58). Then run `npm ci` and `npx expo start -c`
 
 ### 6. Install the Supabase CLI
 
@@ -119,6 +120,10 @@ You'll be prompted to select the project: choose the **dev** project (not produc
 
 Set your code editor (VS Code) to format automatically using the prettier config already set-up in the repo: install the "Prettier" extension in VS Code, and optionally enable "format on save".
 
+## Deployment
+
+How the app is built, shared with testers and updated (Expo EAS, GitHub Actions, Supabase), with release, rollback and troubleshooting steps: [docs/deployment.md](docs/deployment.md).
+
 ## Testing
 
 [![CI](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml/badge.svg)](https://github.com/masesuraj112/mpoweredApp/actions/workflows/ci.yml)
@@ -132,6 +137,7 @@ The rules that must never break live in two places, so that is where the tests a
 | Database | Constraints (one pain entry per user per week, pain level ordering, required values), row level security (a user cannot read another user's data), table privileges, and the atomic `save_pain_assessment` function | pgTAP, run in a real local Postgres | `supabase/tests/database/*.test.sql` |
 | Pure logic | Week maths (Monday to Sunday), location normalisation, answer validation, error mapping | Jest | `src/**/*.test.ts`, next to the code |
 | Service logic | `savePainEntry` and the read functions, using a fake Supabase client (no network) | Jest | `src/services/assessments.test.ts` |
+| Sign-in | Phone normalisation, six digit codes, error mapping, `sendVerificationCode` / `verifyCode` / `hasProfile` / `createProfile`, and the `create_profile` function and its privileges | Jest, pgTAP | `src/features/auth/*.test.ts`, `src/services/auth.test.ts`, `src/services/profile.test.ts`, `supabase/tests/database/060_*` and `061_*` |
 
 The full list of rules and the test that proves each one is in [docs/testing.md](docs/testing.md), including what is **not** automated.
 
@@ -145,15 +151,7 @@ npm run typecheck        # TypeScript type check
 npm run lint             # ESLint (warnings are allowed, errors fail CI)
 ```
 
-The database tests need Docker Desktop running and the local Supabase stack:
-
-```bash
-supabase start           # first run downloads several GB
-supabase test db         # runs every file in supabase/tests/database/
-supabase db reset        # rebuilds the local database from all migrations
-```
-
-If `supabase start` fails because the analytics container is unhealthy (low Docker memory), use `supabase start -x logflare,vector`. The tests do not need those services.
+Database tests (pgTAP) run **only in CI**. Do not run `supabase start` or `supabase test db` locally. Open a pull request and read the **Checks** box: if `database-tests` is red, open the failing step and fix it in a new commit.
 
 ### What CI runs
 

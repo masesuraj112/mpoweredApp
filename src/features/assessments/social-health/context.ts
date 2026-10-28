@@ -4,4 +4,4 @@ import { SocialHealthAssessmentAnswers } from './types';
 export const {
   Provider: SocialHealthAssessmentProvider,
   useAssessment: useSocialHealthAssessment,
-} = createAssessmentContext<SocialHealthAssessmentAnswers>();
+} = createAssessmentContext<SocialHealthAssessmentAnswers>('@mpowered/assessment-draft/v1/social-health');

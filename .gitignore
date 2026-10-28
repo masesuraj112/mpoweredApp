@@ -17,6 +17,9 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+# EAS credentials downloaded with "eas credentials" (keystore passwords)
+credentials.json
+credentials/
 
 # Metro
 .metro-health-check*
@@ -50,4 +53,5 @@ supabase/.temp/
 # test coverage output
 coverage/
 
-.claude/
+#Claude
+.claude/settings.local.json

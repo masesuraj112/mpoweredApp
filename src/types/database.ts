@@ -43,6 +43,9 @@ export type Database = {
           practitioner_name: string | null
           recording_consent_at: string | null
           recording_consent_signature: string | null
+          saved_at: string | null
+          status: string
+          suggestions_generated_on: string | null
         }
         Insert: {
           appointment_id?: never
@@ -52,6 +55,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Update: {
           appointment_id?: never
@@ -61,6 +67,9 @@ export type Database = {
           practitioner_name?: string | null
           recording_consent_at?: string | null
           recording_consent_signature?: string | null
+          saved_at?: string | null
+          status?: string
+          suggestions_generated_on?: string | null
         }
         Relationships: [
           {
@@ -106,20 +115,29 @@ export type Database = {
         Row: {
           answer: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id: number
+          sort_order: number
         }
         Insert: {
           answer?: string | null
           appointment_id: number
+          group_key: string
+          is_selected: boolean
           question: string
           question_id?: never
+          sort_order: number
         }
         Update: {
           answer?: string | null
           appointment_id?: number
+          group_key?: string
+          is_selected?: boolean
           question?: string
           question_id?: never
+          sort_order?: number
         }
         Relationships: [
           {
@@ -186,7 +204,7 @@ export type Database = {
           {
             foreignKeyName: "dosage_medications_id_fkey"
             columns: ["medications_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "medications"
             referencedColumns: ["medication_id"]
           },
@@ -260,6 +278,8 @@ export type Database = {
       }
       medications: {
         Row: {
+          created_at: string
+          deleted_at: string | null
           form: string
           medication_id: number
           name: string
@@ -268,6 +288,8 @@ export type Database = {
           users_id: number
         }
         Insert: {
+          created_at?: string
+          deleted_at?: string | null
           form: string
           medication_id?: never
           name: string
@@ -276,6 +298,8 @@ export type Database = {
           users_id: number
         }
         Update: {
+          created_at?: string
+          deleted_at?: string | null
           form?: string
           medication_id?: never
           name?: string
@@ -629,25 +653,37 @@ export type Database = {
       }
       personal_management: {
         Row: {
+          created_at: string
           date: string
           emotion: string | null
           exercise: string
+          no_medication: boolean
+          otc_medication: string | null
           submission_id: number
           users_id: number
+          week_start: string | null
         }
         Insert: {
+          created_at?: string
           date: string
           emotion?: string | null
           exercise: string
+          no_medication?: boolean
+          otc_medication?: string | null
           submission_id?: never
           users_id: number
+          week_start?: string | null
         }
         Update: {
+          created_at?: string
           date?: string
           emotion?: string | null
           exercise?: string
+          no_medication?: boolean
+          otc_medication?: string | null
           submission_id?: never
           users_id?: number
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -656,6 +692,29 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["users_id"]
+          },
+        ]
+      }
+      personal_management_medication_names: {
+        Row: {
+          medication_name: string
+          submission_id: number
+        }
+        Insert: {
+          medication_name: string
+          submission_id: number
+        }
+        Update: {
+          medication_name?: string
+          submission_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_management_medication_names_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "personal_management"
+            referencedColumns: ["submission_id"]
           },
         ]
       }
@@ -745,28 +804,28 @@ export type Database = {
       support_persons: {
         Row: {
           access_type: string
-          email: string
+          email: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number: string | null
           support_person_id: number
           users_id: number | null
         }
         Insert: {
           access_type: string
-          email: string
+          email?: string | null
           name: string
           patient_id: number
-          phone_number: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
         Update: {
           access_type?: string
-          email?: string
+          email?: string | null
           name?: string
           patient_id?: number
-          phone_number?: string
+          phone_number?: string | null
           support_person_id?: never
           users_id?: number | null
         }
@@ -793,6 +852,7 @@ export type Database = {
           created_at: string
           name: string
           phone_number: string | null
+          user_type: string
           users_id: number
         }
         Insert: {
@@ -800,6 +860,7 @@ export type Database = {
           created_at?: string
           name: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Update: {
@@ -807,6 +868,7 @@ export type Database = {
           created_at?: string
           name?: string
           phone_number?: string | null
+          user_type?: string
           users_id?: never
         }
         Relationships: []
@@ -820,6 +882,18 @@ export type Database = {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
       }
+      create_profile: {
+        Args: {
+          p_conditions: string[]
+          p_name: string
+          p_other_conditions: string
+          p_phone: string
+          p_sex: string
+          p_user_type: string
+          p_year_of_birth: number
+        }
+        Returns: undefined
+      }
       current_users_id: { Args: never; Returns: number }
       is_own_patient_record: {
         Args: { target_patient_id: number }
@@ -829,8 +903,94 @@ export type Database = {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
       }
+      list_my_appointments: {
+        Args: never
+        Returns: {
+          appointment_id: number
+          date_time: string
+          health_service: string
+          practitioner_name: string
+          status: string
+        }[]
+      }
+      list_my_support_persons: {
+        Args: never
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       patient_id_for_user: {
         Args: { target_users_id: number }
+        Returns: number
+      }
+      save_appointment: {
+        Args: { p_appointment_id: number }
+        Returns: undefined
+      }
+      save_appointment_answers: {
+        Args: { p_answers: Json; p_appointment_id: number }
+        Returns: undefined
+      }
+      save_appointment_details: {
+        Args: {
+          p_appointment_id?: number
+          p_date_time: string
+          p_health_service: string
+          p_practitioner_name: string
+        }
+        Returns: number
+      }
+      save_appointment_questions: {
+        Args: { p_appointment_id: number; p_question_ids: number[] }
+        Returns: undefined
+      }
+      save_appointment_suggestions: {
+        Args: {
+          p_appointment_id: number
+          p_generated_on: string
+          p_questions: Json
+        }
+        Returns: boolean
+      }
+      save_appointment_support_people: {
+        Args: { p_appointment_id: number; p_people: Json }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      save_management_assessment: {
+        Args: {
+          p_date: string
+          p_emotion: string
+          p_exercise: string
+          p_medications: string[]
+          p_no_medication: boolean
+          p_otc_medication: string
+        }
         Returns: number
       }
       save_movement_assessment: {
@@ -858,6 +1018,23 @@ export type Database = {
         }
         Returns: number
       }
+      save_prescription: {
+        Args: {
+          p_amount: number
+          p_form: string
+          p_medication_id?: number
+          p_name: string
+          p_repeats_every: number
+          p_strength: number
+          p_strength_unit: string
+          p_unit_of_time: string
+        }
+        Returns: number
+      }
+      save_recording_consent: {
+        Args: { p_appointment_id: number; p_signature: string }
+        Returns: string
+      }
       save_personal_care_assessment: {
         Args: {
           p_date: string
@@ -880,6 +1057,30 @@ export type Database = {
           p_travelling: string
         }
         Returns: number
+      }
+      save_support_person: {
+        Args: {
+          p_access_type: string
+          p_email: string
+          p_name: string
+          p_phone: string
+          p_support_person_id?: number
+        }
+        Returns: {
+          access_type: string
+          email: string | null
+          name: string
+          patient_id: number
+          phone_number: string | null
+          support_person_id: number
+          users_id: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_persons"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
