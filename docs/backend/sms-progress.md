@@ -18,7 +18,7 @@ Status: done / blocked / skipped / todo.
 - [~] A2 Skipped for now: upgrade asks for ID and tax details, so staying on trial; revisit only if B6 is blocked (trial prefix or template limits)
 - [x] A3 Geo permissions: Australia only (Twilio default also had Cocos and Christmas Island, same +61 code)
 - [x] A4 Messaging Service (MPowered Test OTP) with a US trial-credit number as sender, for the plumbing test only; AU delivery unverified until B6
-- [ ] A5 Store Account SID, Auth Token, Messaging Service SID in a password manager
+- [~] A5 Not needed: values are copied straight from the Twilio console into Supabase at B1 (nothing stored elsewhere)
 
 ## Phase B: Supabase dashboard (user)
 - [ ] B1 Phone provider: Twilio, three values entered in the dashboard only
