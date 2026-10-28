@@ -16,7 +16,7 @@ Status: done / blocked / skipped / todo.
 - [ ] A0 Send MHA the confirmations email (not blocking)
 - [x] A1 Create the Twilio account (named mpowered-test, personal account)
 - [~] A2 Skipped for now: upgrade asks for ID and tax details, so staying on trial; revisit only if B6 is blocked (trial prefix or template limits)
-- [ ] A3 Geo permissions: Australia only
+- [x] A3 Geo permissions: Australia only (Twilio default also had Cocos and Christmas Island, same +61 code)
 - [ ] A4 Messaging Service
 - [ ] A5 Store Account SID, Auth Token, Messaging Service SID in a password manager
 
