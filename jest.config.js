@@ -51,6 +51,7 @@ module.exports = {
     'src/services/auth.ts',
     'src/services/profile.ts',
     'src/services/validation.ts',
+    'src/services/settings.ts',
     'src/features/settings/usePersonalDetails.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
