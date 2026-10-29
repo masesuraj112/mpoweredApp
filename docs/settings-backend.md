@@ -263,9 +263,13 @@ Notes:
 
 ### 10. Before opening the PR
 - `npm run lint && npm run typecheck && npm test`.
-- Push, and let CI run the pgTAP files, `supabase db lint` and the generated-types check. Never run
-  `supabase start`, `supabase test db` or `supabase db push` locally. A human applies migrations to shared
-  databases; `deploy-db.yml` handles the hosted test database after merge.
+- Push, and let CI run the pgTAP files, `supabase db lint` and the generated-types check. CI runs only on
+  pull requests and pushes to `main`, so open a draft PR early. Claude never runs `supabase start`,
+  `supabase test db` or `supabase db push`.
+- **Migrations don't reach the hosted dev project by themselves.** `deploy-db.yml` is manual-only, and its
+  runners can't reach the database at the moment (IPv6), so a person runs `supabase db push` (dry run first;
+  see `docs/deployment.md`). The dev project needs `settings_update_profile` before commit 6 can be tested on a
+  device, and each later migration before its screen.
 - Commit the generated types from CI.
 - Manual test on a device with the dev test numbers (dev-login accounts have no `users` row and can't reach the tabs):
   - **Patient:** edit the name and year; change notification settings, close and reopen the app; export your data; delete a test account.
