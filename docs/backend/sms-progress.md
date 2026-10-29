@@ -23,7 +23,7 @@ Status: done / blocked / skipped / todo.
 ## Phase B: Supabase dashboard (user)
 - [x] B1 Phone provider: Twilio, three values entered in the dashboard only
 - [x] B2 OTP length 6, expiry 120 s, message template
-- [ ] B3 Test numbers `0491 570 006` and `0491 570 007` present with `123456`
+- [x] B3 Hosted test numbers checked, left unchanged: 006 present with 123456; 007 is NOT on the hosted project (local/CI only); an extra entry (61400000000) exists on the dashboard that is not in the repo, origin unknown. Neither may exist on production.
 - [ ] B4 Rate limits: SMS per hour low, OTP interval 60 s
 - [ ] B5 Developer-login check (no SMS sent)
 - [ ] B6 Real-SMS smoke test on own mobile
