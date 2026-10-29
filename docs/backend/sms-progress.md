@@ -11,6 +11,7 @@ Status: done / blocked / skipped / todo.
 - [x] T2 Error handling for real SMS failures
 - [x] T3 Guard test for test numbers, Twilio disabled in config, secret scan
 - [ ] T4 Docs after Phase B (blocked until Phase B is done)
+- [x] T5 (added during B6) Verify screen: 60 s resend countdown starts on arrival, Resend disabled until it ends, "Allow up to 30 seconds" hint. Found because the SMS took about 20 s and users pressed Resend early
 
 ## Phase A: Twilio (user)
 - [ ] A0 Send MHA the confirmations email (not blocking)

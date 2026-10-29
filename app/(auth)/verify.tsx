@@ -32,7 +32,9 @@ export default function VerifyScreen() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(null);
+  // The code was sent on the phone screen just before this one, so the wait starts now.
+  const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(RESEND_SECONDS);
+  const [hasResent, setHasResent] = useState(false);
   const codeInputRef = useRef<TextInputInstance>(null);
   const doneBar = useKeyboardDoneBar();
   const { width, height } = useWindowDimensions();
@@ -41,13 +43,12 @@ export default function VerifyScreen() {
   const canvasHeight = 823 * scale;
   const isCodeComplete = isOtpComplete(code);
   const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
-  const hasResentCode = resendSecondsRemaining !== null;
-  const resendWait = formatResendWait(RESEND_SECONDS);
+  const isCountingDown = resendSecondsRemaining !== null;
   const normalisedPhone = toE164(data.phoneNumber);
   const displayPhone = normalisedPhone.ok ? formatForDisplay(normalisedPhone.data) : '';
 
   useEffect(() => {
-    if (!hasResentCode) return;
+    if (!isCountingDown) return;
 
     const timer = setInterval(() => {
       setResendSecondsRemaining((remaining) => {
@@ -57,7 +58,7 @@ export default function VerifyScreen() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [hasResentCode]);
+  }, [isCountingDown]);
 
   const handleCodeChange = (value: string) => {
     setCode(sanitiseCode(value));
@@ -74,6 +75,7 @@ export default function VerifyScreen() {
       return;
     }
     setCode('');
+    setHasResent(true);
     setResendSecondsRemaining(RESEND_SECONDS);
   };
   // After a good code: returning users go home, new users get a profile made, and a user who
@@ -219,7 +221,7 @@ export default function VerifyScreen() {
           {doneBar.bar}
         </View>
 
-        {hasResentCode ? (
+        {resendSecondsRemaining !== null ? (
           <>
             <Text
               style={[
@@ -235,7 +237,7 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              Sent!
+              {hasResent ? 'Sent!' : 'Code sent. Allow up to 30 seconds.'}
             </Text>
             <Text
               style={[
@@ -251,7 +253,7 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              You can resend in {resendSecondsRemaining} {resendSecondsRemaining === 1 ? 'second' : 'seconds'}
+              You can resend in {formatResendWait(resendSecondsRemaining)}
             </Text>
           </>
         ) : (
@@ -294,22 +296,6 @@ export default function VerifyScreen() {
                 </Text>
               </Pressable>
             </View>
-            <Text
-              style={[
-                styles.resendCountdown,
-                {
-                  left: 49 * scale,
-                  top: 405 * scale,
-                  width: 313 * scale,
-                  height: 19 * scale,
-                  fontSize: 12 * scale,
-                  lineHeight: 16 * scale,
-                  letterSpacing: 0.5 * scale,
-                },
-              ]}
-            >
-              You can resend codes in {resendWait}
-            </Text>
           </>
         )}
 
