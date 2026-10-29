@@ -46,22 +46,66 @@ Built by the login, support person front end and Care Planner branches. Reuse it
 
 ## Settled
 
-| Decision | Why | Step |
-| -------- | --- | ---- |
-| **No password anywhere in Settings.** Change password is removed, not commented out. | Sign-in is phone and SMS code only, so there is no password to check or change. | 4 |
-| **No email in Personal details.** The field is removed. | Users sign up without one, and `auth.updateUser({ email })` would add an email login to a phone account (and fails once the Email provider is off). A support person's email on the patient's Support persons screen stays: it's contact information, not a login. | 4 |
-| **Account deletion is confirmed with a new SMS code** sent to the account's own phone, checked by the server. | It replaces a password check. Proves the person deleting still has the phone, not just an unlocked app. | 9 |
+Decided by Ryan Pham on 29 Oct 2026 unless noted.
+
+| # | Decision | Why | Step |
+| - | -------- | --- | ---- |
+| — | **No password anywhere in Settings.** Change password is removed, not commented out. | Sign-in is phone and SMS code only, so there is no password to check or change. | 4 |
+| — | **No email in Personal details.** The field is removed. | Users sign up without one, and `auth.updateUser({ email })` would add an email login to a phone account (and fails once the Email provider is off). A support person's email on the patient's Support persons screen stays: it's contact information, not a login. | 4 |
+| — | **Account deletion is confirmed with a new SMS code** sent to the account's own phone, checked by the server. | It replaces a password check. Proves the person deleting still has the phone, not just an unlocked app. | 9 |
+| Q1 | **Face ID is commented out.** It comes back later as an app lock on top of the SMS sign-in, in a future plan (login decision L16). | Not a way to log in with SMS sign-in; new work, not Settings backend. | Controls |
+| Q2 | **The phone number is read-only in both apps** (login decision L17). | A change flow must keep `users.phone_number` in step with the login's phone, and support person invitations are matched by phone. Its own feature. | 4, 5 |
+| Q3 | **Support persons can edit their own name**, with `update_profile`. | Free with the same function. It changes only their own account name: the patient's list shows `support_persons.name`, which the patient typed. | 5 |
+| Q5 | **Deleting a support person account works like Unpair** for every patient they support: the row becomes `declined`, `users_id` is cleared and its appointment links are deleted. Pending invitations stay. | The rows belong to the patient. Re-signing up with the same number shows the pending invitations again. | 9 |
 
 ## Open questions
 Ask before writing the step that needs the answer.
 
 | # | Question | Owner | Default until answered | Step |
 | - | -------- | ----- | ---------------------- | ---- |
-| Q1 | Face ID for phone users (login decision L16): drop it, or add it as a lock on top of the SMS sign-in? | Team | Comment out the Face ID toggle | Controls |
-| Q2 | Changing the phone number (login decision L17). Needs SMS re-verification. | Team | Phone read-only in both apps | 4, 5 |
-| Q3 | Can a support person edit their own name? (`docs/support-person.md` section 4.4) | Team | Yes, with the same `update_profile` function as patients | 5 |
-| Q4 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). Do we keep anything, for example for MHA records? | Team, MHA | Delete everything the patient owns | 9 |
-| Q5 | What happens to the patients' records when a support person deletes their account? | Team | Same as Unpair for every patient they support (see step 9) | 9 |
+| Q4 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). See "Q4: what Australian law says" below. | MHA (privacy officer or lawyer) | Delete everything the patient owns | 9 |
+| Q6 | Google Play also needs a **web page** where people can ask for their account to be deleted without the app. Where does it live, and who handles the requests? | Team, MHA | Not built in this branch; a section in the privacy policy is enough for Google | Before release |
+
+### Q4: what Australian law says
+Research on 29 Oct 2026, **not legal advice**. MHA should confirm with its privacy officer or lawyer.
+
+1. **The Privacy Act 1988 almost certainly applies.** An organisation that provides a health service and holds health
+   information is covered whatever its size; the small business exemption doesn't apply. The OAIC's definition of
+   a health service includes "recording an individual's health to assess, maintain, improve or manage it", which
+   is what the assessments and Care Planner do.
+2. **APP 11.2: destroy or de-identify personal information once it's no longer needed**, unless an Australian law
+   or a court order requires keeping it. A deleted account no longer needs its data, so the default is to destroy it.
+   "Destroyed" means it can no longer be retrieved; where that isn't possible (for example backups), put it
+   "beyond use". Reasonable steps include checking that providers holding the data (Supabase) actually delete it.
+3. **State health records laws can require keeping records.** Victoria (Health Records Act 2001), NSW (HRIP Act 2002)
+   and the ACT (Health Records (Privacy and Access) Act 1997) require **health service providers** to keep health
+   records for **7 years after the last service** for adults, and until age 25 for anyone under 18. Destroyed records
+   must be listed in a register (name, period covered, date destroyed). Other states have no such law for private
+   providers. These rules are written for clinicians' records; **whether they cover a self-management app with no
+   clinician is the key question for MHA**.
+4. **There's no general "right to erasure" yet.** The Privacy Act tranche 2 exposure draft (31 Aug 2026) proposes one,
+   but only for large digital platforms (around $500 million revenue or 2.5 million monthly Australian users). It's
+   not law and wouldn't cover MPowered.
+5. **The app stores require deletion anyway.** Apple (guideline 5.1.1(v)) requires starting account deletion inside
+   the app, and allows extra confirmation steps for regulated industries such as health, so the SMS code is fine.
+   Google Play requires the in-app option **and** a web page (Q6).
+
+**What this means for step 9:**
+- **If MHA says the state laws don't apply:** build step 9 as written (delete everything). This is the default.
+- **If they do apply:** deletion can't destroy the health records for 7 years. Instead, `delete_account` would
+  delete the login and the profile details, keep the health records **beyond use** (no role can read them, only an
+  administrator for a legal request), record them in a register, and a scheduled job would destroy them after the
+  period. That's a bigger change, so get the answer before commit 14.
+
+Sources:
+[OAIC, APP 11 guidelines](https://www.oaic.gov.au/privacy/australian-privacy-principles/australian-privacy-principles-guidelines/chapter-11-app-11-security-of-personal-information);
+[OAIC, what is a health service provider](https://oaic.gov.au/privacy/privacy-guidance-for-organisations-and-government-agencies/covid-19/privacy/health-information/what-is-a-health-service-provider);
+[OAIC, small business](https://www.oaic.gov.au/privacy/privacy-for-organisations/small-business);
+[NSW IPC, retention for private health service providers](https://www.ipc.nsw.gov.au/node/2873);
+[AMA Victoria, medical records retention](https://amavic.com.au/insights/resources/medical-records-storage-retention-and-destruction);
+[HSF Kramer, tranche 2 draft](https://www.hsfkramer.com/insights/2026-09/the-draft-tranche-2-privacy-act-reforms-whats-there-whats-new-and-whats-missing);
+[Apple, account deletion](https://developer.apple.com/help/app-review/guideline-reference/5-1-1-account-deletion);
+[Google Play, account deletion](https://support.google.com/googleplay/android-developer/answer/13327111).
 
 ## Steps
 
@@ -124,7 +168,7 @@ last optional argument, never send a user or patient id, always filter `users` b
 
 ### 4. Patient Account (`app/(tabs)/settings/profile.tsx`)
 - Load `getPersonalDetails()` when the screen opens and remove the hardcoded "Sarah McLachlan" values. Show a loading state and an error state.
-- Show the phone read-only with `formatForDisplay` (Q2).
+- Show the phone read-only with `formatForDisplay` (Q2, settled).
 - Remove the email field, its state and its `validateEmail` check. Keep `validateEmail` itself: the support
   person form (`src/features/care-planner/supportPerson.ts`) still uses it.
 - Replace the date field (`SettingsModalDateField`) with an optional 4-digit year field (`SettingsModalField`,
@@ -135,13 +179,12 @@ last optional argument, never send a user or patient id, always filter `users` b
 - Remove Change password: the option, its popup and state, and the `signInWithPassword` and
   `updateUser({ password })` calls. Delete `validatePassword`, `PASSWORD_MIN_LENGTH` and the password rules from
   `src/services/validation.ts`, and their tests in `__tests__/validation.test.ts` (nothing else uses them).
-- Comment out Face ID (Q1, see "Controls to comment out").
+- Comment out Face ID (Q1, settled; see "Controls to comment out").
 
 ### 5. Support person Account (`app/(support)/support-settings/profile.tsx`)
-- If Q3 is yes: make the name editable in Personal details (`SettingsModalField`, `maxLength={45}`), saved
+- Make the name editable (Q3, settled) in Personal details (`SettingsModalField`, `maxLength={45}`), saved
   with `updateProfile({ name, yearOfBirth: null })`, then `refreshProfile()`. Same error handling as step 4.
 - Keep the phone read-only (Q2) and change the note under it to say only the phone can't be changed yet.
-- If Q3 is no: leave the screen as it is.
 
 ### 6. Patient Support persons: invitation status (`app/(tabs)/settings/support-persons.tsx`)
 **Waits for the support person branch** to merge its `support_link_state` migration and the `status` field on
@@ -205,7 +248,7 @@ Notes:
     - support persons
     - assessments, conditions and `patients`
     - `user_settings` and `users`
-  - **Support person (Q5):** for each `support_persons` row linked to them, do what Unpair does: mark it
+  - **Support person (Q5, settled):** for each `support_persons` row linked to them, do what Unpair does: mark it
     `declined`, clear `users_id` and delete its appointment links. The patient's row stays. Then delete
     `user_settings` (if any) and `users`. `declined` only exists once the support person branch adds
     `status`; before that, clearing `users_id` is enough (nothing sets it yet). Keep the check
@@ -227,7 +270,7 @@ Notes:
 - Commit the generated types from CI.
 - Manual test on a device with the dev test numbers (dev-login accounts have no `users` row and can't reach the tabs):
   - **Patient:** edit the name and year; change notification settings, close and reopen the app; export your data; delete a test account.
-  - **Support person:** edit the name (if Q3 is yes); check there's no year field; export your data; delete a
+  - **Support person:** edit the name; check there's no year field; export your data; delete a
     test account and check the patient's Support persons screen.
   - **Deleting an account:** a wrong code deletes nothing and says so; Resend works after the wait; the right
     code deletes the account and signs out; signing in again with that number starts onboarding.
@@ -244,9 +287,9 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 ### Phase 1: no database (can start now)
 | # | Commit message | Contents | Waits for |
 | - | -------------- | -------- | --------- |
-| 1 | Remove Change password and comment out the Settings controls that do nothing yet | Patient Account: remove Change password and the password checks in `validation.ts` (with their tests); comment out Face ID. Display: text size and dark mode. Patient Settings home: the Display row. | Q1 (default: comment out Face ID) |
+| 1 | Remove Change password and comment out the Settings controls that do nothing yet | Patient Account: remove Change password and the password checks in `validation.ts` (with their tests); comment out Face ID. Display: text size and dark mode. Patient Settings home: the Display row. | — |
 | 2 | Share the year of birth check between sign-up and Settings | `validateYearOfBirth` in `validation.ts` with tests; `toProfileArgs` uses it. | — |
-| 3 | Show year of birth and phone instead of date of birth and email on the patient Account page | Year field in place of the date field; phone read-only from `useAuth().profile`; email field and its check removed; unused date code and helpers removed. Still local state. | Q2 (default) |
+| 3 | Show year of birth and phone instead of date of birth and email on the patient Account page | Year field in place of the date field; phone read-only from `useAuth().profile`; email field and its check removed; unused date code and helpers removed. Still local state. | — |
 
 ### Phase 2: profile editing
 | # | Commit message | Contents | Waits for |
@@ -254,7 +297,7 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 | 4 | Add update_profile for patients and support persons | Migration `settings_update_profile` (function and column grants) and `093_update_profile.test.sql`. + types | — |
 | 5 | Add personal details services | `getPersonalDetails` and `updateProfile` in `src/services/profile.ts`, with tests. | 4 |
 | 6 | Load and save the patient's personal details | Patient Account loads, saves, calls `refreshProfile()`; loading, error and save-failure states. | 3, 5 |
-| 7 | Let support persons edit their name | Support person Account: editable name, new note under the phone. | 5, Q3 |
+| 7 | Let support persons edit their name | Support person Account: editable name, new note under the phone. | 5 |
 
 ### Phase 3: notifications
 | # | Commit message | Contents | Waits for |
@@ -273,7 +316,7 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 ### Phase 5: account deletion
 | # | Commit message | Contents | Waits for |
 | - | -------------- | -------- | --------- |
-| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q4, Q5 |
+| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q4 (see "Q4: what Australian law says") |
 | 15 | Add the delete-account Edge Function | `supabase/functions/delete-account`: checks the token, checks the SMS code against the account's own phone, calls `delete_account`, then `auth.admin.deleteUser`. No automated test; covered by the manual test. | 14 |
 | 16 | Add the account deletion service | `deleteAccount(code)` in `src/services/account.ts`, with tests: an incomplete code makes no call; only `{ code }` is sent; each error code maps. | 15 |
 | 17 | Confirm account deletion with an SMS code | Legal page: confirmation, send a code to the account's phone, code popup with Resend, then `deleteAccount(code)` and `signOut()`. | 16 |
@@ -307,7 +350,7 @@ Manual QA (step 10) goes in the PR description, not a commit.
 
 | Screen | Control | Why it does nothing |
 | ------ | ------- | ------------------- |
-| Patient Account (`settings/profile.tsx`) | **Enable FaceID** toggle | Only changes local state. No biometric login exists (needs `expo-local-authentication`). Waits on Q1. |
+| Patient Account (`settings/profile.tsx`) | **Enable FaceID** toggle | Only changes local state. No biometric login exists (needs `expo-local-authentication`). Comes back as an app lock in a future plan (Q1). |
 | Display (`settings/display.tsx`) | **Text size** select | Only changes local state. Nothing reads it, and fonts come from `scaleFont` only. |
 | Display (`settings/display.tsx`) | **Enable dark mode** toggle | Only changes local state. The app only uses `Colors.light`, and many colours are hardcoded. |
 | Patient Settings home (`settings/index.tsx`) | **Display** row | Comment it out with the Display page, otherwise it opens a page with nothing working. |
