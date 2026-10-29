@@ -10,7 +10,7 @@ Status: done / blocked / skipped / todo.
 - [x] T1 Resend interval 60 s, `formatResendWait` helper, docs updated
 - [x] T2 Error handling for real SMS failures
 - [x] T3 Guard test for test numbers, Twilio disabled in config, secret scan
-- [ ] T4 Docs after Phase B (blocked until Phase B is done)
+- [x] T4 Docs: login-backend.md, production-auth-checklist.md, sms-setup.md, this file
 - [x] T5 (added during B6) Verify screen: 60 s resend countdown starts on arrival, Resend disabled until it ends, "Allow up to 30 seconds" hint. Found because the SMS took about 20 s and users pressed Resend early
 
 ## Phase A: Twilio (user)
