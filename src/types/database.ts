@@ -933,6 +933,7 @@ export type Database = {
         Returns: undefined
       }
       current_users_id: { Args: never; Returns: number }
+      export_my_data: { Args: never; Returns: Json }
       is_own_patient_record: {
         Args: { target_patient_id: number }
         Returns: boolean
