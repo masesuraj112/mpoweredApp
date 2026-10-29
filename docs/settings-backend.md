@@ -271,13 +271,71 @@ Notes:
   see `docs/deployment.md`). The dev project needs `settings_update_profile` before commit 6 can be tested on a
   device, and each later migration before its screen.
 - Commit the generated types from CI.
-- Manual test on a device with the dev test numbers (dev-login accounts have no `users` row and can't reach the tabs):
-  - **Patient:** edit the name and year; change notification settings, close and reopen the app; export your data; delete a test account.
-  - **Support person:** edit the name; check there's no year field; export your data; delete a
-    test account and check the patient's Support persons screen.
-  - **Deleting an account:** a wrong code deletes nothing and says so; Resend works after the wait; the right
-    code deletes the account and signs out; signing in again with that number starts onboarding.
-  - **Both:** there's no Change password, email or Face ID; the phone is read-only.
+- Do the manual checks in "PR review checklist" below, and copy the results into the PR description.
+
+## PR review checklist
+Everything automated has passed: lint, typecheck, Jest, and the pgTAP files `093`–`096` in CI. These are the
+parts no automated test covers. Tick each one in the PR description, with a note for anything that fails.
+
+### Setup (a person does these; Claude doesn't touch shared databases)
+- [ ] CI is green on the PR: `static-checks`, `unit-tests`, `database-tests`, `migrations-immutable`.
+- [ ] **Migrations on the dev project.** Run `supabase db push --dry-run` and check it lists exactly these four,
+      then run `supabase db push` and tell the team:
+  - `20261029113242_settings_update_profile`
+  - `20261029114645_settings_user_settings`
+  - `20261029120105_export_my_data`
+  - `20261029121213_delete_account`
+- [ ] **Edge Function on the dev project:** `supabase functions deploy delete-account`. It reads
+      `verify_jwt = false` from `supabase/config.toml`; the function checks the sign-in token itself.
+- [ ] **App:** `.env` points at the dev project, `EXPO_PUBLIC_BYPASS_AUTH=false`, `npx expo start -c`, open in
+      Expo Go on a phone.
+- [ ] **Accounts:** a patient and a support person on dev test numbers (dev-login accounts have no `users` row
+      and can't reach the tabs), plus a **throwaway** account for the deletion checks. Deletion is
+      permanent. A real number only gets codes if it's verified on the Twilio trial account.
+
+### Account: patient (commits 1–6)
+- [ ] There's no Change password, Enable FaceID or email field. The Settings home has no Display row.
+- [ ] Personal details shows your real name, your year of birth from sign-up, and your phone (read-only, as `04xx xxx xxx`).
+- [ ] Change the name and year, tap Ok, leave the page and come back, then restart the app: the changes are kept.
+- [ ] Clear the year and save: it stays empty after a restart.
+- [ ] A year of `1899` or next year shows "Please enter a year between 1900 and …", and nothing is saved.
+- [ ] A blank name shows "Please enter your name."; the name stops at 45 characters.
+- [ ] With no connection (flight mode), Ok shows "We could not save your details…", and the popup stays open.
+
+### Account: support person (commit 7)
+- [ ] Personal details has an editable name and a read-only phone, but no year.
+- [ ] A new name is kept after a restart, and shows wherever the app greets them.
+
+### Notifications (commits 8–10)
+- [ ] The first visit shows the defaults: both off, every 3 days, day-before and on-the-day off.
+- [ ] Each toggle, the frequency popup (for example every 2 weeks) and the appointment popup are kept after a restart.
+- [ ] In flight mode a change flips back, with "We could not save that change…" at the top.
+- [ ] No reminders arrive; this branch only stores the choices.
+
+### Export my data (commits 11–13)
+- [ ] Tapping it shows "Preparing your data…", then the share sheet with `mpowered-my-data-YYYY-MM-DD.json` (today's date).
+- [ ] Saved to Files and opened, it's readable JSON with your profile, assessments, appointments (no signature
+      image) and notification settings.
+- [ ] As a support person, it has your profile and settings, with empty patient sections.
+- [ ] In flight mode, an alert says the data couldn't be read.
+
+### Account deletion (commits 14–17; throwaway accounts only)
+- [ ] The confirmation says what will be deleted. A patient and a support person see different wording.
+- [ ] Continue texts a code to the account's own number, and the popup shows that number.
+- [ ] A wrong code shows "That code is wrong or has expired…", and nothing is deleted (the account still
+      works after closing the popup).
+- [ ] Resend is only possible after 120 seconds, and the new code works.
+- [ ] The right code deletes the account and signs out. Signing in again with that number starts onboarding.
+- [ ] In the dev project, the account's rows are gone (`users`, `patients`, assessments, appointments, settings)
+      and the login is gone under Authentication → Users.
+- [ ] Deleting a **support person** account: their patient's Support persons screen still lists them, and they're
+      no longer on that patient's appointments.
+- [ ] If a step fails, check Edge Functions → delete-account → Logs in the dashboard. It logs error codes only,
+      never phone numbers.
+
+### Both apps
+- [ ] The Privacy/Data and Legal page looks and works the same in the support person app, which reuses it.
+- [ ] Sign out still works from both Account pages.
 
 ## Commits
 One commit per row, in order. Each one passes `npm run lint`, `npm run typecheck` and `npm test` on its own.
