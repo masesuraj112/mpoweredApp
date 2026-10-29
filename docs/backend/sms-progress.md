@@ -27,7 +27,7 @@ Status: done / blocked / skipped / todo.
 - [x] B3 Hosted test numbers checked, left unchanged: 006 present with 123456; 007 is NOT on the hosted project (local/CI only); an extra entry (61400000000) exists on the dashboard that is not in the repo, origin unknown. Neither may exist on production.
 - [x] B4 Rate limits: SMS per hour set to 20 (project-wide; raise before launch), OTP interval already 60 s (locked unless custom SMTP)
 - [x] B5 Developer-login check: 0491 570 006 signed in, no message in the Twilio log (007 not on hosted project)
-- [ ] B6 Real-SMS smoke test on own mobile
+- [x] B6 Real-SMS smoke test on own mobile: code arrived in about 20 s from the US trial sender, text matched the template with the trial prefix "Sent from your Twilio trial account - ", sign-in worked, message in the Twilio log. Price, sender display and autofill not yet reported
 
 ## Phase C: production project
 Deferred by D1.
