@@ -32,23 +32,3 @@ export function validatePhone(value: string, { required = true } = {}): string {
   if (!PHONE_PATTERN.test(phone)) return 'Please enter a valid Australian phone number, e.g. 0400 000 000.';
   return '';
 }
-
-// Keep these in line with Supabase (Auth → Providers → Email → Password requirements),
-// otherwise the server will reject passwords that pass here (or the reverse).
-export const PASSWORD_MIN_LENGTH = 8;
-
-const PASSWORD_RULES: { test: (password: string) => boolean; description: string }[] = [
-  { test: password => /[a-z]/.test(password), description: 'a lowercase letter' },
-  { test: password => /[A-Z]/.test(password), description: 'a capital letter' },
-  { test: password => /\d/.test(password), description: 'a number' },
-  { test: password => /[^A-Za-z\d\s]/.test(password), description: 'a symbol (e.g. ! @ # $)' },
-];
-
-/** Lists everything the password is missing in one message, so the user can fix it in one go. */
-export function validatePassword(password: string): string {
-  if (password.length < PASSWORD_MIN_LENGTH) return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
-  const missing = PASSWORD_RULES.filter(rule => !rule.test(password)).map(rule => rule.description);
-  if (missing.length === 0) return '';
-  const list = missing.length === 1 ? missing[0] : `${missing.slice(0, -1).join(', ')} and ${missing.at(-1)}`;
-  return `Password must include ${list}.`;
-}

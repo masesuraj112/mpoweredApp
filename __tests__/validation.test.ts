@@ -1,4 +1,4 @@
-import { validateEmail, validatePassword, validatePhone } from '@/services/validation';
+import { validateEmail, validatePhone } from '@/services/validation';
 
 describe('validateEmail', () => {
   it.each(['sarah.mclachlan@gmail.com', 'a+tag@sub.example.com.au', ' name@example.io '])('accepts %s', email => {
@@ -40,22 +40,5 @@ describe('validatePhone', () => {
 
   it('allows empty when optional', () => {
     expect(validatePhone('', { required: false })).toBe('');
-  });
-});
-
-describe('validatePassword', () => {
-  it('accepts a password meeting every rule', () => {
-    expect(validatePassword('Str0ng!pw')).toBe('');
-  });
-
-  it.each([
-    ['Ab1!', 'Password must be at least 8 characters.'],
-    ['password', 'Password must include a capital letter, a number and a symbol (e.g. ! @ # $).'],
-    ['Password1', 'Password must include a symbol (e.g. ! @ # $).'],
-    ['PASSWORD1!', 'Password must include a lowercase letter.'],
-    ['Password!', 'Password must include a number.'],
-    ['pass word1!', 'Password must include a capital letter.'],
-  ])('rejects %p', (password, message) => {
-    expect(validatePassword(password)).toBe(message);
   });
 });
