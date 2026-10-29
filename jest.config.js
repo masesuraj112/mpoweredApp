@@ -57,6 +57,7 @@ module.exports = {
     'src/features/settings/useNotificationSettings.ts',
     'src/features/settings/exportFile.ts',
     'src/features/settings/useExportMyData.ts',
+    'src/features/settings/useAccountDeletion.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
     'src/features/support-person/appointments.ts',
