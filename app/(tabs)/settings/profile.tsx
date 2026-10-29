@@ -1,69 +1,71 @@
-import { SettingsModal, SettingsModalDateField, SettingsModalField } from '@/components/mpowered/SettingsModal';
+import {
+  SettingsModal,
+  SettingsModalField,
+  SettingsModalGroup,
+  SettingsModalInfoRow,
+  SettingsModalText,
+} from '@/components/mpowered/SettingsModal';
 // Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
 // import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+import { useAuth } from '@/context/AuthContext';
+import { formatForDisplay } from '@/features/auth/phone';
 import { signOut } from '@/services/auth';
-import { isFutureDate, parseIsoDate } from '@/services/date';
-import { validateEmail } from '@/services/validation';
+import { validateYearOfBirth } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
+// Same limit as users.name and create_profile.
+const NAME_MAX = 45;
+
 export default function ProfileScreen() {
+  const { profile } = useAuth();
   // const [faceIdEnabled, setFaceIdEnabled] = useState(false);
-  const [name, setName] = useState('Sarah McLachlan');
-  // Held as a local-midnight Date; stored as ISO YYYY-MM-DD and only formatted for display.
-  const [dateOfBirth, setDateOfBirth] = useState(() => parseIsoDate('1968-01-28')!);
-  const [email, setEmail] = useState('sarah.mclachlan@gmail.com');
+  // TODO (plan commit 6): load the name and year with getPersonalDetails() and save them with updateProfile().
+  const [name, setName] = useState(profile?.name ?? '');
+  const [yearOfBirth, setYearOfBirth] = useState<number | null>(null);
 
   // --- Personal details popup -----------------------------------------------
   // The popup edits drafts, so Cancel discards changes and Ok saves them.
   const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
-  const [draftDateOfBirth, setDraftDateOfBirth] = useState(dateOfBirth);
-  const [draftEmail, setDraftEmail] = useState('');
+  // Kept as typed, so a half-typed year isn't lost; checked on Ok.
+  const [draftYear, setDraftYear] = useState('');
   const [personalDetailsError, setPersonalDetailsError] = useState('');
 
   const openPersonalDetails = () => {
     setDraftName(name);
-    setDraftDateOfBirth(dateOfBirth);
-    setDraftEmail(email);
+    setDraftYear(yearOfBirth === null ? '' : String(yearOfBirth));
     setPersonalDetailsError('');
     setIsPersonalDetailsOpen(true);
   };
 
   // Editing any field clears the previous error.
-  const editPersonalDetailsField =
-    <T,>(setter: (value: T) => void) =>
-    (value: T) => {
-      setter(value);
-      setPersonalDetailsError('');
-    };
+  const editPersonalDetailsField = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setPersonalDetailsError('');
+  };
 
   const handleSavePersonalDetails = () => {
     const trimmedName = draftName.trim();
-    const trimmedEmail = draftEmail.trim();
     if (!trimmedName) {
       setPersonalDetailsError('Please enter your name.');
       return;
     }
-    // The picker already blocks future dates; this guards against a stale maximumDate (e.g. past midnight).
-    if (isFutureDate(draftDateOfBirth)) {
-      setPersonalDetailsError("Date of birth can't be in the future.");
-      return;
-    }
-    const emailError = validateEmail(trimmedEmail);
-    if (emailError) {
-      setPersonalDetailsError(emailError);
+    // Year of birth is optional, as at sign-up.
+    const trimmedYear = draftYear.trim();
+    const year = trimmedYear === '' ? null : Number(trimmedYear);
+    const yearError = validateYearOfBirth(year);
+    if (yearError) {
+      setPersonalDetailsError(yearError);
       return;
     }
 
-    // TODO: save to Supabase, sending the date as toIsoDate(draftDateOfBirth) (YYYY-MM-DD).
     setName(trimmedName);
-    setDateOfBirth(draftDateOfBirth);
-    setEmail(trimmedEmail);
+    setYearOfBirth(year);
     setIsPersonalDetailsOpen(false);
   };
 
@@ -97,23 +99,23 @@ export default function ProfileScreen() {
           onChangeText={editPersonalDetailsField(setDraftName)}
           textContentType="name"
           autoComplete="name"
-        />
-        <SettingsModalDateField
-          label="Date of Birth"
-          value={draftDateOfBirth}
-          onChange={editPersonalDetailsField(setDraftDateOfBirth)}
-          maximumDate={new Date()}
+          maxLength={NAME_MAX}
         />
         <SettingsModalField
-          label="Email"
-          value={draftEmail}
-          onChangeText={editPersonalDetailsField(setDraftEmail)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          textContentType="emailAddress"
-          autoComplete="email"
+          label="Year of birth (optional)"
+          value={draftYear}
+          onChangeText={editPersonalDetailsField(setDraftYear)}
+          keyboardType="number-pad"
+          maxLength={4}
         />
+        <SettingsModalGroup>
+          <SettingsModalInfoRow
+            label="Phone number"
+            value={profile?.phone ? formatForDisplay(profile.phone) : 'Not provided'}
+          />
+        </SettingsModalGroup>
+        {/* A new phone number needs SMS re-verification (docs/settings-backend.md, Q2). */}
+        <SettingsModalText>You sign in with this number, so it can’t be changed in the app yet.</SettingsModalText>
       </SettingsModal>
     </SettingsSubpage>
   );
