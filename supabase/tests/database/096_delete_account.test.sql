@@ -37,8 +37,8 @@ insert into public.dosage (medications_id, amount, unit_of_time, repeats_every)
   select medication_id, 1, 'days', 1 from public.medications;
 insert into public.appointment (patient_id, date_time, health_service, practitioner_name)
   select v, timestamp '2026-11-05 14:30', 'GP', 'Dr Lee' from ids where k in ('p1', 'p2');
-insert into public.appointment_questions (appointment_id, question)
-  select appointment_id, 'How long will recovery take?' from public.appointment;
+insert into public.appointment_questions (appointment_id, group_key, sort_order, question, is_selected)
+  select appointment_id, 'pain-impact', 1, 'How long will recovery take?', true from public.appointment;
 insert into public.support_persons (patient_id, name, phone_number, access_type, users_id)
   select v, 'Gem', '+61491570008', 'questions', (select v from ids where k = 'g3') from ids where k in ('p1', 'p2');
 insert into public.appointment_has_support_persons (appointment_id, support_person_id)
