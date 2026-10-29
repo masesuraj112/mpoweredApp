@@ -53,6 +53,7 @@ module.exports = {
     'src/services/validation.ts',
     'src/services/settings.ts',
     'src/features/settings/usePersonalDetails.ts',
+    'src/features/settings/useNotificationSettings.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
     'src/features/support-person/appointments.ts',
