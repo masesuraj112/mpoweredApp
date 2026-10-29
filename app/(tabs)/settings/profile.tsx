@@ -8,25 +8,24 @@ import {
 // Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
 // import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { useAuth } from '@/context/AuthContext';
 import { formatForDisplay } from '@/features/auth/phone';
+import { usePersonalDetails } from '@/features/settings/usePersonalDetails';
 import { signOut } from '@/services/auth';
-import { validateYearOfBirth } from '@/services/validation';
+import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
-// Same limit as users.name and create_profile.
-const NAME_MAX = 45;
-
 export default function ProfileScreen() {
-  const { profile } = useAuth();
+  const { refreshProfile } = useAuth();
+  const { state, reload, saving, save } = usePersonalDetails();
+  const details = state.status === 'ready' ? state.data : null;
   // const [faceIdEnabled, setFaceIdEnabled] = useState(false);
-  // TODO (plan commit 6): load the name and year with getPersonalDetails() and save them with updateProfile().
-  const [name, setName] = useState(profile?.name ?? '');
-  const [yearOfBirth, setYearOfBirth] = useState<number | null>(null);
 
   // --- Personal details popup -----------------------------------------------
   // The popup edits drafts, so Cancel discards changes and Ok saves them.
@@ -37,8 +36,9 @@ export default function ProfileScreen() {
   const [personalDetailsError, setPersonalDetailsError] = useState('');
 
   const openPersonalDetails = () => {
-    setDraftName(name);
-    setDraftYear(yearOfBirth === null ? '' : String(yearOfBirth));
+    if (!details) return;
+    setDraftName(details.name);
+    setDraftYear(details.yearOfBirth === null ? '' : String(details.yearOfBirth));
     setPersonalDetailsError('');
     setIsPersonalDetailsOpen(true);
   };
@@ -49,23 +49,21 @@ export default function ProfileScreen() {
     setPersonalDetailsError('');
   };
 
-  const handleSavePersonalDetails = () => {
-    const trimmedName = draftName.trim();
-    if (!trimmedName) {
-      setPersonalDetailsError('Please enter your name.');
-      return;
-    }
+  // The popup stays open with the message if the save fails.
+  const handleSavePersonalDetails = async () => {
     // Year of birth is optional, as at sign-up.
     const trimmedYear = draftYear.trim();
-    const year = trimmedYear === '' ? null : Number(trimmedYear);
-    const yearError = validateYearOfBirth(year);
-    if (yearError) {
-      setPersonalDetailsError(yearError);
+    const result = await save({ name: draftName, yearOfBirth: trimmedYear === '' ? null : Number(trimmedYear) });
+    if (!result.ok) {
+      setPersonalDetailsError(
+        result.error.code === 'VALIDATION'
+          ? result.error.message
+          : 'We could not save your details. Please check your connection and try again.',
+      );
       return;
     }
-
-    setName(trimmedName);
-    setYearOfBirth(year);
+    // The name also shows elsewhere in the app, which reads it from the profile.
+    refreshProfile();
     setIsPersonalDetailsOpen(false);
   };
 
@@ -76,7 +74,11 @@ export default function ProfileScreen() {
 
   return (
     <SettingsSubpage title="Account">
-      <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
+      {state.status === 'loading' && <LoadingState label="Loading your details" />}
+      {state.status === 'error' && <ErrorState message="We could not load your details." onRetry={reload} />}
+      {state.status === 'ready' && (
+        <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
+      )}
       {/* <SettingsOption
         icon={faceIdIcon}
         label="Enable FaceID"
@@ -91,6 +93,7 @@ export default function ProfileScreen() {
         title="Personal details"
         onClose={() => setIsPersonalDetailsOpen(false)}
         onConfirm={handleSavePersonalDetails}
+        confirmDisabled={saving}
         errorMessage={personalDetailsError}
       >
         <SettingsModalField
@@ -99,7 +102,7 @@ export default function ProfileScreen() {
           onChangeText={editPersonalDetailsField(setDraftName)}
           textContentType="name"
           autoComplete="name"
-          maxLength={NAME_MAX}
+          maxLength={NAME_MAX_LENGTH}
         />
         <SettingsModalField
           label="Year of birth (optional)"
@@ -111,7 +114,7 @@ export default function ProfileScreen() {
         <SettingsModalGroup>
           <SettingsModalInfoRow
             label="Phone number"
-            value={profile?.phone ? formatForDisplay(profile.phone) : 'Not provided'}
+            value={details?.phone ? formatForDisplay(details.phone) : 'Not provided'}
           />
         </SettingsModalGroup>
         {/* A new phone number needs SMS re-verification (docs/settings-backend.md, Q2). */}
