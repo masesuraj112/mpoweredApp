@@ -846,6 +846,44 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          appointment_day_before: boolean
+          appointment_on_day: boolean
+          appointment_reminders: boolean
+          assessment_every: number
+          assessment_reminders: boolean
+          assessment_unit: string
+          users_id: number
+        }
+        Insert: {
+          appointment_day_before?: boolean
+          appointment_on_day?: boolean
+          appointment_reminders?: boolean
+          assessment_every?: number
+          assessment_reminders?: boolean
+          assessment_unit?: string
+          users_id: number
+        }
+        Update: {
+          appointment_day_before?: boolean
+          appointment_on_day?: boolean
+          appointment_reminders?: boolean
+          assessment_every?: number
+          assessment_reminders?: boolean
+          assessment_unit?: string
+          users_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_users_id_fkey"
+            columns: ["users_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["users_id"]
+          },
+        ]
+      }
       users: {
         Row: {
           auth_id: string | null
