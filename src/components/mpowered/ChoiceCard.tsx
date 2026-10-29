@@ -1,6 +1,7 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import {
+    Keyboard,
     Pressable,
     StyleProp,
     StyleSheet,
@@ -54,11 +55,21 @@ export function ChoiceCard({
   const isLastQuestion = showPager && questionNumber === totalQuestions;
   const showFooter = showPager || showRecord || showNavigation;
 
+  // Close the keyboard before moving on, otherwise it stays open over the next question.
+  const handlePrevious = () => {
+    Keyboard.dismiss();
+    onPrevious?.();
+  };
+  const handleRecord = () => {
+    Keyboard.dismiss();
+    onRecord?.();
+  };
+
   return (
     <View
       style={[
         styles.container,
-        isAssessment && styles.painTrackerContainer,
+        isAssessment && (isPersonalCare ? styles.personalCareContainer : styles.painTrackerContainer),
         cardHeight !== undefined && { height: cardHeight },
         style,
       ]}
@@ -131,7 +142,7 @@ export function ChoiceCard({
               {/* First steps omit Previous when no previous route is provided. */}
               {(!isFlowAssessment || onPrevious) && (
                 <Pressable
-                  onPress={onPrevious}
+                  onPress={handlePrevious}
                   disabled={previousDisabled || !onPrevious}
                   accessibilityRole="button"
                   accessibilityLabel="Previous"
@@ -142,7 +153,7 @@ export function ChoiceCard({
                 </Pressable>
               )}
               <Pressable
-                onPress={onRecord}
+                onPress={handleRecord}
                 disabled={disabled || isRecording || !onRecord}
                 accessibilityRole="button"
                 accessibilityLabel={isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
@@ -168,7 +179,7 @@ export function ChoiceCard({
 
           {showRecord && (
             <Pressable
-              onPress={onRecord}
+              onPress={handleRecord}
               disabled={disabled || isRecording}
               accessibilityRole="button"
               accessibilityLabel="Record answer"
@@ -244,6 +255,16 @@ const styles = StyleSheet.create({
   },
   painTrackerContainer: {
     height: scaleHeight(572),
+    borderColor: '#AEAEB2',
+    borderRadius: scaleWidth(12),
+    paddingTop: scaleHeight(16),
+    paddingHorizontal: scaleWidth(19),
+    paddingBottom: scaleHeight(12),
+    backgroundColor: '#FFFFFF',
+  },
+  personalCareContainer: {
+    flex: 1,
+    minHeight: 0,
     borderColor: '#AEAEB2',
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),

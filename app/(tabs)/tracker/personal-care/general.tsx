@@ -3,14 +3,7 @@ import { usePersonalCareAssessment } from '@/features/assessments/personal-care/
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-
-const GENERAL_ACTIVITY_OPTIONS = [
-  'I am not doing any jobs that I usually do around the house',
-  'I get dressed more slowly than usual because of my pain',
-  'I sleep less well because of my pain',
-  'I am more irritable and bad tempered with people than usual',
-  'I try to get other people to do things for me because of my pain',
-];
+import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
 export default function GeneralScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
@@ -56,7 +49,6 @@ export default function GeneralScreen() {
           searchEnabled={false}
           scrollable
           selectedChipsEnabled={false}
-          cardHeight={scaleHeight(558)}
         />
       </View>
     </View>

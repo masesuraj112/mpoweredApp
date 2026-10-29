@@ -1,4 +1,5 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { MOOD_EMOTION_VALUES, type MoodEmotion } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
@@ -6,38 +7,36 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-const MOOD_EMOTIONS = [
-  {
-    value: 'frustrated',
+// Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
+const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
+  frustrated: {
     icon: require('../../../../assets/images/social-health/frustrated-unselected.svg'),
     selectedIcon: require('../../../../assets/images/social-health/frustrated-selected.svg'),
     iconHeight: 24,
   },
-  {
-    value: 'sad',
+  sad: {
     icon: require('../../../../assets/images/social-health/sad-unselected.svg'),
     selectedIcon: require('../../../../assets/images/social-health/sad-selected.svg'),
     iconHeight: 24,
   },
-  {
-    value: 'okay',
+  okay: {
     icon: require('../../../../assets/images/social-health/okay-unselected.svg'),
     selectedIcon: require('../../../../assets/images/social-health/okay-selected.svg'),
     iconHeight: 24,
   },
-  {
-    value: 'calm',
+  calm: {
     icon: require('../../../../assets/images/social-health/calm-unselected.svg'),
     selectedIcon: require('../../../../assets/images/social-health/calm-selected.svg'),
     iconHeight: 25,
   },
-  {
-    value: 'delighted',
+  delighted: {
     icon: require('../../../../assets/images/social-health/delighted-unselected.svg'),
     selectedIcon: require('../../../../assets/images/social-health/delighted-selected.svg'),
     iconHeight: 25,
   },
-];
+};
+
+const MOOD_EMOTIONS = MOOD_EMOTION_VALUES.map(value => ({ value, ...MOOD_ICONS[value] }));
 
 export default function MoodEmotionScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();

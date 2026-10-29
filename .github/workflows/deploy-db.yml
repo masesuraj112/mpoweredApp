@@ -1,0 +1,41 @@
+name: Deploy database
+
+# Pushes pending migrations to the hosted test project. MANUAL ONLY for now (run it from the Actions tab).
+# It no longer runs after every merge: `supabase link` / `db push` connect to the direct database host,
+# which is IPv6-only, and GitHub's runners cannot reach it. Before turning the automatic trigger back on,
+# push through the session pooler instead (`db push --db-url "$SUPABASE_DB_URL"`, IPv4, user
+# postgres.<project-ref>). Until then a person applies migrations with `supabase db push` (docs/deployment.md).
+# Production is not deployed here yet; add a job with required reviewers when that project exists.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-db
+  cancel-in-progress: false
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    environment: test
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.116.0
+      - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Show migration status
+        run: supabase migration list
+      # Applies migrations only. Never use `supabase config push` here: config.toml has test OTP numbers.
+      # --include-all applies a pending migration whose timestamp is older than the newest applied one.
+      # That is normal with parallel feature branches; CI has already proved the whole set applies in
+      # version order, and this still refuses to run if the hosted history has versions main lacks.
+      - run: supabase db push --include-all

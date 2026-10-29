@@ -83,12 +83,14 @@ export function MultiChoiceList({
     onSelectionChange?.(next);
   };
 
+  // ChoiceCard puts a non-string prompt straight into a View, and React Native throws on a bare
+  // string there (the "\n"), so the pieces share one wrapping Text.
   const fullPrompt = subPrompt ? (
-    <>
+    <Text>
       <Text style={styles.promptBold}>{prompt}</Text>
       {'\n'}
       <Text style={styles.promptSub}>{subPrompt}</Text>
-    </>
+    </Text>
   ) : (
     prompt
   );
@@ -132,12 +134,15 @@ export function MultiChoiceList({
         </View>
       )}
       <View
+        testID="multi-choice-options"
         style={[
           styles.optionsBox,
           showScrollable && styles.scrollableOptionsBox,
           variant !== 'default' && styles.painTrackerOptionsBox,
-          (variant === 'personalCare' || variant === 'management') && styles.personalCareOptionsBox,
+          variant === 'personalCare' && styles.personalCareOptionsBox,
+          variant === 'management' && styles.managementOptionsBox,
           variant === 'management' && listHeight !== undefined && { height: listHeight },
+          variant === 'personalCare' && styles.personalCareMinHeight,
         ]}
       >
         {showScrollable ? (
@@ -305,14 +310,26 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(5),
     backgroundColor: '#FEF7FF',
   },
+  // Fixed-height box. `flex: 0` must override the `flex: 1` from the styles above: on native,
+  // Yoga turns any `flex > 0` into a flex basis of 0, which beats `height` (and ignores
+  // `flexBasis: 'auto'`), so with no grow the box collapses to 0 and the list is invisible.
+  // Web still applies `height`, which is why the bug only shows on phones.
   personalCareOptionsBox: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
+    flex: 1,
+    minHeight: 0,
+    width: '96%',
+    marginLeft: scaleWidth(4),
+    borderRadius: scaleWidth(12),
+  },
+  managementOptionsBox: {
+    flex: 0,
     height: scaleHeight(283),
     width: '96%',
     marginLeft: scaleWidth(4),
     borderRadius: scaleWidth(12),
+  },
+    personalCareMinHeight: {
+    minHeight: scaleHeight(283),
   },
   scrollList: {
     flex: 1,

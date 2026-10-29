@@ -3,15 +3,8 @@ import { usePersonalCareAssessment } from '@/features/assessments/personal-care/
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { PERSONAL_CARE_OPTIONS } from '@/features/assessments/personal-care/options';
 
-const PERSONAL_CARE_OPTIONS = [
-  'I can look after myself normally without causing extra pain',
-  'I can look after myself normally but it causes extra pain',
-  'It is painful to look after myself and I am slow and careful',
-  'I need some help but manage most of my personal care',
-  'I need help everyday in most aspects of self-care',
-  'I do not get dressed, I wash with difficulty and stay in bed',
-];
 
 export default function CareScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
@@ -40,7 +33,6 @@ export default function CareScreen() {
           onPrevious={() => router.push('/tracker/personal-care/general')}
           onRecord={handleNext}
           variant="personalCare"
-          cardHeight={scaleHeight(558)}
         />
       </View>
     </View>
