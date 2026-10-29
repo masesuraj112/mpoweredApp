@@ -4,6 +4,11 @@ Steps to connect Settings to Supabase in **both apps**, the patient app (`app/(t
 support person app (`app/(support)/support-settings`), and the controls to comment out because they do
 nothing in this branch.
 
+> **Status (29 Oct 2026): built.** Commits 1–17 and 20 are on this branch (PR #52). CI passes, including the
+> pgTAP files `093`–`096`. Still to do before merging: the manual checks in "PR review checklist". Commits 18–19
+> moved to the support person branch (`docs/backend/support-person-backend-build-plan.md`, steps T2.4 and T4),
+> because they need its `status` column and `list_supported_patients()`. **This branch merges first.**
+
 ## Which branch does what
 
 | Work | Branch |
@@ -186,11 +191,10 @@ last optional argument, never send a user or patient id, always filter `users` b
 - Keep the phone read-only (Q2) and change the note under it to say only the phone can't be changed yet.
 
 ### 6. Patient Support persons: invitation status (`app/(tabs)/settings/support-persons.tsx`)
-**Waits for the support person branch** to merge its `support_link_state` migration and the `status` field on
-`SupportPerson` (its steps T2.1 and T1.2).
+**Moved to the support person branch** (its step T4), because it needs that branch's `status` column and the
+`status` field on `SupportPerson` (its steps T2.1 and T1.2). Not built here.
 - Show Pending / Accepted / Declined on each row.
 - Say in the Revoke all access popup that the person loses access at once.
-- The support person plan lists this screen change under its T4. It moves here: tell the teammate, so it isn't built twice.
 
 ### 7. Notifications (`app/(tabs)/settings/notifications.tsx`, patients only)
 - Load the settings when the screen opens.
@@ -382,12 +386,12 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 | 16 | Add the account deletion service | `deleteAccount(code)` in `src/services/account.ts`, with tests: an incomplete code makes no call; only `{ code }` is sent; each error code maps. | 15 |
 | 17 | Confirm account deletion with an SMS code | Legal page: confirmation, send a code to the account's phone, code popup with Resend, then `deleteAccount(code)` and `signOut()`. | 16 |
 
-### Phase 6: after the support person branch merges
-Merge `main` in first.
-| # | Commit message | Contents | Waits for |
-| - | -------------- | -------- | --------- |
-| 18 | Show invitation status on the patient's support persons | Step 6. | Support person branch T1.2 and T2.1 |
-| 19 | Use invitation status in a support person's export and deletion | New migration replacing `export_my_data` and `delete_account` (`create or replace`): use `list_supported_patients()` and mark rows `declined`. New `097_settings_support_person_status.test.sql`. + types. **Skip** if the support person branch merged before phases 4 and 5, and write them this way from the start. | Support person branch T2.1 to T2.3 |
+### Phase 6: moved to the support person branch
+Not built here. Settings merges first, so the support person PR does both:
+| # | Commit message | Where it went |
+| - | -------------- | ------------- |
+| 18 | Show invitation status on the patient's support persons | Support person plan, T4 |
+| 19 | Use invitation status in a support person's export and deletion | Support person plan, T2.4: a migration after A11 that replaces `export_my_data` and `delete_account`, with `097_settings_support_person_status.test.sql` |
 
 ### Phase 7: finish
 | # | Commit message | Contents | Waits for |
@@ -397,8 +401,9 @@ Merge `main` in first.
 Manual QA (step 10) goes in the PR description, not a commit.
 
 ## Working alongside the support person branch
-- **Merge order:** either branch can merge first. Step 6 waits for the support person branch. Steps 8 and 9 work
-  before it and get their support person details right after it.
+- **Merge order:** this branch merges first. The support person PR then adds step 6 (its T4) and the
+  `status` versions of `export_my_data` and `delete_account` (its T2.4) **in the same PR as A9**. A9's check
+  "accepted only with a login" would otherwise make a support person's account deletion fail.
 - **Migration timestamps:** whichever branch merges second renames its migration (a new `supabase migration new`)
   so it sorts after the other's. Never rename a migration that has merged.
 - **Shared files:** both branches regenerate `src/types/database.ts` and may touch `src/lib/errors.ts` and
