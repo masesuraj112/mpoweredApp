@@ -18,6 +18,12 @@ It never builds a second copy.
 Built by the login, support person front end and Care Planner branches. Reuse it.
 - **Sign-in:** phone number and SMS code only. Users have **no password and no email**. `users.user_type` is
   `patient` or `support_person`; a support person has a `users` row only (no `patients` row, so no year of birth).
+  - Services: `sendVerificationCode(phone)` and `verifyCode(phone, code)` in `src/services/auth.ts`.
+  - Helpers: `OTP_LENGTH`, `RESEND_SECONDS`, `sanitiseCode`, `isCodeComplete` (`src/features/auth/otp.ts`),
+    `authErrorMessage` (`src/features/auth/messages.ts`), `formatForDisplay` (`src/features/auth/phone.ts`).
+  - Not sign-in paths: `app/(auth)/dev-login.tsx` (email and password, development builds only, nothing links
+    to it) and the Email provider, which `supabase/config.toml` still enables for local and CI use. Turning it
+    off in production is on `docs/backend/production-auth-checklist.md`. Both belong to the login work, not this branch.
 - **Profile in the app:** `getProfile()` in `src/services/auth.ts` returns `{ userType, name, phone }`, and
   `AuthContext` exposes it as `profile`, with `refreshProfile()`.
 - **Sign out:** `signOut()` in `src/services/auth.ts`, used by both Account pages.
@@ -38,17 +44,24 @@ Built by the login, support person front end and Care Planner branches. Reuse it
   (`users_id = current_users_id()`). Only the table grants are missing.
 - **Packages:** `expo-sharing` is installed; `expo-file-system` isn't.
 
+## Settled
+
+| Decision | Why | Step |
+| -------- | --- | ---- |
+| **No password anywhere in Settings.** Change password is removed, not commented out. | Sign-in is phone and SMS code only, so there is no password to check or change. | 4 |
+| **No email in Personal details.** The field is removed. | Users sign up without one, and `auth.updateUser({ email })` would add an email login to a phone account (and fails once the Email provider is off). A support person's email on the patient's Support persons screen stays: it's contact information, not a login. | 4 |
+| **Account deletion is confirmed with a new SMS code** sent to the account's own phone, checked by the server. | It replaces a password check. Proves the person deleting still has the phone, not just an unlocked app. | 9 |
+
 ## Open questions
 Ask before writing the step that needs the answer.
 
 | # | Question | Owner | Default until answered | Step |
 | - | -------- | ----- | ---------------------- | ---- |
-| Q1 | Password and Face ID for phone users (login decision L16) | Team | Comment out Change password and Face ID on the patient Account page | Controls |
-| Q2 | Email in patient Personal details. Users sign up without one, and `auth.updateUser({ email })` would add an email login to a phone account. | Team | Hide the email field | 4 |
-| Q3 | Changing the phone number (login decision L17). Needs SMS re-verification. | Team | Phone read-only in both apps | 4, 5 |
-| Q4 | Can a support person edit their own name? (`docs/support-person.md` section 4.4) | Team | Yes, with the same `update_profile` function as patients | 5 |
-| Q5 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). Do we keep anything, for example for MHA records? | Team, MHA | Delete everything the patient owns | 9 |
-| Q6 | What happens to the patients' records when a support person deletes their account? | Team | Same as Unpair for every patient they support (see step 9) | 9 |
+| Q1 | Face ID for phone users (login decision L16): drop it, or add it as a lock on top of the SMS sign-in? | Team | Comment out the Face ID toggle | Controls |
+| Q2 | Changing the phone number (login decision L17). Needs SMS re-verification. | Team | Phone read-only in both apps | 4, 5 |
+| Q3 | Can a support person edit their own name? (`docs/support-person.md` section 4.4) | Team | Yes, with the same `update_profile` function as patients | 5 |
+| Q4 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). Do we keep anything, for example for MHA records? | Team, MHA | Delete everything the patient owns | 9 |
+| Q5 | What happens to the patients' records when a support person deletes their account? | Team | Same as Unpair for every patient they support (see step 9) | 9 |
 
 ## Steps
 
@@ -111,19 +124,24 @@ last optional argument, never send a user or patient id, always filter `users` b
 
 ### 4. Patient Account (`app/(tabs)/settings/profile.tsx`)
 - Load `getPersonalDetails()` when the screen opens and remove the hardcoded "Sarah McLachlan" values. Show a loading state and an error state.
-- Show the phone read-only with `formatForDisplay` (Q3). Hide the email field (Q2).
+- Show the phone read-only with `formatForDisplay` (Q2).
+- Remove the email field, its state and its `validateEmail` check. Keep `validateEmail` itself: the support
+  person form (`src/features/care-planner/supportPerson.ts`) still uses it.
 - Replace the date field (`SettingsModalDateField`) with an optional 4-digit year field (`SettingsModalField`,
   `keyboardType="number-pad"`, `maxLength={4}`), checked with `validateYearOfBirth`.
 - Remove the date of birth code that's no longer needed (`parseIsoDate`, `isFutureDate`, the date state). If
   `SettingsModalDateField` and the date helpers in `src/services/date.ts` aren't used anywhere else, delete them.
 - On Ok: save with `updateProfile`, then `refreshProfile()`. If the save fails, keep the popup open with the message.
-- Comment out Change password and Face ID (Q1, see "Controls to comment out").
+- Remove Change password: the option, its popup and state, and the `signInWithPassword` and
+  `updateUser({ password })` calls. Delete `validatePassword`, `PASSWORD_MIN_LENGTH` and the password rules from
+  `src/services/validation.ts`, and their tests in `__tests__/validation.test.ts` (nothing else uses them).
+- Comment out Face ID (Q1, see "Controls to comment out").
 
 ### 5. Support person Account (`app/(support)/support-settings/profile.tsx`)
-- If Q4 is yes: make the name editable in Personal details (`SettingsModalField`, `maxLength={45}`), saved
+- If Q3 is yes: make the name editable in Personal details (`SettingsModalField`, `maxLength={45}`), saved
   with `updateProfile({ name, yearOfBirth: null })`, then `refreshProfile()`. Same error handling as step 4.
-- Keep the phone read-only (Q3) and change the note under it to say only the phone can't be changed yet.
-- If Q4 is no: leave the screen as it is.
+- Keep the phone read-only (Q2) and change the note under it to say only the phone can't be changed yet.
+- If Q3 is no: leave the screen as it is.
 
 ### 6. Patient Support persons: invitation status (`app/(tabs)/settings/support-persons.tsx`)
 **Waits for the support person branch** to merge its `support_link_state` migration and the `status` field on
@@ -154,14 +172,40 @@ The support person Legal page re-exports this screen, so one button serves both 
   with `expo-sharing` (installed).
 
 ### 9. Account deletion (shared `app/(tabs)/settings/legal.tsx`)
+**Confirming with an SMS code.** Deletion can't be undone, so the user proves they still have the phone,
+using the same SMS code as sign-in instead of a password:
+1. **Confirm:** a destructive popup says what will be deleted (`Alert`, with `window.confirm` on web, as Unpair does).
+2. **Send a code:** `sendVerificationCode(profile.phone)`. The number comes from `useAuth().profile`, never from
+   a field the user types in. The popup says "We've texted a code to 0491 570 006" (`formatForDisplay`).
+3. **Enter the code:** a 6-digit field (`OTP_LENGTH`, `sanitiseCode`, `keyboardType="number-pad"`,
+   `textContentType="oneTimeCode"`, `autoComplete="sms-otp"`), and a Resend button after `RESEND_SECONDS`, as on
+   `app/(auth)/verify.tsx`. Errors use `authErrorMessage`: wrong or expired code (`OTP_EXPIRED`), too many tries
+   (`RATE_LIMITED`), SMS not sent (`SMS_FAILED`), no connection (`NETWORK`).
+4. **Delete:** `deleteAccount(code)`. **The server checks the code**, not the app: the app only sends it.
+   Checking it on the device with `verifyCode` would prove nothing to the server, and would replace the session.
+5. **Done:** `signOut()`. Signing in again with the same number starts onboarding as a new user.
+
+Notes:
+- If `profile.phone` is null (rows made before phone sign-in), show "Account deletion needs a phone number on
+  your account" and stop. No real user should have one.
+- `supabase.auth.reauthenticate()` isn't used: its code is for changing a password with `updateUser({ password, nonce })`
+  **(verify in the Supabase docs)**, and there's no password here.
+- With the dev test numbers the code is the fixed test code, so this works without real SMS.
+
 - Edge Function `supabase/functions/delete-account`:
-  - Check the user's sign-in token, then work out `user_type` from their `users` row.
-  - **Patient (Q5):** delete children first, because most foreign keys have no cascade:
+  - Check the user's sign-in token (`auth.getUser(token)`), then work out `user_type` from their `users` row.
+  - **Check the code:**
+    - Take the phone from the signed-in auth user, never from the request. The request carries only `{ code }`.
+    - Call `verifyOtp({ phone, token: code, type: 'sms' })` with a separate client that doesn't keep the session.
+    - The user it returns must be the caller.
+    - On a wrong or expired code, or any mismatch, return `OTP_EXPIRED` (or `NOT_ALLOWED` for a mismatch) and
+      delete nothing. A used code can't be used again.
+  - **Patient (Q4):** delete children first, because most foreign keys have no cascade:
     - appointment questions, appointment links and appointments
     - support persons
     - assessments, conditions and `patients`
     - `user_settings` and `users`
-  - **Support person (Q6):** for each `support_persons` row linked to them, do what Unpair does: mark it
+  - **Support person (Q5):** for each `support_persons` row linked to them, do what Unpair does: mark it
     `declined`, clear `users_id` and delete its appointment links. The patient's row stays. Then delete
     `user_settings` (if any) and `users`. `declined` only exists once the support person branch adds
     `status`; before that, clearing `users_id` is enough (nothing sets it yet). Keep the check
@@ -170,11 +214,10 @@ The support person Legal page re-exports this screen, so one button serves both 
   - Do it all in one database transaction, so a failure deletes nothing: a single `plpgsql` function
     `delete_account(p_users_id int)`, executable by `service_role` only (`revoke all … from public, anon, authenticated`),
     called by the Edge Function. `096_delete_account` tests it.
-- `deleteAccount()` in `src/services/account.ts` calls `supabase.functions.invoke('delete-account')`.
-- App:
-  - Show a destructive confirmation (`Alert`, with `window.confirm` on web, as Unpair does). Ask the user to
-    type DELETE. A password can't be asked for: phone users have none.
-  - Call the function, then `signOut()`.
+- `deleteAccount(code)` in `src/services/account.ts`:
+  - Checks the code is complete (`isCodeComplete`) first; an incomplete one gives `INVALID_OTP` with no call.
+  - Calls `supabase.functions.invoke('delete-account', { body: { code } })`. Sends no phone and no user id.
+  - Maps the function's error codes to `AppError`, so `authErrorMessage` can show them.
 
 ### 10. Before opening the PR
 - `npm run lint && npm run typecheck && npm test`.
@@ -184,9 +227,11 @@ The support person Legal page re-exports this screen, so one button serves both 
 - Commit the generated types from CI.
 - Manual test on a device with the dev test numbers (dev-login accounts have no `users` row and can't reach the tabs):
   - **Patient:** edit the name and year; change notification settings, close and reopen the app; export your data; delete a test account.
-  - **Support person:** edit the name (if Q4 is yes); check there's no year field; export your data; delete a
+  - **Support person:** edit the name (if Q3 is yes); check there's no year field; export your data; delete a
     test account and check the patient's Support persons screen.
-  - **Both:** Change password and Face ID aren't shown; the phone is read-only.
+  - **Deleting an account:** a wrong code deletes nothing and says so; Resend works after the wait; the right
+    code deletes the account and signs out; signing in again with that number starts onboarding.
+  - **Both:** there's no Change password, email or Face ID; the phone is read-only.
 
 ## Commits
 One commit per row, in order. Each one passes `npm run lint`, `npm run typecheck` and `npm test` on its own.
@@ -199,9 +244,9 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 ### Phase 1: no database (can start now)
 | # | Commit message | Contents | Waits for |
 | - | -------------- | -------- | --------- |
-| 1 | Comment out the Settings controls that do nothing yet | Patient Account: Change password and Face ID. Display: text size and dark mode. Patient Settings home: the Display row. | Q1 (default: comment out) |
+| 1 | Remove Change password and comment out the Settings controls that do nothing yet | Patient Account: remove Change password and the password checks in `validation.ts` (with their tests); comment out Face ID. Display: text size and dark mode. Patient Settings home: the Display row. | Q1 (default: comment out Face ID) |
 | 2 | Share the year of birth check between sign-up and Settings | `validateYearOfBirth` in `validation.ts` with tests; `toProfileArgs` uses it. | — |
-| 3 | Show year of birth and phone instead of date of birth and email on the patient Account page | Year field in place of the date field; phone read-only from `useAuth().profile`; email hidden; unused date code and helpers removed. Still local state. | Q2, Q3 (defaults) |
+| 3 | Show year of birth and phone instead of date of birth and email on the patient Account page | Year field in place of the date field; phone read-only from `useAuth().profile`; email field and its check removed; unused date code and helpers removed. Still local state. | Q2 (default) |
 
 ### Phase 2: profile editing
 | # | Commit message | Contents | Waits for |
@@ -209,7 +254,7 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 | 4 | Add update_profile for patients and support persons | Migration `settings_update_profile` (function and column grants) and `093_update_profile.test.sql`. + types | — |
 | 5 | Add personal details services | `getPersonalDetails` and `updateProfile` in `src/services/profile.ts`, with tests. | 4 |
 | 6 | Load and save the patient's personal details | Patient Account loads, saves, calls `refreshProfile()`; loading, error and save-failure states. | 3, 5 |
-| 7 | Let support persons edit their name | Support person Account: editable name, new note under the phone. | 5, Q4 |
+| 7 | Let support persons edit their name | Support person Account: editable name, new note under the phone. | 5, Q3 |
 
 ### Phase 3: notifications
 | # | Commit message | Contents | Waits for |
@@ -228,10 +273,10 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 ### Phase 5: account deletion
 | # | Commit message | Contents | Waits for |
 | - | -------------- | -------- | --------- |
-| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q5, Q6 |
-| 15 | Add the delete-account Edge Function | `supabase/functions/delete-account`: checks the token, calls `delete_account`, then `auth.admin.deleteUser`. No automated test; covered by the manual test. | 14 |
-| 16 | Add the account deletion service | `deleteAccount()` in `src/services/account.ts`, with tests. | 15 |
-| 17 | Delete the account from Settings | Legal page: typed-DELETE confirmation, then `deleteAccount()` and `signOut()`. | 16 |
+| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q4, Q5 |
+| 15 | Add the delete-account Edge Function | `supabase/functions/delete-account`: checks the token, checks the SMS code against the account's own phone, calls `delete_account`, then `auth.admin.deleteUser`. No automated test; covered by the manual test. | 14 |
+| 16 | Add the account deletion service | `deleteAccount(code)` in `src/services/account.ts`, with tests: an incomplete code makes no call; only `{ code }` is sent; each error code maps. | 15 |
+| 17 | Confirm account deletion with an SMS code | Legal page: confirmation, send a code to the account's phone, code popup with Resend, then `deleteAccount(code)` and `signOut()`. | 16 |
 
 ### Phase 6: after the support person branch merges
 Merge `main` in first.
@@ -262,14 +307,14 @@ Manual QA (step 10) goes in the PR description, not a commit.
 
 | Screen | Control | Why it does nothing |
 | ------ | ------- | ------------------- |
-| Patient Account (`settings/profile.tsx`) | **Change password** | Phone users have no password, so the old-password check always fails. Waits on Q1. |
 | Patient Account (`settings/profile.tsx`) | **Enable FaceID** toggle | Only changes local state. No biometric login exists (needs `expo-local-authentication`). Waits on Q1. |
 | Display (`settings/display.tsx`) | **Text size** select | Only changes local state. Nothing reads it, and fonts come from `scaleFont` only. |
 | Display (`settings/display.tsx`) | **Enable dark mode** toggle | Only changes local state. The app only uses `Colors.light`, and many colours are hardcoded. |
 | Patient Settings home (`settings/index.tsx`) | **Display** row | Comment it out with the Display page, otherwise it opens a page with nothing working. |
 
 Notes:
-- The support person Account page already has no Change password or Face ID.
+- **Change password and the email field are removed, not commented out** (see "Settled" and step 4).
+- The support person Account page already has no Change password, email or Face ID.
 - **Privacy policy and Terms** (`settings/privacy.tsx`, `settings/terms.tsx`) only say "coming soon", and nothing
   links to `terms.tsx`. Content to write, not backend work. Both apps share them.
 - **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7).
