@@ -1,238 +1,209 @@
 # Settings backend: feature/settings-backend
 
-Steps to connect the Settings screens to Supabase, and the controls to comment out because
-they do nothing in this branch.
+Steps to connect Settings to Supabase in **both apps**, the patient app (`app/(tabs)/settings`) and the
+support person app (`app/(support)/support-settings`), and the controls to comment out because they do
+nothing in this branch.
 
-## Depends on `feature/onboarding-login-backend`
-That branch adds phone code sign-in and the `create_profile` database function, which creates the
-`users`, `patients` and `patient_musko_skeletal_pain` rows at sign-up. Settings needs those rows:
-- the name is stored in `users`
-- the year of birth is stored in `patients`
-- every support person row needs a `patient_id`
+## Which branch does what
 
-Before starting:
-- Rebase onto `main` after the login branch merges.
-- Push its migrations to the dev project (`supabase db push --dry-run`, then `supabase db push`).
-  See `docs/backend/login-backend.md`.
+| Work | Branch |
+| ---- | ------ |
+| Every Settings screen in both apps, and the database work only Settings needs (profile edits, notification settings, export, account deletion) | `feature/settings-backend` (this plan) |
+| Everything else for support persons: invitations, accept / reject / unpair, the table lockdown, the support person functions, the Care Planner tab, the `src/services/support-person.ts` rewrite | `feature/support-person-backend` (`docs/backend/support-person-backend-build-plan.md`) |
 
-What the login branch changes for this plan:
-- Users sign in with a phone number and an SMS code. They have **no password and no email**.
-- `users.user_type` is `'patient'` or `'support_person'`. A support person has a `users` row only:
-  no `patients` row, so no year of birth.
-- `authenticated` has only `select` and `insert` on `users`, `patients` and
-  `patient_musko_skeletal_pain` (revoke-then-grant). Nobody can change `user_type`.
-- `src/services/profile.ts` exists (`createProfile` and a `run()` wrapper). `signOut()` is in `src/services/auth.ts`.
-- `AuthContext` doesn't expose `user_type` yet, so the app can't tell a patient from a support person.
+Where a Settings screen needs something from the support person branch, this plan says so and waits for it.
+It never builds a second copy.
+
+## Already on `main`
+Built by the login, support person front end and Care Planner branches. Reuse it.
+- **Sign-in:** phone number and SMS code only. Users have **no password and no email**. `users.user_type` is
+  `patient` or `support_person`; a support person has a `users` row only (no `patients` row, so no year of birth).
+- **Profile in the app:** `getProfile()` in `src/services/auth.ts` returns `{ userType, name, phone }`, and
+  `AuthContext` exposes it as `profile`, with `refreshProfile()`.
+- **Sign out:** `signOut()` in `src/services/auth.ts`, used by both Account pages.
+- **Patient Settings > Support Persons is connected:** `useMySupportPersons` with `listMySupportPersons`,
+  `saveSupportPerson` and `deleteSupportPerson` in `src/services/care-planner.ts`; loading, error and empty states.
+- **`support_persons`:**
+  - Explicit grants (revoke then grant).
+  - Optional phone and email; only the name is required.
+  - Phone is a mobile in E.164 (`+614` and 8 digits), unique per patient.
+  - `access_type` is `none`, `questions`, `answers` or `questions,answers`; `src/features/care-planner/accessType.ts` converts it.
+  - Deleting a support person deletes their appointment links (ON DELETE CASCADE).
+- **Support person Settings** (front end only):
+  - Home with three rows: Account, People you support, Privacy/Data and Legal.
+  - **Account:** name and phone read-only, and Sign out. No Change password or Face ID.
+  - **People you support:** the patients they support, with Unpair. It runs on `useSupportPerson`, which still uses placeholder data.
+  - **Privacy/Data and Legal and Privacy:** re-export the patient screens, so Export my data and Account deletion are shared.
+- **RLS update policies already exist:** `users_update` (`auth_id = auth.uid()`) and `patients_update`
+  (`users_id = current_users_id()`). Only the table grants are missing.
+- **Packages:** `expo-sharing` is installed; `expo-file-system` isn't.
 
 ## Open questions
-Ask before writing the related step.
-- **`support_persons.access_type` format.** The Planner and the support person back end rely on it too.
-  Settle it with the teammate building the support person back end.
-- **Password and Face ID (login decision L16).** Phone users have no password, so change password can't work.
-- **Email in Personal details.** Users sign up without one. `auth.updateUser({ email })` would add an email
-  login to a phone account. Default until decided: hide the email field.
-- **Phone number change (login decision L17).** Needs re-verification. Default until decided: show the phone read-only.
-- **Must a support person's phone be a mobile?** Only mobiles can link to a support person account.
-  See "Phone numbers" under Support persons.
-- **Appointment links when a support person is deleted.** No foreign key has ON DELETE CASCADE.
-- **What gets deleted along with an account**, including a support person's links to patients.
+Ask before writing the step that needs the answer.
 
-## Support persons
-There are two sides to support persons in Settings:
-- **Patients managing their support persons:** the Support persons screen. This branch builds it (steps 1, 3 and 5).
-- **Support person users using Settings:** people who signed up as a support person. Settings has to
-  handle them (steps 3, 4, 5 and 8).
-
-The login handover (`feature/onboarding-login-backend`) lists eight things it left undone. Who owns each one:
-
-| # | Handover item | Owner | In this plan |
-| - | ------------- | ----- | ------------ |
-| 1 | Nothing sets `support_persons.users_id` (no link between a patient's entry and the support person's account) | Support person back end | Not built here. Step 3 saves phones in E.164 so a phone match works later. `phone_number` has no unique constraint, so agree whether `(patient_id, phone_number)` should be unique. |
-| 2 | `support_persons.email` is NOT NULL, but sign-up has no email | This branch | Step 1 makes phone and email nullable, with a check that one is set. |
-| 3 | `AuthContext` and `hasProfile()` don't expose `user_type` | Agree who | Step 3: `getProfile()` returns `userType`. If the support person back end adds `userType` to `AuthContext`, Settings reads it from there instead. |
-| 4 | No `user_type` guards on patient features | Support person back end | Settings hides its patient-only parts (step 4 year field, step 5 screen). Database guards on pain and social health aren't in scope. |
-| 5 | No pgTAP tests for support person access or the `support_persons` table | Agree who | Step 2 `045_support_persons_rls.test.sql` covers the patient's side. Support person reads of patient data belong to the support person back end. |
-| 6 | Privileges on `support_persons` weren't reviewed | This branch | Step 1: revoke then grant. |
-| 7 | `access_type` values aren't defined | Both (decide together) | Open question. Step 1 adds the format once agreed; step 3 maps the two toggles to it. |
-| 8 | Existing support person screens weren't checked | This branch for Settings | `settings/support-persons.tsx` is UI only (hardcoded `INITIAL_PEOPLE`); step 5 connects it. `planner/support-person.tsx` makes no database calls and is left to the support person back end. |
-
-### Toggles to `access_type`
-The Support persons screen has two toggles per person: **Add questions** (`canAddQuestions`) and
-**Add doctor's answers** (`canAddAnswers`). Once the format is agreed, map them both ways in
-`src/services/contacts.ts`. With the suggested tokens:
-
-| Add questions | Add doctor's answers | `access_type` |
-| ------------- | -------------------- | ------------- |
-| off | off | `''` |
-| on | off | `'questions'` |
-| off | on | `'answers'` |
-| on | on | `'questions,answers'` |
-
-Always write the tokens in that order, so one combination never gets two spellings.
-
-### Phone numbers
-- The screen's `validatePhone` accepts any Australian number, but `toE164` and the support person's
-  `users.phone_number` are mobiles only (`+614` and 8 digits). Decide whether a support person's phone must be a mobile:
-  - **Mobile only (suggested):** validate with `isValidAuMobile` (`src/features/auth/phone.ts`), so every saved number can be linked later.
-  - **Any number:** store landlines as entered; they can never link to an account.
-- `support_persons.phone_number` is `varchar(12)`, which fits E.164 exactly.
-
-### What a support person user sees in Settings
-| Screen | Patient | Support person |
-| ------ | ------- | -------------- |
-| Personal details | Name, year of birth, phone (read-only) | Name, phone (read-only). No year: they have no `patients` row. |
-| Support persons | Shown | Hidden, row and screen. |
-| Notifications | Shown | Shown. `user_settings` is keyed on `users_id`, so it works for both. |
-| Export my data | Their own rows | Their `users` row and the `support_persons` rows that link to them. |
-| Account deletion | All their data | Their `users` row and settings. Patients' `support_persons` rows stay (see step 8). |
-
-## Already working
-- Sign out (`settings/index.tsx`, `settings/profile.tsx`), through `signOut()` in `src/services/auth.ts`.
+| # | Question | Owner | Default until answered | Step |
+| - | -------- | ----- | ---------------------- | ---- |
+| Q1 | Password and Face ID for phone users (login decision L16) | Team | Comment out Change password and Face ID on the patient Account page | Controls |
+| Q2 | Email in patient Personal details. Users sign up without one, and `auth.updateUser({ email })` would add an email login to a phone account. | Team | Hide the email field | 4 |
+| Q3 | Changing the phone number (login decision L17). Needs SMS re-verification. | Team | Phone read-only in both apps | 4, 5 |
+| Q4 | Can a support person edit their own name? (`docs/support-person.md` section 4.4) | Team | Yes, with the same `update_profile` function as patients | 5 |
+| Q5 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). Do we keep anything, for example for MHA records? | Team, MHA | Delete everything the patient owns | 9 |
+| Q6 | What happens to the patients' records when a support person deletes their account? | Team | Same as Unpair for every patient they support (see step 9) | 9 |
 
 ## Steps
 
 ### 1. Database migration
-Add a new migration (never edit an old one):
-- **Profile updates:** add an `update_profile(p_name, p_year_of_birth)` function in the same style as
-  `create_profile`:
-  - Security invoker, user from `auth.uid()`.
-  - Same checks: name 1 to 45 characters after trimming, year empty or 1900 to the current year.
-  - Updates `users.name`, and `patients.year_of_birth` only when the user has a `patients` row.
-  - Revoke from `public, anon`; grant execute to `authenticated`.
+One new migration (`supabase migration new settings_backend`), never an edited one. Its timestamp must sort
+after the newest migration on `main` when this branch merges (see "Working alongside the support person branch").
+
+- **`update_profile(p_name text, p_year_of_birth int)`**, in the style of `create_profile`:
+  - `plpgsql`, `security invoker`, `set search_path = public`, user from `auth.uid()`.
+  - `NO_SESSION` when signed out, `NO_PROFILE` when there's no `users` row.
+  - Same checks as `create_profile`: name 1 to 45 characters after trimming (`INVALID_NAME`); year empty or
+    1900 to the current year (`INVALID_YEAR`).
+  - Updates `users.name`. Updates `patients.year_of_birth` only for a patient; for a support person the year is ignored.
+  - `revoke all … from public, anon; grant execute … to authenticated;`
   - It needs column grants to run: `grant update (name) on public.users to authenticated;` and
-    `grant update (year_of_birth) on public.patients to authenticated;`. Never grant `update (user_type)`.
-- **`support_persons` privileges:** revoke then grant, like the login migration. `anon` currently has
-  `references`, `trigger` and `truncate`, and local and hosted defaults differ.
-  - `revoke all on public.support_persons from anon, authenticated;`
-  - `grant select, insert, update, delete on public.support_persons to authenticated;`
-- **`support_persons` contact fields:** make `phone_number` and `email` nullable, and add
-  `check (phone_number is not null or email is not null)`. The screen allows either one, and a support
-  person signs up with no email.
-- **`support_persons.access_type` format:** once agreed (see open questions). `is_support_person_for_patient`
-  checks it with `LIKE '%<access>%'`, so use distinct tokens, e.g. `''`, `'questions'`, `'answers'`, `'questions,answers'`.
-  - Optional: add a check constraint that limits it to those values.
-- **New table `user_settings`**, one row per user:
+    `grant update (year_of_birth) on public.patients to authenticated;`. Never grant `update (user_type)`
+    or `update (phone_number)`.
+- **New table `user_settings`** (patients only; support persons have no Notifications page):
   - `users_id` (primary key, references `users`)
   - `assessment_reminders` bool, `assessment_every` int (1–7), `assessment_unit` text (`days`|`weeks`)
   - `appointment_reminders` bool, `appointment_day_before` bool, `appointment_on_day` bool
   - Defaults must match the screen: off, every 3 days, off, off, off.
-  - Enable RLS. Add select/insert/update rules using `users_id = public.current_users_id()`.
-  - Revoke all from `anon, authenticated` first (local defaults grant everything to new tables), then
-    grant `select, insert, update` to `authenticated`.
-- Regenerate types: `supabase gen types typescript --local > src/types/database.ts`.
+  - Enable RLS. Select/insert/update policies using `users_id = public.current_users_id()`.
+  - Revoke all from `anon, authenticated` (local defaults grant everything to new tables), then grant
+    `select, insert, update` to `authenticated`.
+- Regenerate `src/types/database.ts` from CI (`docs/backend/testing-and-cicd.md`); never edit it by hand.
 
 ### 2. Database tests (`supabase/tests/database/`)
-The login branch uses 060 and 061.
-- `040_settings_privileges.test.sql`:
-  - The new grants exist, and `anon` has nothing on `support_persons` or `user_settings`.
-  - `authenticated` can't update `users.user_type`.
-- `041_update_profile.test.sql`:
+`000`–`089` are taken and the support person branch has `090`–`092`, so this branch uses `093` onwards.
+- `093_update_profile.test.sql`:
   - A patient can change their name and year.
   - A support person can change their name. The year is ignored.
-  - Bad name or year is rejected; `anon` can't run it.
-- `045_support_persons_rls.test.sql` (agree with the support person teammate who writes this, to avoid two copies):
-  - The patient can add, read, edit and delete their own support persons.
-  - Another user can't see them.
-  - The contact check rejects a row with neither phone nor email.
-  - A support person can't change their own `access_type` (an existing trigger enforces this).
-- `050_user_settings_rls.test.sql`: users only see and change their own row.
+  - Bad name or year is rejected; signed out gives `NO_SESSION`.
+  - `anon` can't run it.
+  - `authenticated` can't update `users.user_type` or `users.phone_number`.
+  - One user can't change another user's row.
+- `094_user_settings.test.sql`:
+  - RLS is on; `anon` has nothing.
+  - Users only see and change their own row; the defaults are as above.
 
 ### 3. Data access functions
-Follow `src/services/assessments.ts` and `src/services/profile.ts`:
-- Return `Result<T>` (`src/lib/result.ts`) and turn errors into messages with `mapError` (`src/lib/errors.ts`). Never throw.
-- Accept the client as the last optional argument (`client: Client = supabase`).
-- Look up the user by `auth_id`, as `getUserStartWeek` does. Always filter `users` by `auth_id`:
-  `users_select` also returns a patient's row to their support persons.
-
-Files:
+Follow `src/services/care-planner.ts`: `Result<T>` through `run()`, errors through `mapError`, client as the
+last optional argument, never send a user or patient id, always filter `users` by `auth_id`.
 - `src/services/profile.ts` (add to the existing file):
-  - `getProfile()` returns `{ name, userType, yearOfBirth, phone }`. `yearOfBirth` is null for a support person.
-  - `updateProfile({ name, yearOfBirth })` calls `update_profile`.
-  - No `updateEmail` until the email question is answered.
-- `src/services/contacts.ts` (currently empty): `listSupportPersons()`, `addSupportPerson()`, `updateSupportPerson()`, `removeSupportPerson()`.
-  - Turn the two toggles into `access_type` and back (see "Toggles to `access_type`" above).
-  - Save phone numbers in E.164 (`+614…`) with `toE164` (`src/features/auth/phone.ts`), not `normalisePhone`.
-    The support person's own `users.phone_number` is E.164, and linking the two will likely match on phone.
-- `src/services/settings.ts`: `getNotificationSettings()` returns the defaults when there's no row; `saveNotificationSettings()` creates or updates the row.
-- Jest tests next to each file, with a fake client like `src/services/assessments.test.ts`.
-  - Start each test file with `jest.mock('@/lib/supabase', () => ({ supabase: {} }))`.
-  - Add the new files to `collectCoverageFrom` in `jest.config.js`.
+  - `getPersonalDetails()` returns `{ name, phone, yearOfBirth }`; `yearOfBirth` is null for a support person
+    or when it wasn't given. Keep `getProfile()` in `auth.ts` as it is: it runs on every launch, and the year isn't needed there.
+  - `updateProfile({ name, yearOfBirth })` calls `update_profile`. After it succeeds, the screen calls
+    `refreshProfile()` so the new name shows everywhere.
+- `src/services/settings.ts`: `getNotificationSettings()` returns the defaults when there's no row;
+  `saveNotificationSettings()` creates or updates the row.
+- `validateYearOfBirth` in `src/services/validation.ts`, taken out of `toProfileArgs`
+  (`src/features/auth/profile.ts`) and used in both places. Test it in `__tests__/validation.test.ts`.
+- Jest tests next to each file with a fake client; start each service test with
+  `jest.mock('@/lib/supabase', () => ({ supabase: {} }))`; add new files to `collectCoverageFrom` in `jest.config.js`.
 
-### 4. Account → Personal details (`app/(tabs)/settings/profile.tsx`)
-- Load the profile when the screen opens, and remove the hardcoded "Sarah McLachlan" values. Show a loading state and an error state.
-- Show the phone number read-only. Hide the email field (see open questions).
-- Replace the date field (`SettingsModalDateField`) with a 4-digit year field (`SettingsModalField`, `keyboardType="number-pad"`, `maxLength={4}`).
-  - Keep it optional, as in sign-up.
-  - Hide it for a support person.
-  - Allow years from 1900 to the current year. Move the year check out of `toProfileArgs` (`src/features/auth/profile.ts`)
-    into a shared `validateYearOfBirth` in `src/services/validation.ts`, use it in both places, and test it in `__tests__/validation.test.ts`.
-- Remove the date of birth handling that's no longer needed (`parseIsoDate`, `isFutureDate` and the date state). If `SettingsModalDateField` and the date helpers in `src/services/date.ts` aren't used anywhere else, delete them.
-- On Ok:
-  - Save the name and year.
-  - Keep the popup open with the error message if the save fails.
+### 4. Patient Account (`app/(tabs)/settings/profile.tsx`)
+- Load `getPersonalDetails()` when the screen opens and remove the hardcoded "Sarah McLachlan" values. Show a loading state and an error state.
+- Show the phone read-only with `formatForDisplay` (Q3). Hide the email field (Q2).
+- Replace the date field (`SettingsModalDateField`) with an optional 4-digit year field (`SettingsModalField`,
+  `keyboardType="number-pad"`, `maxLength={4}`), checked with `validateYearOfBirth`.
+- Remove the date of birth code that's no longer needed (`parseIsoDate`, `isFutureDate`, the date state). If
+  `SettingsModalDateField` and the date helpers in `src/services/date.ts` aren't used anywhere else, delete them.
+- On Ok: save with `updateProfile`, then `refreshProfile()`. If the save fails, keep the popup open with the message.
+- Comment out Change password and Face ID (Q1, see "Controls to comment out").
 
-### 5. Support persons (`app/(tabs)/settings/support-persons.tsx`)
-- Hide this screen and its Settings row for a support person. Their inserts would fail RLS anyway.
-- Load the list, and remove `INITIAL_PEOPLE`.
-- Change `id` to the `support_person_id` number. A new person has no id until the insert returns one; this replaces the `new-${Date.now()}` trick.
-- In `save()`: add the person if new, otherwise update them. Only change the list once the save succeeds.
-- "Revoke all access" deletes the row, then removes it from the list.
-- Show an empty state when the list has no one (`src/components/ui/EmptyState.tsx`).
-- Not in this branch: setting `support_persons.users_id` to link the row to the support person's account.
-  That belongs to the support person back end.
+### 5. Support person Account (`app/(support)/support-settings/profile.tsx`)
+- If Q4 is yes: make the name editable in Personal details (`SettingsModalField`, `maxLength={45}`), saved
+  with `updateProfile({ name, yearOfBirth: null })`, then `refreshProfile()`. Same error handling as step 4.
+- Keep the phone read-only (Q3) and change the note under it to say only the phone can't be changed yet.
+- If Q4 is no: leave the screen as it is.
 
-### 6. Notifications (`app/(tabs)/settings/notifications.tsx`)
+### 6. Patient Support persons: invitation status (`app/(tabs)/settings/support-persons.tsx`)
+**Waits for the support person branch** to merge its `support_link_state` migration and the `status` field on
+`SupportPerson` (its steps T2.1 and T1.2).
+- Show Pending / Accepted / Declined on each row.
+- Say in the Revoke all access popup that the person loses access at once.
+- The support person plan lists this screen change under its T4. It moves here: tell the teammate, so it isn't built twice.
+
+### 7. Notifications (`app/(tabs)/settings/notifications.tsx`, patients only)
 - Load the settings when the screen opens.
-- Save straight away when a toggle changes.
-- Save when the user taps Ok in either popup.
+- Save straight away when a toggle changes, and when the user taps Ok in either popup.
 - If a save fails, put the previous value back.
 - No reminders are scheduled yet: this branch only stores the choices.
 
-### 7. Export my data (`app/(tabs)/settings/legal.tsx`)
+### 8. Export my data (shared `app/(tabs)/settings/legal.tsx`)
+The support person Legal page re-exports this screen, so one button serves both apps.
 - Edge Function `supabase/functions/export-data`:
-  - Check the user's sign-in token.
-  - Read all of their rows with RLS, using the user's own token.
-  - Return JSON.
-- App:
-  - Call it with `supabase.functions.invoke('export-data')`.
-  - Write the file with `expo-file-system` and open the share sheet with `expo-sharing`. These packages need adding; check the Expo SDK 57 docs.
+  - Check the user's sign-in token; read with the **user's own token**, so RLS applies.
+  - **Patient:** their `users`, `patients`, conditions, assessments, appointments with questions and answers,
+    support persons and `user_settings` rows.
+  - **Support person:** their `users` row and the patients they support. Once the support person branch
+    locks down the tables, they can't read `support_persons` directly, so call `list_supported_patients()`
+    instead. Until that function exists, export the `users` row only.
+  - Never include the consent signature image. Return JSON.
+- App: call `supabase.functions.invoke('export-data')`, write the file with `expo-file-system` (add it; check the
+  Expo SDK 58 docs), and open the share sheet with `expo-sharing` (installed).
 
-### 8. Account deletion (`app/(tabs)/settings/legal.tsx`)
+### 9. Account deletion (shared `app/(tabs)/settings/legal.tsx`)
 - Edge Function `supabase/functions/delete-account`:
-  - Check the user's sign-in token.
-  - Delete their data, children first. Check the foreign keys: a cascade from `users` may not exist.
-  - For a support person, don't delete the patient's `support_persons` rows. Suggested: set `users_id` to null (agree first, see open questions).
-  - Then call `auth.admin.deleteUser` with the service role key, which lives only in the function's secrets.
+  - Check the user's sign-in token, then work out `user_type` from their `users` row.
+  - **Patient (Q5):** delete children first, because most foreign keys have no cascade:
+    - appointment questions, appointment links and appointments
+    - support persons
+    - assessments, conditions and `patients`
+    - `user_settings` and `users`
+  - **Support person (Q6):** for each `support_persons` row linked to them, do what Unpair does: mark it
+    `declined`, clear `users_id` and delete its appointment links. The patient's row stays. Then delete
+    `user_settings` (if any) and `users`. `declined` only exists once the support person branch adds
+    `status`; before that, clearing `users_id` is enough (nothing sets it yet). Keep the check
+    "accepted only with a login" in mind (`chk_support_persons_link`).
+  - Then `auth.admin.deleteUser` with the service role key, which lives only in the function's secrets.
+  - Do it all in one database transaction, so a failure deletes nothing: a single `plpgsql` function that
+    takes the `users_id`, executable by `service_role` only (`revoke all … from public, anon, authenticated`),
+    called by the Edge Function. Test in `093`/`095` that `authenticated` can't run it.
 - App:
-  - Show a destructive confirmation (`Alert`, as "Revoke all access" does). Ideally make the user type DELETE.
-    Re-entering a password isn't possible for phone users.
+  - Show a destructive confirmation (`Alert`, with `window.confirm` on web, as Unpair does). Ask the user to
+    type DELETE. A password can't be asked for: phone users have none.
   - Call the function, then `signOut()`.
 
-### 9. Before opening the PR
-- `npm run lint && npm run typecheck && npm test`
-- `supabase db reset && supabase test db`
-- Check the generated types are committed. CI compares them with the migrations.
-- Push the new migrations to the dev project before testing on a device. A green CI run doesn't mean they're there.
-- Manual test on a device. Sign in with the dev test number and code: dev-login accounts have no `users` row,
-  so the app keeps them out of the tabs.
-  - As a patient: edit the name and year.
-  - As a support person: edit the name; check the year field and Support persons screen are hidden.
-  - Add, edit and remove a support person.
-  - Change the notification settings, close the app and reopen it.
-  - Export your data.
-  - Delete a test account.
+### 10. Before opening the PR
+- `npm run lint && npm run typecheck && npm test`.
+- Push, and let CI run the pgTAP files, `supabase db lint` and the generated-types check. Never run
+  `supabase start`, `supabase test db` or `supabase db push` locally. A human applies migrations to shared
+  databases; `deploy-db.yml` handles the hosted test database after merge.
+- Commit the generated types from CI.
+- Manual test on a device with the dev test numbers (dev-login accounts have no `users` row and can't reach the tabs):
+  - **Patient:** edit the name and year; change notification settings, close and reopen the app; export your data; delete a test account.
+  - **Support person:** edit the name (if Q4 is yes); check there's no year field; export your data; delete a
+    test account and check the patient's Support persons screen.
+  - **Both:** Change password and Face ID aren't shown; the phone is read-only.
+
+## Working alongside the support person branch
+- **Merge order:** either branch can merge first. Step 6 waits for the support person branch. Steps 8 and 9 work
+  before it and get their support person details right after it.
+- **Migration timestamps:** whichever branch merges second renames its migration (a new `supabase migration new`)
+  so it sorts after the other's. Never rename a migration that has merged.
+- **Shared files:** both branches regenerate `src/types/database.ts` and may touch `src/lib/errors.ts` and
+  `src/features/care-planner/messages.ts`. Merge `main` in before regenerating types.
+- **Table lockdown:** the support person branch replaces `users_select` and the `support_persons` policies so a
+  support person sees only their own `users` row. `update_profile` and `getPersonalDetails` only use the
+  caller's own rows, so they keep working; `093_update_profile` must still pass after that change.
 
 ## Controls to comment out (no function in this branch)
 
 | Screen | Control | Why it does nothing |
 | ------ | ------- | ------------------- |
-| Account (`settings/profile.tsx`) | **Change password** | Phone users have no password, so the old-password check always fails. Waits on L16. |
-| Account (`settings/profile.tsx`) | **Enable FaceID** toggle | Only changes local state. No biometric login exists (needs `expo-local-authentication`). Waits on L16. |
+| Patient Account (`settings/profile.tsx`) | **Change password** | Phone users have no password, so the old-password check always fails. Waits on Q1. |
+| Patient Account (`settings/profile.tsx`) | **Enable FaceID** toggle | Only changes local state. No biometric login exists (needs `expo-local-authentication`). Waits on Q1. |
 | Display (`settings/display.tsx`) | **Text size** select | Only changes local state. Nothing reads it, and fonts come from `scaleFont` only. |
 | Display (`settings/display.tsx`) | **Enable dark mode** toggle | Only changes local state. The app only uses `Colors.light`, and many colours are hardcoded. |
-| Settings home (`settings/index.tsx`) | **Display** row | Comment it out with the Display page, otherwise it opens a page with nothing working. |
+| Patient Settings home (`settings/index.tsx`) | **Display** row | Comment it out with the Display page, otherwise it opens a page with nothing working. |
 
 Notes:
-- **Privacy policy and Terms** (`settings/privacy.tsx`, `settings/terms.tsx`) only say "coming soon". Nothing links to `terms.tsx`, because "View PP and T&Cs" opens `privacy.tsx` only. These are content to write, not backend work. Leave them or hide them as the team prefers.
-- **Notification toggles** don't send reminders yet, but they are kept because this branch saves them (step 6).
-- **Export my data / Account deletion** currently do `() => undefined`. They are kept because steps 7 and 8 make them work.
+- The support person Account page already has no Change password or Face ID.
+- **Privacy policy and Terms** (`settings/privacy.tsx`, `settings/terms.tsx`) only say "coming soon", and nothing
+  links to `terms.tsx`. Content to write, not backend work. Both apps share them.
+- **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7).
+- **Export my data / Account deletion** currently do `() => undefined`. They are kept because steps 8 and 9 make them work.
