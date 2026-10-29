@@ -52,9 +52,11 @@ Ask before writing the step that needs the answer.
 
 ## Steps
 
-### 1. Database migration
-One new migration (`supabase migration new settings_backend`), never an edited one. Its timestamp must sort
-after the newest migration on `main` when this branch merges (see "Working alongside the support person branch").
+### 1. Database migrations
+One new migration per change (`supabase migration new <name>`), each committed with its pgTAP file (see
+"Commits"): `settings_update_profile` and `settings_user_settings` here, `export_my_data` in step 8 and
+`delete_account` in step 9. Never edit one, even before it merges; add another. Timestamps must sort after the
+newest migration on `main` when this branch merges (see "Working alongside the support person branch").
 
 - **`update_profile(p_name text, p_year_of_birth int)`**, in the style of `create_profile`:
   - `plpgsql`, `security invoker`, `set search_path = public`, user from `auth.uid()`.
@@ -88,6 +90,9 @@ after the newest migration on `main` when this branch merges (see "Working along
 - `094_user_settings.test.sql`:
   - RLS is on; `anon` has nothing.
   - Users only see and change their own row; the defaults are as above.
+- `095_export_my_data.test.sql` (step 8): each user gets only their own data; no signature; `anon` can't run it.
+- `096_delete_account.test.sql` (step 9): a patient's rows are all gone; a support person's links are cleared and
+  the patient's row stays; `authenticated` and `anon` can't run it.
 
 ### 3. Data access functions
 Follow `src/services/care-planner.ts`: `Result<T>` through `run()`, errors through `mapError`, client as the
@@ -135,16 +140,18 @@ last optional argument, never send a user or patient id, always filter `users` b
 
 ### 8. Export my data (shared `app/(tabs)/settings/legal.tsx`)
 The support person Legal page re-exports this screen, so one button serves both apps.
-- Edge Function `supabase/functions/export-data`:
-  - Check the user's sign-in token; read with the **user's own token**, so RLS applies.
+- Database function `export_my_data()` returning `jsonb`: `plpgsql`, `security invoker`, so RLS applies and
+  only the caller's rows are read. A function rather than an Edge Function, because pgTAP can test it and CI
+  has no tests for Edge Functions.
   - **Patient:** their `users`, `patients`, conditions, assessments, appointments with questions and answers,
     support persons and `user_settings` rows.
   - **Support person:** their `users` row and the patients they support. Once the support person branch
-    locks down the tables, they can't read `support_persons` directly, so call `list_supported_patients()`
+    locks down the tables, they can't read `support_persons` directly, so use `list_supported_patients()`
     instead. Until that function exists, export the `users` row only.
-  - Never include the consent signature image. Return JSON.
-- App: call `supabase.functions.invoke('export-data')`, write the file with `expo-file-system` (add it; check the
-  Expo SDK 58 docs), and open the share sheet with `expo-sharing` (installed).
+  - Never include the consent signature image.
+- `exportMyData()` in `src/services/account.ts` calls it.
+- App: write the JSON with `expo-file-system` (add it; check the Expo SDK 58 docs), and open the share sheet
+  with `expo-sharing` (installed).
 
 ### 9. Account deletion (shared `app/(tabs)/settings/legal.tsx`)
 - Edge Function `supabase/functions/delete-account`:
@@ -160,9 +167,10 @@ The support person Legal page re-exports this screen, so one button serves both 
     `status`; before that, clearing `users_id` is enough (nothing sets it yet). Keep the check
     "accepted only with a login" in mind (`chk_support_persons_link`).
   - Then `auth.admin.deleteUser` with the service role key, which lives only in the function's secrets.
-  - Do it all in one database transaction, so a failure deletes nothing: a single `plpgsql` function that
-    takes the `users_id`, executable by `service_role` only (`revoke all … from public, anon, authenticated`),
-    called by the Edge Function. Test in `093`/`095` that `authenticated` can't run it.
+  - Do it all in one database transaction, so a failure deletes nothing: a single `plpgsql` function
+    `delete_account(p_users_id int)`, executable by `service_role` only (`revoke all … from public, anon, authenticated`),
+    called by the Edge Function. `096_delete_account` tests it.
+- `deleteAccount()` in `src/services/account.ts` calls `supabase.functions.invoke('delete-account')`.
 - App:
   - Show a destructive confirmation (`Alert`, with `window.confirm` on web, as Unpair does). Ask the user to
     type DELETE. A password can't be asked for: phone users have none.
@@ -179,6 +187,65 @@ The support person Legal page re-exports this screen, so one button serves both 
   - **Support person:** edit the name (if Q4 is yes); check there's no year field; export your data; delete a
     test account and check the patient's Support persons screen.
   - **Both:** Change password and Face ID aren't shown; the phone is read-only.
+
+## Commits
+One commit per row, in order. Each one passes `npm run lint`, `npm run typecheck` and `npm test` on its own.
+Commit messages are imperative with no `type:` prefix, as on the rest of the project.
+
+**Generated types:** after each migration commit, push and let CI's "Generated types match the migrations"
+check fail. Then commit the generated `src/types/database.ts` from the CI log as **"Update the generated
+database types"** (rows marked "+ types"). The next service commit needs it.
+
+### Phase 1: no database (can start now)
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 1 | Comment out the Settings controls that do nothing yet | Patient Account: Change password and Face ID. Display: text size and dark mode. Patient Settings home: the Display row. | Q1 (default: comment out) |
+| 2 | Share the year of birth check between sign-up and Settings | `validateYearOfBirth` in `validation.ts` with tests; `toProfileArgs` uses it. | — |
+| 3 | Show year of birth and phone instead of date of birth and email on the patient Account page | Year field in place of the date field; phone read-only from `useAuth().profile`; email hidden; unused date code and helpers removed. Still local state. | Q2, Q3 (defaults) |
+
+### Phase 2: profile editing
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 4 | Add update_profile for patients and support persons | Migration `settings_update_profile` (function and column grants) and `093_update_profile.test.sql`. + types | — |
+| 5 | Add personal details services | `getPersonalDetails` and `updateProfile` in `src/services/profile.ts`, with tests. | 4 |
+| 6 | Load and save the patient's personal details | Patient Account loads, saves, calls `refreshProfile()`; loading, error and save-failure states. | 3, 5 |
+| 7 | Let support persons edit their name | Support person Account: editable name, new note under the phone. | 5, Q4 |
+
+### Phase 3: notifications
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 8 | Add the user_settings table for notification choices | Migration `settings_user_settings` and `094_user_settings.test.sql`. + types | — |
+| 9 | Add notification settings services | `src/services/settings.ts` with tests (defaults when there's no row). | 8 |
+| 10 | Load and save notification settings | `notifications.tsx`: load, save on change and on Ok, roll back on failure. | 9 |
+
+### Phase 4: export
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 11 | Add export_my_data for patients and support persons | Migration `export_my_data` and `095_export_my_data.test.sql`. + types | — |
+| 12 | Add the export my data service | `exportMyData()` in `src/services/account.ts`, with tests. | 11 |
+| 13 | Export my data from Settings | Add `expo-file-system`; Legal page writes the file and opens the share sheet. | 12 |
+
+### Phase 5: account deletion
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q5, Q6 |
+| 15 | Add the delete-account Edge Function | `supabase/functions/delete-account`: checks the token, calls `delete_account`, then `auth.admin.deleteUser`. No automated test; covered by the manual test. | 14 |
+| 16 | Add the account deletion service | `deleteAccount()` in `src/services/account.ts`, with tests. | 15 |
+| 17 | Delete the account from Settings | Legal page: typed-DELETE confirmation, then `deleteAccount()` and `signOut()`. | 16 |
+
+### Phase 6: after the support person branch merges
+Merge `main` in first.
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 18 | Show invitation status on the patient's support persons | Step 6. | Support person branch T1.2 and T2.1 |
+| 19 | Use invitation status in a support person's export and deletion | New migration replacing `export_my_data` and `delete_account` (`create or replace`): use `list_supported_patients()` and mark rows `declined`. New `097_settings_support_person_status.test.sql`. + types. **Skip** if the support person branch merged before phases 4 and 5, and write them this way from the start. | Support person branch T2.1 to T2.3 |
+
+### Phase 7: finish
+| # | Commit message | Contents | Waits for |
+| - | -------------- | -------- | --------- |
+| 20 | Document the settings back end | Rows for `docs/testing.md` (traceability, and "Not automated" for the Edge Function and screens); answered questions in `docs/support-person.md` section 4.4; this plan marked done. | All above |
+
+Manual QA (step 10) goes in the PR description, not a commit.
 
 ## Working alongside the support person branch
 - **Merge order:** either branch can merge first. Step 6 waits for the support person branch. Steps 8 and 9 work
