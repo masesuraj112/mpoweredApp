@@ -1082,6 +1082,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      update_profile: {
+        Args: { p_name: string; p_year_of_birth: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
