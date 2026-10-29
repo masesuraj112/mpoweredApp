@@ -36,7 +36,7 @@ If the Auth Token is rotated in Twilio, enter the new one in Supabase or sending
 | Minimum interval between OTP requests | 60 s | Locked on the dev plan unless custom SMTP is set; matches `RESEND_SECONDS` |
 | Twilio geo permissions | Australia only | Twilio also enabled Cocos and Christmas Island by default (same +61 code) |
 
-The app's verify screen starts a 60 s countdown on arrival, hides Resend until it ends, and says the text can take up to 30 seconds.
+The app's verify screen starts a 60 s countdown on arrival, hides Resend until it ends, and says the text may take a moment.
 
 ## Twilio account (dev)
 

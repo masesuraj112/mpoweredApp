@@ -237,7 +237,7 @@ export default function VerifyScreen() {
                 },
               ]}
             >
-              {hasResent ? 'Sent!' : 'Code sent. Allow up to 30 seconds.'}
+              {hasResent ? 'Sent!' : 'Code sent. This may take a moment.'}
             </Text>
             <Text
               style={[
