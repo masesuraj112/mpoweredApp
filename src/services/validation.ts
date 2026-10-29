@@ -6,6 +6,9 @@
 /** The earliest year of birth accepted at sign-up and in Settings (create_profile uses the same). */
 export const YEAR_OF_BIRTH_MIN = 1900;
 
+/** The longest name users.name holds (create_profile and update_profile use the same). */
+export const NAME_MAX_LENGTH = 45;
+
 // name@domain.tld: no spaces, one @, a dot-separated domain, and a TLD of at least two letters.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
 
