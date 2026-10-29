@@ -57,13 +57,13 @@ Decided by Ryan Pham on 29 Oct 2026 unless noted.
 | Q2 | **The phone number is read-only in both apps** (login decision L17). | A change flow must keep `users.phone_number` in step with the login's phone, and support person invitations are matched by phone. Its own feature. | 4, 5 |
 | Q3 | **Support persons can edit their own name**, with `update_profile`. | Free with the same function. It changes only their own account name: the patient's list shows `support_persons.name`, which the patient typed. | 5 |
 | Q5 | **Deleting a support person account works like Unpair** for every patient they support: the row becomes `declined`, `users_id` is cleared and its appointment links are deleted. Pending invitations stay. | The rows belong to the patient. Re-signing up with the same number shows the pending invitations again. | 9 |
+| Q4 | **Deleting a patient account deletes everything the patient owns** (approved 29 Oct 2026). Nothing is kept for 7 years. | See "Q4: what Australian law says": APP 11.2 says destroy data that's no longer needed. | 9 |
 
 ## Open questions
 Ask before writing the step that needs the answer.
 
 | # | Question | Owner | Default until answered | Step |
 | - | -------- | ----- | ---------------------- | ---- |
-| Q4 | What gets deleted along with a patient account? Appointment tables have no ON DELETE rule (Care Planner M4). See "Q4: what Australian law says" below. | MHA (privacy officer or lawyer) | Delete everything the patient owns | 9 |
 | Q6 | Google Play also needs a **web page** where people can ask for their account to be deleted without the app. Where does it live, and who handles the requests? | Team, MHA | Not built in this branch; a section in the privacy policy is enough for Google | Before release |
 
 ### Q4: what Australian law says
@@ -90,8 +90,7 @@ Research on 29 Oct 2026, **not legal advice**. MHA should confirm with its priva
    the app, and allows extra confirmation steps for regulated industries such as health, so the SMS code is fine.
    Google Play requires the in-app option **and** a web page (Q6).
 
-**What this means for step 9:**
-- **If MHA says the state laws don't apply:** build step 9 as written (delete everything). This is the default.
+**What this means for step 9:** deletion of everything was approved on 29 Oct 2026, so step 9 is built as written. Kept for reference, in case MHA later finds the state laws apply:
 - **If they do apply:** deletion can't destroy the health records for 7 years. Instead, `delete_account` would
   delete the login and the profile details, keep the health records **beyond use** (no role can read them, only an
   administrator for a legal request), record them in a register, and a scheduled job would destroy them after the
@@ -243,7 +242,7 @@ Notes:
     - The user it returns must be the caller.
     - On a wrong or expired code, or any mismatch, return `OTP_EXPIRED` (or `NOT_ALLOWED` for a mismatch) and
       delete nothing. A used code can't be used again.
-  - **Patient (Q4):** delete children first, because most foreign keys have no cascade:
+  - **Patient (Q4, settled):** delete children first, because most foreign keys have no cascade:
     - appointment questions, appointment links and appointments
     - support persons
     - assessments, conditions and `patients`
@@ -316,7 +315,7 @@ database types"** (rows marked "+ types"). The next service commit needs it.
 ### Phase 5: account deletion
 | # | Commit message | Contents | Waits for |
 | - | -------------- | -------- | --------- |
-| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | Q4 (see "Q4: what Australian law says") |
+| 14 | Add delete_account for patients and support persons | Migration `delete_account` (`service_role` only) and `096_delete_account.test.sql`. + types | — |
 | 15 | Add the delete-account Edge Function | `supabase/functions/delete-account`: checks the token, checks the SMS code against the account's own phone, calls `delete_account`, then `auth.admin.deleteUser`. No automated test; covered by the manual test. | 14 |
 | 16 | Add the account deletion service | `deleteAccount(code)` in `src/services/account.ts`, with tests: an incomplete code makes no call; only `{ code }` is sent; each error code maps. | 15 |
 | 17 | Confirm account deletion with an SMS code | Legal page: confirmation, send a code to the account's phone, code popup with Resend, then `deleteAccount(code)` and `signOut()`. | 16 |
