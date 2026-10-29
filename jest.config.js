@@ -50,6 +50,7 @@ module.exports = {
     'src/services/health.ts',
     'src/services/auth.ts',
     'src/services/profile.ts',
+    'src/services/validation.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
     'src/features/support-person/appointments.ts',

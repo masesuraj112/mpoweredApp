@@ -1,7 +1,10 @@
 /**
- * Front-end checks for contact details. Each returns an error message to show the user,
- * or '' when the value is fine. They catch typos only; Supabase does the real validation.
+ * Front-end checks for contact and profile details. Each returns an error message to show the
+ * user, or '' when the value is fine. They catch typos only; Supabase does the real validation.
  */
+
+/** The earliest year of birth accepted at sign-up and in Settings (create_profile uses the same). */
+export const YEAR_OF_BIRTH_MIN = 1900;
 
 // name@domain.tld: no spaces, one @, a dot-separated domain, and a TLD of at least two letters.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
@@ -30,5 +33,14 @@ export function validatePhone(value: string, { required = true } = {}): string {
   if (!phone) return required ? 'Please enter a phone number.' : '';
   if (!/^\+?\d+$/.test(phone)) return 'Phone numbers can only contain digits, spaces and a leading +.';
   if (!PHONE_PATTERN.test(phone)) return 'Please enter a valid Australian phone number, e.g. 0400 000 000.';
+  return '';
+}
+
+/** Year of birth is optional: null is fine, otherwise a whole year from 1900 to this year. */
+export function validateYearOfBirth(year: number | null, currentYear: number = new Date().getFullYear()): string {
+  if (year === null) return '';
+  if (!Number.isInteger(year) || year < YEAR_OF_BIRTH_MIN || year > currentYear) {
+    return `Please enter a year between ${YEAR_OF_BIRTH_MIN} and ${currentYear}.`;
+  }
   return '';
 }

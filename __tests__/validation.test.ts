@@ -1,4 +1,4 @@
-import { validateEmail, validatePhone } from '@/services/validation';
+import { validateEmail, validatePhone, validateYearOfBirth } from '@/services/validation';
 
 describe('validateEmail', () => {
   it.each(['sarah.mclachlan@gmail.com', 'a+tag@sub.example.com.au', ' name@example.io '])('accepts %s', email => {
@@ -40,5 +40,21 @@ describe('validatePhone', () => {
 
   it('allows empty when optional', () => {
     expect(validatePhone('', { required: false })).toBe('');
+  });
+});
+
+describe('validateYearOfBirth', () => {
+  it.each([null, 1900, 1968, 2026])('accepts %p', year => {
+    expect(validateYearOfBirth(year, 2026)).toBe('');
+  });
+
+  it.each([1899, 2027, 1968.5, Number.NaN])('rejects %p', year => {
+    expect(validateYearOfBirth(year, 2026)).toBe('Please enter a year between 1900 and 2026.');
+  });
+
+  it('uses this year when none is given', () => {
+    const thisYear = new Date().getFullYear();
+    expect(validateYearOfBirth(thisYear)).toBe('');
+    expect(validateYearOfBirth(thisYear + 1)).not.toBe('');
   });
 });
