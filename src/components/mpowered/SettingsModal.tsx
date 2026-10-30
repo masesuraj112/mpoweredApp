@@ -1,8 +1,7 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -61,7 +60,8 @@ export function SettingsModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.card}>
+        {/* Tapping the card closes the keyboard: number pads have no key for it (see SettingsModalField). */}
+        <Pressable style={styles.card} onPress={Keyboard.dismiss} accessible={false}>
           <Text style={styles.title}>{title}</Text>
           {scrollable ? (
             <ScrollView
@@ -101,7 +101,7 @@ export function SettingsModal({
               <Text style={styles.confirmText}>{confirmLabel}</Text>
             </Pressable>
           </View>
-        </View>
+        </Pressable>
       </View>
     </Modal>
   );
@@ -140,7 +140,6 @@ export function SettingsModalField({
   ...inputProps
 }: SettingsModalFieldProps) {
   const [revealed, setRevealed] = useState(false);
-  const doneBar = useKeyboardDoneBar();
 
   const passwordProps: TextInputProps = password
     ? {
@@ -156,17 +155,18 @@ export function SettingsModalField({
     <View style={styles.field}>
       <Text style={styles.fieldLabel}>{label}</Text>
       {/* Caller props come after the password defaults, so they can still override them. */}
+      {/* No keyboard Done bar (inputAccessoryViewID) here: in testing on iPhone, inside a Modal no
+          keyboard opened with it. Text keyboards close with their Done key; number pads close
+          by tapping the popup card (SettingsModal). */}
       <TextInput
+        returnKeyType="done"
         {...passwordProps}
         {...inputProps}
         value={value}
         onChangeText={onChangeText}
-        // Every field gets a Done bar, since phone pads have no return key to close the keyboard.
-        inputAccessoryViewID={doneBar.id}
         style={styles.fieldInput}
         accessibilityLabel={label}
       />
-      {doneBar.bar}
       {password ? (
         <Pressable
           onPress={() => setRevealed(current => !current)}
