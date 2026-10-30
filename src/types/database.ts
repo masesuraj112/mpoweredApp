@@ -589,28 +589,34 @@ export type Database = {
       }
       personal_care_assessment: {
         Row: {
+          created_at: string
           date: string
           reflection: string | null
           sleeping: string
           submission_id: number
           users_id: number
           washing_dressing: string
+          week_start: string | null
         }
         Insert: {
+          created_at?: string
           date: string
           reflection?: string | null
           sleeping: string
           submission_id?: never
           users_id: number
           washing_dressing: string
+          week_start?: string | null
         }
         Update: {
+          created_at?: string
           date?: string
           reflection?: string | null
           sleeping?: string
           submission_id?: never
           users_id?: number
           washing_dressing?: string
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -1047,6 +1053,16 @@ export type Database = {
           p_locations: string[]
           p_mildest: number
           p_worst: number
+        }
+        Returns: number
+      }
+      save_personal_care_assessment: {
+        Args: {
+          p_date: string
+          p_general_activities: string[]
+          p_reflection: string
+          p_sleeping: string
+          p_washing_dressing: string
         }
         Returns: number
       }

@@ -1,23 +1,37 @@
-import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
-import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
+import {
+  toPersonalCareSummary,
+  type PersonalCareSummaryData,
+} from '@/features/assessments/personal-care/summary';
+import { getPersonalCareEntryForWeek } from '@/services/assessments';
+import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
-export default function SummaryScreen() {
-  const { answers } = usePersonalCareAssessment();
-  const close = async () => {
-    try {
-      await markAssessmentCompleted('personalCare');
-      router.replace('/(tabs)/home');
-    } catch (error) {
-      console.error('[PersonalCareSummary] Failed to save weekly assessment progress:', error);
-      Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
-    }
-  };
+async function closeAndMarkDone() {
+  try {
+    await markAssessmentCompleted('personalCare');
+    router.replace('/(tabs)/home');
+  } catch (error) {
+    console.error('[PersonalCareSummary] Failed to save weekly assessment progress:', error);
+    Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
+  }
+}
 
+function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -28,7 +42,7 @@ export default function SummaryScreen() {
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
           <Text style={styles.reportTitle}>My Personal Care</Text>
-          <Text style={styles.period}>Period: Last 7 days</Text>
+          <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
 
@@ -39,10 +53,7 @@ export default function SummaryScreen() {
         >
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
-            <Text style={styles.guidanceText}>
-              Pain is currently having a <Text style={styles.boldText}>significant impact</Text> on your personal care.
-              {'\n'}With the right care and guidance, these tasks can become more manageable over time.
-            </Text>
+            <Text style={styles.guidanceText}>{summary.message}</Text>
             <Pressable
               onPress={() => Linking.openURL(DAILY_LIVING_TIPS_URL)}
               accessibilityRole="link"
@@ -58,22 +69,22 @@ export default function SummaryScreen() {
           <View style={styles.resultsList}>
             <ResultSection
               heading="General Activities:"
-              value={answers.generalActivities?.join(', ') || 'No activities selected.'}
+              value={summary.generalActivities.join(', ') || 'No activities selected.'}
             />
             <ResultSection
               heading="Personal care (washing, dressing, etc)"
-              value={answers.personalCareLevel || 'No response recorded.'}
+              value={summary.personalCareLevel || 'No response recorded.'}
             />
             <ResultSection
               heading="Sleeping:"
-              value={answers.sleepingLevel || 'No response recorded.'}
+              value={summary.sleepingLevel || 'No response recorded.'}
             />
           </View>
 
           <View style={styles.reflectionSection}>
             <Text style={styles.reflectionHeading}>My reflections:</Text>
             <Text style={[styles.resultText, styles.reflectionText]}>
-              {answers.reflection || 'No reflections added.'}
+              {summary.reflection || 'No reflections added.'}
             </Text>
           </View>
         </ScrollView>
@@ -83,7 +94,7 @@ export default function SummaryScreen() {
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={close}
+              onPress={closeAndMarkDone}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
@@ -93,6 +104,64 @@ export default function SummaryScreen() {
           </View>
         </View>
       </View>
+    </View>
+  );
+}
+
+type SummaryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; summary: PersonalCareSummaryData };
+
+// The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
+export default function SummaryScreen() {
+  const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
+  const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
+  const [state, setState] = useState<SummaryState>({ status: 'loading' });
+  const close = () => router.replace('/(tabs)/home');
+
+  useEffect(() => {
+    if (!weekStart) return;
+    let cancelled = false;
+    getPersonalCareEntryForWeek(weekStart).then(result => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ status: 'error', message: assessmentSaveMessage(result.error, 'personal care') });
+      } else if (!result.data) {
+        setState({ status: 'error', message: 'We could not find your saved entry.' });
+      } else {
+        setState({ status: 'ready', summary: toPersonalCareSummary(result.data) });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart]);
+
+  const view: SummaryState = weekStart
+    ? state
+    : { status: 'error', message: 'We could not find the week to show.' };
+
+  if (view.status === 'ready') {
+    return <PersonalCareSummaryView summary={view.summary} />;
+  }
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      {view.status === 'loading' ? (
+        <ActivityIndicator accessibilityLabel="Loading your summary" />
+      ) : (
+        <>
+          <Text style={styles.errorText}>{view.message}</Text>
+          <Pressable
+            onPress={close}
+            accessibilityRole="button"
+            accessibilityLabel="Close summary"
+            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+          >
+            <Text style={styles.closeButtonText}>Close</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
@@ -107,6 +176,17 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: scaleHeight(16),
+  },
+  errorText: {
+    color: '#1D1B20',
+    fontSize: scaleFont(14),
+    lineHeight: scaleHeight(20),
+    textAlign: 'center',
+  },
   screen: {
     flex: 1,
     paddingHorizontal: scaleWidth(24),
@@ -193,9 +273,6 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
     textAlign: 'center',
-  },
-  boldText: {
-    fontWeight: '700',
   },
   tipsButton: {
     minHeight: scaleHeight(44),
