@@ -178,9 +178,9 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 ## Phase T2: Migrations, pgTAP, generated types
 - [x] T2.1 A9 `support_link_state` (090) (`1341a22`)
 - [x] T2.1b `settings_delete_account_status`: `delete_account` marks a deleted support person's rows declined; `096` updated (`74a209f`)
-- [ ] T2.2 A10 `restrict_support_person_table_access` (091)
-- [ ] T2.3 A11 `support_person_functions` (092)
-- [ ] T2.4 `settings_support_person_status` (097): `export_my_data` adds supported patients; after A11
+- [x] T2.2 A10 `restrict_support_person_table_access` (091) (`69ea03f`)
+- [x] T2.3 A11 `support_person_functions` (092) (`1c617eb`; all 94 checks passed on the first CI run)
+- [x] T2.4 `settings_support_person_status` (097): `export_my_data` adds supported patients
 
 ## Phase T3: Service
 - [ ] T3.1 Service rewrite
