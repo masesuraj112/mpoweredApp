@@ -1,4 +1,4 @@
-import type { AppointmentPlan } from '@/features/care-planner/planTypes';
+jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
 
 import {
   acceptSupportRequest,
@@ -7,182 +7,284 @@ import {
   listSupportedPatients,
   listSupportRequests,
   rejectSupportRequest,
-  resetMockSupportedPlans,
-  resetMockSupportPerson,
   saveSupportedAnswers,
   saveSupportedQuestions,
   unpairFromPatient,
 } from './support-person';
 
-beforeEach(() => resetMockSupportPerson());
+type Reply = { data: unknown; error: unknown };
 
-const ids = <T extends { id: string }>(items: T[]) => items.map(item => item.id);
-
-async function patientIds() {
-  const result = await listSupportedPatients();
-  if (!result.ok) throw new Error('listSupportedPatients failed');
-  return ids(result.data);
+/** A fake client whose rpc answers each function name with the given reply. */
+function clientWith(replies: Record<string, Reply>) {
+  const rpc = jest.fn((name: string) => Promise.resolve(replies[name] ?? { data: null, error: null }));
+  return { rpc, client: { rpc } as never };
 }
 
-async function requestIds() {
-  const result = await listSupportRequests();
-  if (!result.ok) throw new Error('listSupportRequests failed');
-  return ids(result.data);
-}
+const dbError = (message: string) => ({ code: 'P0001', message });
 
-describe('listSupportedPatients and listSupportRequests', () => {
-  it('start with the sample data', async () => {
-    expect(await patientIds()).toEqual(['jane-cooper', 'steven-harper']);
-    expect(await requestIds()).toEqual(['request-1', 'request-2']);
+const patientRow = {
+  patient_id: 7,
+  patient_name: 'Alice',
+  conditions: 'Arthritis',
+  can_add_questions: true,
+  can_add_answers: false,
+};
+const appointmentRow = (appointment_id: number, patient_id = 7) => ({
+  patient_id,
+  appointment_id,
+  date_time: '2026-11-05 14:30:00',
+  practitioner_name: 'Dr Lee',
+  health_service: 'GP',
+  status: 'saved',
+});
+const supportedAppointment = {
+  appointment_id: 21,
+  patient_id: 7,
+  date_time: '2026-11-05T14:30:00',
+  practitioner_name: 'Dr Lee',
+  health_service: 'GP',
+  status: 'saved',
+  recording_consent_at: null,
+  suggestions_generated_on: '2026-10-29',
+  can_add_questions: true,
+  can_add_answers: false,
+};
+const questionRows = [
+  { question_id: 1, group_key: 'pain-location', sort_order: 1, question: 'Q1', is_selected: true, answer: 'Rest' },
+  { question_id: 2, group_key: 'pain-location', sort_order: 2, question: 'Q2', is_selected: false, answer: null },
+];
+
+describe('listSupportedPatients', () => {
+  it('reads patients and appointments together and puts each appointment under its patient', async () => {
+    const { rpc, client } = clientWith({
+      list_supported_patients: { data: [patientRow, { ...patientRow, patient_id: 9, patient_name: 'Bob' }], error: null },
+      list_supported_appointments: { data: [appointmentRow(21), appointmentRow(22, 9)], error: null },
+    });
+    const result = await listSupportedPatients(client);
+    expect(rpc).toHaveBeenCalledWith('list_supported_patients');
+    expect(rpc).toHaveBeenCalledWith('list_supported_appointments');
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.map((p) => [p.id, p.appointments.map((a) => a.appointmentId)])).toEqual([
+        ['7', [21]],
+        ['9', [22]],
+      ]);
+      // dates stay local wall-clock strings
+      expect(result.data[0].appointments[0].dateTime).toBe('2026-11-05T14:30:00');
+    }
   });
 
-  it('return copies, so changing a result does not change the store', async () => {
-    const result = await listSupportedPatients();
-    if (result.ok) result.data.pop();
-    expect(await patientIds()).toHaveLength(2);
+  it('gives a patient with no appointments an empty list', async () => {
+    const { client } = clientWith({
+      list_supported_patients: { data: [patientRow], error: null },
+      list_supported_appointments: { data: [], error: null },
+    });
+    const result = await listSupportedPatients(client);
+    expect(result.ok && result.data[0].appointments).toEqual([]);
+  });
+
+  it('maps an error from either call', async () => {
+    const { client } = clientWith({
+      list_supported_patients: { data: [patientRow], error: null },
+      list_supported_appointments: { data: null, error: { message: 'Network request failed' } },
+    });
+    const result = await listSupportedPatients(client);
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe('listSupportRequests', () => {
+  it('maps each request to a patient with no condition and no appointments', async () => {
+    const { client } = clientWith({
+      list_my_support_requests: {
+        data: [{ patient_id: 7, patient_name: 'Alice', can_add_questions: false, can_add_answers: true }],
+        error: null,
+      },
+    });
+    const result = await listSupportRequests(client);
+    expect(result).toEqual({
+      ok: true,
+      data: [
+        {
+          id: '7',
+          patient: { id: '7', name: 'Alice', condition: '', canAddQuestions: false, canAddAnswers: true, appointments: [] },
+        },
+      ],
+    });
   });
 });
 
 describe('acceptSupportRequest', () => {
-  it('removes the request and adds the patient', async () => {
-    const result = await acceptSupportRequest('request-1');
-    expect(result.ok && result.data.id).toBe('maria-lopez');
-    expect(await requestIds()).toEqual(['request-2']);
-    expect(await patientIds()).toContain('maria-lopez');
+  it('sends the patient id as a number and returns the patient with their appointments', async () => {
+    const { rpc, client } = clientWith({
+      accept_support_request: { data: [patientRow], error: null },
+      list_supported_appointments: { data: [appointmentRow(21), appointmentRow(30, 9)], error: null },
+    });
+    const result = await acceptSupportRequest('7', client);
+    expect(rpc).toHaveBeenCalledWith('accept_support_request', { p_patient_id: 7 });
+    expect(result.ok && result.data.id).toBe('7');
+    expect(result.ok && result.data.appointments.map((a) => a.appointmentId)).toEqual([21]);
   });
 
-  it('fails for an unknown request and changes nothing', async () => {
-    const result = await acceptSupportRequest('nope');
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error.message).toBe('REQUEST_NOT_FOUND');
-    expect(await requestIds()).toHaveLength(2);
+  it('refuses an id that cannot be a patient without calling the database', async () => {
+    const { rpc, client } = clientWith({});
+    const result = await acceptSupportRequest('request-1', client);
+    expect(result).toEqual({ ok: false, error: { code: 'NOT_FOUND', message: 'REQUEST_NOT_FOUND' } });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['REQUEST_NOT_FOUND', 'NOT_FOUND'],
+    ['NOT_A_SUPPORT_PERSON', 'NOT_ALLOWED'],
+  ])('maps %s to %s and keeps the message', async (message, code) => {
+    const { client } = clientWith({ accept_support_request: { data: null, error: dbError(message) } });
+    const result = await acceptSupportRequest('7', client);
+    expect(result).toEqual({ ok: false, error: { code, message } });
   });
 });
 
-describe('rejectSupportRequest', () => {
-  it('removes the request without adding the patient', async () => {
-    expect((await rejectSupportRequest('request-1')).ok).toBe(true);
-    expect(await requestIds()).toEqual(['request-2']);
-    expect(await patientIds()).not.toContain('maria-lopez');
+describe('rejectSupportRequest and unpairFromPatient', () => {
+  it('reject sends the patient id as a number', async () => {
+    const { rpc, client } = clientWith({ reject_support_request: { data: null, error: null } });
+    expect(await rejectSupportRequest('7', client)).toEqual({ ok: true, data: undefined });
+    expect(rpc).toHaveBeenCalledWith('reject_support_request', { p_patient_id: 7 });
   });
 
-  it('fails for an unknown request', async () => {
-    expect((await rejectSupportRequest('nope')).ok).toBe(false);
+  it('unpair sends the patient id as a number', async () => {
+    const { rpc, client } = clientWith({ unpair_from_patient: { data: null, error: null } });
+    expect(await unpairFromPatient('7', client)).toEqual({ ok: true, data: undefined });
+    expect(rpc).toHaveBeenCalledWith('unpair_from_patient', { p_patient_id: 7 });
+  });
+
+  it('unpair maps PATIENT_NOT_FOUND and refuses a bad id without a call', async () => {
+    const { client } = clientWith({ unpair_from_patient: { data: null, error: dbError('PATIENT_NOT_FOUND') } });
+    expect(await unpairFromPatient('7', client)).toEqual({
+      ok: false,
+      error: { code: 'NOT_FOUND', message: 'PATIENT_NOT_FOUND' },
+    });
+    const empty = clientWith({});
+    expect((await unpairFromPatient('', empty.client)).ok).toBe(false);
+    expect(empty.rpc).not.toHaveBeenCalled();
   });
 });
 
-describe('unpairFromPatient', () => {
-  it('removes the patient', async () => {
-    expect((await unpairFromPatient('jane-cooper')).ok).toBe(true);
-    expect(await patientIds()).toEqual(['steven-harper']);
+describe('getSupportedAppointmentPlan', () => {
+  it('reads the appointment and its questions and keeps only the questions on the plan', async () => {
+    const { rpc, client } = clientWith({
+      get_supported_appointment: { data: [supportedAppointment], error: null },
+      list_supported_appointment_questions: { data: questionRows, error: null },
+    });
+    const result = await getSupportedAppointmentPlan(21, client);
+    expect(rpc).toHaveBeenCalledWith('get_supported_appointment', { p_appointment_id: 21 });
+    expect(rpc).toHaveBeenCalledWith('list_supported_appointment_questions', { p_appointment_id: 21 });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.supportPersonName).toBeNull();
+      expect(result.data.recordingConsentedAt).toBeNull();
+      expect(result.data.questionGroups.flatMap((g) => g.questions)).toEqual([
+        { questionId: 1, text: 'Q1', doctorAnswer: 'Rest' },
+      ]);
+    }
   });
 
-  it('fails for a patient who is not supported', async () => {
-    const result = await unpairFromPatient('nope');
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error.message).toBe('PATIENT_NOT_FOUND');
+  it('turns zero rows into APPOINTMENT_NOT_FOUND', async () => {
+    const { client } = clientWith({
+      get_supported_appointment: { data: [], error: null },
+      list_supported_appointment_questions: { data: [], error: null },
+    });
+    expect(await getSupportedAppointmentPlan(21, client)).toEqual({
+      ok: false,
+      error: { code: 'NOT_FOUND', message: 'APPOINTMENT_NOT_FOUND' },
+    });
   });
 });
 
-describe('appointment plans', () => {
-  beforeEach(() => resetMockSupportedPlans());
-
-  // Jane (101 upcoming, 102 past): questions only. Steven (111 past): both. Tom (131, after his
-  // request is accepted): answers only.
-  const plan = async (appointmentId: number) => {
-    const result = await getSupportedAppointmentPlan(appointmentId);
-    if (!result.ok) throw new Error(result.error.message);
-    return result.data;
-  };
-  const questionIds = (p: AppointmentPlan) => p.questionGroups.flatMap(g => g.questions.map(q => q.questionId));
-  const answered = (p: AppointmentPlan) =>
-    p.questionGroups.flatMap(g => g.questions.filter(q => q.doctorAnswer !== null).map(q => q.questionId));
-
-  it('returns the plan for a supported patient’s appointment', async () => {
-    const result = await plan(101);
-    expect(result.appointment.appointmentId).toBe(101);
-    expect(questionIds(result)).toEqual([1, 3, 5]);
+describe('getSupportedQuestionSuggestions', () => {
+  it('lists every stored question with the chosen and answered ones', async () => {
+    const { client } = clientWith({
+      get_supported_appointment: { data: [supportedAppointment], error: null },
+      list_supported_appointment_questions: { data: questionRows, error: null },
+    });
+    const result = await getSupportedQuestionSuggestions(21, client);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.generatedOn).toBe('2026-10-29');
+      expect(result.data.groups.flatMap((g) => g.questions.map((q) => q.questionId))).toEqual([1, 2]);
+      expect(result.data.selectedQuestionIds).toEqual([1]);
+      expect(result.data.answeredQuestionIds).toEqual([1]);
+    }
   });
 
-  it('starts past appointments with answers and consent, and upcoming ones without', async () => {
-    expect(answered(await plan(102))).toEqual([1, 5]);
-    expect((await plan(102)).recordingConsentedAt).not.toBeNull();
-    expect(answered(await plan(101))).toEqual([]);
-    expect((await plan(101)).recordingConsentedAt).toBeNull();
+  it('gives a null generatedOn when no questions were generated', async () => {
+    const { client } = clientWith({
+      get_supported_appointment: { data: [{ ...supportedAppointment, suggestions_generated_on: null }], error: null },
+      list_supported_appointment_questions: { data: [], error: null },
+    });
+    const result = await getSupportedQuestionSuggestions(21, client);
+    expect(result.ok && result.data.generatedOn).toBeNull();
+  });
+});
+
+describe('saveSupportedQuestions', () => {
+  it('sends the appointment and question ids', async () => {
+    const { rpc, client } = clientWith({ save_supported_questions: { data: null, error: null } });
+    expect(await saveSupportedQuestions(21, [1, 3], client)).toEqual({ ok: true, data: undefined });
+    expect(rpc).toHaveBeenCalledWith('save_supported_questions', { p_appointment_id: 21, p_question_ids: [1, 3] });
   });
 
-  it('fails for an appointment of someone the user does not support', async () => {
-    const result = await getSupportedAppointmentPlan(1);
+  it.each([
+    ['NO_QUESTIONS_PERMISSION', 'NOT_ALLOWED'],
+    ['NO_ANSWERS_PERMISSION', 'NOT_ALLOWED'],
+    ['APPOINTMENT_NOT_FOUND', 'NOT_FOUND'],
+  ])('maps %s to %s and keeps the message for the screen', async (message, code) => {
+    const { client } = clientWith({ save_supported_questions: { data: null, error: dbError(message) } });
+    expect(await saveSupportedQuestions(21, [1], client)).toEqual({ ok: false, error: { code, message } });
+  });
+
+  it('maps NO_QUESTIONS as a validation error', async () => {
+    const { client } = clientWith({ save_supported_questions: { data: null, error: dbError('NO_QUESTIONS') } });
+    const result = await saveSupportedQuestions(21, [], client);
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error.message).toBe('APPOINTMENT_NOT_FOUND');
+    if (!result.ok) expect(result.error.code).toBe('VALIDATION');
   });
+});
 
-  it('stops finding a patient’s appointments after unpairing', async () => {
-    await unpairFromPatient('jane-cooper');
-    expect((await getSupportedAppointmentPlan(101)).ok).toBe(false);
-  });
-
-  describe('saveSupportedAnswers', () => {
-    it('saves and clears answers with the answers permission', async () => {
-      expect((await saveSupportedAnswers(111, [{ questionId: 3, answerText: '  Rest and heat. ' }])).ok).toBe(true);
-      expect(answered(await plan(111))).toEqual([1, 3, 5]);
-      await saveSupportedAnswers(111, [{ questionId: 1, answerText: '' }]);
-      expect(answered(await plan(111))).toEqual([3, 5]);
-    });
-
-    it('is refused without the answers permission', async () => {
-      const result = await saveSupportedAnswers(101, [{ questionId: 1, answerText: 'x' }]);
-      expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error.code).toBe('NOT_ALLOWED');
-    });
-
-    it('rejects a question that is not on the plan', async () => {
-      const result = await saveSupportedAnswers(111, [{ questionId: 2, answerText: 'x' }]);
-      expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error.message).toBe('QUESTION_NOT_ON_PLAN');
+describe('saveSupportedAnswers', () => {
+  it('sends { question_id, answer_text } items, including an empty answer to clear one', async () => {
+    const { rpc, client } = clientWith({ save_supported_answers: { data: null, error: null } });
+    const result = await saveSupportedAnswers(
+      21,
+      [
+        { questionId: 1, answerText: 'Rest' },
+        { questionId: 3, answerText: '' },
+      ],
+      client,
+    );
+    expect(result).toEqual({ ok: true, data: undefined });
+    expect(rpc).toHaveBeenCalledWith('save_supported_answers', {
+      p_appointment_id: 21,
+      p_answers: [
+        { question_id: 1, answer_text: 'Rest' },
+        { question_id: 3, answer_text: '' },
+      ],
     });
   });
 
-  describe('getSupportedQuestionSuggestions', () => {
-    it('lists every suggestion with what is chosen and answered', async () => {
-      const result = await getSupportedQuestionSuggestions(102);
-      expect(result.ok).toBe(true);
-      if (!result.ok) return;
-      expect(result.data.groups.flatMap(g => g.questions)).toHaveLength(7);
-      expect(result.data.selectedQuestionIds).toEqual([1, 3, 5]);
-      expect(result.data.answeredQuestionIds).toEqual([1, 5]);
+  it('maps CONSENT_REQUIRED and NO_ANSWERS_PERMISSION', async () => {
+    const consent = clientWith({ save_supported_answers: { data: null, error: dbError('CONSENT_REQUIRED') } });
+    const consentResult = await saveSupportedAnswers(21, [{ questionId: 1, answerText: 'x' }], consent.client);
+    expect(!consentResult.ok && consentResult.error.code).toBe('CONSENT_REQUIRED');
+
+    const permission = clientWith({ save_supported_answers: { data: null, error: dbError('NO_ANSWERS_PERMISSION') } });
+    expect(await saveSupportedAnswers(21, [{ questionId: 1, answerText: 'x' }], permission.client)).toEqual({
+      ok: false,
+      error: { code: 'NOT_ALLOWED', message: 'NO_ANSWERS_PERMISSION' },
     });
   });
 
-  describe('saveSupportedQuestions', () => {
-    it('adds questions with the questions permission', async () => {
-      expect((await saveSupportedQuestions(101, [1, 2, 3, 5])).ok).toBe(true);
-      expect(questionIds(await plan(101))).toEqual([1, 2, 3, 5]);
-    });
-
-    it('is refused without the questions permission', async () => {
-      await acceptSupportRequest('request-2');
-      const result = await saveSupportedQuestions(131, [1]);
-      expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error.message).toBe('NO_QUESTIONS_PERMISSION');
-    });
-
-    it('lets someone with both permissions remove an answered question, removing its answer', async () => {
-      expect((await saveSupportedQuestions(111, [3, 5])).ok).toBe(true);
-      expect(answered(await plan(111))).toEqual([5]);
-    });
-
-    it('refuses removing an answered question without the answers permission', async () => {
-      const result = await saveSupportedQuestions(102, [3, 5]);
-      expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error.message).toBe('NO_ANSWERS_PERMISSION');
-      expect(questionIds(await plan(102))).toEqual([1, 3, 5]);
-    });
-
-    it('rejects an unknown question id', async () => {
-      const result = await saveSupportedQuestions(101, [99]);
-      expect(result.ok).toBe(false);
-      if (!result.ok) expect(result.error.message).toBe('UNKNOWN_QUESTION');
-    });
+  it('returns an error instead of throwing when the connection fails', async () => {
+    const rpc = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
+    const result = await saveSupportedAnswers(21, [], { rpc } as never);
+    expect(result.ok).toBe(false);
   });
 });
