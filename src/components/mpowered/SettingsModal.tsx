@@ -1,10 +1,7 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { formatDisplayDate } from '@/services/date';
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
-import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -40,7 +37,6 @@ type SettingsModalProps = {
  *
  * Content building blocks (all exported below):
  *   SettingsModalField       – labelled text input (optional `password` mode)
- *   SettingsModalDateField   – labelled date that opens the native date picker
  *   SettingsModalSection     – bold heading above a block of content
  *   SettingsModalGroup       – bordered card that stacks rows with dividers
  *   SettingsModalToggleRow   – label + switch (use inside a Group)
@@ -64,7 +60,8 @@ export function SettingsModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.card}>
+        {/* Tapping the card closes the keyboard: number pads have no key for it (see SettingsModalField). */}
+        <Pressable style={styles.card} onPress={Keyboard.dismiss} accessible={false}>
           <Text style={styles.title}>{title}</Text>
           {scrollable ? (
             <ScrollView
@@ -104,7 +101,7 @@ export function SettingsModal({
               <Text style={styles.confirmText}>{confirmLabel}</Text>
             </Pressable>
           </View>
-        </View>
+        </Pressable>
       </View>
     </Modal>
   );
@@ -143,7 +140,6 @@ export function SettingsModalField({
   ...inputProps
 }: SettingsModalFieldProps) {
   const [revealed, setRevealed] = useState(false);
-  const doneBar = useKeyboardDoneBar();
 
   const passwordProps: TextInputProps = password
     ? {
@@ -159,17 +155,18 @@ export function SettingsModalField({
     <View style={styles.field}>
       <Text style={styles.fieldLabel}>{label}</Text>
       {/* Caller props come after the password defaults, so they can still override them. */}
+      {/* No keyboard Done bar (inputAccessoryViewID) here: in testing on iPhone, inside a Modal no
+          keyboard opened with it. Text keyboards close with their Done key; number pads close
+          by tapping the popup card (SettingsModal). */}
       <TextInput
+        returnKeyType="done"
         {...passwordProps}
         {...inputProps}
         value={value}
         onChangeText={onChangeText}
-        // Every field gets a Done bar, since phone pads have no return key to close the keyboard.
-        inputAccessoryViewID={doneBar.id}
         style={styles.fieldInput}
         accessibilityLabel={label}
       />
-      {doneBar.bar}
       {password ? (
         <Pressable
           onPress={() => setRevealed(current => !current)}
@@ -186,77 +183,6 @@ export function SettingsModalField({
         )
       )}
     </View>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Date field                                                                 */
-/* -------------------------------------------------------------------------- */
-
-// The Android picker reads and returns UTC midnight, while we keep local midnight in state.
-// Convert across so the picker shows (and returns) the same calendar day in every time zone.
-const toPickerDate = (date: Date) =>
-  Platform.OS === 'android' ? new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())) : date;
-const fromPickerDate = (date: Date) =>
-  Platform.OS === 'android'
-    ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-    : new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-/**
- * Labelled date field styled like `SettingsModalField`. Shows the date as text; tapping it opens
- * the native picker (a wheel below the field on iOS, a dialog on Android).
- */
-export function SettingsModalDateField({
-  label,
-  value,
-  onChange,
-  minimumDate,
-  maximumDate,
-}: {
-  label: string;
-  /** A local-midnight date (see `@/services/date`). */
-  value: Date;
-  onChange: (value: Date) => void;
-  minimumDate?: Date;
-  maximumDate?: Date;
-}) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const displayValue = formatDisplayDate(value);
-
-  return (
-    <>
-      <Pressable
-        onPress={() => setIsPickerOpen(current => !current)}
-        accessibilityRole="button"
-        accessibilityLabel={`${label}, ${displayValue}`}
-        accessibilityHint="Opens a date picker"
-        accessibilityState={{ expanded: isPickerOpen }}
-        style={styles.field}
-      >
-        <Text style={styles.fieldLabel}>{label}</Text>
-        <Text style={styles.fieldValue}>{displayValue}</Text>
-        <Image source={pencilIcon} style={styles.editIcon} contentFit="contain" accessibilityLabel="" />
-      </Pressable>
-      {isPickerOpen && (
-        <DateTimePicker
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          value={toPickerDate(value)}
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
-          accentColor="#6750A4"
-          // The popup card is always white, so keep the wheel's text dark even in system dark mode.
-          themeVariant="light"
-          onValueChange={(_event, date) => {
-            onChange(fromPickerDate(date));
-            // The Android dialog is done once a date is picked; the iOS wheel stays until tapped again.
-            if (Platform.OS === 'android') setIsPickerOpen(false);
-          }}
-          onDismiss={() => setIsPickerOpen(false)}
-          style={styles.datePicker}
-        />
-      )}
-    </>
   );
 }
 
@@ -458,16 +384,6 @@ const styles = StyleSheet.create({
     paddingRight: 44,
     color: '#1D1B20',
     fontSize: 16,
-  },
-  fieldValue: {
-    paddingRight: 44,
-    color: '#1D1B20',
-    fontSize: 16,
-    lineHeight: 26,
-  },
-  datePicker: {
-    marginTop: -8,
-    marginBottom: 16,
   },
   editIcon: {
     position: 'absolute',

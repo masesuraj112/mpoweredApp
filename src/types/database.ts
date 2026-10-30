@@ -589,28 +589,34 @@ export type Database = {
       }
       personal_care_assessment: {
         Row: {
+          created_at: string
           date: string
           reflection: string | null
           sleeping: string
           submission_id: number
           users_id: number
           washing_dressing: string
+          week_start: string | null
         }
         Insert: {
+          created_at?: string
           date: string
           reflection?: string | null
           sleeping: string
           submission_id?: never
           users_id: number
           washing_dressing: string
+          week_start?: string | null
         }
         Update: {
+          created_at?: string
           date?: string
           reflection?: string | null
           sleeping?: string
           submission_id?: never
           users_id?: number
           washing_dressing?: string
+          week_start?: string | null
         }
         Relationships: [
           {
@@ -840,6 +846,44 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          appointment_day_before: boolean
+          appointment_on_day: boolean
+          appointment_reminders: boolean
+          assessment_every: number
+          assessment_reminders: boolean
+          assessment_unit: string
+          users_id: number
+        }
+        Insert: {
+          appointment_day_before?: boolean
+          appointment_on_day?: boolean
+          appointment_reminders?: boolean
+          assessment_every?: number
+          assessment_reminders?: boolean
+          assessment_unit?: string
+          users_id: number
+        }
+        Update: {
+          appointment_day_before?: boolean
+          appointment_on_day?: boolean
+          appointment_reminders?: boolean
+          assessment_every?: number
+          assessment_reminders?: boolean
+          assessment_unit?: string
+          users_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_users_id_fkey"
+            columns: ["users_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["users_id"]
+          },
+        ]
+      }
       users: {
         Row: {
           auth_id: string | null
@@ -889,6 +933,8 @@ export type Database = {
         Returns: undefined
       }
       current_users_id: { Args: never; Returns: number }
+      delete_account: { Args: { p_users_id: number }; Returns: undefined }
+      export_my_data: { Args: never; Returns: Json }
       is_own_patient_record: {
         Args: { target_patient_id: number }
         Returns: boolean
@@ -1012,6 +1058,16 @@ export type Database = {
         }
         Returns: number
       }
+      save_personal_care_assessment: {
+        Args: {
+          p_date: string
+          p_general_activities: string[]
+          p_reflection: string
+          p_sleeping: string
+          p_washing_dressing: string
+        }
+        Returns: number
+      }
       save_prescription: {
         Args: {
           p_amount: number
@@ -1065,6 +1121,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      update_profile: {
+        Args: { p_name: string; p_year_of_birth: number }
+        Returns: undefined
       }
     }
     Enums: {
