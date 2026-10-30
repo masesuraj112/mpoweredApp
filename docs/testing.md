@@ -110,6 +110,19 @@ Pain, social health and management tests share some file names (`validate.test.t
 | The export file is named with the local date and is readable JSON | `exportFile.test.ts`; `useExportMyData.test.ts` | Unit | `unit-tests` |
 | Deleting a patient removes all of their data and nobody else's; deleting a support person keeps the patients' rows (like Unpair); only the service role can run it | `096_delete_account` | Database | `database-tests` |
 | Account deletion sends only the SMS code (never a phone or user id) and maps the Edge Function's errors | `account.test.ts` (`deleteAccount`); `useAccountDeletion.test.ts` | Service, Unit | `unit-tests` |
+| A support person sees an invitation only if their verified phone number was invited, with the patient's name but no conditions | `092_support_person_functions` | Database | `database-tests` |
+| A support person must accept before seeing anything; reject and unpair end access at once | `092_support_person_functions`; `support-person.test.ts` | Database, Service | `database-tests`, `unit-tests` |
+| Reject and unpair keep the patient's record as declined; re-adding the number invites again; a new number makes a new invitation | `090_support_link_state`; `092_support_person_functions` | Database | `database-tests` |
+| **A support person cannot read the patient's tables directly** (appointments, questions, links, patient row, other users, invitation rows) | `091_support_person_table_access`; `092_support_person_functions` | Database | `database-tests` |
+| A support person sees only saved appointments the patient added them to, and never the consent signature | `092_support_person_functions` | Database | `database-tests` |
+| A support person can change questions only with "Add questions" and answers only with "Add doctor's answer"; removing an answered question needs both | `092_support_person_functions`; `permissions.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
+| A doctor's answer from a support person also needs recording consent, and the app offers no answer box before it | `092_support_person_functions`; `permissions.test.ts` (`canAnswerNow`) | Database, Unit | `database-tests`, `unit-tests` |
+| Changing a support person's access or number, taking them off an appointment, or deleting them takes effect immediately | `090_support_link_state`; `092_support_person_functions` | Database | `database-tests` |
+| Deleting a support person's account marks the patients' rows declined and keeps them | `096_delete_account` | Database | `database-tests` |
+| A support person's export lists only the patients they accepted | `097_settings_support_person_status` | Database | `database-tests` |
+| Support person database errors map to app codes (permission errors are `NOT_ALLOWED`, never `VALIDATION`) and have friendly messages | `errors.test.ts`; `messages.test.ts` | Unit | `unit-tests` |
+| The support person service sends the exact function arguments and maps rows, including patients with no appointments | `support-person.test.ts`; `src/features/support-person/mappers.test.ts` | Service, Unit | `unit-tests` |
+| The patient's Support persons list shows each invitation's status | `supportPerson.test.ts` (`invitationStatusLabel`); `mappers.test.ts` (status) | Unit | `unit-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
 ## Not automated
@@ -134,6 +147,8 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - Real SMS delivery of sign-in codes (test OTP numbers send nothing).
 - The `delete-account` Edge Function: checking the sign-in token, checking the SMS code against the account's own phone, and deleting the login. CI has no Edge Function tests, so it's checked by hand with the "PR review checklist" in `docs/settings-backend.md`. The database part it calls, `delete_account`, is tested (`096`).
 - The Settings screens (Account in both apps, Notifications, Privacy/Data and Legal), the share sheet for Export my data, and the account deletion popups: checked by hand with the same checklist.
+- The support person app's screens (requests, people you support, appointment plan, Add questions), the consent line and the hidden answer pen before consent, and the empty-condition layout: checked by hand with the two-account list in `docs/backend/support-person-backend-build-plan.md` step T7.
+- Two people editing the same plan at once: last save wins (not tested; `docs/support-person.md` section 5).
 
 ## Not tested / deferred
 
@@ -159,3 +174,5 @@ Database tests passing (72 checks across 6 files):
 - The manual journey (section 8.3 of the Care Planner plan) written up in the pull request description with the result of each numbered check.
 - Settings database tests passing: **TODO**, screenshot of `supabase test db` with `093`–`096` passing to be saved as `docs/screenshots/db-tests-settings.png` (from the CI run on PR #52).
 - The Settings "PR review checklist" (`docs/settings-backend.md`) ticked in the pull request description.
+- Support person database tests passing (`090`–`092`, `097`): **TODO**, `docs/screenshots/db-tests-support-person.png` (from the CI run).
+- The two-account journey (back-end plan step T7) written up in the pull request description with the result of each numbered check.

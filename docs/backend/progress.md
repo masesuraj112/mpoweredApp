@@ -191,7 +191,7 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 - [x] T4 Invitation status on the patient's Support persons screen (from Settings commit 18) (`036cd20`)
 
 ## Phase T5–T7
-- [ ] T5.1 Remove the placeholders and update the docs
+- [x] T5.1 Remove the placeholders (done in T3, `6edb526`) and update the docs (`docs/support-person.md`, `docs/testing.md`)
 - [ ] T6.1 Full checks and green CI
 - [ ] T7.1 Manual QA with two accounts
 
