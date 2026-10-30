@@ -41,6 +41,7 @@ export function SettingsOption({
   trailing,
   destructive = false,
   elevated = false,
+  accessibilityLabel,
 }: {
   icon?: number;
   label: string;
@@ -48,12 +49,14 @@ export function SettingsOption({
   trailing?: ReactNode;
   destructive?: boolean;
   elevated?: boolean;
+  /** What a screen reader says for the row, when `trailing` shows something it should hear too. Defaults to `label`. */
+  accessibilityLabel?: string;
 }) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole={onPress ? 'button' : undefined}
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       style={({ pressed }) => [styles.option, elevated && styles.optionElevated, pressed && styles.optionPressed]}
     >
       {icon && <Image source={icon} style={styles.optionIcon} contentFit="contain" accessibilityLabel="" />}
