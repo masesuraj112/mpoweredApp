@@ -64,6 +64,7 @@ module.exports = {
     'src/features/support-person/greeting.ts',
     'src/features/support-person/context.tsx',
     'src/features/support-person/permissions.ts',
+    'src/features/support-person/mappers.ts',
     'src/services/support-person.ts',
     'src/features/support-person/useSupportedAppointmentQuestions.ts',
   ],
