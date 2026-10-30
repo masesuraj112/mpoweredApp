@@ -161,3 +161,38 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 | M4 | Data retention / account deletion (deleting a patient fails while appointments exist) | ❓ out of scope |
 | M5 | No server rule on past/future appointment dates | ❓ optional |
 | M6 | Draft appointments are never cleaned up | ❓ optional |
+
+# Support person back-end progress
+
+Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/support-person-backend`. The Settings back end (PR #52) merged first and is on dev.
+
+## Phase T0: Branch and recon
+- [x] T0.1 Branch from `main`, then `main` merged in after Settings (`473293a`)
+- [x] T0.2 Recon: the repo matches sections 0.2 and 4; stub inventory in `support-person-stub-inventory.md`
+
+## Phase T1: Pure foundations
+- [ ] T1.1 Error codes
+- [ ] T1.2 Friendly messages and invitation status
+- [ ] T1.3 Support person row mappers
+
+## Phase T2: Migrations, pgTAP, generated types
+- [ ] T2.1 A9 `support_link_state` (090)
+- [ ] T2.2 A10 `restrict_support_person_table_access` (091)
+- [ ] T2.3 A11 `support_person_functions` (092)
+- [ ] T2.4 `settings_support_person_status` (097), from Settings commit 19; same PR as A9
+
+## Phase T3: Service
+- [ ] T3.1 Service rewrite
+- [ ] T3.2 Service tests
+
+## Phase T4: Front-end deltas
+- [ ] T4 Consent gating and the other screen changes
+- [ ] T4 Invitation status on the patient's Support persons screen (from Settings commit 18)
+
+## Phase T5–T7
+- [ ] T5.1 Remove the placeholders and update the docs
+- [ ] T6.1 Full checks and green CI
+- [ ] T7.1 Manual QA with two accounts
+
+## Decisions
+S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.

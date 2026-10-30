@@ -215,13 +215,13 @@ Follow `src/services/care-planner.ts` for the pattern. Keep the error shapes the
 | Change | Why |
 |---|---|
 | **S3:** when `recordingConsentedAt` is null, hide the answer pen and disable "Add doctor's answer" on the plan screen, with the line "{name} needs to record the doctor's consent first" in place of "Only {name} can ask the doctor for it". Show the friendly message if `CONSENT_REQUIRED` still comes back (consent changed under them). | D3, S3 |
-| **S5:** the request card (`SupportRequestCard`) shows no condition line. | Requests carry no conditions |
+| **S5:** nothing to change on screen: `SupportRequestCard` already shows only the name (T0.2 recon). | Requests carry no conditions |
 | A supported patient with no conditions: hide the condition line instead of showing an empty string. | `conditions` can be empty |
 | **S2:** a patient with no appointments the person was added to shows the empty appointments state, not an error. | Only linked appointments are returned |
 | `NO_QUESTIONS_PERMISSION` / `NO_ANSWERS_PERMISSION` show the friendly message and reload the patient list (access changes take effect at once). `APPOINTMENT_NOT_FOUND` (for example after the patient took the person off the appointment) does the same. | Permissions are enforced by the database |
 | Update `support-person.test.ts`, `context.test.tsx` and `useSupportedAppointmentQuestions.test.ts` so none import `resetMock*`. | Placeholder removal |
 | **From Settings (its step 6 and commit 18):** patient Settings > Support Persons (`app/(tabs)/settings/support-persons.tsx`, driven by `useMySupportPersons`) shows Pending / Accepted / Declined on each row, and the Revoke all access popup says the person loses access at once. Its own commit: "Show invitation status on the patient's support persons". | A9 adds `status`; T1.2 maps it |
-**Commit:** "Gate doctor's answers on recording consent and hide conditions on support requests" (the invitation status row is its own commit, above).
+**Commit:** "Gate doctor's answers on recording consent" (the invitation status row is its own commit, above).
 
 ### Phase T5 — Placeholder removal and docs
 **T5.1** Delete `MOCK_SUPPORTED_PATIENTS`, `MOCK_SUPPORT_REQUESTS`, `MOCK_SUGGESTED_GROUPS`, `MOCK_DEFAULT_SELECTED_IDS`, `MOCK_PAST_ANSWERS`, the in-memory maps, `resetMockSupportPerson`, `resetMockSupportedPlans` and the copied `run`; grep must find none. Update `docs/support-person.md` (§4.1 table: P2, P4, P5, P6, B5 and B4 (Care Planner only) done; P1, P3 and B2 are already done; §4.2 steps done; §4.4 answered questions; record S2–S6 outcomes), `docs/testing.md` (rows from 6.5, "Not automated" from 6.6) and `progress.md`. **Commit:** "Remove support person placeholder data and update the docs".
