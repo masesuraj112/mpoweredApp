@@ -808,6 +808,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }
@@ -817,6 +819,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number?: string | null
+          responded_at?: string | null
+          status?: string
           support_person_id?: never
           users_id?: number | null
         }
@@ -826,6 +830,8 @@ export type Database = {
           name?: string
           patient_id?: number
           phone_number?: string | null
+          responded_at?: string | null
+          status?: string
           support_person_id?: never
           users_id?: number | null
         }
@@ -916,6 +922,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_support_request: {
+        Args: { p_patient_id: number }
+        Returns: {
+          can_add_answers: boolean
+          can_add_questions: boolean
+          conditions: string
+          patient_id: number
+          patient_name: string
+        }[]
+      }
       can_access_patient: {
         Args: { required_access?: string; target_patient_id: number }
         Returns: boolean
@@ -935,6 +951,21 @@ export type Database = {
       current_users_id: { Args: never; Returns: number }
       delete_account: { Args: { p_users_id: number }; Returns: undefined }
       export_my_data: { Args: never; Returns: Json }
+      get_supported_appointment: {
+        Args: { p_appointment_id: number }
+        Returns: {
+          appointment_id: number
+          can_add_answers: boolean
+          can_add_questions: boolean
+          date_time: string
+          health_service: string
+          patient_id: number
+          practitioner_name: string
+          recording_consent_at: string
+          status: string
+          suggestions_generated_on: string
+        }[]
+      }
       is_own_patient_record: {
         Args: { target_patient_id: number }
         Returns: boolean
@@ -961,6 +992,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }[]
@@ -971,9 +1004,54 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      list_my_support_requests: {
+        Args: never
+        Returns: {
+          can_add_answers: boolean
+          can_add_questions: boolean
+          patient_id: number
+          patient_name: string
+        }[]
+      }
+      list_supported_appointment_questions: {
+        Args: { p_appointment_id: number }
+        Returns: {
+          answer: string
+          group_key: string
+          is_selected: boolean
+          question: string
+          question_id: number
+          sort_order: number
+        }[]
+      }
+      list_supported_appointments: {
+        Args: never
+        Returns: {
+          appointment_id: number
+          date_time: string
+          health_service: string
+          patient_id: number
+          practitioner_name: string
+          status: string
+        }[]
+      }
+      list_supported_patients: {
+        Args: never
+        Returns: {
+          can_add_answers: boolean
+          can_add_questions: boolean
+          conditions: string
+          patient_id: number
+          patient_name: string
+        }[]
+      }
       patient_id_for_user: {
         Args: { target_users_id: number }
         Returns: number
+      }
+      reject_support_request: {
+        Args: { p_patient_id: number }
+        Returns: undefined
       }
       save_appointment: {
         Args: { p_appointment_id: number }
@@ -1012,6 +1090,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }[]
@@ -1112,6 +1192,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }
@@ -1121,6 +1203,26 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      save_supported_answers: {
+        Args: { p_answers: Json; p_appointment_id: number }
+        Returns: undefined
+      }
+      save_supported_questions: {
+        Args: { p_appointment_id: number; p_question_ids: number[] }
+        Returns: undefined
+      }
+      support_access: {
+        Args: { p_patient_id: number; p_token?: string }
+        Returns: boolean
+      }
+      supports_appointment: {
+        Args: { p_appointment_id: number }
+        Returns: boolean
+      }
+      unpair_from_patient: {
+        Args: { p_patient_id: number }
+        Returns: undefined
       }
       update_profile: {
         Args: { p_name: string; p_year_of_birth: number }

@@ -1,4 +1,4 @@
-import { getAppointmentActions, getPlanAccess } from './permissions';
+import { canAnswerNow, getAppointmentActions, getPlanAccess, isAccessChanged } from './permissions';
 
 const both = { canAddQuestions: true, canAddAnswers: true };
 const questionsOnly = { canAddQuestions: true, canAddAnswers: false };
@@ -38,5 +38,31 @@ describe('getPlanAccess', () => {
     ['both', both, { canEditQuestions: true, canEditAnswers: true }],
   ])('%s', (_name, patient, expected) => {
     expect(getPlanAccess(patient)).toEqual(expected);
+  });
+});
+
+describe('canAnswerNow', () => {
+  const withAnswers = { canEditQuestions: false, canEditAnswers: true };
+
+  it('needs the answers permission and recorded consent (S3)', () => {
+    expect(canAnswerNow(withAnswers, '2026-11-05T03:30:00Z')).toBe(true);
+  });
+
+  it('is false before the patient records consent, even with the permission', () => {
+    expect(canAnswerNow(withAnswers, null)).toBe(false);
+  });
+
+  it('is false without the answers permission, even with consent', () => {
+    expect(canAnswerNow({ canEditQuestions: true, canEditAnswers: false }, '2026-11-05T03:30:00Z')).toBe(false);
+  });
+});
+
+describe('isAccessChanged', () => {
+  it.each(['NOT_ALLOWED', 'NOT_FOUND'] as const)('is true for %s (permission changed, removed or unpaired)', (code) => {
+    expect(isAccessChanged({ code })).toBe(true);
+  });
+
+  it.each(['NETWORK', 'CONSENT_REQUIRED', 'VALIDATION', 'UNKNOWN'] as const)('is false for %s', (code) => {
+    expect(isAccessChanged({ code })).toBe(false);
   });
 });

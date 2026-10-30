@@ -39,8 +39,10 @@ insert into public.appointment (patient_id, date_time, health_service, practitio
   select v, timestamp '2026-11-05 14:30', 'GP', 'Dr Lee' from ids where k in ('p1', 'p2');
 insert into public.appointment_questions (appointment_id, group_key, sort_order, question, is_selected)
   select appointment_id, 'pain-impact', 1, 'How long will recovery take?', true from public.appointment;
-insert into public.support_persons (patient_id, name, phone_number, access_type, users_id)
-  select v, 'Gem', '+61491570008', 'questions', (select v from ids where k = 'g3') from ids where k in ('p1', 'p2');
+-- linked to g3's login, so accepted (support_link_state: a login only when accepted)
+insert into public.support_persons (patient_id, name, phone_number, access_type, users_id, status, responded_at)
+  select v, 'Gem', '+61491570008', 'questions', (select v from ids where k = 'g3'), 'accepted', now()
+    from ids where k in ('p1', 'p2');
 insert into public.appointment_has_support_persons (appointment_id, support_person_id)
   select a.appointment_id, sp.support_person_id
     from public.appointment a join public.support_persons sp on sp.patient_id = a.patient_id;
@@ -91,9 +93,9 @@ reset role;
 
 select ok(not exists (select 1 from public.users where users_id = (select v from ids where k = 'g3')),
   'the support person''s users row is gone');
-select ok((select users_id is null and name = 'Gem' from public.support_persons
+select ok((select users_id is null and status = 'declined' and name = 'Gem' from public.support_persons
             where patient_id = (select v from ids where k = 'p2')),
-  'the patient''s support person row stays, unlinked from the deleted login');
+  'the patient''s support person row stays, declined and unlinked from the deleted login');
 select ok(not exists (select 1 from public.appointment_has_support_persons)
           and exists (select 1 from public.appointment where patient_id = (select v from ids where k = 'p2')),
   'the support person is taken off the patient''s appointments, and the appointment stays');

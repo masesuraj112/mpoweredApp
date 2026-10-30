@@ -56,6 +56,9 @@ export default function PatientAppointmentsScreen() {
   }
 
   const { upcoming, past } = splitAppointments(patient.appointments);
+  // They only see appointments the patient added them to (decision S2), so say so when there are none.
+  const noneShared = patient.appointments.length === 0;
+  const firstName = patient.name.split(' ')[0];
 
   return (
     <View style={styles.screen}>
@@ -67,9 +70,11 @@ export default function PatientAppointmentsScreen() {
             <Text style={styles.name} numberOfLines={1}>
               {patient.name}
             </Text>
-            <Text style={styles.condition} numberOfLines={1}>
-              {patient.condition}
-            </Text>
+            {patient.condition ? (
+              <Text style={styles.condition} numberOfLines={1}>
+                {patient.condition}
+              </Text>
+            ) : null}
           </View>
         </View>
 
@@ -77,7 +82,7 @@ export default function PatientAppointmentsScreen() {
 
         <AppointmentSection
           title="Upcoming appointments"
-          emptyText="No upcoming appointments."
+          emptyText={noneShared ? ` hasn’t added you to an appointment yet.` : 'No upcoming appointments.'}
           appointments={upcoming}
           patient={patient}
           isUpcoming

@@ -96,6 +96,31 @@ describe('carePlannerMessage', () => {
     }
   });
 
+  it.each([
+    ['NO_QUESTIONS_PERMISSION', /permission to change the questions/],
+    ['NO_ANSWERS_PERMISSION', /permission to add the doctor’s answers/],
+    ['NOT_A_SUPPORT_PERSON', /Only a support person account/],
+  ])('says which permission is missing for NOT_ALLOWED with %s', (message, text) => {
+    expect(carePlannerMessage(error('NOT_ALLOWED', { message }))).toMatch(text);
+  });
+
+  it.each([
+    ['REQUEST_NOT_FOUND', /request is no longer available/],
+    ['PATIENT_NOT_FOUND', /no longer supporting this person/],
+    ['APPOINTMENT_NOT_FOUND', /can no longer see this appointment/],
+  ])('says what was not found for NOT_FOUND with %s', (message, text) => {
+    expect(carePlannerMessage(error('NOT_FOUND', { message }))).toMatch(text);
+  });
+
+  it('keeps the general NOT_ALLOWED and NOT_FOUND messages for other causes', () => {
+    expect(carePlannerMessage(error('NOT_ALLOWED', { message: 'NOT_A_PATIENT' }))).toBe(
+      'You cannot do that with this account.',
+    );
+    expect(carePlannerMessage(error('NOT_FOUND', { message: 'NOT_FOUND' }))).toBe(
+      'We could not find that appointment. It may have been removed.',
+    );
+  });
+
   it('uses the fallback for codes it has no message for', () => {
     expect(carePlannerMessage(error('UNKNOWN'))).toBe(FALLBACK_MESSAGE);
     expect(carePlannerMessage(error('DUPLICATE_WEEK'))).toBe(FALLBACK_MESSAGE);

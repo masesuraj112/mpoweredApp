@@ -1,3 +1,5 @@
+import type { AppError } from '@/lib/errors';
+
 import type { SupportedPatient } from './types';
 
 export type AppointmentActionType = 'add-questions' | 'add-answer' | 'view-questions' | 'view-answer' | 'view-plan';
@@ -39,11 +41,28 @@ export type PlanAccess = {
  * - Answers can still be added to past appointments, because doctors' answers are often typed up later.
  * - Recording consent is never signed by a support person (the plan screen shows it read-only).
  *
- * Only the app enforces this until the database checks access_type (docs/support-person.md, P5).
+ * The database checks the same rules (support_person_functions); this decides what the screens offer.
  */
 export function getPlanAccess(patient: Pick<SupportedPatient, 'canAddQuestions' | 'canAddAnswers'>): PlanAccess {
   return {
     canEditQuestions: patient.canAddQuestions,
     canEditAnswers: patient.canAddAnswers,
   };
+}
+
+/**
+ * Whether the support person may type the doctor's answers now: they need the answers permission,
+ * and the patient must have recorded the doctor's consent first (decision S3; the database refuses
+ * an answer without it, CONSENT_REQUIRED).
+ */
+export function canAnswerNow(access: PlanAccess, recordingConsentedAt: string | null): boolean {
+  return access.canEditAnswers && recordingConsentedAt !== null;
+}
+
+/**
+ * True when a save failed because the patient changed what this person may do: their access was
+ * changed, they were taken off the appointment, or they were removed. The patient list is stale then.
+ */
+export function isAccessChanged(error: Pick<AppError, 'code'>): boolean {
+  return error.code === 'NOT_ALLOWED' || error.code === 'NOT_FOUND';
 }

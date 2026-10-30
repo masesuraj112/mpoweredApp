@@ -4,6 +4,7 @@
 > **Starts after the Care Planner back end (`care-planner-build-plan.md`, branch `feature/care-planner-backend`) has merged to `main`.** Do not begin earlier (see section 0).
 > Mirrors `login-backend-build-plan.md`: guardrails, decisions register, phases, one commit per step, tests with each step.
 > **Revision 2.** This revision updates the first version against what the Care Planner branch actually delivered (section 0.2 lists every difference). The SQL in Appendices A and C is unchanged except for notes.
+> **Revision 3 (29 Oct 2026, owner Ryan Pham).** Decisions S2–S6 and M7 are settled (section 2). S2 and S5 changed the A11 SQL and Appendix C: a support person sees only the appointments they were added to (new helper `supports_appointment`), and a pending request no longer shows the patient's conditions. **Those changes have not been run** like the rest of the SQL was; CI's `092` is the first run. The timestamp rule now says after `20261027013340` (the tenth Care Planner migration).
 > **Status of the SQL:** A9–A11 were applied in order on top of the 29 repo migrations and the Care Planner's migrations, in a local Postgres 16. The behaviour suite in Appendix C passed and was mutation-checked: re-creating the old `appointment_select` policy makes it fail. **pgTAP itself has not been run** (Docker is never run locally); you translate Appendix C into pgTAP files (section 6) and CI runs them. The Care Planner's own pgTAP files (`080`–`088`) and generated types have been through CI and pass (section 0.1).
 
 ---
@@ -36,7 +37,9 @@ The Care Planner back end is on branch `feature/care-planner-backend` (about 30 
 | `20261027013340_enforce_care_planner_rules` | **new since the last revision:** triggers so the consent rule (a non-empty answer needs `recording_consent_at`) and the `NO_QUESTIONS` rule on save also apply to direct table writes; a row lock in the two-person limit and in `save_appointment_support_people`; a numeric check on `support_person_id` |
 
 
-pgTAP files `080`–`089` exist, so **your pgTAP files `090`–`092` remain free**.
+pgTAP files `080`–`089` exist, and the Settings branch uses `093`–`096`, so **your pgTAP files are `090`–`092` and `097`**.
+
+**The Settings branch merges first** (PR #52, `docs/settings-backend.md`). It adds four migrations, `20261029113242_settings_update_profile`, `20261029114645_settings_user_settings`, `20261029120105_export_my_data` and `20261029121213_delete_account`, plus the `delete-account` Edge Function. Merge `main` in after it merges: yours must sort after `20261029121213` (`supabase migration new` does this), and T2.1b and T2.4 replace two of its functions (`delete_account`, `export_my_data`).
 
 **Things your migrations must stay compatible with**
 
@@ -71,8 +74,8 @@ These add to `CLAUDE.md` and `docs/backend/testing-and-cicd.md`. Where they diff
 
 1. **STOP and ask (AskUserQuestion, 2–4 options) on any 🟡, ❓ or ⏳ item in section 2 that is still open when you reach the step that depends on it.** Never invent column names, error codes or library behaviour. If the repo conflicts with this plan, stop and say so.
 2. **Show the exact SQL and grants for each migration and wait for approval before writing the file** (`CLAUDE.md`). Appendix A is the proposal; approval is still required.
-3. Never edit an existing migration, **including the Care Planner's once merged**. One new migration per Appendix A file (`supabase migration new <name>`, timestamps after `20261027013240`, order A9→A11), each with its `-- Rollback:` comment, RLS enabled and explicit grants. A9 uses `create or replace function` on a function added by the Care Planner's `rpc_support_people` migration; that is a new migration, not an edit of a merged one.
-4. Database functions are plpgsql, set `search_path = public`, raise `P0001` with a message code, derive the caller from `auth.uid()` (never an argument), and end with `revoke all … from public, anon; grant execute … to authenticated`. **The A11 functions are `security definer` on purpose** (support persons get no table access) and the helper `support_access` is revoked from `authenticated` too. **This is the first `security definer` in the Care Planner and needs the owner's explicit written approval (decision S4) before step T2.1.**
+3. Never edit an existing migration, **including the Care Planner's once merged**. One new migration per Appendix A file (`supabase migration new <name>`, timestamps after `20261027013340`, order A9→A11), each with its `-- Rollback:` comment, RLS enabled and explicit grants. A9 uses `create or replace function` on a function added by the Care Planner's `rpc_support_people` migration; that is a new migration, not an edit of a merged one.
+4. Database functions are plpgsql, set `search_path = public`, raise `P0001` with a message code, derive the caller from `auth.uid()` (never an argument), and end with `revoke all … from public, anon; grant execute … to authenticated`. **The A11 functions are `security definer` on purpose** (support persons get no table access) and the helpers `support_access` and `supports_appointment` are revoked from `authenticated` too. **This is the first `security definer` in the Care Planner; the owner approved it in writing (decision S4, 29 Oct 2026).**
 5. Never run `supabase start`, `supabase test db`, `supabase db push` or anything that needs Docker. CI runs the database tests. `npm run typecheck`, `npm run lint` and `npm test` are allowed and required before finishing each phase.
 6. `src/types/database.ts` is **generated; never edit it by hand** (`CLAUDE.md`). After each migration, push, let the "Generated types match the migrations" step fail, and commit the generated file from the CI log or artifact (`testing-and-cicd.md` §7.3). (The Care Planner branch had to hand-write its types; do not repeat that if you can see the CI log.)
 7. Always filter `public.users` by `auth_id`.
@@ -98,16 +101,18 @@ These add to `CLAUDE.md` and `docs/backend/testing-and-cicd.md`. Where they diff
 | D4 | **Support-person model = what the support-person front end already built** (`docs/support-person.md`): the patient invites a person by phone number; the person sees an invitation, **accepts or rejects** it, can later **unpair**; the patient's `access_type` decides whether they can add questions and/or doctor's answers. |
 | D10 | `support_persons.status` = `pending` / `accepted` / `declined`, plus `responded_at`. **Reject and unpair keep the patient's row as `declined`**; adding the same number again re-invites. Unpair also removes the person from the patient's appointments. Closes the "what does unpair do to appointment links" row in `docs/support-person.md` §4.1. |
 
-### Open — STOP and ask the owner before the dependent step
-| # | Item | Recommended default | Needed by |
-|---|---|---|---|
-| 🟡 S2 | **Which appointments does an accepted support person see?** All of the patient's *saved* appointments (what the front end shows), or only appointments the patient chose them for in the wizard. | **All saved** (one commented predicate in `list_supported_appointments` switches to the narrower rule). Ask the owner/designer. | T2.3 |
-| 🟡 S3 | **Doctor's answers need consent (D3), but the support-person app lets them add answers on *upcoming* appointments, and a support person cannot sign consent.** Until the patient signs, "Add doctor's answer" must be disabled. | Keep D3. Front end disables answering and shows the existing "Only {name} can ask the doctor for it" line (T4). Tell the designer. | T4 |
-| 🟡 S4 | **Approve `security definer` functions (A11) and tightening four existing policies (A10).** Today any linked support person could read the patient's whole appointment, questions, `patients` row (sex, year of birth, conditions) and `users` row (phone number) whatever access they were given, and `is_support_person_for_patient` matches access with `LIKE`. A10 limits those tables to the patient; A11 gives support persons narrow functions instead. | Approve both. Without them, S2 does not start. | T2.1 |
-| 🟡 S5 | A pending request shows the patient's **name and conditions** to whoever signs up with the invited number. | Keep (the Figma request card shows them). | T2.3 |
-| 🟡 S6 | One account = one `user_type`. A person who is already a **patient** cannot also support someone with the same number. | Accept and note it in `docs/support-person.md`. | T2.3 |
-| ❓ M7 | Other patient-only functions (pain, social health, management, movement, prescriptions) do not check `user_type` (`docs/support-person.md` B4). The Care Planner functions do. | Separate task. | — |
-| — | Out of scope: editing a support person's own name/phone (`docs/support-person.md` §4.2a), notifications, the support person collecting recording consent, support persons typing their own questions. The Care Planner's open items M1–M3 (health service list, extra question rules, generation gate) are the client's and do not affect this plan. | | |
+### Settled on 29 Oct 2026 (owner: Ryan Pham)
+| # | Decision | Affects |
+|---|---|---|
+| S2 | **A support person sees only the saved appointments the patient added them to** in the wizard (`appointment_has_support_persons`), not all of the patient's appointments. It follows the patient's choice and shares less by default. A new internal helper `supports_appointment(p_appointment_id)` checks the link in every appointment function, so an unlinked appointment can't be opened by its id either. Taking a person off an appointment ends their access to it at once. The People you support list still shows the patient. | A11, `092`, T4 |
+| S3 | **Consent stays mandatory** for a support person's answers (D3; the owner had already chosen not to follow US12's third criterion). Until the patient records consent, "Add doctor's answer" is disabled with the line "{name} needs to record the doctor's consent first". **Designer approved (29 Oct 2026).** | T4 |
+| S4 | **Approved: `security definer` functions (A11) and the tighter policies (A10).** Without A10, any linked support person could read the patient's whole appointment, questions, `patients` row (sex, year of birth, conditions) and `users` row (phone number) whatever access they were given, and `is_support_person_for_patient` matches access with `LIKE`. | T2 |
+| S5 | **A pending request shows the patient's name only.** Conditions appear after Accept. A mistyped number would otherwise show a stranger the patient's health conditions, which are sensitive information under the Privacy Act. `list_my_support_requests` returns no `conditions` column. **Designer approved (29 Oct 2026):** the Figma request card loses its condition line. | A11, T1.3, T4 |
+| S6 | **One account is either a patient or a support person.** A patient who also cares for someone uses another number. Note it in `docs/support-person.md` (T5.1). | — |
+| M7 | **Accepted as a separate fix, after this branch.** The five assessment save functions only check for a `users` row and store against `users_id`, so a support person could save assessments through the API (about themselves; no screen does it). Fix on its own `fix/` branch: one migration with a shared `require_patient()` trigger on the five assessment tables raising `NOT_A_PATIENT`, and a pgTAP test. Not part of this plan's steps. | — |
+
+### Out of scope
+Notifications, a support person changing their phone number (login decision L17), the patient Settings and support person Settings screens (they belong to `docs/settings-backend.md` on `feature/settings-backend`, which also lets a support person edit their own name), the support person collecting recording consent, support persons typing their own questions. The Care Planner's open items M1–M3 (health service list, extra question rules, generation gate) are the client's and do not affect this plan.
 
 ---
 
@@ -117,7 +122,7 @@ These add to `CLAUDE.md` and `docs/backend/testing-and-cicd.md`. Where they diff
 |---|---|---|
 | T0 | Branch and recon | T0.1–T0.2 |
 | T1 | Pure foundations (no database) | T1.1–T1.3 |
-| T2 | Migrations + pgTAP + generated types (**gated on S2–S6 answered, S4 approved in writing**) | T2.1–T2.3 |
+| T2 | Migrations + pgTAP + generated types (S2–S6 settled and S4 approved on 29 Oct 2026) | T2.1, T2.1b, T2.2–T2.4 |
 | T3 | Mappers and service rewrite | T3.1–T3.2 |
 | T4 | Front-end deltas | T4.1 |
 | T5 | Placeholder removal and docs | T5.1 |
@@ -136,18 +141,18 @@ These add to `CLAUDE.md` and `docs/backend/testing-and-cicd.md`. Where they diff
 ### Functions (A11, **security definer**, `authenticated` only)
 | RPC | Returns | Error codes |
 |---|---|---|
-| `list_my_support_requests()` | pending invitations for the caller's phone: `patient_id, patient_name, conditions, can_add_questions, can_add_answers` | — |
-| `list_supported_patients()` | accepted patients, same columns | — |
-| `list_supported_appointments()` | saved appointments of all accepted patients (+ `patient_id`) | — |
+| `list_my_support_requests()` | pending invitations for the caller's phone: `patient_id, patient_name, can_add_questions, can_add_answers` (**no conditions**, S5) | — |
+| `list_supported_patients()` | accepted patients: `patient_id, patient_name, conditions, can_add_questions, can_add_answers` | — |
+| `list_supported_appointments()` | saved appointments of accepted patients **that the caller was added to** (S2), with `patient_id` | — |
 | `accept_support_request(p_patient_id)` | the patient now supported (one row) | `NO_PROFILE` `NOT_A_SUPPORT_PERSON` `REQUEST_NOT_FOUND` |
 | `reject_support_request(p_patient_id)` | void | same |
 | `unpair_from_patient(p_patient_id)` | void | `NO_PROFILE` `NOT_A_SUPPORT_PERSON` `PATIENT_NOT_FOUND` |
-| `get_supported_appointment(p_appointment_id)` | details, `recording_consent_at` (never the signature), `suggestions_generated_on`, `can_add_questions`, `can_add_answers`; **zero rows** if not allowed | — |
+| `get_supported_appointment(p_appointment_id)` | details, `recording_consent_at` (never the signature), `suggestions_generated_on`, `can_add_questions`, `can_add_answers`; **zero rows** if not allowed, including an appointment the caller wasn't added to (S2) | — |
 | `list_supported_appointment_questions(p_appointment_id)` | all stored questions with `is_selected` and `answer` | — |
 | `save_supported_questions(p_appointment_id, p_question_ids int[])` | void | `NO_SESSION` `APPOINTMENT_NOT_FOUND` `NO_QUESTIONS_PERMISSION` `UNKNOWN_QUESTION` `NO_QUESTIONS` `NO_ANSWERS_PERMISSION` (removing an answered question) |
 | `save_supported_answers(p_appointment_id, p_answers jsonb)` | void | `NO_SESSION` `APPOINTMENT_NOT_FOUND` `NO_ANSWERS_PERMISSION` `INVALID_ANSWER` `CONSENT_REQUIRED` `QUESTION_NOT_ON_PLAN` `VALUE_TOO_LONG` |
 
-The message codes `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION`, `REQUEST_NOT_FOUND`, `PATIENT_NOT_FOUND` and `APPOINTMENT_NOT_FOUND` are the strings the support-person screens and `support-person.test.ts` already expect. The request id used by the app is the **patient id as a string** (one invitation per patient per person); `SupportedPatient.id` is the same string. `support_access(p_patient_id, p_token)` is an internal helper (accepted + user type + exact access token); it is not callable by the app.
+The message codes `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION`, `REQUEST_NOT_FOUND`, `PATIENT_NOT_FOUND` and `APPOINTMENT_NOT_FOUND` are the strings the support-person screens and `support-person.test.ts` already expect. The request id used by the app is the **patient id as a string** (one invitation per patient per person); `SupportedPatient.id` is the same string. `support_access(p_patient_id, p_token)` (accepted + user type + exact access token) and `supports_appointment(p_appointment_id)` (accepted and added to that appointment) are internal helpers; the app can't call them.
 
 How a request reaches a person: the patient adds a support person with an Australian mobile (E.164). When someone signs up as a support person with that verified number, `list_my_support_requests` returns it. Nothing else links them.
 
@@ -159,25 +164,39 @@ Closes `docs/support-person.md`: P2, P4, P5, P6 (the patient's snapshot is what 
 
 ### Phase T0 — Branch and recon
 **T0.1 Branch.** Care Planner merged and CI green (section 0.1)? `git checkout main && git pull && git checkout -b feature/support-person-backend`. **Commit:** none.
-**T0.2 Recon.** Confirm in the repo: the nine Care Planner migrations listed in 0.2 exist, including `…013240_support_people_relink_and_link_policy`; `errors.ts` has `NOT_ALLOWED_MESSAGES` and `CONSENT_REQUIRED`; `accessType.ts`, `mappers.ts` and `messages.ts` exist in `src/features/care-planner/`; the policies and the trigger `support_persons_protect_access_type` match section 4. If anything differs, **STOP and ask**. List every import of `@/services/support-person` and every placeholder (`MOCK_*`, `resetMockSupportPerson`, `resetMockSupportedPlans`, the copied `run`) in `docs/backend/support-person-stub-inventory.md`. **Commit:** "Add support person stub inventory".
+**T0.2 Recon.** Confirm in the repo: the ten Care Planner migrations listed in 0.2 exist, including `…013340_enforce_care_planner_rules`; `errors.ts` has `NOT_ALLOWED_MESSAGES` and `CONSENT_REQUIRED`; `accessType.ts`, `mappers.ts` and `messages.ts` exist in `src/features/care-planner/`; the policies and the trigger `support_persons_protect_access_type` match section 4. If anything differs, **STOP and ask**. List every import of `@/services/support-person` and every placeholder (`MOCK_*`, `resetMockSupportPerson`, `resetMockSupportedPlans`, the copied `run`) in `docs/backend/support-person-stub-inventory.md`. **Commit:** "Add support person stub inventory".
 
 ### Phase T1 — Pure foundations
 **T1.1 Error codes.** *Files:* `src/lib/errors.ts`, `errors.test.ts`. Add `NOT_A_SUPPORT_PERSON`, `NO_QUESTIONS_PERMISSION` and `NO_ANSWERS_PERMISSION` to the existing `NOT_ALLOWED_MESSAGES` tuple (it is checked first). **Order matters:** `NO_QUESTIONS` (a validation message) is a substring of `NO_QUESTIONS_PERMISSION`, and the mapper matches with `message.includes`. `REQUEST_NOT_FOUND`, `PATIENT_NOT_FOUND` and `APPOINTMENT_NOT_FOUND` need no change: they contain `NOT_FOUND`, so they map to `NOT_FOUND` with the message kept. *Tests:* the three codes are `NOT_ALLOWED` and **not** `VALIDATION`; `NO_QUESTIONS` is still `VALIDATION`; the three `*_NOT_FOUND` messages map to `NOT_FOUND` and keep their message. **Commit:** "Map support person error codes".
 **T1.2 Friendly messages and types.** Extend `src/features/care-planner/messages.ts` (+ test). Because both permission errors have `code: 'NOT_ALLOWED'` and `NOT_FOUND` currently talks about "that appointment", look up `error.message` first inside the `NOT_ALLOWED` and `NOT_FOUND` cases for `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION`, `REQUEST_NOT_FOUND`, `PATIENT_NOT_FOUND`, `APPOINTMENT_NOT_FOUND`; no raw database text. Add `status?: 'pending' | 'accepted' | 'declined'` to the patient `SupportPerson` type and read `status` in `mapSupportPerson` (add it to `SupportPersonRow`). **Commit:** "Add support person messages and invitation status".
-**T1.3 Support-person mappers.** `src/features/support-person/mappers.ts` (+ test, add to `collectCoverageFrom`): function rows → `SupportedPatient` (`id` = `String(patient_id)`, `condition` = `conditions` or `''`, `canAddQuestions`/`canAddAnswers`), `SupportRequest` (`appointments: []`), `Appointment`, grouped by patient. The plan and suggestions go through the Care Planner mappers (`mapAppointmentPlan(row, questions, [])` and `mapQuestionSuggestions(row, questions)`; `supportPersonName` stays `null`). *Tests:* id strings, empty condition, a request has no appointments, grouping, dates unchanged. **Commit:** "Add support person row mappers".
+**T1.3 Support-person mappers.** `src/features/support-person/mappers.ts` (+ test, add to `collectCoverageFrom`): function rows → `SupportedPatient` (`id` = `String(patient_id)`, `condition` = `conditions` or `''`, `canAddQuestions`/`canAddAnswers`), `SupportRequest` (`appointments: []`, `condition: ''`: requests carry no conditions, S5), `Appointment`, grouped by patient. The plan and suggestions go through the Care Planner mappers (`mapAppointmentPlan(row, questions, [])` and `mapQuestionSuggestions(row, questions)`; `supportPersonName` stays `null`). *Tests:* id strings, empty condition, a request has no appointments and no condition, grouping, dates unchanged. **Commit:** "Add support person row mappers".
 
 ### Phase T2 — Migrations (**gated**)
 Each step: show the SQL and wait for approval, then one commit with the migration, its pgTAP file (section 6), and the regenerated types after CI reports the diff.
 | Step | Appendix A file | Migration name | pgTAP file | Commit |
 |---|---|---|---|---|
 | T2.1 | A9 | `support_link_state` | `090_support_link_state.test.sql` | "Add support person invitation status" |
+| T2.1b | (from Settings) | `settings_delete_account_status` | `096_delete_account.test.sql` (updated) | "Mark a deleted support person's rows as declined" |
 | T2.2 | A10 | `restrict_support_person_table_access` | `091_support_person_table_access.test.sql` | "Restrict support person table access to the patient" |
 | T2.3 | A11 | `support_person_functions` | `092_support_person_functions.test.sql` | "Add support person functions" |
+| T2.4 | (from Settings) | `settings_support_person_status` | `097_settings_support_person_status.test.sql` | "Include supported patients in a support person's export" |
 
 Notes:
-- Keep A9 < A10 < A11 by timestamp (all after `20261027013240`), all in the same pull request. A10 is the **security fix**: it must never be merged after A11 (nothing links a person to a login before A11 exists, so shipping them together is safe).
+- Keep A9 < A10 < A11 by timestamp (all after `20261027013340`), all in the same pull request. A10 is the **security fix**: it must never be merged after A11 (nothing links a person to a login before A11 exists, so shipping them together is safe).
 - If a constraint fails on hosted data (A9's backfill, `chk_support_persons_link`), **STOP and ask**; do not loosen it. If CI fails on a migration that is new in this PR, show the owner the fix before changing it; never touch a merged migration.
 - After T2.3, **nothing in the app calls the functions yet**, so the placeholder service keeps working until T3.
+- **Settings commit 19 is split between T2.1b and T2.4** (`docs/settings-backend.md` merged first, PR #52):
+  - **T2.1b, done (`74a209f`), right after A9.** Settings' `delete_account` cleared `users_id` without changing the
+    status, which A9's `chk_support_persons_link` ("a login only when accepted") refuses, and CI's `096` showed it at
+    once. Migration `settings_delete_account_status` replaces `delete_account` (same signature `(int)`, still
+    `security definer` and `service_role` only): a deleted support person's rows become `declined` with no login and
+    `responded_at = now()`, and their appointment links go, as `unpair_from_patient` does. `096`'s fixture now links
+    the support person as `accepted`, and it checks the row ends `declined`. Approved by the owner on 30 Oct 2026.
+  - **T2.4, after A11:** `export_my_data` (`create or replace`, same signature `()`, still `security invoker`) adds
+    `'supported_patients'`, the rows of `list_supported_patients()`. After A10, a support person can't read
+    `support_persons` directly, so this is the only way to include them. Test `097_settings_support_person_status`:
+    a support person's export lists the patients they accepted and nothing of a pending invitation; a patient's
+    export is unchanged. Show the SQL and wait for approval first, like A9–A11.
 
 ### Phase T3 — Service
 **T3.1 Service rewrite** (`src/services/support-person.ts`; the exported signatures stay and the client becomes the last optional argument):
@@ -195,12 +214,14 @@ Follow `src/services/care-planner.ts` for the pattern. Keep the error shapes the
 ### Phase T4 — Front-end deltas
 | Change | Why |
 |---|---|
-| **S3:** when `recordingConsentedAt` is null, hide the answer pen and disable "Add doctor's answer" on the plan screen; keep the existing "Only {name} can ask the doctor for it" line. Show the friendly message if `CONSENT_REQUIRED` still comes back (consent changed under them). | D3 |
-| A patient with no conditions: hide the condition line instead of showing an empty string. | `conditions` can be empty |
-| `NO_QUESTIONS_PERMISSION` / `NO_ANSWERS_PERMISSION` show the friendly message and reload the patient list (access changes take effect at once). | Permissions are enforced by the database |
-| Patient Settings > Support Persons (`app/(tabs)/settings/support-persons.tsx`, driven by `useMySupportPersons`): show the invitation state (Pending / Accepted / Declined) on each row, and say that removing a person ends their access at once. | A9 adds `status` |
+| **S3:** when `recordingConsentedAt` is null, hide the answer pen and disable "Add doctor's answer" on the plan screen, with the line "{name} needs to record the doctor's consent first" in place of "Only {name} can ask the doctor for it". Show the friendly message if `CONSENT_REQUIRED` still comes back (consent changed under them). | D3, S3 |
+| **S5:** nothing to change on screen: `SupportRequestCard` already shows only the name (T0.2 recon). | Requests carry no conditions |
+| A supported patient with no conditions: hide the condition line instead of showing an empty string. | `conditions` can be empty |
+| **S2:** a patient with no appointments the person was added to shows the empty appointments state, not an error. | Only linked appointments are returned |
+| `NO_QUESTIONS_PERMISSION` / `NO_ANSWERS_PERMISSION` show the friendly message and reload the patient list (access changes take effect at once). `APPOINTMENT_NOT_FOUND` (for example after the patient took the person off the appointment) does the same. | Permissions are enforced by the database |
 | Update `support-person.test.ts`, `context.test.tsx` and `useSupportedAppointmentQuestions.test.ts` so none import `resetMock*`. | Placeholder removal |
-**Commit:** "Show invitation status and gate doctor's answers on recording consent".
+| **From Settings (its step 6 and commit 18):** patient Settings > Support Persons (`app/(tabs)/settings/support-persons.tsx`, driven by `useMySupportPersons`) shows Pending / Accepted / Declined on each row, and the Revoke all access popup says the person loses access at once. Its own commit: "Show invitation status on the patient's support persons". | A9 adds `status`; T1.2 maps it |
+**Commit:** "Gate doctor's answers on recording consent" (the invitation status row is its own commit, above).
 
 ### Phase T5 — Placeholder removal and docs
 **T5.1** Delete `MOCK_SUPPORTED_PATIENTS`, `MOCK_SUPPORT_REQUESTS`, `MOCK_SUGGESTED_GROUPS`, `MOCK_DEFAULT_SELECTED_IDS`, `MOCK_PAST_ANSWERS`, the in-memory maps, `resetMockSupportPerson`, `resetMockSupportedPlans` and the copied `run`; grep must find none. Update `docs/support-person.md` (§4.1 table: P2, P4, P5, P6, B5 and B4 (Care Planner only) done; P1, P3 and B2 are already done; §4.2 steps done; §4.4 answered questions; record S2–S6 outcomes), `docs/testing.md` (rows from 6.5, "Not automated" from 6.6) and `progress.md`. **Commit:** "Remove support person placeholder data and update the docs".
@@ -284,7 +305,8 @@ Count your assertions before you commit (a quick `grep -cE "^select (ok|lives_ok
 |---|---|---|
 | `090_support_link_state` | A9 | `status`/`responded_at` columns; status outside the three values → 23514; `accepted` without a login and a login without `accepted` → 23514; invitations start `pending` and unlinked; a new number resets an accepted person to `pending` and drops the login; re-adding a declined number → `pending`; the same name/phone for another patient is allowed |
 | `091_support_person_table_access` | A10 | **an accepted support person sees 0 rows** in `appointment`, `appointment_questions`, `appointment_has_support_persons`, `patients`, `support_persons`, and only their own `users` row; their direct updates change 0 rows; the patient still reads and updates their own rows. *Keep the "accepted" setting: a pending person never matched the old policy, so only an accepted one proves the lockdown (the mutation check showed this).* |
-| `092_support_person_functions` | A11 | requests visible only to the invited number; accept / reject / unpair and their errors (a **patient** calling them → `NOT_A_SUPPORT_PERSON`, a second accept → `REQUEST_NOT_FOUND`, a second unpair → `PATIENT_NOT_FOUND`); only saved appointments; `get_supported_appointment` returns zero rows for pending, draft, other patient; flags equal the access given; `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION` (including removing an answered question), `CONSENT_REQUIRED`, `QUESTION_NOT_ON_PLAN`, `NO_QUESTIONS`, `UNKNOWN_QUESTION`; the patient sees answers a supporter added; changing access, deleting the person, changing their number or unpairing takes effect immediately; unpair removes the appointment links and leaves the patient's row `declined`; `support_access` is **not** executable by `authenticated` or `anon`; anon cannot execute any function |
+| `092_support_person_functions` | A11 | requests visible only to the invited number, **with no `conditions` column** (S5); accept / reject / unpair and their errors (a **patient** calling them → `NOT_A_SUPPORT_PERSON`, a second accept → `REQUEST_NOT_FOUND`, a second unpair → `PATIENT_NOT_FOUND`); only saved appointments **the person was added to** (S2): a saved appointment they weren't added to is missing from `list_supported_appointments`, returns zero rows from `get_supported_appointment` and `list_supported_appointment_questions`, and gives `APPOINTMENT_NOT_FOUND` from both save functions; taking the person off an appointment ends access to it; `get_supported_appointment` returns zero rows for pending, draft, other patient; flags equal the access given; `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION` (including removing an answered question), `CONSENT_REQUIRED`, `QUESTION_NOT_ON_PLAN`, `NO_QUESTIONS`, `UNKNOWN_QUESTION`; the patient sees answers a supporter added; changing access, deleting the person, changing their number or unpairing takes effect immediately; unpair removes the appointment links and leaves the patient's row `declined`; `support_access` and `supports_appointment` are **not** executable by `authenticated` or `anon`; anon cannot execute any function |
+| `097_settings_support_person_status` | T2.4 | a support person's export has `supported_patients` (accepted only, never a pending invitation); a patient's export is unchanged. (Deleting an accepted support person is covered by `096`, updated in T2.1b.) |
 
 ### 6.5 Traceability rows to add to `docs/testing.md`
 (Same columns as the existing table; add them in step T5.1.)
@@ -296,6 +318,8 @@ Count your assertions before you commit (a quick `grep -cE "^select (ok|lives_ok
 | Reject and unpair keep the patient's record as declined; re-adding the number invites again | `090_support_link_state`; `092_support_person_functions` | Database | `database-tests` |
 | **A support person cannot read the patient's tables directly** (appointments, questions, patient row, user row, invitation row) | `091_support_person_table_access` | Database | `database-tests` |
 | A support person sees only saved appointments and never the consent signature | `092_support_person_functions` | Database | `database-tests` |
+| A support person sees only the appointments the patient added them to (S2) | `092_support_person_functions` | Database | `database-tests` |
+| A pending request shows the patient's name but never their conditions (S5) | `092_support_person_functions`; `mappers.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
 | A support person can change questions only with "Add questions" and answers only with "Add doctor's answer"; removing an answered question needs both | `092_support_person_functions`; `permissions.test.ts` | Database, Unit | `database-tests`, `unit-tests` |
 | A doctor's answer from a support person also needs recording consent | `092_support_person_functions` | Database | `database-tests` |
 | Changing a support person's access or number, or deleting them, takes effect immediately | `090_support_link_state`; `092_support_person_functions` | Database | `database-tests` |
@@ -311,7 +335,7 @@ Count your assertions before you commit (a quick `grep -cE "^select (ok|lives_ok
 - Two people editing the same plan at once: last save wins (not tested; noted in `docs/support-person.md` §5).
 
 ### 6.7 Evidence to capture
-- `supabase test db` passing with files `090`–`092`: `docs/screenshots/db-tests-support-person.png` (**TODO**, from the CI run).
+- `supabase test db` passing with files `090`–`092` and `097`: `docs/screenshots/db-tests-support-person.png` (**TODO**, from the CI run).
 - `npm test` passing: `docs/screenshots/unit-tests-support-person.png` (**TODO**).
 - Green CI on the pull request, including the types diff, `db lint` and `migrations-immutable`: `docs/screenshots/ci-support-person.png` (**TODO**).
 - The two-account journey (T7.1) written up in the PR description with the result of each numbered check.
@@ -335,7 +359,7 @@ Count your assertions before you commit (a quick `grep -cE "^select (ok|lives_ok
 ---
 
 ## Appendix A — Migration SQL (tested)
-One migration per file, in order. This is exactly what was executed. A9 follows the Care Planner's migrations. **Name the files with `supabase migration new <name>` so the timestamps sort after `20261027013240`.**
+One migration per file, in order. This is what was executed, **except the Revision 3 changes in A11** (the `supports_appointment` helper and its four uses for S2, and no `conditions` in `list_my_support_requests` for S5), which have not been run yet. A9 follows the Care Planner's migrations. **Name the files with `supabase migration new <name>` so the timestamps sort after `20261027013340`.**
 
 ### A9 — support_link_state (`09_support_link_state.sql`)
 ```sql
@@ -540,6 +564,7 @@ create policy support_persons_update on public.support_persons
 --   drop function public.list_supported_appointments();
 --   drop function public.list_supported_patients();
 --   drop function public.list_my_support_requests();
+--   drop function public.supports_appointment(int);
 --   drop function public.support_access(int, text);
 
 -- These functions are `security definer` on purpose: the support person is not allowed to read
@@ -570,12 +595,35 @@ as $$
 $$;
 revoke all on function public.support_access(int, text) from public, anon, authenticated;
 
+-- Decision S2: true when the signed-in support person has accepted and the patient added them to
+-- this appointment. Taking them off the appointment ends their access to it. Not callable from the app.
+create function public.supports_appointment(p_appointment_id int)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+      from public.appointment_has_support_persons l
+      join public.support_persons sp on sp.support_person_id = l.support_person_id
+      join public.users u on u.users_id = sp.users_id
+     where l.appointment_id = p_appointment_id
+       and sp.status = 'accepted'
+       and u.auth_id = auth.uid()
+       and u.user_type = 'support_person'
+  );
+$$;
+revoke all on function public.supports_appointment(int) from public, anon, authenticated;
+
 -- Invitations sent to the signed-in person's phone number and not answered yet.
+-- Decision S5: only the patient's name. Their conditions appear once the request is accepted, so a
+-- mistyped number never shows a stranger someone's health conditions.
 create function public.list_my_support_requests()
 returns table (
   patient_id integer,
   patient_name text,
-  conditions text,
   can_add_questions boolean,
   can_add_answers boolean
 )
@@ -586,8 +634,6 @@ set search_path = public
 as $$
   select p.patient_id,
          pu.name::text,
-         (select string_agg(distinct m.disease::text, ', ' order by m.disease::text)
-            from public.patient_musko_skeletal_pain m where m.patient_id = p.patient_id),
          'questions' = any (string_to_array(sp.access_type, ',')),
          'answers' = any (string_to_array(sp.access_type, ','))
     from public.users me
@@ -631,11 +677,8 @@ as $$
    order by pu.name, p.patient_id;
 $$;
 
--- The saved appointments of every accepted patient. Drafts are never shown.
--- Decision S2: a supported patient's appointments are all visible. To limit this to appointments
--- the patient chose the person for, add:
---   and exists (select 1 from public.appointment_has_support_persons l
---                where l.appointment_id = a.appointment_id and l.support_person_id = sp.support_person_id)
+-- The saved appointments of every accepted patient that the patient added this person to.
+-- Drafts are never shown. Decision S2: an appointment they weren't added to is not shown.
 create function public.list_supported_appointments()
 returns table (
   patient_id integer,
@@ -658,6 +701,9 @@ as $$
      and me.user_type = 'support_person'
      and sp.status = 'accepted'
      and a.status = 'saved'
+     and exists (select 1 from public.appointment_has_support_persons l
+                  where l.appointment_id = a.appointment_id
+                    and l.support_person_id = sp.support_person_id)
    order by a.date_time, a.appointment_id;
 $$;
 
@@ -795,7 +841,8 @@ as $$
     from public.appointment a
    where a.appointment_id = p_appointment_id
      and a.status = 'saved'
-     and public.support_access(a.patient_id);
+     and public.support_access(a.patient_id)
+     and public.supports_appointment(a.appointment_id);
 $$;
 
 -- Every question stored for a supported appointment, with which are on the plan and any answer.
@@ -819,6 +866,7 @@ as $$
    where a.appointment_id = p_appointment_id
      and a.status = 'saved'
      and public.support_access(a.patient_id)
+     and public.supports_appointment(a.appointment_id)
    order by q.group_key, q.sort_order;
 $$;
 
@@ -840,7 +888,9 @@ begin
   select a.patient_id into v_patient_id
     from public.appointment a
    where a.appointment_id = p_appointment_id and a.status = 'saved';
-  if v_patient_id is null or not public.support_access(v_patient_id) then
+  if v_patient_id is null
+     or not public.support_access(v_patient_id)
+     or not public.supports_appointment(p_appointment_id) then
     raise exception 'APPOINTMENT_NOT_FOUND' using errcode = 'P0001';
   end if;
   if not public.support_access(v_patient_id, 'questions') then
@@ -895,7 +945,9 @@ begin
   select * into v_appointment
     from public.appointment a
    where a.appointment_id = p_appointment_id and a.status = 'saved';
-  if not found or not public.support_access(v_appointment.patient_id) then
+  if not found
+     or not public.support_access(v_appointment.patient_id)
+     or not public.supports_appointment(p_appointment_id) then
     raise exception 'APPOINTMENT_NOT_FOUND' using errcode = 'P0001';
   end if;
   if not public.support_access(v_appointment.patient_id, 'answers') then
@@ -957,8 +1009,8 @@ grant execute on function public.save_supported_answers(int, jsonb) to authentic
 
 ---
 
-## Appendix C — Support-person behaviour test (executed, passing)
-Requires the Care Planner's migrations and A9–A11. Translate into `090`–`092` using the rules in 6.4. The mutation check (re-creating the old policy makes "accepted C reads no appointments directly" fail) is the reason those assertions exist: keep them.
+## Appendix C — Support-person behaviour test (executed and passing before Revision 3)
+Requires the Care Planner's migrations and A9–A11. Translate into `090`–`092` using the rules in 6.4. Lines and messages marked `R3` were added for decisions S2 and S5 and **have not been run**. The mutation check (re-creating the old policy makes "accepted C reads no appointments directly" fail) is the reason those assertions exist: keep them.
 
 ```sql
 begin;
@@ -1001,6 +1053,9 @@ select public.save_appointment_suggestions((select v from ctx where k='appt'), c
 select public.save_appointment_questions((select v from ctx where k='appt'),
   (select array_agg(question_id) from public.appointment_questions where question in ('Q1','Q2')));
 select public.save_appointment((select v from ctx where k='appt'));
+-- R3 (S2): a saved appointment nobody was added to
+insert into ctx select 'unlinked', public.save_appointment_details('2026-11-20 09:00','Dr Other','GP');
+select public.save_appointment((select v from ctx where k='unlinked'));
 select * from public.save_appointment_support_people((select v from ctx where k='appt'),
   '[{"name":"Cara","phone":"+61491570007","access_type":"questions"},{"name":"Dan","phone":"+61491570008","access_type":"answers"}]');
 select t.assert((select count(*)=2 and bool_and(status='pending' and users_id is null) from public.support_persons), 'invitations start pending and unlinked');
@@ -1008,7 +1063,7 @@ select t.assert((select count(*)=2 and bool_and(status='pending' and users_id is
 -- ===== C: sees the request, nothing else yet =====
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000000c"}',true);
 select t.assert((select count(*)=1 from public.list_my_support_requests()), 'C sees one request');
-select t.assert((select patient_name='Alice' and conditions='Arthritis' and can_add_questions and not can_add_answers from public.list_my_support_requests()), 'request shows name, condition, C''s access only');
+select t.assert((select patient_name='Alice' and can_add_questions and not can_add_answers from public.list_my_support_requests()), 'R3 (S5): request shows the name and C''s access only');
 select t.assert((select count(*)=0 from public.list_supported_patients()), 'no supported patients before accepting');
 select t.assert((select count(*)=0 from public.list_supported_appointments()), 'no appointments before accepting');
 select t.assert((select count(*)=0 from public.get_supported_appointment((select v from ctx where k='appt'))), 'pending person cannot open the appointment');
@@ -1031,6 +1086,7 @@ select t.expect('REQUEST_NOT_FOUND', 'select * from public.accept_support_reques
 select * from public.accept_support_request((select patient_id from public.list_my_support_requests()));
 select t.assert((select count(*)=0 from public.list_my_support_requests()), 'request gone after accepting');
 select t.assert((select count(*)=1 and bool_and(can_add_questions and not can_add_answers) from public.list_supported_patients()), 'accepted patient listed with access');
+select t.assert((select conditions='Arthritis' from public.list_supported_patients()), 'R3 (S5): conditions appear once accepted');
 select t.expect('REQUEST_NOT_FOUND', format('select * from public.accept_support_request(%s)', (select patient_id from public.list_supported_patients())));
 
 -- an accepted support person still has no direct table access (only the functions)
@@ -1047,8 +1103,10 @@ do $$ declare n int; begin
   if n <> 0 then raise exception 'accepted C updated % invitation rows directly', n; end if; end $$;
 
 -- ===== C: appointments (saved only) =====
-select t.assert((select count(*)=1 and bool_and(status='saved') from public.list_supported_appointments()), 'C sees the saved appointment, not the draft');
+select t.assert((select count(*)=1 and bool_and(status='saved') from public.list_supported_appointments()), 'R3 (S2): C sees only the saved appointment they were added to, not the draft or the unlinked one');
 select t.assert((select count(*)=0 from public.get_supported_appointment((select v from ctx where k='draft'))), 'draft appointment not openable');
+select t.assert((select count(*)=0 from public.get_supported_appointment((select v from ctx where k='unlinked'))), 'R3 (S2): an appointment C was not added to is not openable');
+select t.expect('APPOINTMENT_NOT_FOUND', format('select public.save_supported_questions(%s, array[1])', (select v from ctx where k='unlinked')));
 select t.assert((select recording_consent_at is null and can_add_questions and not can_add_answers and practitioner_name='Dr Lee'
   from public.get_supported_appointment((select v from ctx where k='appt'))), 'details and access flags');
 select t.assert((select count(*)=3 from public.list_supported_appointment_questions((select v from ctx where k='appt'))), 'C sees all stored questions');
@@ -1104,6 +1162,15 @@ select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000
 select t.expect('NO_QUESTIONS_PERMISSION', format('select public.save_supported_questions(%s, (select array_agg(question_id) from public.list_supported_appointment_questions(%s) where question in (''Q1'',''Q3'')))', (select v from ctx where k='appt'), (select v from ctx where k='appt')));
 select t.assert((select not can_add_questions from public.list_supported_patients()), 'listing reflects new access');
 
+-- R3 (S2): taking C off the appointment ends access to it at once
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000000a"}',true);
+select * from public.save_appointment_support_people((select v from ctx where k='appt'),
+  jsonb_build_array(jsonb_build_object('support_person_id',(select support_person_id from public.support_persons where name='Dan'))));
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000000c"}',true);
+select t.assert((select count(*)=0 from public.list_supported_appointments()), 'R3 (S2): C off the appointment sees no appointments');
+select t.assert((select count(*)=0 from public.get_supported_appointment((select v from ctx where k='appt'))), 'R3 (S2): C off the appointment cannot open it');
+select t.assert((select count(*)=1 from public.list_supported_patients()), 'R3 (S2): C still supports the patient');
+
 -- ===== unpair: access gone, links removed, patient can re-invite =====
 select public.unpair_from_patient((select patient_id from public.list_supported_patients()));
 select t.assert((select count(*)=0 from public.list_supported_patients()) and (select count(*)=0 from public.list_supported_appointments()), 'C has no access after unpairing');
@@ -1140,6 +1207,9 @@ reset role;
 select t.assert(not has_function_privilege('anon','public.accept_support_request(int)','execute'), 'anon cannot accept');
 select t.assert(not has_function_privilege('anon','public.list_supported_patients()','execute'), 'anon cannot list');
 select t.assert(not has_function_privilege('authenticated','public.support_access(int,text)','execute'), 'helper is not callable by the app');
+select t.assert(not has_function_privilege('authenticated','public.supports_appointment(int)','execute'), 'R3 (S2): appointment helper is not callable by the app');
+select t.assert(not exists (select 1 from pg_proc p cross join unnest(p.proargnames) n
+  where p.proname = 'list_my_support_requests' and n = 'conditions'), 'R3 (S5): requests never return conditions');
 select t.assert(has_function_privilege('authenticated','public.save_supported_answers(int,jsonb)','execute'), 'authenticated can save answers');
 -- the link and status constraints
 do $$ begin

@@ -161,3 +161,39 @@ Plan: `care-planner-build-plan.md` (copied to `docs/backend/` in step 8.1). Bran
 | M4 | Data retention / account deletion (deleting a patient fails while appointments exist) | ❓ out of scope |
 | M5 | No server rule on past/future appointment dates | ❓ optional |
 | M6 | Draft appointments are never cleaned up | ❓ optional |
+
+# Support person back-end progress
+
+Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/support-person-backend`. The Settings back end (PR #52) merged first and is on dev.
+
+## Phase T0: Branch and recon
+- [x] T0.1 Branch from `main`, then `main` merged in after Settings (`473293a`)
+- [x] T0.2 Recon: the repo matches sections 0.2 and 4; stub inventory in `support-person-stub-inventory.md`
+
+## Phase T1: Pure foundations
+- [x] T1.1 Error codes (`eaf4d03`)
+- [x] T1.2 Friendly messages and invitation status (`3a11eb2`)
+- [x] T1.3 Support person row mappers
+
+## Phase T2: Migrations, pgTAP, generated types
+- [x] T2.1 A9 `support_link_state` (090) (`1341a22`)
+- [x] T2.1b `settings_delete_account_status`: `delete_account` marks a deleted support person's rows declined; `096` updated (`74a209f`)
+- [x] T2.2 A10 `restrict_support_person_table_access` (091) (`69ea03f`)
+- [x] T2.3 A11 `support_person_functions` (092) (`1c617eb`; all 94 checks passed on the first CI run)
+- [x] T2.4 `settings_support_person_status` (097): `export_my_data` adds supported patients
+
+## Phase T3: Service
+- [x] T3.1 Service rewrite (`6edb526`)
+- [x] T3.2 Service tests (same commit: the old tests and two hook tests imported the mock data, so splitting would have left a red commit; the hook tests now mock the service)
+
+## Phase T4: Front-end deltas
+- [x] T4 Consent gating and the other screen changes (`26888c7`)
+- [x] T4 Invitation status on the patient's Support persons screen (from Settings commit 18) (`036cd20`)
+
+## Phase T5–T7
+- [x] T5.1 Remove the placeholders (done in T3, `6edb526`) and update the docs (`docs/support-person.md`, `docs/testing.md`)
+- [x] T6.1 Full checks and green CI (`fc75921`)
+- [ ] T7.1 Manual QA with two accounts
+
+## Decisions
+S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.

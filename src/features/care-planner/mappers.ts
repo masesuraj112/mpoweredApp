@@ -13,7 +13,7 @@ import type {
   QuestionSuggestions,
   SuggestedQuestionGroup,
 } from './suggestionTypes';
-import type { Appointment, AppointmentStatus, SupportPerson } from './types';
+import type { Appointment, AppointmentStatus, SupportPerson, SupportPersonStatus } from './types';
 
 export type AppointmentRow = {
   appointment_id: number;
@@ -47,6 +47,8 @@ export type SupportPersonRow = {
   phone_number: string | null;
   email: string | null;
   access_type: string;
+  /** The invitation state. Rows read before the support_link_state migration have none. */
+  status?: string;
 };
 
 /** A row of `appointment_has_support_persons` with its person embedded (PostgREST). */
@@ -89,7 +91,14 @@ export function mapSupportPerson(row: SupportPersonRow): SupportPerson {
     phone: row.phone_number,
     email: row.email,
     ...accessTypeFromDb(row.access_type),
+    ...(isSupportPersonStatus(row.status) ? { status: row.status } : {}),
   };
+}
+
+const SUPPORT_PERSON_STATUSES: readonly string[] = ['pending', 'accepted', 'declined'];
+
+function isSupportPersonStatus(value: string | undefined): value is SupportPersonStatus {
+  return value !== undefined && SUPPORT_PERSON_STATUSES.includes(value);
 }
 
 /** The people linked to an appointment, in a stable order. Links whose person is hidden are skipped. */
