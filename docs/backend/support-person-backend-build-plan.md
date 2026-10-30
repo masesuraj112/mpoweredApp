@@ -39,7 +39,7 @@ The Care Planner back end is on branch `feature/care-planner-backend` (about 30 
 
 pgTAP files `080`–`089` exist, and the Settings branch uses `093`–`096`, so **your pgTAP files are `090`–`092` and `097`**.
 
-**The Settings branch merges first** (PR #52, `docs/settings-backend.md`). It adds four migrations, `20261029113242_settings_update_profile`, `20261029114645_settings_user_settings`, `20261029120105_export_my_data` and `20261029121213_delete_account`, plus the `delete-account` Edge Function. Merge `main` in after it merges: yours must sort after `20261029121213` (`supabase migration new` does this), and T2.4 replaces two of its functions.
+**The Settings branch merges first** (PR #52, `docs/settings-backend.md`). It adds four migrations, `20261029113242_settings_update_profile`, `20261029114645_settings_user_settings`, `20261029120105_export_my_data` and `20261029121213_delete_account`, plus the `delete-account` Edge Function. Merge `main` in after it merges: yours must sort after `20261029121213` (`supabase migration new` does this), and T2.1b and T2.4 replace two of its functions (`delete_account`, `export_my_data`).
 
 **Things your migrations must stay compatible with**
 
@@ -122,7 +122,7 @@ Notifications, a support person changing their phone number (login decision L17)
 |---|---|---|
 | T0 | Branch and recon | T0.1–T0.2 |
 | T1 | Pure foundations (no database) | T1.1–T1.3 |
-| T2 | Migrations + pgTAP + generated types (S2–S6 settled and S4 approved on 29 Oct 2026) | T2.1–T2.4 |
+| T2 | Migrations + pgTAP + generated types (S2–S6 settled and S4 approved on 29 Oct 2026) | T2.1, T2.1b, T2.2–T2.4 |
 | T3 | Mappers and service rewrite | T3.1–T3.2 |
 | T4 | Front-end deltas | T4.1 |
 | T5 | Placeholder removal and docs | T5.1 |
@@ -176,27 +176,27 @@ Each step: show the SQL and wait for approval, then one commit with the migratio
 | Step | Appendix A file | Migration name | pgTAP file | Commit |
 |---|---|---|---|---|
 | T2.1 | A9 | `support_link_state` | `090_support_link_state.test.sql` | "Add support person invitation status" |
+| T2.1b | (from Settings) | `settings_delete_account_status` | `096_delete_account.test.sql` (updated) | "Mark a deleted support person's rows as declined" |
 | T2.2 | A10 | `restrict_support_person_table_access` | `091_support_person_table_access.test.sql` | "Restrict support person table access to the patient" |
 | T2.3 | A11 | `support_person_functions` | `092_support_person_functions.test.sql` | "Add support person functions" |
-| T2.4 | (from Settings) | `settings_support_person_status` | `097_settings_support_person_status.test.sql` | "Use invitation status in a support person's export and deletion" |
+| T2.4 | (from Settings) | `settings_support_person_status` | `097_settings_support_person_status.test.sql` | "Include supported patients in a support person's export" |
 
 Notes:
 - Keep A9 < A10 < A11 by timestamp (all after `20261027013340`), all in the same pull request. A10 is the **security fix**: it must never be merged after A11 (nothing links a person to a login before A11 exists, so shipping them together is safe).
 - If a constraint fails on hosted data (A9's backfill, `chk_support_persons_link`), **STOP and ask**; do not loosen it. If CI fails on a migration that is new in this PR, show the owner the fix before changing it; never touch a merged migration.
 - After T2.3, **nothing in the app calls the functions yet**, so the placeholder service keeps working until T3.
-- **T2.4 comes from the Settings branch** (its commit 19; `docs/settings-backend.md` merges first, PR #52). Its
-  `delete_account` clears `users_id` when a support person deletes their account, and A9's `chk_support_persons_link`
-  ("accepted only with a login") makes that fail for an `accepted` row. So **T2.4 ships in this PR, never after A9**:
-  - `delete_account` (`create or replace`, same signature `(int)`, still `security definer` and `service_role` only):
-    for the support person's rows, set `status = 'declined'`, `users_id = null`, `responded_at = now()`, and delete
-    their appointment links, exactly as `unpair_from_patient` does. The patient part is unchanged.
-  - `export_my_data` (`create or replace`, same signature `()`, still `security invoker`): add
+- **Settings commit 19 is split between T2.1b and T2.4** (`docs/settings-backend.md` merged first, PR #52):
+  - **T2.1b, done (`74a209f`), right after A9.** Settings' `delete_account` cleared `users_id` without changing the
+    status, which A9's `chk_support_persons_link` ("a login only when accepted") refuses, and CI's `096` showed it at
+    once. Migration `settings_delete_account_status` replaces `delete_account` (same signature `(int)`, still
+    `security definer` and `service_role` only): a deleted support person's rows become `declined` with no login and
+    `responded_at = now()`, and their appointment links go, as `unpair_from_patient` does. `096`'s fixture now links
+    the support person as `accepted`, and it checks the row ends `declined`. Approved by the owner on 30 Oct 2026.
+  - **T2.4, after A11:** `export_my_data` (`create or replace`, same signature `()`, still `security invoker`) adds
     `'supported_patients'`, the rows of `list_supported_patients()`. After A10, a support person can't read
-    `support_persons` directly, so this is the only way to include them.
-  - `097_settings_support_person_status.test.sql`: deleting an **accepted** support person leaves the patient's row
-    `declined` and unlinked, and removes its links; a support person's export lists the patients they support
-    and nothing of a pending invitation; deleting a patient still removes everything (re-check one table).
-  - Show the SQL and wait for approval first, like A9–A11.
+    `support_persons` directly, so this is the only way to include them. Test `097_settings_support_person_status`:
+    a support person's export lists the patients they accepted and nothing of a pending invitation; a patient's
+    export is unchanged. Show the SQL and wait for approval first, like A9–A11.
 
 ### Phase T3 — Service
 **T3.1 Service rewrite** (`src/services/support-person.ts`; the exported signatures stay and the client becomes the last optional argument):
@@ -306,7 +306,7 @@ Count your assertions before you commit (a quick `grep -cE "^select (ok|lives_ok
 | `090_support_link_state` | A9 | `status`/`responded_at` columns; status outside the three values → 23514; `accepted` without a login and a login without `accepted` → 23514; invitations start `pending` and unlinked; a new number resets an accepted person to `pending` and drops the login; re-adding a declined number → `pending`; the same name/phone for another patient is allowed |
 | `091_support_person_table_access` | A10 | **an accepted support person sees 0 rows** in `appointment`, `appointment_questions`, `appointment_has_support_persons`, `patients`, `support_persons`, and only their own `users` row; their direct updates change 0 rows; the patient still reads and updates their own rows. *Keep the "accepted" setting: a pending person never matched the old policy, so only an accepted one proves the lockdown (the mutation check showed this).* |
 | `092_support_person_functions` | A11 | requests visible only to the invited number, **with no `conditions` column** (S5); accept / reject / unpair and their errors (a **patient** calling them → `NOT_A_SUPPORT_PERSON`, a second accept → `REQUEST_NOT_FOUND`, a second unpair → `PATIENT_NOT_FOUND`); only saved appointments **the person was added to** (S2): a saved appointment they weren't added to is missing from `list_supported_appointments`, returns zero rows from `get_supported_appointment` and `list_supported_appointment_questions`, and gives `APPOINTMENT_NOT_FOUND` from both save functions; taking the person off an appointment ends access to it; `get_supported_appointment` returns zero rows for pending, draft, other patient; flags equal the access given; `NO_QUESTIONS_PERMISSION`, `NO_ANSWERS_PERMISSION` (including removing an answered question), `CONSENT_REQUIRED`, `QUESTION_NOT_ON_PLAN`, `NO_QUESTIONS`, `UNKNOWN_QUESTION`; the patient sees answers a supporter added; changing access, deleting the person, changing their number or unpairing takes effect immediately; unpair removes the appointment links and leaves the patient's row `declined`; `support_access` and `supports_appointment` are **not** executable by `authenticated` or `anon`; anon cannot execute any function |
-| `097_settings_support_person_status` | T2.4 | deleting an **accepted** support person: the patient's row becomes `declined` with no login, and its appointment links are gone; a support person's export has `supported_patients` (accepted only, never a pending invitation); deleting a patient still removes their data; `delete_account` is still not executable by `authenticated` or `anon` |
+| `097_settings_support_person_status` | T2.4 | a support person's export has `supported_patients` (accepted only, never a pending invitation); a patient's export is unchanged. (Deleting an accepted support person is covered by `096`, updated in T2.1b.) |
 
 ### 6.5 Traceability rows to add to `docs/testing.md`
 (Same columns as the existing table; add them in step T5.1.)
