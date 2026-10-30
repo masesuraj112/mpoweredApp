@@ -808,6 +808,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }
@@ -817,6 +819,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number?: string | null
+          responded_at?: string | null
+          status?: string
           support_person_id?: never
           users_id?: number | null
         }
@@ -826,6 +830,8 @@ export type Database = {
           name?: string
           patient_id?: number
           phone_number?: string | null
+          responded_at?: string | null
+          status?: string
           support_person_id?: never
           users_id?: number | null
         }
@@ -961,6 +967,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }[]
@@ -1012,6 +1020,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }[]
@@ -1112,6 +1122,8 @@ export type Database = {
           name: string
           patient_id: number
           phone_number: string | null
+          responded_at: string | null
+          status: string
           support_person_id: number
           users_id: number | null
         }
