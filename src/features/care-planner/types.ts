@@ -45,4 +45,11 @@ export type SupportPerson = {
   email: string | null;
   canAddQuestions: boolean;
   canAddAnswers: boolean;
+  /**
+   * The invitation: waiting for the person to answer, accepted (they can see the patient's
+   * appointments), or declined (they rejected or unpaired). Absent until the database has it.
+   */
+  status?: SupportPersonStatus;
 };
+
+export type SupportPersonStatus = 'pending' | 'accepted' | 'declined';
