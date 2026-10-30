@@ -1,5 +1,4 @@
 import { assessmentSaveMessage } from '@/features/assessments/messages';
-import { markAssessmentCompleted } from '@/features/assessments/homeProgress';
 import {
   toPersonalCareSummary,
   type PersonalCareSummaryData,
@@ -10,7 +9,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -21,15 +19,7 @@ import {
 
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
-async function closeAndMarkDone() {
-  try {
-    await markAssessmentCompleted('personalCare');
-    router.replace('/(tabs)/home');
-  } catch (error) {
-    console.error('[PersonalCareSummary] Failed to save weekly assessment progress:', error);
-    Alert.alert('Progress not saved', 'Your assessment could not be marked complete. Please try again.');
-  }
-}
+const closeToHome = () => router.replace('/(tabs)/home');
 
 function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
   return (
@@ -94,7 +84,7 @@ function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
             <Pressable
-              onPress={closeAndMarkDone}
+              onPress={closeToHome}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}

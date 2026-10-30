@@ -20,6 +20,7 @@ describe('getWeeklyProgress', () => {
     const tables: Record<string, ReturnType<typeof query>> = {
       pain_assessment: query({ data: { date: '2026-10-27' }, error: null }),
       movement_assessment: query({ data: null, error: null }),
+      personal_care_assessment: query({ data: { date: '2026-10-28' }, error: null }),
       social_health_assessment: query({ data: { date: '2026-10-26' }, error: null }),
       personal_management: query({ data: null, error: null }),
     };
@@ -27,8 +28,11 @@ describe('getWeeklyProgress', () => {
 
     const result = await getWeeklyProgress('2026-10-26', fakeClient({ from }));
 
-    expect(result).toEqual({ ok: true, data: { pain: '2026-10-27', socialHealth: '2026-10-26' } });
-    expect(from).toHaveBeenCalledTimes(4);
+    expect(result).toEqual({
+      ok: true,
+      data: { pain: '2026-10-27', personalCare: '2026-10-28', socialHealth: '2026-10-26' },
+    });
+    expect(from).toHaveBeenCalledTimes(5);
     for (const builder of Object.values(tables)) {
       expect(builder.select).toHaveBeenCalledWith('date');
       expect(builder.eq).toHaveBeenCalledWith('week_start', '2026-10-26');

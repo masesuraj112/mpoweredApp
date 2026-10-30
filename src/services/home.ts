@@ -13,18 +13,16 @@ import type { Database } from '@/types/database';
 
 type Client = SupabaseClient<Database>;
 
-/** The assessments saved in the database. Personal care has no database save yet. */
-export type SavedAssessmentId = Exclude<WeeklyAssessmentId, 'personalCare'>;
-
 const ASSESSMENT_TABLES = {
   pain: 'pain_assessment',
   movement: 'movement_assessment',
+  personalCare: 'personal_care_assessment',
   socialHealth: 'social_health_assessment',
   management: 'personal_management',
-} as const satisfies Record<SavedAssessmentId, keyof Database['public']['Tables']>;
+} as const satisfies Record<WeeklyAssessmentId, keyof Database['public']['Tables']>;
 
 /** For each assessment saved in the week, the date ('YYYY-MM-DD') the entry is for. */
-export type WeeklyProgress = Partial<Record<SavedAssessmentId, string>>;
+export type WeeklyProgress = Partial<Record<WeeklyAssessmentId, string>>;
 
 /** Which assessments the user has saved for the week starting on `weekStart`. */
 export function getWeeklyProgress(
@@ -32,7 +30,7 @@ export function getWeeklyProgress(
   client: Client = supabase,
 ): Promise<Result<WeeklyProgress>> {
   return run(async () => {
-    const ids = Object.keys(ASSESSMENT_TABLES) as SavedAssessmentId[];
+    const ids = Object.keys(ASSESSMENT_TABLES) as WeeklyAssessmentId[];
     // RLS limits every table to the signed-in user's own rows; one row per week at most.
     const responses = await Promise.all(
       ids.map((id) =>

@@ -98,16 +98,14 @@ export default function HomeScreen() {
           <Text style={styles.panelHeading}>This week’s assessment</Text>
           <View style={styles.assessmentList}>
             {ASSESSMENTS.map((assessment) => {
-              const isRecorded = recordedAssessments.has(assessment.id);
               const recordedDate = recordedAssessments.get(assessment.id);
+              const isRecorded = recordedDate !== undefined;
               return (
                 <View key={assessment.id} style={styles.assessmentRow}>
                   <View style={styles.assessmentCopy}>
                     <Text style={styles.assessmentTitle}>{assessment.title}</Text>
                     {isRecorded && (
-                      <Text style={styles.updatedText}>
-                        {recordedDate ? `Recorded ${formatDayMonth(recordedDate)}` : 'Recorded this week'}
-                      </Text>
+                      <Text style={styles.updatedText}>Recorded {formatDayMonth(recordedDate)}</Text>
                     )}
                   </View>
                   <Pressable
