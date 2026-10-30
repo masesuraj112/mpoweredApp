@@ -60,6 +60,7 @@ module.exports = {
     'src/features/settings/useAccountDeletion.ts',
     'src/services/social-health.ts',
     'src/services/management.ts',
+    'src/services/home.ts',
     'src/features/support-person/appointments.ts',
     'src/features/support-person/greeting.ts',
     'src/features/support-person/context.tsx',
