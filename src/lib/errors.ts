@@ -30,8 +30,14 @@ export type AppError = {
 };
 
 // P0001 messages that mean the caller may not do this. Checked first: a later validation message
-// can be a substring of one of these (the mapper matches with `includes`).
-const NOT_ALLOWED_MESSAGES = ['NOT_A_PATIENT'] as const;
+// can be a substring of one of these (the mapper matches with `includes`), for example
+// NO_QUESTIONS inside NO_QUESTIONS_PERMISSION.
+const NOT_ALLOWED_MESSAGES = [
+  'NOT_A_PATIENT',
+  'NOT_A_SUPPORT_PERSON',
+  'NO_QUESTIONS_PERMISSION',
+  'NO_ANSWERS_PERMISSION',
+] as const;
 // P0001 messages raised by the save functions that keep their own code
 const PASSTHROUGH_CODES = [
   'NO_PROFILE',
