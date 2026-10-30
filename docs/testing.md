@@ -101,6 +101,15 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Services send the exact RPC arguments, never a user or patient id, and bad input never reaches the database | `care-planner.test.ts` | Service | `unit-tests` |
 | The settings support persons list loads, saves and deletes through the database | `useMySupportPersons.test.ts`; `care-planner.test.ts` | Unit, Service | `unit-tests` |
 | The questions generated for the patient are browsable without an appointment and store nothing | `care-planner.test.ts` (`previewGeneratedQuestions`); `mappers.test.ts` | Service, Unit | `unit-tests` |
+| A user can change only their own name, and a patient their year of birth, with the same checks as sign-up; nobody can change their user type or phone number | `093_update_profile`; `profile.test.ts` (`updateProfile`) | Database, Service | `database-tests`, `unit-tests` |
+| Sign-up and Settings use one year of birth check (optional, 1900 to this year) | `validation.test.ts` (`validateYearOfBirth`); `src/features/auth/profile.test.ts` | Unit | `unit-tests` |
+| Settings reads only the signed-in user's own details, by `auth_id` | `profile.test.ts` (`getPersonalDetails`); `settings.test.ts` | Service | `unit-tests` |
+| Notification choices are stored per user, readable and changeable only by that user, with the screen's defaults; out-of-range values are rejected | `094_user_settings`; `settings.test.ts` | Database, Service | `database-tests`, `unit-tests` |
+| A failed notification save puts the previous value back, and an older failure never undoes a newer change | `useNotificationSettings.test.ts` | Unit | `unit-tests` |
+| Export my data returns only the caller's own rows, never the consent signature image, and nothing to anonymous callers | `095_export_my_data`; `account.test.ts` (`exportMyData`) | Database, Service | `database-tests`, `unit-tests` |
+| The export file is named with the local date and is readable JSON | `exportFile.test.ts`; `useExportMyData.test.ts` | Unit | `unit-tests` |
+| Deleting a patient removes all of their data and nobody else's; deleting a support person keeps the patients' rows (like Unpair); only the service role can run it | `096_delete_account` | Database | `database-tests` |
+| Account deletion sends only the SMS code (never a phone or user id) and maps the Edge Function's errors | `account.test.ts` (`deleteAccount`); `useAccountDeletion.test.ts` | Service, Unit | `unit-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
 ## Not automated
@@ -123,6 +132,8 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The consent screen's signature pad drawing, the consent prompt on the review screen, and the read-only "Explore questions" screen (checked by hand).
 - Dictation producing text only (on-device; checked by hand on the Android build).
 - Real SMS delivery of sign-in codes (test OTP numbers send nothing).
+- The `delete-account` Edge Function: checking the sign-in token, checking the SMS code against the account's own phone, and deleting the login. CI has no Edge Function tests, so it's checked by hand with the "PR review checklist" in `docs/settings-backend.md`. The database part it calls, `delete_account`, is tested (`096`).
+- The Settings screens (Account in both apps, Notifications, Privacy/Data and Legal), the share sheet for Export my data, and the account deletion popups: checked by hand with the same checklist.
 
 ## Not tested / deferred
 
@@ -146,3 +157,5 @@ Database tests passing (72 checks across 6 files):
 - Care Planner unit tests passing: **TODO**, `docs/screenshots/unit-tests-care-planner.png`.
 - Green CI on the Care Planner pull request, including the types diff, `db lint` and `migrations-immutable`: **TODO**, `docs/screenshots/ci-care-planner.png`.
 - The manual journey (section 8.3 of the Care Planner plan) written up in the pull request description with the result of each numbered check.
+- Settings database tests passing: **TODO**, screenshot of `supabase test db` with `093`–`096` passing to be saved as `docs/screenshots/db-tests-settings.png` (from the CI run on PR #52).
+- The Settings "PR review checklist" (`docs/settings-backend.md`) ticked in the pull request description.

@@ -1,7 +1,13 @@
 /**
- * Front-end checks for contact details. Each returns an error message to show the user,
- * or '' when the value is fine. They catch typos only; Supabase does the real validation.
+ * Front-end checks for contact and profile details. Each returns an error message to show the
+ * user, or '' when the value is fine. They catch typos only; Supabase does the real validation.
  */
+
+/** The earliest year of birth accepted at sign-up and in Settings (create_profile uses the same). */
+export const YEAR_OF_BIRTH_MIN = 1900;
+
+/** The longest name users.name holds (create_profile and update_profile use the same). */
+export const NAME_MAX_LENGTH = 45;
 
 // name@domain.tld: no spaces, one @, a dot-separated domain, and a TLD of at least two letters.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
@@ -33,22 +39,11 @@ export function validatePhone(value: string, { required = true } = {}): string {
   return '';
 }
 
-// Keep these in line with Supabase (Auth → Providers → Email → Password requirements),
-// otherwise the server will reject passwords that pass here (or the reverse).
-export const PASSWORD_MIN_LENGTH = 8;
-
-const PASSWORD_RULES: { test: (password: string) => boolean; description: string }[] = [
-  { test: password => /[a-z]/.test(password), description: 'a lowercase letter' },
-  { test: password => /[A-Z]/.test(password), description: 'a capital letter' },
-  { test: password => /\d/.test(password), description: 'a number' },
-  { test: password => /[^A-Za-z\d\s]/.test(password), description: 'a symbol (e.g. ! @ # $)' },
-];
-
-/** Lists everything the password is missing in one message, so the user can fix it in one go. */
-export function validatePassword(password: string): string {
-  if (password.length < PASSWORD_MIN_LENGTH) return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
-  const missing = PASSWORD_RULES.filter(rule => !rule.test(password)).map(rule => rule.description);
-  if (missing.length === 0) return '';
-  const list = missing.length === 1 ? missing[0] : `${missing.slice(0, -1).join(', ')} and ${missing.at(-1)}`;
-  return `Password must include ${list}.`;
+/** Year of birth is optional: null is fine, otherwise a whole year from 1900 to this year. */
+export function validateYearOfBirth(year: number | null, currentYear: number = new Date().getFullYear()): string {
+  if (year === null) return '';
+  if (!Number.isInteger(year) || year < YEAR_OF_BIRTH_MIN || year > currentYear) {
+    return `Please enter a year between ${YEAR_OF_BIRTH_MIN} and ${currentYear}.`;
+  }
+  return '';
 }

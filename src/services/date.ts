@@ -29,8 +29,3 @@ export function parseIsoDate(value: string): Date | null {
 export function formatDisplayDate(date: Date): string {
   return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
-
-/** True if `date` falls on a later calendar day than today. */
-export function isFutureDate(date: Date, today: Date = new Date()): boolean {
-  return toIsoDate(date) > toIsoDate(today);
-}

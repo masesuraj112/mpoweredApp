@@ -3,10 +3,10 @@
 
 import { toE164 } from '@/features/auth/phone';
 import { fail, ok, type Result } from '@/lib/result';
+import { validateYearOfBirth } from '@/services/validation';
 
 const NAME_MAX = 45;
 const CONDITION_MAX = 45;
-const YEAR_MIN = 1900;
 
 /** The onboarding answers, as held by OnboardingContext. */
 export type OnboardingAnswers = {
@@ -79,9 +79,8 @@ export function toProfileArgs(
   if (answers.sex === null) return invalid('sex', 'Please choose an option for sex.');
 
   const year = answers.yearOfBirth;
-  if (year !== null && (!Number.isInteger(year) || year < YEAR_MIN || year > currentYear)) {
-    return invalid('yearOfBirth', `Please enter a year between ${YEAR_MIN} and ${currentYear}.`);
-  }
+  const yearError = validateYearOfBirth(year, currentYear);
+  if (yearError) return invalid('yearOfBirth', yearError);
 
   // Conditions only count when the user said they have a diagnosis.
   const conditions =
