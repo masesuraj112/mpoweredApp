@@ -183,8 +183,8 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 - [x] T2.4 `settings_support_person_status` (097): `export_my_data` adds supported patients
 
 ## Phase T3: Service
-- [ ] T3.1 Service rewrite
-- [ ] T3.2 Service tests
+- [x] T3.1 Service rewrite (`6edb526`)
+- [x] T3.2 Service tests (same commit: the old tests and two hook tests imported the mock data, so splitting would have left a red commit; the hook tests now mock the service)
 
 ## Phase T4: Front-end deltas
 - [ ] T4 Consent gating and the other screen changes
