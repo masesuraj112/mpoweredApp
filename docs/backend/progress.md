@@ -192,7 +192,7 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 
 ## Phase T5–T7
 - [x] T5.1 Remove the placeholders (done in T3, `6edb526`) and update the docs (`docs/support-person.md`, `docs/testing.md`)
-- [ ] T6.1 Full checks and green CI
+- [x] T6.1 Full checks and green CI (`fc75921`)
 - [ ] T7.1 Manual QA with two accounts
 
 ## Decisions
