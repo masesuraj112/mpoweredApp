@@ -171,9 +171,9 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 - [x] T0.2 Recon: the repo matches sections 0.2 and 4; stub inventory in `support-person-stub-inventory.md`
 
 ## Phase T1: Pure foundations
-- [ ] T1.1 Error codes
-- [ ] T1.2 Friendly messages and invitation status
-- [ ] T1.3 Support person row mappers
+- [x] T1.1 Error codes (`eaf4d03`)
+- [x] T1.2 Friendly messages and invitation status (`3a11eb2`)
+- [x] T1.3 Support person row mappers
 
 ## Phase T2: Migrations, pgTAP, generated types
 - [ ] T2.1 A9 `support_link_state` (090)
