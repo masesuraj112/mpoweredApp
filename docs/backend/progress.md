@@ -187,8 +187,8 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 - [x] T3.2 Service tests (same commit: the old tests and two hook tests imported the mock data, so splitting would have left a red commit; the hook tests now mock the service)
 
 ## Phase T4: Front-end deltas
-- [ ] T4 Consent gating and the other screen changes
-- [ ] T4 Invitation status on the patient's Support persons screen (from Settings commit 18)
+- [x] T4 Consent gating and the other screen changes (`26888c7`)
+- [x] T4 Invitation status on the patient's Support persons screen (from Settings commit 18) (`036cd20`)
 
 ## Phase T5–T7
 - [ ] T5.1 Remove the placeholders and update the docs
