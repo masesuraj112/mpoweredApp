@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
@@ -11,9 +12,10 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
+import { carePlannerMessage } from '@/features/care-planner/messages';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/support-person/context';
-import { getPlanAccess } from '@/features/support-person/permissions';
+import { getPlanAccess, isAccessChanged } from '@/features/support-person/permissions';
 import { useSupportedAppointmentQuestions } from '@/features/support-person/useSupportedAppointmentQuestions';
 import { formatDisplayDate, parseIsoDate } from '@/services/date';
 
@@ -32,7 +34,8 @@ function showMessage(title: string, message: string) {
 export default function SupportedQuestionsScreen() {
   const params = useLocalSearchParams<{ appointmentId: string; patientId: string }>();
   const appointmentId = Number(params.appointmentId);
-  const patient = useSupportPerson().getPatient(params.patientId);
+  const supportPerson = useSupportPerson();
+  const patient = supportPerson.getPatient(params.patientId);
   const access = getPlanAccess(patient ?? { canAddQuestions: false, canAddAnswers: false });
   const firstName = patient?.name.split(' ')[0] ?? 'the patient';
 
@@ -65,6 +68,14 @@ export default function SupportedQuestionsScreen() {
     }
     questions.toggle(questionId);
   };
+
+  // A save refused because the patient changed this person's access, or took them off the
+  // appointment: the patient list is stale, so read it again.
+  const { saveError } = questions;
+  const { reload: reloadPatients } = supportPerson;
+  useEffect(() => {
+    if (saveError && isAccessChanged(saveError)) reloadPatients();
+  }, [saveError, reloadPatients]);
 
   const save = async () => {
     if (!(await questions.save())) return;
@@ -133,7 +144,11 @@ export default function SupportedQuestionsScreen() {
           </Card>
 
           {questions.saveError ? (
-            <ErrorState message="We could not save the questions." onRetry={save} retryLabel="Try saving again" />
+            <ErrorState
+              message={carePlannerMessage(questions.saveError)}
+              onRetry={isAccessChanged(questions.saveError) ? undefined : save}
+              retryLabel="Try saving again"
+            />
           ) : null}
         </>
       ) : null}
