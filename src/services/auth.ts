@@ -39,6 +39,11 @@ export async function sendVerificationCode(
       phone,
       options: { channel: 'sms', shouldCreateUser: true },
     });
+    // The only input here is the phone number, so a failed request validation means the server
+    // did not accept it. The message is fixed so no number ever travels in the error.
+    if (error?.code === 'validation_failed') {
+      return fail({ code: 'INVALID_PHONE', message: 'The server did not accept the phone number.' });
+    }
     if (error) return fail(mapError(error));
     return ok({ phone });
   });
