@@ -84,7 +84,7 @@ Status: ✅ settled · 🟡 recommended, needs your yes · ⏳ deferred · ❓ o
 | --- | --- | --- | --- |
 | L1 | SMS provider | Twilio via Supabase. **Dev uses preset test OTPs now; Twilio next sprint.** | ✅ |
 | L2 | OTP length | **6 digits.** Changes `verify.tsx`, `phone.tsx` helper text ("four digit"), and Figma/requirements wording (needs MHA sign-off) | ✅ (sign-off pending) |
-| L3 | Resend interval | UI countdown currently 120 s; server minimum is Supabase's (60 s default, local `max_frequency = "5s"`). Build the countdown as a constant; decide the real value in the Twilio sprint. Check OTP expiry in the dev dashboard (docs conflict) | ⏳ |
+| L3 | Resend interval | Settled (D2 in the Twilio guide): UI countdown and server minimum 60 s, OTP expiry 120 s (dashboard). MHA sign-off pending. Local `max_frequency = "5s"` is unchanged | ✅ |
 | L4 | Dev sign-in | Supabase **test OTP** phone→code map. One fixed number per developer | ✅ |
 | L5 | Phone normalisation | UI keeps local `04xx xxx xxx`. **`auth.ts` converts to E.164 `+614…`.** `users.phone_number` stores E.164 (`varchar(12)` fits exactly) | ✅ (my call, delegated) |
 | L6 | Sign-in vs sign-up | Both call the **same** `sendVerificationCode`. No "account exists?" message (avoids account enumeration) | ✅ (section 6) |
@@ -179,7 +179,7 @@ Costs reference for the Twilio sprint (USD, my research, **verify before quoting
 
 ### S2.2 OTP code validator
 - **Files:** `src/features/auth/otp.ts`, `otp.test.ts`
-- **Do:** `OTP_LENGTH = 6`, `sanitiseCode(raw)` (digits only, max 6), `isCodeComplete(code)`. Constant `RESEND_SECONDS = 120` with a comment pointing to L3.
+- **Do:** `OTP_LENGTH = 6`, `sanitiseCode(raw)` (digits only, max 6), `isCodeComplete(code)`. Constant `RESEND_SECONDS` (60 since L3 was settled; first built as 120) with a comment pointing to L3.
 - **Tests:** strips non-digits, truncates, completeness at exactly 6.
 - **Commit:** `feat(auth): add OTP code helpers`
 
@@ -241,7 +241,7 @@ Costs reference for the Twilio sprint (USD, my research, **verify before quoting
 - **Commit:** `feat(auth): verify code on verify screen`
 
 ### S4.4 Resend
-- **Do:** `handleResend` calls `sendVerificationCode` again and starts the countdown using `RESEND_SECONDS`. Fix copy: "You can resend codes in two minutes" must come from the constant (e.g. "in 2 minutes"). Show `RATE_LIMITED` message if the server refuses.
+- **Do:** `handleResend` calls `sendVerificationCode` again and starts the countdown using `RESEND_SECONDS`. Fix copy: "You can resend codes in 1 minute" must come from the constant (via `formatResendWait`). Show `RATE_LIMITED` message if the server refuses.
 - **Commit:** `feat(auth): wire resend with server rate-limit handling`
 
 ### S4.5 Display the number being texted
@@ -488,7 +488,7 @@ Revision 2 (2026-10-14). Everything in sections 1 to 5 above is the original pla
 | ID | Item | Note |
 | --- | --- | --- |
 | L2 / A3 | MHA sign-off on six digit wording | Pending. |
-| L3 | Resend interval and OTP expiry | UI countdown is 120 s but the dev expiry is 60 s; decide in the Twilio sprint. |
+| L3 | Resend interval and OTP expiry | Settled: 60 s resend, 120 s expiry (set in the dashboard, step B2 of the Twilio guide). |
 | L12 / L13 | Session storage encryption and session length | Production hardening. |
 | L16 | Password and Face ID login | `settings/account` still assumes email and password, which phone users do not have. |
 | L17 | Phone number change | Needs a re-verification flow. |

@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(17);
+select plan(18);
 
 -- fixtures (run as the migration/superuser role)
 -- f1 patient with data, f2 another patient with data, f3 support person, f4 signed in with no profile
@@ -30,6 +30,9 @@ insert into public.appointment (patient_id, date_time, health_service, practitio
     from public.patients p join public.users u using (users_id);
 insert into public.user_settings (users_id, assessment_every)
   select users_id, 2 from public.users where name = 'Fay';
+insert into public.weekly_reflection (users_id, week_start, entry, is_complete)
+  select users_id, date '2026-10-26', case name when 'Fay' then 'Fay reflection' else 'Finn reflection' end, true
+    from public.users where name in ('Fay', 'Finn');
 
 -- the exports, kept for the checks below
 create temp table export_out (k text primary key, v jsonb);
@@ -72,6 +75,12 @@ select ok((select not (v->'pain_assessments'->0 ? 'users_id') and not (v->'appoi
   'internal user ids are left out');
 select ok((select (v->'notification_settings'->>'assessment_every')::int = 2 from export_out where k = 'f1'),
   'the export has the notification settings');
+select ok((select jsonb_array_length(v->'weekly_reflections') = 1
+              and v->'weekly_reflections'->0->>'entry' = 'Fay reflection'
+              and (v->'weekly_reflections'->0->>'is_complete')::boolean
+              and position('Finn reflection' in v::text) = 0
+             from export_out where k = 'f1'),
+  'the export has their own weekly reflection and not another user''s');
 select ok((select v ? 'exported_at' and jsonb_typeof(v->'support_persons') = 'array'
              from export_out where k = 'f1'),
   'the export has a timestamp and every section');

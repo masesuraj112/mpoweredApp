@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(19);
 
 -- fixtures (run as the migration/superuser role)
 -- g1 patient being deleted, g2 another patient with the same kinds of data, g3 a support person
@@ -45,6 +45,8 @@ insert into public.appointment_has_support_persons (appointment_id, support_pers
   select a.appointment_id, sp.support_person_id
     from public.appointment a join public.support_persons sp on sp.patient_id = a.patient_id;
 insert into public.user_settings (users_id) select v from ids where k in ('g1', 'g2', 'g3');
+insert into public.weekly_reflection (users_id, week_start, entry, is_complete)
+  select v, date '2026-10-26', 'Felt better this week', true from ids where k in ('g1', 'g2');
 
 -- function and privileges
 select has_function('public', 'delete_account', array['integer'], 'delete_account exists');
@@ -79,6 +81,9 @@ select ok(not exists (select 1 from public.support_persons where patient_id = (s
   'the patient''s support persons are gone');
 select ok(not exists (select 1 from public.user_settings where users_id = (select v from ids where k = 'g1')),
   'the notification settings are gone');
+select ok(not exists (select 1 from public.weekly_reflection where users_id = (select v from ids where k = 'g1'))
+          and exists (select 1 from public.weekly_reflection where users_id = (select v from ids where k = 'g2')),
+  'the weekly reflection is gone and the other patient''s stays');
 select ok((select count(*) from public.pain_assessment where users_id = (select v from ids where k = 'g2')) = 1
           and (select count(*) from public.appointment where patient_id = (select v from ids where k = 'p2')) = 1
           and (select count(*) from public.support_persons where patient_id = (select v from ids where k = 'p2')) = 1,

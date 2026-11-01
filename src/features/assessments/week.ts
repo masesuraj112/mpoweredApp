@@ -76,6 +76,12 @@ export function formatWeekEndLabel(weekStart: string): string {
   return `${end.day}/${end.monthNumber}`;
 }
 
+/** A date as day and short month, for example '27 Oct'. */
+export function formatDayMonth(isoDate: string): string {
+  const { day, month } = parts(isoDate);
+  return `${Number(day)} ${month}`;
+}
+
 /** The Monday of every week from the week containing `from` to the week containing `to`. */
 export function listWeeks(from: string, to: string): string[] {
   const last = getWeekStart(to);
