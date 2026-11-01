@@ -917,6 +917,44 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_reflection: {
+        Row: {
+          created_at: string
+          entry: string
+          is_complete: boolean
+          reflection_id: number
+          updated_at: string
+          users_id: number
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          entry: string
+          is_complete?: boolean
+          reflection_id?: never
+          updated_at?: string
+          users_id: number
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          entry?: string
+          is_complete?: boolean
+          reflection_id?: never
+          updated_at?: string
+          users_id?: number
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_reflection_users_id_fkey"
+            columns: ["users_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["users_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1211,6 +1249,10 @@ export type Database = {
       save_supported_questions: {
         Args: { p_appointment_id: number; p_question_ids: number[] }
         Returns: undefined
+      }
+      save_weekly_reflection: {
+        Args: { p_date: string; p_entry: string; p_is_complete: boolean }
+        Returns: number
       }
       support_access: {
         Args: { p_patient_id: number; p_token?: string }
