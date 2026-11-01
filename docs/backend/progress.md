@@ -181,6 +181,7 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 - [x] T2.2 A10 `restrict_support_person_table_access` (091) (`69ea03f`)
 - [x] T2.3 A11 `support_person_functions` (092) (`1c617eb`; all 94 checks passed on the first CI run)
 - [x] T2.4 `settings_support_person_status` (097): `export_my_data` adds supported patients
+- [x] T2.5 `combine_delete_and_export_functions` (after merging `main`): `weekly_reflection_delete_and_export` (#53) re-created `delete_account` and `export_my_data` without T2.1b/T2.4, so this runs last with both. Checked by `095`–`097` (`adba3df`)
 
 ## Phase T3: Service
 - [x] T3.1 Service rewrite (`6edb526`)
