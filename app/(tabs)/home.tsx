@@ -1,10 +1,10 @@
-import {
-  getCompletedAssessments,
-  getWeeklyReflection,
-  type WeeklyAssessmentId,
-} from '@/features/assessments/homeProgress';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import type { WeeklyAssessmentId } from '@/features/assessments/homeProgress';
+import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgress';
+import { formatDayMonth } from '@/features/assessments/week';
+import { getGreeting } from '@/features/support-person/greeting';
+import { router } from 'expo-router';
+import { useState } from 'react';
 import {
   Platform,
   Pressable,
@@ -35,41 +35,16 @@ const ASSESSMENTS: Assessment[] = [
 ];
 
 export default function HomeScreen() {
-  const [recordedAssessments, setRecordedAssessments] = useState<Set<WeeklyAssessmentId>>(
-    () => new Set(),
-  );
-  const [hasReflection, setHasReflection] = useState(false);
+  const name = useAuth().profile?.name ?? '';
+  const {
+    recorded: recordedAssessments,
+    reflection,
+    isLoaded: isProgressLoaded,
+    error: progressError,
+  } = useWeeklyHomeProgress();
   const [trackWidth, setTrackWidth] = useState(0);
-  const [isProgressLoaded, setIsProgressLoaded] = useState(false);
-  const [progressError, setProgressError] = useState<string | null>(null);
   const progress = recordedAssessments.size;
-
-  useFocusEffect(
-    useCallback(() => {
-      let isCurrent = true;
-      setIsProgressLoaded(false);
-
-      Promise.all([getCompletedAssessments(), getWeeklyReflection()])
-        .then(([completed, reflection]) => {
-          if (!isCurrent) return;
-          setRecordedAssessments(completed);
-          setHasReflection(reflection.trim().length > 0);
-          setProgressError(null);
-        })
-        .catch((error: unknown) => {
-          if (!isCurrent) return;
-          console.error('[Home] Failed to load weekly home progress:', error);
-          setProgressError('This week’s progress could not be loaded from this device.');
-        })
-        .finally(() => {
-          if (isCurrent) setIsProgressLoaded(true);
-        });
-
-      return () => {
-        isCurrent = false;
-      };
-    }, []),
-  );
+  const hasReflection = reflection === 'complete';
 
   const openAssessment = (assessment: Assessment) => {
     if (!isProgressLoaded) return;
@@ -83,7 +58,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.intro}>
-          <Text style={styles.greeting}>Good morning, Jane ☀️</Text>
+          <Text style={styles.greeting}>{getGreeting(name)}</Text>
           <Text style={styles.heading}>
             Let&apos;s build your M<Text style={styles.superscript}>Powered</Text>
             {' plan.'}
@@ -123,12 +98,15 @@ export default function HomeScreen() {
           <Text style={styles.panelHeading}>This week’s assessment</Text>
           <View style={styles.assessmentList}>
             {ASSESSMENTS.map((assessment) => {
-              const isRecorded = recordedAssessments.has(assessment.id);
+              const recordedDate = recordedAssessments.get(assessment.id);
+              const isRecorded = recordedDate !== undefined;
               return (
                 <View key={assessment.id} style={styles.assessmentRow}>
                   <View style={styles.assessmentCopy}>
                     <Text style={styles.assessmentTitle}>{assessment.title}</Text>
-                    {isRecorded && <Text style={styles.updatedText}>Updated today</Text>}
+                    {isRecorded && (
+                      <Text style={styles.updatedText}>Recorded {formatDayMonth(recordedDate)}</Text>
+                    )}
                   </View>
                   <Pressable
                     accessibilityRole="button"
@@ -166,6 +144,7 @@ export default function HomeScreen() {
 
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
           onPress={() => router.push('/tracker/reflection')}
           style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
         >
@@ -176,7 +155,7 @@ export default function HomeScreen() {
             <Text style={styles.reflectionText}>
               {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
             </Text>
-            {hasReflection && <Text style={styles.reflectionStatus}>Saved on this device</Text>}
+            {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
           </View>
           {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
         </Pressable>

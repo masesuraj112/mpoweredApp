@@ -9,7 +9,17 @@ import {
   savePainEntry,
   getMovementEntryForWeek,
   saveMovementEntry,
+  getPersonalCareEntryForWeek,
+  savePersonalCareEntry,
 } from '@/services/assessments';
+
+import {
+  GENERAL_ACTIVITY_OPTIONS,
+  PERSONAL_CARE_OPTIONS,
+  SLEEPING_OPTIONS,
+} from '@/features/assessments/personal-care/options';
+import type { PersonalCareAssessmentAnswers } from '@/features/assessments/personal-care/types';
+
 import {
   GENERAL_IMPACT_OPTIONS,
   LIFTING_OPTIONS,
@@ -424,5 +434,118 @@ describe('getMovementEntryForWeek', () => {
       ok: false,
       error: { code: 'NOT_ALLOWED' },
     });
+  });
+});
+ // Personal Care
+
+const personalCareAnswers: PersonalCareAssessmentAnswers = {
+  generalActivities: [GENERAL_ACTIVITY_OPTIONS[0], GENERAL_ACTIVITY_OPTIONS[2]],
+  personalCareLevel: PERSONAL_CARE_OPTIONS[1],
+  sleepingLevel: SLEEPING_OPTIONS[3],
+  reflection: 'A hard week',
+};
+
+const personalCareRow = {
+  submission_id: 9,
+  date: '2026-10-01',
+  week_start: '2026-09-28',
+  washing_dressing: PERSONAL_CARE_OPTIONS[1],
+  sleeping: SLEEPING_OPTIONS[3],
+  reflection: 'A hard week',
+  personal_care_general_activities: [
+    { activity_statement: GENERAL_ACTIVITY_OPTIONS[0] },
+    { activity_statement: GENERAL_ACTIVITY_OPTIONS[2] },
+  ],
+};
+
+describe('savePersonalCareEntry', () => {
+  it('sends the cleaned answers to the database function and returns the new id', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 9, error: null });
+    const result = await savePersonalCareEntry(personalCareAnswers, '2026-10-01', fakeClient({ rpc }), options);
+
+    expect(rpc).toHaveBeenCalledWith('save_personal_care_assessment', {
+      p_date: '2026-10-01',
+      p_general_activities: [GENERAL_ACTIVITY_OPTIONS[0], GENERAL_ACTIVITY_OPTIONS[2]],
+      p_washing_dressing: PERSONAL_CARE_OPTIONS[1],
+      p_sleeping: SLEEPING_OPTIONS[3],
+      p_reflection: 'A hard week',
+    });
+    expect(result).toEqual({ ok: true, data: 9 });
+  });
+
+  it('sends an empty reflection when none was written', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 9, error: null });
+    await savePersonalCareEntry(
+      { ...personalCareAnswers, reflection: undefined },
+      '2026-10-01',
+      fakeClient({ rpc }),
+      options,
+    );
+    expect(rpc).toHaveBeenCalledWith(
+      'save_personal_care_assessment',
+      expect.objectContaining({ p_reflection: '' }),
+    );
+  });
+
+  it('does not call the database when the answers are incomplete', async () => {
+    const rpc = jest.fn();
+    const result = await savePersonalCareEntry(
+      { ...personalCareAnswers, sleepingLevel: undefined },
+      '2026-10-01',
+      fakeClient({ rpc }),
+      options,
+    );
+    expect(result).toMatchObject({ ok: false, error: { code: 'VALIDATION', field: 'sleepingLevel' } });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('reports a second save in the same week as DUPLICATE_WEEK when the stored entry differs', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'duplicate key' } });
+    const from = jest.fn(() =>
+      query({ data: { ...personalCareRow, sleeping: SLEEPING_OPTIONS[0] }, error: null }),
+    );
+    const result = await savePersonalCareEntry(personalCareAnswers, '2026-10-02', fakeClient({ rpc, from }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'DUPLICATE_WEEK' } });
+  });
+
+  it('counts a duplicate as success when the stored entry is identical (a retry after a lost response)', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'duplicate key' } });
+    const from = jest.fn(() => query({ data: personalCareRow, error: null }));
+    const result = await savePersonalCareEntry(personalCareAnswers, '2026-10-01', fakeClient({ rpc, from }), options);
+    expect(result).toEqual({ ok: true, data: 9 });
+  });
+
+  it('maps a network failure to NETWORK', async () => {
+    const rpc = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
+    const result = await savePersonalCareEntry(personalCareAnswers, '2026-10-01', fakeClient({ rpc }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'NETWORK' } });
+  });
+});
+
+describe('getPersonalCareEntryForWeek', () => {
+  it('returns the entry for that week with its activities', async () => {
+    const q = query({ data: personalCareRow, error: null });
+    const from = jest.fn(() => q);
+    const result = await getPersonalCareEntryForWeek('2026-09-28', fakeClient({ from }));
+
+    expect(from).toHaveBeenCalledWith('personal_care_assessment');
+    expect(q.eq).toHaveBeenCalledWith('week_start', '2026-09-28');
+    expect(result).toEqual({
+      ok: true,
+      data: {
+        submissionId: 9,
+        date: '2026-10-01',
+        weekStart: '2026-09-28',
+        generalActivities: [GENERAL_ACTIVITY_OPTIONS[0], GENERAL_ACTIVITY_OPTIONS[2]],
+        washingDressing: PERSONAL_CARE_OPTIONS[1],
+        sleeping: SLEEPING_OPTIONS[3],
+        reflection: 'A hard week',
+      },
+    });
+  });
+
+  it('returns null when the week has no entry', async () => {
+    const from = jest.fn(() => query({ data: null, error: null }));
+    expect(await getPersonalCareEntryForWeek('2026-09-28', fakeClient({ from }))).toEqual({ ok: true, data: null });
   });
 });

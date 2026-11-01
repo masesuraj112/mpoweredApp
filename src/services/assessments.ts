@@ -4,7 +4,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { validateMovementAnswers, type ValidMovementEntry } from '@/features/assessments/movement/validate';
 import type { MovementAssessmentAnswers } from '@/features/assessments/movement/types';
-
+import type { PersonalCareAssessmentAnswers } from '@/features/assessments/personal-care/types';
+import {
+  validatePersonalCareAnswers,
+  type ValidPersonalCareEntry,
+} from '@/features/assessments/personal-care/validate';
 import { dedupe } from '@/features/assessments/pain/normalise';
 import type { PainAssessmentAnswers } from '@/features/assessments/pain/types';
 import { validatePainAnswers, type ValidPainEntry } from '@/features/assessments/pain/validate';
@@ -209,6 +213,98 @@ function saveEntry(
       return fail({ code: 'UNKNOWN', message: 'The save did not return a submission id.' });
     }
     return ok(data);
+  });
+}
+
+/** A saved personal care submission with its general activities. */
+export type PersonalCareEntry = {
+  submissionId: number;
+  date: string;
+  weekStart: string;
+  generalActivities: string[];
+  washingDressing: string;
+  sleeping: string;
+  reflection: string | null;
+};
+
+type PersonalCareRow = Database['public']['Tables']['personal_care_assessment']['Row'] & {
+  personal_care_general_activities: { activity_statement: string }[];
+};
+
+const PERSONAL_CARE_SELECT = '*, personal_care_general_activities(activity_statement)';
+
+function toPersonalCareEntry(row: PersonalCareRow): PersonalCareEntry {
+  return {
+    submissionId: row.submission_id,
+    date: row.date,
+    weekStart: row.week_start ?? getWeekStart(row.date),
+    generalActivities: row.personal_care_general_activities.map((a) => a.activity_statement),
+    washingDressing: row.washing_dressing,
+    sleeping: row.sleeping,
+    reflection: row.reflection,
+  };
+}
+
+function matchesSavedPersonalCare(existing: PersonalCareEntry, saved: ValidPersonalCareEntry): boolean {
+  return (
+    existing.date === saved.date &&
+    existing.washingDressing === saved.washingDressing &&
+    existing.sleeping === saved.sleeping &&
+    existing.reflection === saved.reflection &&
+    sameValues(existing.generalActivities, saved.generalActivities)
+  );
+}
+
+/**
+ * Validates and saves one personal care submission in a single database call.
+ * Returns the new submission_id.
+ */
+export async function savePersonalCareEntry(
+  answers: PersonalCareAssessmentAnswers,
+  entryDate: string,
+  client: Client = supabase,
+  options: { today?: string; startWeek?: string } = {},
+): Promise<Result<number>> {
+  const validated = validatePersonalCareAnswers(answers, {
+    entryDate,
+    today: options.today ?? getLocalToday(),
+    startWeek: options.startWeek,
+  });
+  if (!validated.ok) return validated;
+  const entry = validated.data;
+
+  return saveEntry(
+    () =>
+      client.rpc('save_personal_care_assessment', {
+        p_date: entry.date,
+        p_general_activities: entry.generalActivities,
+        p_washing_dressing: entry.washingDressing,
+        p_sleeping: entry.sleeping,
+        // the database turns a blank reflection into null
+        p_reflection: entry.reflection ?? '',
+      }),
+    async () => {
+      const existing = await getPersonalCareEntryForWeek(getWeekStart(entry.date), client);
+      return existing.ok && existing.data && matchesSavedPersonalCare(existing.data, entry)
+        ? existing.data.submissionId
+        : null;
+    },
+  );
+}
+
+/** The user's personal care entry for the week starting on `weekStart`, or null when there is none. */
+export function getPersonalCareEntryForWeek(
+  weekStart: string,
+  client: Client = supabase,
+): Promise<Result<PersonalCareEntry | null>> {
+  return run(async () => {
+    const { data, error } = await client
+      .from('personal_care_assessment')
+      .select(PERSONAL_CARE_SELECT)
+      .eq('week_start', weekStart)
+      .maybeSingle();
+    if (error) return fail(mapError(error));
+    return ok(data ? toPersonalCareEntry(data as unknown as PersonalCareRow) : null);
   });
 }
 

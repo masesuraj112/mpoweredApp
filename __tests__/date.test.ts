@@ -1,4 +1,4 @@
-import { formatDisplayDate, isFutureDate, parseIsoDate, toIsoDate } from '@/services/date';
+import { formatDisplayDate, parseIsoDate, toIsoDate } from '@/services/date';
 
 describe('date helpers', () => {
   it('round-trips ISO dates through local midnight', () => {
@@ -18,12 +18,5 @@ describe('date helpers', () => {
 
   it('formats unambiguously for display', () => {
     expect(formatDisplayDate(new Date(1990, 3, 3))).toBe('3 April 1990');
-  });
-
-  it('compares by calendar day, not time', () => {
-    const today = new Date(2026, 9, 7, 15, 30);
-    expect(isFutureDate(new Date(2026, 9, 7), today)).toBe(false);
-    expect(isFutureDate(new Date(2026, 9, 8), today)).toBe(true);
-    expect(isFutureDate(new Date(1968, 0, 28), today)).toBe(false);
   });
 });

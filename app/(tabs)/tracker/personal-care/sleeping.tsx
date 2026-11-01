@@ -3,15 +3,7 @@ import { usePersonalCareAssessment } from '@/features/assessments/personal-care/
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-
-const SLEEPING_OPTIONS = [
-  'My sleep is never disturbed by pain',
-  'My sleep is occasionally disturbed by pain',
-  'Because of pain I have less than 6 hours of sleep',
-  'Because of pain I have less than 4 hours of sleep',
-  'Because of pain I have less than 2 hours of sleep',
-  'Pain prevents me from sleeping at all',
-];
+import { SLEEPING_OPTIONS } from '@/features/assessments/personal-care/options';
 
 export default function SleepingScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();

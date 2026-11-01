@@ -1,153 +1,70 @@
 import {
   SettingsModal,
-  SettingsModalDateField,
   SettingsModalField,
+  SettingsModalGroup,
+  SettingsModalInfoRow,
   SettingsModalText,
 } from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-import { supabase } from '@/lib/supabase';
+// Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
+// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { useAuth } from '@/context/AuthContext';
+import { formatForDisplay } from '@/features/auth/phone';
+import { usePersonalDetails } from '@/features/settings/usePersonalDetails';
 import { signOut } from '@/services/auth';
-import { isFutureDate, parseIsoDate } from '@/services/date';
-import { validateEmail, validatePassword } from '@/services/validation';
+import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
-const passwordIcon = require('../../../assets/images/settings/password.svg');
-const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
+// const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
 export default function ProfileScreen() {
-  const [faceIdEnabled, setFaceIdEnabled] = useState(false);
-  const [name, setName] = useState('Sarah McLachlan');
-  // Held as a local-midnight Date; stored as ISO YYYY-MM-DD and only formatted for display.
-  const [dateOfBirth, setDateOfBirth] = useState(() => parseIsoDate('1968-01-28')!);
-  const [email, setEmail] = useState('sarah.mclachlan@gmail.com');
+  const { refreshProfile } = useAuth();
+  const { state, reload, saving, save } = usePersonalDetails();
+  const details = state.status === 'ready' ? state.data : null;
+  // const [faceIdEnabled, setFaceIdEnabled] = useState(false);
 
   // --- Personal details popup -----------------------------------------------
   // The popup edits drafts, so Cancel discards changes and Ok saves them.
   const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
-  const [draftDateOfBirth, setDraftDateOfBirth] = useState(dateOfBirth);
-  const [draftEmail, setDraftEmail] = useState('');
+  // Kept as typed, so a half-typed year isn't lost; checked on Ok.
+  const [draftYear, setDraftYear] = useState('');
   const [personalDetailsError, setPersonalDetailsError] = useState('');
 
   const openPersonalDetails = () => {
-    setDraftName(name);
-    setDraftDateOfBirth(dateOfBirth);
-    setDraftEmail(email);
+    if (!details) return;
+    setDraftName(details.name);
+    setDraftYear(details.yearOfBirth === null ? '' : String(details.yearOfBirth));
     setPersonalDetailsError('');
     setIsPersonalDetailsOpen(true);
   };
 
   // Editing any field clears the previous error.
-  const editPersonalDetailsField =
-    <T,>(setter: (value: T) => void) =>
-    (value: T) => {
-      setter(value);
-      setPersonalDetailsError('');
-    };
-
-  const handleSavePersonalDetails = () => {
-    const trimmedName = draftName.trim();
-    const trimmedEmail = draftEmail.trim();
-    if (!trimmedName) {
-      setPersonalDetailsError('Please enter your name.');
-      return;
-    }
-    // The picker already blocks future dates; this guards against a stale maximumDate (e.g. past midnight).
-    if (isFutureDate(draftDateOfBirth)) {
-      setPersonalDetailsError("Date of birth can't be in the future.");
-      return;
-    }
-    const emailError = validateEmail(trimmedEmail);
-    if (emailError) {
-      setPersonalDetailsError(emailError);
-      return;
-    }
-
-    // TODO: save to Supabase, sending the date as toIsoDate(draftDateOfBirth) (YYYY-MM-DD).
-    setName(trimmedName);
-    setDateOfBirth(draftDateOfBirth);
-    setEmail(trimmedEmail);
-    setIsPersonalDetailsOpen(false);
-  };
-
-  // --- Change password popup ------------------------------------------------
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [isSavingPassword, setIsSavingPassword] = useState(false);
-  // After a successful change the same popup switches to a confirmation message.
-  const [isPasswordChanged, setIsPasswordChanged] = useState(false);
-
-  const closeChangePassword = () => {
-    setIsChangePasswordOpen(false);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordError('');
-    setIsPasswordChanged(false);
-  };
-
-  // Typing in any field clears the previous error.
-  const editPasswordField = (setter: (value: string) => void) => (value: string) => {
+  const editPersonalDetailsField = (setter: (value: string) => void) => (value: string) => {
     setter(value);
-    setPasswordError('');
+    setPersonalDetailsError('');
   };
 
-  const handleChangePassword = async () => {
-    const newPasswordError = validatePassword(newPassword);
-    if (newPasswordError) {
-      setPasswordError(`New ${newPasswordError.charAt(0).toLowerCase()}${newPasswordError.slice(1)}`);
+  // The popup stays open with the message if the save fails.
+  const handleSavePersonalDetails = async () => {
+    // Year of birth is optional, as at sign-up.
+    const trimmedYear = draftYear.trim();
+    const result = await save({ name: draftName, yearOfBirth: trimmedYear === '' ? null : Number(trimmedYear) });
+    if (!result.ok) {
+      setPersonalDetailsError(
+        result.error.code === 'VALIDATION'
+          ? result.error.message
+          : 'We could not save your details. Please check your connection and try again.',
+      );
       return;
     }
-    if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords don't match.");
-      return;
-    }
-    if (newPassword === currentPassword) {
-      setPasswordError('New password must be different from your existing password.');
-      return;
-    }
-
-    setIsSavingPassword(true);
-    setPasswordError('');
-    try {
-      // Supabase doesn't check the old password itself, so confirm it by signing in again with it.
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      const accountEmail = userData.user?.email;
-      if (userError || !accountEmail) {
-        setPasswordError("We couldn't find your account. Please sign in again.");
-        return;
-      }
-
-      const { error: verifyError } = await supabase.auth.signInWithPassword({
-        email: accountEmail,
-        password: currentPassword,
-      });
-      if (verifyError) {
-        setPasswordError(verifyError.status === 400 ? 'Your existing password is incorrect.' : verifyError.message);
-        return;
-      }
-
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
-      if (updateError) {
-        setPasswordError(updateError.message);
-        return;
-      }
-
-      // Clear the typed passwords right away, then show the confirmation.
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setIsPasswordChanged(true);
-    } catch {
-      setPasswordError('Something went wrong. Please try again.');
-    } finally {
-      setIsSavingPassword(false);
-    }
+    // The name also shows elsewhere in the app, which reads it from the profile.
+    refreshProfile();
+    setIsPersonalDetailsOpen(false);
   };
 
   const handleSignOut = async () => {
@@ -157,13 +74,16 @@ export default function ProfileScreen() {
 
   return (
     <SettingsSubpage title="Account">
-      <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
-      <SettingsOption icon={passwordIcon} label="Change password" onPress={() => setIsChangePasswordOpen(true)} />
-      <SettingsOption
+      {state.status === 'loading' && <LoadingState label="Loading your details" />}
+      {state.status === 'error' && <ErrorState message="We could not load your details." onRetry={reload} />}
+      {state.status === 'ready' && (
+        <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
+      )}
+      {/* <SettingsOption
         icon={faceIdIcon}
         label="Enable FaceID"
         trailing={<SettingsToggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />}
-      />
+      /> */}
       <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>
@@ -173,6 +93,7 @@ export default function ProfileScreen() {
         title="Personal details"
         onClose={() => setIsPersonalDetailsOpen(false)}
         onConfirm={handleSavePersonalDetails}
+        confirmDisabled={saving}
         errorMessage={personalDetailsError}
       >
         <SettingsModalField
@@ -181,64 +102,23 @@ export default function ProfileScreen() {
           onChangeText={editPersonalDetailsField(setDraftName)}
           textContentType="name"
           autoComplete="name"
-        />
-        <SettingsModalDateField
-          label="Date of Birth"
-          value={draftDateOfBirth}
-          onChange={editPersonalDetailsField(setDraftDateOfBirth)}
-          maximumDate={new Date()}
+          maxLength={NAME_MAX_LENGTH}
         />
         <SettingsModalField
-          label="Email"
-          value={draftEmail}
-          onChangeText={editPersonalDetailsField(setDraftEmail)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          textContentType="emailAddress"
-          autoComplete="email"
+          label="Year of birth (optional)"
+          value={draftYear}
+          onChangeText={editPersonalDetailsField(setDraftYear)}
+          keyboardType="number-pad"
+          maxLength={4}
         />
-      </SettingsModal>
-
-      <SettingsModal
-        visible={isChangePasswordOpen}
-        title={isPasswordChanged ? 'Password changed' : 'Change password'}
-        onClose={closeChangePassword}
-        onConfirm={isPasswordChanged ? closeChangePassword : handleChangePassword}
-        hideCancel={isPasswordChanged}
-        errorMessage={passwordError}
-        confirmDisabled={
-          !isPasswordChanged && (isSavingPassword || !currentPassword || !newPassword || !confirmPassword)
-        }
-      >
-        {isPasswordChanged ? (
-          <SettingsModalText>Your password has been changed successfully.</SettingsModalText>
-        ) : (
-          <>
-            <SettingsModalField
-              label="Enter existing password"
-              value={currentPassword}
-              onChangeText={editPasswordField(setCurrentPassword)}
-              password
-            />
-            <SettingsModalField
-              label="Enter new password"
-              value={newPassword}
-              onChangeText={editPasswordField(setNewPassword)}
-              password
-              textContentType="newPassword"
-              autoComplete="new-password"
-            />
-            <SettingsModalField
-              label="Enter new password again"
-              value={confirmPassword}
-              onChangeText={editPasswordField(setConfirmPassword)}
-              password
-              textContentType="newPassword"
-              autoComplete="new-password"
-            />
-          </>
-        )}
+        <SettingsModalGroup>
+          <SettingsModalInfoRow
+            label="Phone number"
+            value={details?.phone ? formatForDisplay(details.phone) : 'Not provided'}
+          />
+        </SettingsModalGroup>
+        {/* A new phone number needs SMS re-verification (docs/settings-backend.md, Q2). */}
+        <SettingsModalText>You sign in with this number, so it can’t be changed in the app yet.</SettingsModalText>
       </SettingsModal>
     </SettingsSubpage>
   );

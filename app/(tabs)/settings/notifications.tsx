@@ -5,64 +5,94 @@ import {
   SettingsModalToggleRow,
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { Colors } from '@/constants/theme';
+import { useNotificationSettings } from '@/features/settings/useNotificationSettings';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 const COUNT_OPTIONS = ['1', '2', '3', '4', '5', '6', '7'];
 const UNIT_OPTIONS = ['days', 'weeks'];
 
+/** Saves the choices only: nothing sends reminders yet (docs/settings-backend.md, step 7). */
 export default function NotificationsScreen() {
-  const [assessmentReminders, setAssessmentReminders] = useState(false);
-  const [appointmentReminders, setAppointmentReminders] = useState(false);
+  const { state, reload, settings, update, saveError } = useNotificationSettings();
 
   // --- Screenshot 2: "Assessment reminders frequency" popup -----------------
   const [frequencyOpen, setFrequencyOpen] = useState(false);
-  const [count, setCount] = useState('3');
-  const [unit, setUnit] = useState('days');
-  const [draftCount, setDraftCount] = useState(count);
-  const [draftUnit, setDraftUnit] = useState(unit);
+  const [draftCount, setDraftCount] = useState('3');
+  const [draftUnit, setDraftUnit] = useState('days');
 
   const openFrequency = () => {
-    setDraftCount(count);
-    setDraftUnit(unit);
+    if (!settings) return;
+    setDraftCount(String(settings.assessmentEvery));
+    setDraftUnit(settings.assessmentUnit);
     setFrequencyOpen(true);
   };
   const saveFrequency = () => {
-    setCount(draftCount);
-    setUnit(draftUnit);
     setFrequencyOpen(false);
+    update({ assessmentEvery: Number(draftCount), assessmentUnit: draftUnit === 'weeks' ? 'weeks' : 'days' });
   };
 
   // --- Screenshot 3: "Appointment reminders" popup --------------------------
   const [appointmentOpen, setAppointmentOpen] = useState(false);
-  const [dayBefore, setDayBefore] = useState(false);
-  const [onTheDay, setOnTheDay] = useState(false);
-  const [draftDayBefore, setDraftDayBefore] = useState(dayBefore);
-  const [draftOnTheDay, setDraftOnTheDay] = useState(onTheDay);
+  const [draftDayBefore, setDraftDayBefore] = useState(false);
+  const [draftOnTheDay, setDraftOnTheDay] = useState(false);
 
   const openAppointment = () => {
-    setDraftDayBefore(dayBefore);
-    setDraftOnTheDay(onTheDay);
+    if (!settings) return;
+    setDraftDayBefore(settings.appointmentDayBefore);
+    setDraftOnTheDay(settings.appointmentOnDay);
     setAppointmentOpen(true);
   };
   const saveAppointment = () => {
-    setDayBefore(draftDayBefore);
-    setOnTheDay(draftOnTheDay);
     setAppointmentOpen(false);
+    update({ appointmentDayBefore: draftDayBefore, appointmentOnDay: draftOnTheDay });
   };
 
   return (
     <SettingsSubpage title="Notifications">
-      <Text style={styles.sectionTitle}>Assessment reminders</Text>
-      <View style={styles.group}>
-        <SettingsOption label="Turn on notifications" trailing={<SettingsToggle value={assessmentReminders} onValueChange={setAssessmentReminders} />} />
-        <SettingsOption label="Set reminder frequency" onPress={openFrequency} />
-      </View>
-      <Text style={styles.sectionTitle}>Appointment reminders</Text>
-      <View style={styles.group}>
-        <SettingsOption label="Turn on notifications" trailing={<SettingsToggle value={appointmentReminders} onValueChange={setAppointmentReminders} />} />
-        <SettingsOption label="Set reminder frequency" onPress={openAppointment} />
-      </View>
+      {state.status === 'loading' && <LoadingState label="Loading your notification settings" />}
+      {state.status === 'error' && (
+        <ErrorState message="We could not load your notification settings." onRetry={reload} />
+      )}
+      {settings && (
+        <>
+          {/* A failed save has already put the previous value back. */}
+          {saveError && (
+            <Text style={styles.errorText} accessibilityRole="alert" accessibilityLiveRegion="polite">
+              We could not save that change. Please check your connection and try again.
+            </Text>
+          )}
+          <Text style={styles.sectionTitle}>Assessment reminders</Text>
+          <View style={styles.group}>
+            <SettingsOption
+              label="Turn on notifications"
+              trailing={
+                <SettingsToggle
+                  value={settings.assessmentReminders}
+                  onValueChange={value => update({ assessmentReminders: value })}
+                />
+              }
+            />
+            <SettingsOption label="Set reminder frequency" onPress={openFrequency} />
+          </View>
+          <Text style={styles.sectionTitle}>Appointment reminders</Text>
+          <View style={styles.group}>
+            <SettingsOption
+              label="Turn on notifications"
+              trailing={
+                <SettingsToggle
+                  value={settings.appointmentReminders}
+                  onValueChange={value => update({ appointmentReminders: value })}
+                />
+              }
+            />
+            <SettingsOption label="Set reminder frequency" onPress={openAppointment} />
+          </View>
+        </>
+      )}
 
       {/* Screenshot 2 */}
       <SettingsModal
@@ -93,4 +123,8 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = { sectionTitle: { fontSize: 20, fontWeight: '600' as const, marginBottom: 12 }, group: { marginBottom: 24 } };
+const styles = {
+  sectionTitle: { fontSize: 20, fontWeight: '600' as const, marginBottom: 12 },
+  group: { marginBottom: 24 },
+  errorText: { color: Colors.light.error, fontSize: 14, marginBottom: 16 },
+};

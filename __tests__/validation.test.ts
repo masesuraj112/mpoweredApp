@@ -1,4 +1,4 @@
-import { validateEmail, validatePassword, validatePhone } from '@/services/validation';
+import { validateEmail, validatePhone, validateYearOfBirth } from '@/services/validation';
 
 describe('validateEmail', () => {
   it.each(['sarah.mclachlan@gmail.com', 'a+tag@sub.example.com.au', ' name@example.io '])('accepts %s', email => {
@@ -43,19 +43,18 @@ describe('validatePhone', () => {
   });
 });
 
-describe('validatePassword', () => {
-  it('accepts a password meeting every rule', () => {
-    expect(validatePassword('Str0ng!pw')).toBe('');
+describe('validateYearOfBirth', () => {
+  it.each([null, 1900, 1968, 2026])('accepts %p', year => {
+    expect(validateYearOfBirth(year, 2026)).toBe('');
   });
 
-  it.each([
-    ['Ab1!', 'Password must be at least 8 characters.'],
-    ['password', 'Password must include a capital letter, a number and a symbol (e.g. ! @ # $).'],
-    ['Password1', 'Password must include a symbol (e.g. ! @ # $).'],
-    ['PASSWORD1!', 'Password must include a lowercase letter.'],
-    ['Password!', 'Password must include a number.'],
-    ['pass word1!', 'Password must include a capital letter.'],
-  ])('rejects %p', (password, message) => {
-    expect(validatePassword(password)).toBe(message);
+  it.each([1899, 2027, 1968.5, Number.NaN])('rejects %p', year => {
+    expect(validateYearOfBirth(year, 2026)).toBe('Please enter a year between 1900 and 2026.');
+  });
+
+  it('uses this year when none is given', () => {
+    const thisYear = new Date().getFullYear();
+    expect(validateYearOfBirth(thisYear)).toBe('');
+    expect(validateYearOfBirth(thisYear + 1)).not.toBe('');
   });
 });
