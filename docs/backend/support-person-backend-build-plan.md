@@ -61,7 +61,7 @@ pgTAP files `080`–`089` exist, so **your pgTAP files `090`–`092` remain free
 | `src/features/care-planner/useMySupportPersons.ts` | Drives the patient's Settings > Support Persons screen; you add the invitation state to that screen (T4). |
 | `docs/support-person.md` | Rows P1, P3 and B2 of the §4.1 table are already marked done by the Care Planner. |
 
-**Local-only tests.** `__tests__/care-planner/` and `__tests__/_golden/` are excluded from git on the owner's machine (`.git/info/exclude`), so CI never sees them; some of them fail against the real service. Ignore them unless the owner asks.
+**Local-only tests.** `__tests__/care-planner/` is excluded from git on the owner's machine (`.git/info/exclude`), so CI never sees it. Its suites were updated on 29 Oct 2026 and pass against the real service. Ignore them unless the owner asks.
 
 ---
 
