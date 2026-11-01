@@ -1,4 +1,10 @@
-import { OTP_LENGTH, RESEND_SECONDS, isCodeComplete, sanitiseCode } from '@/features/auth/otp';
+import {
+  OTP_LENGTH,
+  RESEND_SECONDS,
+  formatResendWait,
+  isCodeComplete,
+  sanitiseCode,
+} from '@/features/auth/otp';
 
 describe('sanitiseCode', () => {
   it('removes anything that is not a digit', () => {
@@ -28,9 +34,24 @@ describe('isCodeComplete', () => {
   });
 });
 
+describe('formatResendWait', () => {
+  it('uses the singular for exactly one minute', () => {
+    expect(formatResendWait(60)).toBe('1 minute');
+  });
+
+  it('uses the plural for several minutes', () => {
+    expect(formatResendWait(120)).toBe('2 minutes');
+  });
+
+  it('falls back to seconds when the wait is not a whole number of minutes', () => {
+    expect(formatResendWait(45)).toBe('45 seconds');
+    expect(formatResendWait(1)).toBe('1 second');
+  });
+});
+
 describe('constants', () => {
-  it('uses a six digit code and a two minute resend interval', () => {
+  it('uses a six digit code and a one minute resend interval', () => {
     expect(OTP_LENGTH).toBe(6);
-    expect(RESEND_SECONDS).toBe(120);
+    expect(RESEND_SECONDS).toBe(60);
   });
 });

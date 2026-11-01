@@ -3,9 +3,18 @@
 
 export const OTP_LENGTH = 6;
 
-// Seconds before the user may ask for another code. Placeholder: the real value (and the
-// code's expiry, 60 s on the dev project) is decision L3, to be settled in the Twilio sprint.
-export const RESEND_SECONDS = 120;
+// Seconds before the user may ask for another code (decision L3, settled): 60 s resend. The
+// code itself expires after 120 s, which is set in the Supabase dashboard, not in the app.
+export const RESEND_SECONDS = 60;
+
+/** Wording for a wait, e.g. "1 minute", "2 minutes" or "45 seconds". */
+export function formatResendWait(seconds: number): string {
+  if (seconds % 60 === 0) {
+    const minutes = seconds / 60;
+    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+  }
+  return `${seconds} ${seconds === 1 ? 'second' : 'seconds'}`;
+}
 
 /** Keeps digits only and cuts the result to OTP_LENGTH. */
 export function sanitiseCode(raw: string): string {

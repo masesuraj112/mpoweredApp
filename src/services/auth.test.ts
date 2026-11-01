@@ -38,6 +38,39 @@ describe('sendVerificationCode', () => {
     if (!result.ok) expect(result.error.code).toBe('RATE_LIMITED');
   });
 
+  it('maps a failed text message send (for example a blocked region) to SMS_FAILED', async () => {
+    const { client } = clientWith({
+      data: {},
+      error: { code: 'sms_send_failed', message: 'Error sending sms' },
+    });
+    const result = await sendVerificationCode('0491 570 006', client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('SMS_FAILED');
+  });
+
+  it('maps the per-request rate limit to RATE_LIMITED', async () => {
+    const { client } = clientWith({
+      data: {},
+      error: { code: 'over_request_rate_limit', message: 'slow down' },
+    });
+    const result = await sendVerificationCode('0491 570 006', client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.code).toBe('RATE_LIMITED');
+  });
+
+  it('maps a number the server rejects to INVALID_PHONE without echoing the number', async () => {
+    const { client } = clientWith({
+      data: {},
+      error: { code: 'validation_failed', message: 'Invalid phone number +61491570006' },
+    });
+    const result = await sendVerificationCode('0491 570 006', client);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe('INVALID_PHONE');
+      expect(result.error.message).not.toMatch(/\d{6}/);
+    }
+  });
+
   it('maps a lost connection thrown by the client to NETWORK', async () => {
     const signInWithOtp = jest.fn().mockRejectedValue(new TypeError('Network request failed'));
     const result = await sendVerificationCode(
