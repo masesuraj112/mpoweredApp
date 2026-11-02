@@ -227,7 +227,6 @@ export const Typography = {
   bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
 
 /** The colours for the phone's current appearance (light or dark). */

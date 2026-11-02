@@ -52,7 +52,7 @@ export default function HealthScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.pageTitle}>My Health</Text>
         <View style={styles.divider} />

@@ -35,7 +35,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <Text style={styles.title}>Settings</Text>
       <View style={styles.titleDivider} />
 

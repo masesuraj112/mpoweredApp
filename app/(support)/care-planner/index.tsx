@@ -28,7 +28,7 @@ export default function CarePlannerHomeScreen() {
     openAppointmentAction('add-questions', patient.id, appointment.appointmentId);
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.greetingRow}>
           <Text style={styles.greeting}>{getGreeting(name)}</Text>

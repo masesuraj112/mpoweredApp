@@ -12,7 +12,7 @@ export default function PainGuideScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       {/* The guide fills the screen, so give a way back to wherever it was opened from */}
       <View style={styles.topBar}>
         <BackButton

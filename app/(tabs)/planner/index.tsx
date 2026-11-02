@@ -7,7 +7,7 @@ import { MyAppointmentsSection } from '@/components/care-planner/MyAppointmentsS
 import { PlannerIntro } from '@/components/care-planner/PlannerIntro';
 import { ShortcutCarousel, type Shortcut } from '@/components/care-planner/ShortcutCarousel';
 import { SponsorFooter } from '@/components/care-planner/SponsorFooter';
-import { BottomTabInset, Spacing, makeStyles } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { useAppointments } from '@/features/care-planner/useAppointments';
 
 export default function PlannerScreen() {
@@ -43,7 +43,7 @@ export default function PlannerScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <PlannerIntro />
         <ShortcutCarousel shortcuts={shortcuts} />
@@ -73,6 +73,6 @@ const useStyles = makeStyles((colors) => ({
   content: {
     gap: Spacing.four,
     paddingTop: Spacing.four,
-    paddingBottom: BottomTabInset + Spacing.four,
+    paddingBottom: Spacing.four,
   },
 }));

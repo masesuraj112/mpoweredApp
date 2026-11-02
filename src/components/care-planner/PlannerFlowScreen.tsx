@@ -34,7 +34,7 @@ export function PlannerFlowScreen({
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.topBar}>
         <BackButton onPress={() => router.back()} />
       </View>

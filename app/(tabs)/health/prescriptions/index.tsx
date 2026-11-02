@@ -73,7 +73,7 @@ export default function PrescriptionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <PrescriptionsHeader title="My Prescriptions" />
 

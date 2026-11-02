@@ -107,7 +107,7 @@ export default function TrackingChartScreen() {
     );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <TrackingScreenHeader
           activeTab="chart"

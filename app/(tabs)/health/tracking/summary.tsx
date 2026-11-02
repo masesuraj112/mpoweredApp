@@ -37,7 +37,7 @@ export default function WeekSummaryScreen() {
   const title = type ? `My ${ASSESSMENT_LABELS[type]} Summary` : 'Summary';
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.topBar}>
           <Pressable
