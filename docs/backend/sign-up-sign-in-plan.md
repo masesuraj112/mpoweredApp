@@ -195,4 +195,4 @@ signed up; on dev, a throwaway account deleted first via Settings → Delete acc
   new rules.
 - **The header and #65 (`fix/auth-screens-bottom-inset`):** #65 fits the canvas between the system bars. A transparent
   header sits over the top of that space. If the arrow overlaps content on short phones, give the flow screens a top
-  inset equal to the header height. Check this once #65 is merged.
+  inset equal to the header height. #65 is already merged (`src/features/auth/canvas.ts`), so check this in F5.
