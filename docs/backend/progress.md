@@ -204,9 +204,10 @@ S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer a
 Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status key as above. No migrations.
 
 ## Steps
-- [x] F0 Plan written (decisions SU-1 to SU-7 proposed, not yet approved)
+- [x] F0 Plan written (decisions SU-1 to SU-9 proposed, not yet approved)
 - [ ] F1 Sign-up or sign-in intent in `OnboardingContext`
 - [ ] F2 `nextStepAfterVerify()`
 - [ ] F3 `account-check` screen
 - [ ] F4 `verify.tsx` routes to it
-- [ ] F5 Docs, checks and manual QA
+- [ ] F5 Back arrows on the sign-up and sign-in screens
+- [ ] F6 Docs, checks and manual QA
