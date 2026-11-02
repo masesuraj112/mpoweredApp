@@ -1,6 +1,13 @@
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { Button, Text, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
+
+// Keep the native splash (the M on purple) up until the session has been read, so the app never shows a
+// blank screen while it starts. It then fades into the first screen (docs/backend/app-icons-and-splash-plan.md).
+void SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 300, fade: true });
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
@@ -8,7 +15,11 @@ const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 function RootNavigator() {
   const { session, loading, hasProfile, profile, profileError, refreshProfile } = useAuth();
 
-  // Implements a temporary loading screen for the initial session check
+  useEffect(() => {
+    if (!loading) SplashScreen.hide();
+  }, [loading]);
+
+  // The native splash is still showing while the session is read
   if (loading) return null;
 
   // Signed in, but we could not tell whether there is a profile (for example no connection)
