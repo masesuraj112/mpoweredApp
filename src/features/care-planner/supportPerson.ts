@@ -5,7 +5,7 @@ import { formatForDisplay, isValidAuMobile, toE164 } from '@/features/auth/phone
 import { validateEmail } from '@/services/validation';
 
 import { toOptionalText } from './text';
-import type { SupportPerson } from './types';
+import type { SupportPerson, SupportPersonStatus } from './types';
 
 /** What is typed into the form. Strings, never null, so inputs stay controlled. */
 export type SupportPersonDraft = {
@@ -155,4 +155,21 @@ export function availableSupportPeople(
   return saved.filter(
     (person) => person.supportPersonId !== undefined && !chosenIds.has(person.supportPersonId),
   );
+}
+
+/**
+ * How the patient's Support persons list describes an invitation. Null before the database has
+ * invitation status, so the row looks as it did.
+ */
+export function invitationStatusLabel(status: SupportPersonStatus | undefined): string | null {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'accepted':
+      return 'Accepted';
+    case 'declined':
+      return 'Declined';
+    default:
+      return null;
+  }
 }

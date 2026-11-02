@@ -172,6 +172,15 @@ describe('support people', () => {
     });
   });
 
+  it.each(['pending', 'accepted', 'declined'] as const)('keeps the invitation status %s', (status) => {
+    expect(mapSupportPerson({ ...row, status }).status).toBe(status);
+  });
+
+  it('leaves the status out when the row has none or an unknown one', () => {
+    expect(mapSupportPerson(row)).not.toHaveProperty('status');
+    expect(mapSupportPerson({ ...row, status: 'revoked' })).not.toHaveProperty('status');
+  });
+
   it('maps embedded links in id order and skips a missing person', () => {
     const people = mapSupportPeopleFromLinks([
       { support_persons: { ...row, support_person_id: 9, name: 'Sam' } },
