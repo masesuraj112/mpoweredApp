@@ -7,6 +7,8 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
+    'src/features/splash/startup.ts',
+    'src/features/splash/useMinimumDuration.ts',
     'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
     'src/features/assessments/drafts.ts',
