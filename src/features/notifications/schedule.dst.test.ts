@@ -1,12 +1,8 @@
-// Runs in Sydney time, so the daylight saving changes (4 Oct 2026 and 4 Apr 2027) fall inside the
-// schedule. Set before any Date is made in this file.
-process.env.TZ = 'Australia/Sydney';
-
-/* eslint-disable import/first */
+// Runs in Sydney time (set for every test in jest.globalSetup.js), so the daylight saving changes
+// (4 Oct 2026 and 4 Apr 2027) fall inside the schedule.
 import type { NotificationSettings } from '@/services/settings';
 
 import { planReminders } from './schedule';
-/* eslint-enable import/first */
 
 const OFF: NotificationSettings = {
   assessmentReminders: false,

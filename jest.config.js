@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'jest-expo',
+  globalSetup: '<rootDir>/jest.globalSetup.js',
   setupFiles: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/assets/(.*)$': '<rootDir>/assets/$1', // must come first: same alias prefix as the next line
