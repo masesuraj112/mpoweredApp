@@ -58,9 +58,9 @@ Mismatched versions are a common source of "it works on my machine" bugs.
 | -------- | ----------- |
 | Node.js  | v24.20.0    |
 | npm      | 11.19.0     |
-| Expo SDK | 58.0.0 |
+| Expo SDK | 58 (installed by `npm ci`: 58.0.19) |
 
-> React Native's version is managed automatically by Expo. You don't install or track it separately.
+> Node v24.20.0 is the version CI uses; Expo SDK 58 accepts Node 22.13 or later in the 22 line, 24.3 or later in the 24 line, and 26 or later. React Native's version (0.88) is managed automatically by Expo. You don't install or track it separately.
 
 ### 1. Install Node.js
 
