@@ -16,7 +16,7 @@ import {
 
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
 
-function MovementSummaryView({ summary }: { summary: MovementSummaryData }) {
+function MovementSummaryView({ summary, onClose }: { summary: MovementSummaryData; onClose: () => void }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -82,7 +82,7 @@ function MovementSummaryView({ summary }: { summary: MovementSummaryData }) {
             {/* TODO: Persist this report to the My Health before showing its saved status. */}
             <Text style={styles.savedText}>Saved to My Health</Text>
             <Pressable
-              onPress={close}
+              onPress={onClose}
               accessibilityRole="button"
               accessibilityLabel="Close summary"
               style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
@@ -131,7 +131,7 @@ export default function SummaryScreen() {
     : { status: 'error', message: 'We could not find the week to show.' };
 
   if (view.status === 'ready') {
-    return <MovementSummaryView summary={view.summary} />;
+    return <MovementSummaryView summary={view.summary} onClose={close} />;
   }
   return (
     <View style={[styles.screen, styles.centered]}>
