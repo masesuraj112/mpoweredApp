@@ -208,10 +208,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   addButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: 20,
   },
 });

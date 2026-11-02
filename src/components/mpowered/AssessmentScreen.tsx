@@ -2,6 +2,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 /**
  * Page shell for assessment questions: white background, page title, then the question card.
  *
@@ -25,7 +26,7 @@ export function AssessmentScreen({ title, children }: { title: string; children:
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },

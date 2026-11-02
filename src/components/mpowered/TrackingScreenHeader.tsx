@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
@@ -12,10 +13,10 @@ interface TrackingScreenHeaderProps {
   printing?: boolean;
 }
 
-const SECONDARY_CONTAINER = '#E8DEF8';
-const PRIMARY_PURPLE = '#6750A4';
-const ON_SURFACE_VARIANT = '#49454F';
-const OUTLINE_VARIANT = '#CAC4D0';
+const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
+const PRIMARY_PURPLE = Colors.light.primary;
+const ON_SURFACE_VARIANT = Colors.light.textSecondary;
+const OUTLINE_VARIANT = Colors.light.outline;
 
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
   return (

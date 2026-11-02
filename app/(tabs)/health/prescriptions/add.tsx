@@ -19,6 +19,7 @@ import {
 import { getPrescription, savePrescription } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
   return (Object.keys(singulars) as T[]).map((value) => ({
@@ -241,10 +242,10 @@ export default function AddPrescriptionScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = '#F2F2F7';
-const SURFACE = '#FEF7FF';
-const OUTLINE = '#79747E';
-const ERROR = '#B3261E';
+const GROUPED_BACKGROUND = Colors.light.background;
+const SURFACE = Colors.light.background;
+const OUTLINE = Colors.light.outline;
+const ERROR = Colors.light.error;
 
 const styles = StyleSheet.create({
   safeArea: {

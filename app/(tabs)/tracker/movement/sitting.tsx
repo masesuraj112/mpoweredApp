@@ -6,6 +6,7 @@ import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { SITTING_OPTIONS } from '@/features/assessments/movement/options';
 
+import { Colors } from '@/constants/theme';
 // Roughly how many lines an option wraps to (about 34 characters per line at this font size).
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
@@ -60,7 +61,7 @@ export default function SittingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -71,12 +72,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   promptText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
-    backgroundColor: '#FEF7FF',
+    backgroundColor: Colors.light.background,
     overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
   },

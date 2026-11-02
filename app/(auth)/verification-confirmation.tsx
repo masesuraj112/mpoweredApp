@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
+import { Colors } from '@/constants/theme';
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
@@ -155,18 +156,18 @@ export default function VerificationConfirmationScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   illustration: {
     position: 'absolute',
   },
   startMessage: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
@@ -176,14 +177,14 @@ const styles = StyleSheet.create({
   },
   questionnaireMessage: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   suggestionMessage: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
@@ -192,10 +193,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   continueText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
 });

@@ -1,10 +1,10 @@
-import { Radius } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { StyleSheet, Text, View } from 'react-native';
 
 const VARIANTS = {
-  upcoming: { label: 'Appointment upcoming', backgroundColor: '#FFF3CD', color: '#92400E' },
-  none: { label: 'No scheduled appointments', backgroundColor: '#C5E9C5', color: '#3D9C31' },
+  upcoming: { label: 'Appointment upcoming', backgroundColor: Colors.light.warningContainer, color: Colors.light.warning },
+  none: { label: 'No scheduled appointments', backgroundColor: Colors.light.successContainer, color: Colors.light.success },
 } as const;
 
 /** Yellow "Appointment upcoming" or green "No scheduled appointments" pill (Figma 3911-24657, 3911-24634). */

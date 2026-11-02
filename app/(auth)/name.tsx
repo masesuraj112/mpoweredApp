@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const isValidName = (value: string) =>
   /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(value.trim());
 
@@ -78,14 +79,14 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%', 
-    backgroundColor: '#EDE9F5',
+    backgroundColor: Colors.light.surfaceContainer,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
   },
   nameError: {
-    color: '#B3261E',
+    color: Colors.light.error,
     fontSize: 13,
     marginTop: 8,
     textAlign: 'center',
@@ -95,26 +96,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 24,
     marginBottom: 24,
-    color: '#333'
+    color: Colors.light.text
   },
   continueButton: {
-    backgroundColor: '#5B3FA5',
+    backgroundColor: Colors.light.primary,
     width: '100%',
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center'
   },
   continueButtonDisabled: {
-    backgroundColor: '#D9D0EE'
+    backgroundColor: Colors.light.secondaryContainer
   },
   continueText: {
-    color: '#fff',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
     fontSize: 16 }
     ,
   footnote: { 
     textAlign: 'center',
-    color: '#8A8590',
+    color: Colors.light.textSubtle,
     marginTop: 24,
     fontSize: 13
   },

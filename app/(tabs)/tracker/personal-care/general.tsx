@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
+import { Colors } from '@/constants/theme';
 export default function GeneralScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const savedActivities = answers.generalActivities ?? [];
@@ -58,7 +59,7 @@ export default function GeneralScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -68,12 +69,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   prompt: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),

@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   condition: {
     marginLeft: scaleWidth(4),
-    color: 'rgba(60, 60, 67, 0.6)',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '600',
     lineHeight: 20,

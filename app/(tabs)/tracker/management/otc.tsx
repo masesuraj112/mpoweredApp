@@ -6,6 +6,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function OtcScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
   const doneBar = useKeyboardDoneBar();
@@ -33,7 +34,7 @@ export default function OtcScreen() {
             value={answers.otcMedication ?? ''}
             onChangeText={value => updateAnswer('otcMedication', value)}
             placeholder="Input name of over the counter medication"
-            placeholderTextColor="#B3B3B3"
+            placeholderTextColor={Colors.light.textSubtle}
             textAlignVertical="top"
             style={styles.input}
           />
@@ -46,7 +47,7 @@ export default function OtcScreen() {
 
 const styles = StyleSheet.create({
   prompt: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(4),
   },
   helperText: {
-    color: '#727272',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
@@ -65,12 +66,12 @@ const styles = StyleSheet.create({
   input: {
     height: scaleHeight(146),
     borderWidth: 1,
-    borderColor: '#D9D9D9',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },

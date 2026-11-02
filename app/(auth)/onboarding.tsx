@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 
+import { Colors } from '@/constants/theme';
 const SLIDES = [
   {
     heading: 'Track your pain and its impacts weekly',
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   imageSlide: {
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
 
   copyArea: {
@@ -155,16 +156,16 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#D9D4E8',
+        backgroundColor: Colors.light.surfaceContainer,
     },
 
     dotActive: {
         width: 20,
-        backgroundColor: '#3F2A7A',
+        backgroundColor: Colors.light.primaryDeep,
     },
 
     primaryButton: {
-        backgroundColor: '#5B3FA5',
+        backgroundColor: Colors.light.primary,
         marginHorizontal: 24,
         paddingVertical: 16,
         borderRadius: 12,
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     },
 
     primaryButtonText: {
-        color: '#fff',
+        color: Colors.light.onPrimary,
         fontWeight: '600',
         fontSize: 16
     },

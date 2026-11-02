@@ -15,6 +15,7 @@ import type { PdfAction } from '@/services/pdf';
 import { getHealthProfile } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 const loadProfile = () => getHealthProfile();
 
 export default function PainProfileScreen() {
@@ -94,9 +95,9 @@ export default function PainProfileScreen() {
   );
 }
 
-const OUTLINE_VARIANT = '#CAC4D0';
-const ON_SURFACE = '#1D1B20';
-const PRIMARY_PURPLE = '#6750A4';
+const OUTLINE_VARIANT = Colors.light.outline;
+const ON_SURFACE = Colors.light.text;
+const PRIMARY_PURPLE = Colors.light.primary;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   },
   updatedText: {
     fontSize: scaleFont(12),
-    color: '#79747E',
+    color: Colors.light.textSubtle,
     marginTop: scaleHeight(2),
     marginHorizontal: scaleWidth(38),
   },

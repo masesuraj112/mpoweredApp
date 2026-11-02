@@ -17,6 +17,7 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { deletePrescription, getPrescriptions } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -143,11 +144,11 @@ export default function PrescriptionsScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = '#F2F2F7';
-const OUTLINE_VARIANT = '#CAC4D0';
-const PRIMARY_PURPLE = '#6750A4';
-const GRAY_2 = '#AEAEB2';
-const ON_SURFACE = '#1D1B20';
+const GROUPED_BACKGROUND = Colors.light.background;
+const OUTLINE_VARIANT = Colors.light.outline;
+const PRIMARY_PURPLE = Colors.light.primary;
+const GRAY_2 = Colors.light.outline;
+const ON_SURFACE = Colors.light.text;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: scaleFont(16),
     lineHeight: scaleFont(22),
-    color: '#898A8D',
+    color: Colors.light.textSubtle,
     textAlign: 'center',
     marginBottom: scaleHeight(23),
   },
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleFont(20),
     fontWeight: '600',
     letterSpacing: 0.1,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   listFrame: {
     marginHorizontal: scaleWidth(24),

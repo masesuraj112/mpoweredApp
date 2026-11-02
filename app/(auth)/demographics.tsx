@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function DemographicsScreen() {
   const { data, updateData } = useOnboarding();
   const [yearOfBirth, setYearOfBirth] = useState(data.yearOfBirth?.toString() ?? '');
@@ -65,11 +66,11 @@ const styles = StyleSheet.create({
     marginBottom: 8
   },
   optional: {
-    color: '#8A8590', marginBottom: 24 
+    color: Colors.light.textSubtle, marginBottom: 24 
   },
   input: {
     width: '100%',
-    backgroundColor: '#EDE9F5',
+    backgroundColor: Colors.light.surfaceContainer,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -78,20 +79,20 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   continueButton: {
-    backgroundColor: '#5B3FA5',
+    backgroundColor: Colors.light.primary,
     width: '100%',
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center'
   },
   continueText: {
-    color: '#fff',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
     fontSize: 16
   },
   tip: {
     textAlign: 'center',
-    color: '#8A8590',
+    color: Colors.light.textSubtle,
     marginTop: 24,
     fontSize: 13,
     paddingHorizontal: 16

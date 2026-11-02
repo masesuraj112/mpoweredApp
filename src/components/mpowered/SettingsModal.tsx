@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
 import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
 /* -------------------------------------------------------------------------- */
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 13,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: Colors.light.backdrop,
   },
   card: {
     width: '100%',
@@ -306,26 +307,26 @@ const styles = StyleSheet.create({
     paddingTop: 28,
     paddingBottom: 8,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   scroll: {
     flexGrow: 0,
   },
   title: {
     marginBottom: 18,
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '600',
   },
   errorText: {
     marginBottom: 4,
-    color: '#D32F2F',
+    color: Colors.light.error,
     fontSize: 12,
     lineHeight: 16,
   },
   bodyText: {
     marginBottom: 16,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 16,
     lineHeight: 24,
   },
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -353,13 +354,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   confirmButtonDisabled: {
     opacity: 0.5,
   },
   confirmText: {
-    color: '#FEF7FF',
+    color: Colors.light.onPrimary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -370,11 +371,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: 'center',
     borderRadius: 4,
-    backgroundColor: '#E6E0E9',
+    backgroundColor: Colors.light.surfaceContainer,
     paddingHorizontal: 16,
   },
   fieldLabel: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: 12,
     lineHeight: 16,
   },
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
     height: 26,
     padding: 0,
     paddingRight: 44,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 16,
   },
   editIcon: {
@@ -398,7 +399,7 @@ const styles = StyleSheet.create({
     bottom: 16,
   },
   revealText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -410,20 +411,20 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: 12,
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '600',
   },
   group: {
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: 12,
     overflow: 'hidden',
   },
   divider: {
     height: 1,
     marginHorizontal: 12,
-    backgroundColor: '#CAC4D0',
+    backgroundColor: Colors.light.divider,
   },
   row: {
     minHeight: 56,
@@ -438,17 +439,17 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     flex: 1,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 16,
     lineHeight: 24,
   },
   rowValue: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: 14,
     lineHeight: 20,
   },
   destructiveText: {
-    color: '#D32F2F',
+    color: Colors.light.error,
   },
   rowIcon: {
     width: 24,
@@ -462,7 +463,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   inlineLabel: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 20,
     lineHeight: 24,
   },

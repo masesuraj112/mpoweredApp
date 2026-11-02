@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Colors } from '@/constants/theme';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -169,7 +170,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   scrollContent: {
     alignSelf: 'center',
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   greeting: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     marginTop: 16,
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 24,
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: 5,
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 0.25,
@@ -225,12 +226,12 @@ const styles = StyleSheet.create({
     height: 10,
     overflow: 'hidden',
     borderRadius: 5,
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   progressFill: {
     height: '100%',
     borderRadius: 5,
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   progressLabel: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   },
   progressError: {
     marginTop: 4,
-    color: '#B3261E',
+    color: Colors.light.error,
     fontSize: 12,
     lineHeight: 16,
   },
@@ -255,11 +256,11 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 14,
     borderRadius: 12,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
   },
   panelHeading: {
     marginBottom: 16,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 16,
     fontWeight: '700',
     lineHeight: 22,
@@ -275,20 +276,20 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   assessmentCopy: {
     flex: 1,
     gap: 2,
   },
   assessmentTitle: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
   },
   updatedText: {
-    color: 'rgba(60, 60, 67, 0.6)',
+    color: Colors.light.textSecondary,
     fontSize: 11,
     lineHeight: 14,
     letterSpacing: 0.3,
@@ -304,12 +305,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   recordButton: {
-    borderColor: '#6750A4',
-    backgroundColor: '#6750A4',
+    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.primary,
   },
   editButton: {
-    borderColor: '#CAC4D0',
-    backgroundColor: '#EADDFF',
+    borderColor: Colors.light.outline,
+    backgroundColor: Colors.light.secondaryContainer,
   },
   assessmentButtonText: {
     fontSize: 14,
@@ -317,10 +318,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   recordButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
   },
   editButtonText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   arrow: {
     fontSize: 18,
@@ -337,16 +338,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 24,
     borderRadius: 12,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
   },
   plus: {
-    color: '#381E72',
+    color: Colors.light.primaryDeep,
     fontSize: 28,
     fontWeight: '400',
     lineHeight: 30,
   },
   reflectionText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
@@ -355,7 +356,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   reflectionStatus: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: 11,
     lineHeight: 16,
   },
@@ -364,14 +365,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   reflectionEdit: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
   supported: {
     marginTop: 'auto',
     paddingTop: 22,
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: 11,
     fontWeight: '600',
     lineHeight: 16,

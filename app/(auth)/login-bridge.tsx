@@ -9,6 +9,7 @@ import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
+import { Colors } from '@/constants/theme';
 export default function LoginBridgeScreen() {
   const { data } = useOnboarding();
   const { session, refreshProfile } = useAuth();
@@ -118,38 +119,38 @@ export default function LoginBridgeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   copy: {
     position: 'absolute',
     justifyContent: 'center',
   },
   greeting: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontWeight: '500',
     marginBottom: 28,
   },
   message: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   errorText: {
     position: 'absolute',
-    color: '#B3261E',
+    color: Colors.light.error,
     textAlign: 'center',
   },
   continueText: {
-    color: '#fff',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
 });

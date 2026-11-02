@@ -18,6 +18,7 @@ import { getUserStartWeek } from '@/services/assessments';
 import { getCompletedWeeks } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 function loadHistory() {
   return run(async () => {
     const startWeek = await getUserStartWeek();
@@ -126,8 +127,8 @@ export default function TrackingHistoryScreen() {
   );
 }
 
-const PRIMARY_PURPLE = '#6750A4';
-const OUTLINE = '#898A8D';
+const PRIMARY_PURPLE = Colors.light.primary;
+const OUTLINE = Colors.light.outline;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: scaleFont(16),
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   categoryRow: {
     flexDirection: 'row',
@@ -181,11 +182,11 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   categoryLabelMissing: {
-    color: '#79747E',
+    color: Colors.light.textSubtle,
   },
   weekCount: {
     fontSize: scaleFont(12),
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     marginTop: scaleHeight(2),
   },
   statusRow: {
@@ -198,13 +199,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statusDone: {
-    color: '#2E7D32',
+    color: Colors.light.success,
   },
   statusMissing: {
-    color: '#B3261E',
+    color: Colors.light.error,
   },
   categoryChevron: {
     fontSize: scaleFont(16),
-    color: '#79747E',
+    color: Colors.light.textSubtle,
   },
 });

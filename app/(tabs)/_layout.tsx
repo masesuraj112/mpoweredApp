@@ -6,6 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { RemindersProvider } from '@/features/notifications/RemindersContext';
 import { useOpenTappedReminder } from '@/features/notifications/useOpenTappedReminder';
 
+import { Colors } from '@/constants/theme';
 type TabIconName = 'person' | 'folder' | 'planner' | 'settings';
 
 const painTrackerIcon = require('../../assets/images/home-page/stickman.svg');
@@ -13,7 +14,7 @@ const carePlannerIcon = require('../../assets/images/home-page/care-planner.svg'
 const settingsIcon = require('../../assets/images/home-page/settings.svg');
 
 function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
-  const color = '#49454F';
+  const color = Colors.light.textSecondary;
 
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerSelected]}>
@@ -52,8 +53,8 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#49454F',
-          tabBarInactiveTintColor: '#49454F',
+          tabBarActiveTintColor: Colors.light.textSecondary,
+          tabBarInactiveTintColor: Colors.light.textSecondary,
           tabBarLabelStyle: styles.tabLabel,
           tabBarStyle: styles.tabBar,
         }}
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 6,
     borderTopWidth: 0,
-    backgroundColor: '#F2EAF8',
+    backgroundColor: Colors.light.surfaceContainer,
   },
   tabLabel: {
     marginTop: 3,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   iconContainerSelected: {
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   painTrackerIcon: {
     width: 18,

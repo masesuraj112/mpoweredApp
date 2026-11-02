@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { SearchBar } from './SearchBar';
 
+import { Colors } from '@/constants/theme';
 interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
@@ -249,20 +250,20 @@ const styles = StyleSheet.create({
   promptBold: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: Colors.light.text,
   },
   promptSub: {
     fontSize: scaleFont(13),
     fontStyle: 'italic',
     fontWeight: '400',
-    color: '#6B6B6B',
+    color: Colors.light.textSecondary,
   },
 
   // Matches the screenshot: the option rows sit in their own bordered box
   // inside the card, distinct from ChoiceCard's own outer border.
   optionsBox: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(14),
     width: '100%',
     overflow: 'hidden',
@@ -283,21 +284,21 @@ const styles = StyleSheet.create({
   selectedChip: {
     minHeight: scaleHeight(30),
     borderWidth: 1,
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(16),
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.secondaryContainer,
     flexDirection: 'row',
     alignItems: 'center',
     gap: scaleWidth(16),
     paddingHorizontal: scaleWidth(16),
   },
   selectedChipText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
   selectedChipClose: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(24),
     lineHeight: scaleFont(20),
   },
@@ -306,9 +307,9 @@ const styles = StyleSheet.create({
     minHeight: 0,
     width: '100%',
     alignSelf: 'flex-start',
-    borderColor: '#E7E0EC',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(5),
-    backgroundColor: '#FEF7FF',
+    backgroundColor: Colors.light.background,
   },
   // Fixed-height box. `flex: 0` must override the `flex: 1` from the styles above: on native,
   // Yoga turns any `flex > 0` into a flex basis of 0, which beats `height` (and ignores
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    backgroundColor: '#FEF7FF',
+    backgroundColor: Colors.light.background,
   },
   scrollContentGrow: {
     flexGrow: 1,
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   supportingText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     letterSpacing: 0.4,
@@ -369,11 +370,11 @@ const styles = StyleSheet.create({
   },
   personalCareRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.divider,
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.light.divider,
   },
 
   box: {
@@ -381,20 +382,20 @@ const styles = StyleSheet.create({
     height: scaleWidth(24),
     borderRadius: scaleWidth(6),
     borderWidth: 2,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.light.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
   boxSelected: {
-    borderColor: '#5B4A9E',
-    backgroundColor: '#5B4A9E',
+    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.primary,
   },
   painTrackerBox: {
     width: scaleWidth(18),
     height: scaleWidth(18),
     borderRadius: scaleWidth(2),
-    borderColor: '#49454F',
+    borderColor: Colors.light.outlineStrong,
   },
   checkmark: {
     color: 'white',
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: scaleFont(16),
     fontWeight: '700',
-    color: '#1A1A1A',
+    color: Colors.light.text,
     flex: 1,
     flexShrink: 1,
     minWidth: 0
@@ -413,7 +414,7 @@ const styles = StyleSheet.create({
   painTrackerLabel: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   personalCareLabel: {
     lineHeight: scaleHeight(20),

@@ -5,6 +5,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 // SingleChoiceInput takes a mutable string[]
 const SOCIAL_HEALTH_OPTIONS: string[] = [...TRAVELLING_OPTIONS];
 
@@ -45,7 +46,7 @@ export default function TravellingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },

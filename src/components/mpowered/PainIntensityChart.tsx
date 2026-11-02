@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { scaleFont, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 export interface PainIntensityPoint {
   /** Short label shown under the point, e.g. "24/05" */
   label: string;
@@ -16,9 +17,9 @@ interface PainIntensityChartProps {
 }
 
 const PAIN_SCALE_MAX = 10;
-const LINE_COLOR = '#6750A4';
-const GRID_COLOR = '#E0E0E0';
-const AXIS_TEXT_COLOR = '#525252';
+const LINE_COLOR = Colors.light.primary;
+const GRID_COLOR = Colors.light.textDisabled;
+const AXIS_TEXT_COLOR = Colors.light.textSecondary;
 const Y_AXIS_WIDTH = 18;
 // Keeps the edge dots and their centred date labels inside the plot area
 const HORIZONTAL_INSET = scaleWidth(16);

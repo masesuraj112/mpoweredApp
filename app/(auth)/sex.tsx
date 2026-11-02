@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
   { label: 'Male', value: 'male' as const },
@@ -45,12 +46,12 @@ export default function SexScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, alignItems: 'center' },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 32 },
-  option: { width: '100%', backgroundColor: '#EDE9F5', borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
-  optionSelected: { backgroundColor: '#D9D0EE' },
-  optionText: { color: '#5B3FA5', fontWeight: '600', fontSize: 15 },
-  continueButton: { backgroundColor: '#5B3FA5', width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
-  continueButtonDisabled: { backgroundColor: '#D9D0EE' },
-  continueText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  continueTextDisabled: { color: '#5B3FA5' },
-  tip: { textAlign: 'center', color: '#8A8590', marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
+  option: { width: '100%', backgroundColor: Colors.light.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
+  optionSelected: { backgroundColor: Colors.light.secondaryContainer },
+  optionText: { color: Colors.light.primary, fontWeight: '600', fontSize: 15 },
+  continueButton: { backgroundColor: Colors.light.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
+  continueButtonDisabled: { backgroundColor: Colors.light.secondaryContainer },
+  continueText: { color: Colors.light.onPrimary, fontWeight: '700', fontSize: 16 },
+  continueTextDisabled: { color: Colors.light.primary },
+  tip: { textAlign: 'center', color: Colors.light.textSubtle, marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
 });

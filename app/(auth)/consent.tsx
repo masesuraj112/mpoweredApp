@@ -2,6 +2,7 @@ import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 // TODO: confirm final URLs with the team before shipping
 const TERMS_URL = 'https://mpowered.example/terms';
 const PRIVACY_URL = 'https://mpowered.example/privacy';
@@ -50,14 +51,14 @@ const styles = StyleSheet.create({
     marginBottom: 32
   },
   continueButton: {
-    backgroundColor: '#5B3FA5',
+    backgroundColor: Colors.light.primary,
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center',
     marginBottom: 24
   },
   continueText: {
-    color: '#fff',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
     fontSize: 16
   },

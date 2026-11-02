@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
@@ -58,7 +59,7 @@ export default function ActivityScreen() {
             onChangeText={handleChange}
             keyboardType="decimal-pad"
             placeholder="Input number only"
-            placeholderTextColor="#79747E"
+            placeholderTextColor={Colors.light.textSubtle}
             maxLength={5}
             style={[styles.input, isOverMax && styles.inputError]}
             accessibilityLabel="Hours active per day"
@@ -85,7 +86,7 @@ export default function ActivityScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  screen: { flex: 1, backgroundColor: Colors.light.surface },
   container: {
     flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
@@ -95,37 +96,37 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   input: {
     height: scaleHeight(56),
     borderWidth: 1,
-    borderColor: '#79747E',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(4),
     paddingHorizontal: scaleWidth(16),
     fontSize: scaleFont(16),
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   inputError: {
-    borderColor: '#B3261E',
+    borderColor: Colors.light.error,
   },
   helper: {
     marginTop: scaleHeight(16),
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     letterSpacing: 0.4,
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   accessoryBar: {
     alignItems: 'flex-end',
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(10),
   },
   accessoryDone: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: scaleFont(16),
     fontWeight: '600',
   },

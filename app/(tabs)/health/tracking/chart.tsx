@@ -25,6 +25,7 @@ import type { AppError } from '@/lib/errors';
 import { getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 const PAGE_SIZE = 5;
 const ALL_LOCATIONS = '__all__';
 
@@ -207,9 +208,9 @@ export default function TrackingChartScreen() {
   );
 }
 
-const PRIMARY_PURPLE = '#6750A4';
-const PRIMARY_CONTAINER = '#EADDFF';
-const OUTLINE_VARIANT = '#CAC4D0';
+const PRIMARY_PURPLE = Colors.light.primary;
+const PRIMARY_CONTAINER = Colors.light.secondaryContainer;
+const OUTLINE_VARIANT = Colors.light.outline;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: scaleFont(20),
     fontWeight: '600',
-    color: '#525252',
+    color: Colors.light.textSecondary,
   },
   filterChip: {
     borderWidth: 1,
@@ -239,35 +240,35 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(100),
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(6),
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.light.background,
     maxWidth: '55%',
   },
   emptyText: {
     fontSize: scaleFont(14),
     lineHeight: scaleFont(20),
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     textAlign: 'center',
     marginHorizontal: scaleWidth(24),
     marginVertical: scaleHeight(32),
   },
   tableHeader: {
     fontWeight: '600',
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   notice: {
     fontSize: scaleFont(12),
-    color: '#2E7D32',
+    color: Colors.light.success,
     textAlign: 'center',
     marginTop: scaleHeight(10),
   },
   noticeError: {
-    color: '#B3261E',
+    color: Colors.light.error,
   },
   metricRow: {
     flexDirection: 'row',
     marginTop: scaleHeight(16),
     borderWidth: 1,
-    borderColor: '#D9D9D9',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(20),
     overflow: 'hidden',
   },
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
   table: {
     marginTop: scaleHeight(16),
     borderWidth: 1,
-    borderColor: '#D1D1D6',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(10),
     paddingHorizontal: scaleWidth(12),
   },
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: scaleHeight(12),
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: Colors.light.divider,
     gap: scaleWidth(8),
   },
   tableRowLast: {
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
   seeMoreButton: {
     alignSelf: 'center',
     marginTop: scaleHeight(16),
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(20),
     paddingVertical: scaleHeight(10),

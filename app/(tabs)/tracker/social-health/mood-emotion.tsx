@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
 const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
   frustrated: {
@@ -114,7 +115,7 @@ export default function MoodEmotionScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: '#000000',
+    color: Colors.light.text,
   },
   hintText: {
     marginTop: scaleHeight(1),
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: '#79747E',
+    color: Colors.light.textSubtle,
   },
   emojiRow: {
     flexDirection: 'row',
@@ -173,6 +174,6 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: '#000000',
+    color: Colors.light.text,
   },
 });

@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     flexShrink: 1,
-    color: '#8E8E93',
+    color: Colors.light.textSubtle,
     fontSize: scaleFont(12),
     lineHeight: 18,
     letterSpacing: 0.4,

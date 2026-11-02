@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 export interface PainTrendPoint {
   /** Short label shown under the point, e.g. "25/05" */
   label: string;
@@ -16,9 +17,9 @@ interface PainTrendChartProps {
 }
 
 const PAIN_SCALE_MAX = 10;
-const LINE_COLOR = '#6750A4';
-const LINE_COLOR_LIGHT = '#B9AAE0';
-const DATE_LABEL_COLOR = '#79747E';
+const LINE_COLOR = Colors.light.primary;
+const LINE_COLOR_LIGHT = Colors.light.onBrandMuted;
+const DATE_LABEL_COLOR = Colors.light.textSubtle;
 // Keeps the edge dots and their centred date labels inside the SVG
 const HORIZONTAL_INSET = scaleWidth(20);
 
@@ -74,7 +75,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   y={point.y - scaleHeight(8)}
                   fontSize={scaleFont(11)}
                   fontWeight="700"
-                  fill="#1A1A1A"
+                  fill={Colors.light.text}
                   textAnchor="middle"
                 >
                   {isEndpoint ? point.value : ''}

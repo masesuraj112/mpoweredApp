@@ -6,6 +6,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function PainCharacteristicsScreen() {
   const { answers, updateAnswer } = usePainAssessment();
   const [selected, setSelected] = useState<number[]>(() =>
@@ -73,7 +74,7 @@ export default function PainCharacteristicsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(9),
     marginBottom: scaleHeight(18),
   },

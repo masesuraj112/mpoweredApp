@@ -55,7 +55,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
         accessibilityState={{ disabled: isSigningOut }}
         style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
       >
-        {isSigningOut ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.signOutText}>Sign out</Text>}
+        {isSigningOut ? <ActivityIndicator color={Colors.light.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
       </Pressable>
     </SafeAreaView>
   );
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   title: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleHeight(29),
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(24),
   },
   chevron: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(26),
     lineHeight: scaleFont(26),
   },
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   signOutText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: scaleFont(20),
     lineHeight: scaleHeight(24),
   },

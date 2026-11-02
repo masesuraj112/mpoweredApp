@@ -14,6 +14,7 @@ import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
@@ -65,9 +66,9 @@ export default function WeekSummaryScreen() {
   );
 }
 
-const SECONDARY_CONTAINER = '#E8DEF8';
-const ON_SURFACE_VARIANT = '#49454F';
-const OUTLINE_VARIANT = '#CAC4D0';
+const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
+const ON_SURFACE_VARIANT = Colors.light.textSecondary;
+const OUTLINE_VARIANT = Colors.light.outline;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   },
   period: {
     fontSize: scaleFont(12),
-    color: '#79747E',
+    color: Colors.light.textSubtle,
     marginTop: scaleHeight(4),
     marginHorizontal: scaleWidth(24),
   },

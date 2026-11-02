@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
 
+import { Colors } from '@/constants/theme';
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function GeneralScreen() {
@@ -81,7 +82,7 @@ return (
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -92,12 +93,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   promptText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
-    backgroundColor: '#FEF7FF',
+    backgroundColor: Colors.light.background,
     overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
   },
@@ -126,10 +127,10 @@ const styles = StyleSheet.create({
   },
   optionDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.divider,
   },
   optionText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
@@ -142,17 +143,17 @@ const styles = StyleSheet.create({
     width: scaleWidth(18),
     height: scaleWidth(18),
     borderWidth: 2,
-    borderColor: '#49454F',
+    borderColor: Colors.light.outlineStrong,
     borderRadius: scaleWidth(2),
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxSelected: {
-    borderColor: '#5B4A9E',
-    backgroundColor: '#5B4A9E',
+    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.primary,
   },
   checkmark: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: scaleFont(12),
     fontWeight: '700',
   },

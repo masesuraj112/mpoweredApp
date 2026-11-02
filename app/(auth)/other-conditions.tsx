@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function OtherConditionsScreen() {
   const { data, updateData } = useOnboarding();
   const [text, setText] = useState(data.otherConditions);
@@ -33,7 +34,7 @@ export default function OtherConditionsScreen() {
           value={text}
           onChangeText={setText}
           placeholder={isNoDiagnosisPath ? 'Describe your symptoms or how you\'re feeling' : 'Type conditions or symptoms that you know'}
-          placeholderTextColor="#8A8590"
+          placeholderTextColor={Colors.light.textSubtle}
           multiline
           // Return adds a new line, so add a Done bar to close the keyboard.
           inputAccessoryViewID={doneBar.id}
@@ -52,8 +53,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, paddingBottom: 64 },
   title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
-  subtitle: { textAlign: 'center', color: '#8A8590', marginBottom: 24 },
-  input: { backgroundColor: '#EDE9F5', borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
-  continueButton: { backgroundColor: '#6750A4', width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
-  continueText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  subtitle: { textAlign: 'center', color: Colors.light.textSubtle, marginBottom: 24 },
+  input: { backgroundColor: Colors.light.surfaceContainer, borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
+  continueButton: { backgroundColor: Colors.light.primary, width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
+  continueText: { color: Colors.light.onPrimary, fontWeight: '600', fontSize: 14 },
 });

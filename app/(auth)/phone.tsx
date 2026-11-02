@@ -8,6 +8,7 @@ import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
+import { Colors } from '@/constants/theme';
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
   if (localNumber.length <= 4) return localNumber;
@@ -94,7 +95,7 @@ export default function PhoneScreen() {
               borderTopLeftRadius: 4 * scale,
               borderTopRightRadius: 4 * scale,
               borderBottomWidth: scale,
-              borderBottomColor: isValidPhoneNumber ? '#6750A4' : '#49454F',
+              borderBottomColor: isValidPhoneNumber ? Colors.light.primary : Colors.light.outlineStrong,
             },
           ]}
         >
@@ -103,7 +104,7 @@ export default function PhoneScreen() {
             value={phoneNumber}
             onChangeText={handlePhoneNumberChange}
             placeholder="04xx xxx xxx"
-            placeholderTextColor="#1D1B20"
+            placeholderTextColor={Colors.light.text}
             keyboardType="phone-pad"
             // The iOS phone pad has no return key, so add a Done bar to close it.
             inputAccessoryViewID={doneBar.id}
@@ -194,57 +195,57 @@ export default function PhoneScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   title: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     textAlign: 'center',
     fontWeight: '500',
   },
   inputContainer: {
     position: 'absolute',
-    backgroundColor: '#E6E0E9',
-    borderBottomColor: '#49454F',
+    backgroundColor: Colors.light.surfaceContainer,
+    borderBottomColor: Colors.light.outlineStrong,
     overflow: 'hidden',
   },
   input: {
     flex: 1,
-    color: '#1D1B20',
+    color: Colors.light.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   helperText: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   phoneError: {
     position: 'absolute',
-    color: '#B3261E',
+    color: Colors.light.error,
     textAlign: 'center',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   continueButtonDisabled: {
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   continueText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
   continueTextDisabled: {
-    color: '#6750A4',
+    color: Colors.light.primary,
   },
 });

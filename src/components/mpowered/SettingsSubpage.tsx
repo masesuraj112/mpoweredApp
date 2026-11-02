@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNode, useState } from 'react';
 
+import { Colors } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -18,7 +19,7 @@ export function SettingsSubpage({ title, children }: { title: string; children: 
 
 export const settingsSubpageStyles = StyleSheet.create({
   placeholder: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
@@ -26,10 +27,10 @@ export const settingsSubpageStyles = StyleSheet.create({
     minHeight: scaleHeight(48),
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.divider,
   },
   linkText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
@@ -139,11 +140,11 @@ export function SettingsSelect({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   title: {
     marginBottom: scaleHeight(24),
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleHeight(29),
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: scaleWidth(16),
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(12),
     marginBottom: scaleHeight(16),
   },
@@ -178,17 +179,17 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     flex: 1,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(20),
     lineHeight: scaleHeight(24),
   },
   optionArrow: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(26),
     lineHeight: scaleFont(26),
   },
   destructiveText: {
-    color: '#D32F2F',
+    color: Colors.light.error,
   },
   toggle: {
     width: scaleWidth(72),
@@ -196,22 +197,22 @@ const styles = StyleSheet.create({
     padding: scaleWidth(4),
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(20),
-    backgroundColor: '#F3EDF7',
+    backgroundColor: Colors.light.surfaceContainer,
   },
   toggleOn: {
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   toggleThumb: {
     width: scaleWidth(28),
     height: scaleWidth(28),
     borderRadius: scaleWidth(14),
-    backgroundColor: '#CCC2DC',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   toggleThumbOn: {
     alignSelf: 'flex-end',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   select: {
     minWidth: scaleWidth(106),
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(4),
   },
   selectWrapper: {
@@ -234,11 +235,11 @@ const styles = StyleSheet.create({
     right: 0,
     minWidth: scaleWidth(106),
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(4),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     elevation: 4,
-    shadowColor: '#000000',
+    shadowColor: Colors.light.shadow,
     shadowOpacity: 0.15,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
@@ -249,15 +250,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(12),
   },
   selectOptionText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(16),
   },
   selectText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(16),
   },
   selectArrow: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(20),
   },
 });

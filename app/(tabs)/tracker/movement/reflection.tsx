@@ -21,6 +21,7 @@ import {
   View,
 } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
@@ -88,7 +89,7 @@ export default function ReflectionScreen() {
               value={answers.reflection ?? ''}
               onChangeText={text => updateAnswer('reflection', text)}
               placeholder="For instance, when pain occurred, you lie down for the whole day"
-              placeholderTextColor="#79747E"
+              placeholderTextColor={Colors.light.textSubtle}
               multiline
               textAlignVertical="top"
               style={styles.input}
@@ -116,7 +117,7 @@ export default function ReflectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
+  screen: { flex: 1, backgroundColor: Colors.light.surface },
   container: {
     flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -134,21 +135,21 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: scaleHeight(120),
     borderWidth: 1,
-    borderColor: '#79747E',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(4),
     padding: scaleWidth(16),
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   accessoryBar: {
     alignItems: 'flex-end',
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(10),
   },
   accessoryDone: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: scaleFont(16),
     fontWeight: '600',
   },
@@ -156,10 +157,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: scaleHeight(6),
     fontSize: scaleFont(12),
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   counterOver: { 
-    color: '#B3261E', 
+    color: Colors.light.error, 
     fontWeight: '600', 
   },
 });

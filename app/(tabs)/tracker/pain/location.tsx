@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
@@ -105,7 +106,7 @@ export default function PainLocationScreen() {
               value={draftOtherLocation}
               onChangeText={setDraftOtherLocation}
               placeholder="Knee"
-              placeholderTextColor="#1D1B20"
+              placeholderTextColor={Colors.light.text}
               style={styles.input}
               accessibilityLabel="Other pain location"
               inputAccessoryViewID={doneBar.id}
@@ -165,7 +166,7 @@ export default function PainLocationScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(9),
     marginBottom: scaleHeight(18),
   },
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: Colors.light.backdrop,
     padding: scaleWidth(24),
   },
   modalContent: {
@@ -191,13 +192,13 @@ const styles = StyleSheet.create({
     maxWidth: scaleWidth(386),
     height: scaleHeight(242),
     borderRadius: scaleWidth(12),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     paddingTop: scaleHeight(12),
     paddingHorizontal: scaleWidth(16),
     paddingBottom: scaleHeight(8),
   },
   modalLabel: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     fontWeight: '400',
     lineHeight: scaleHeight(16),
@@ -205,16 +206,16 @@ const styles = StyleSheet.create({
   },
   input: {
     height: scaleHeight(40),
-    backgroundColor: '#E6E0E9',
+    backgroundColor: Colors.light.surfaceContainer,
     borderRadius: scaleWidth(2),
     paddingHorizontal: scaleWidth(4),
     paddingVertical: 0,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
   previousLabel: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     marginTop: scaleHeight(8),
@@ -227,12 +228,12 @@ const styles = StyleSheet.create({
   previousLocation: {
     height: scaleHeight(30),
     justifyContent: 'center',
-    backgroundColor: '#CCC2DC',
+    backgroundColor: Colors.light.secondaryContainer,
     borderRadius: scaleWidth(2),
     paddingHorizontal: scaleWidth(4),
   },
   previousLocationText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(16),
   },
   cancelButtonText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
@@ -260,12 +261,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(16),
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   okButtonText: {
-    color: '#FEF7FF',
+    color: Colors.light.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },

@@ -10,6 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummaryData; onClose: () => void }) {
   return (
     <View style={styles.screen}>
@@ -157,12 +158,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(24),
     paddingTop: scaleHeight(16),
     paddingBottom: scaleHeight(16),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   heading: {
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(8),
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleHeight(29),
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
   subheading: {
     marginHorizontal: scaleWidth(7),
     marginBottom: scaleHeight(20),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     letterSpacing: 0.4,
@@ -179,12 +180,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
     borderWidth: 1,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(18),
     paddingTop: scaleHeight(12),
     paddingBottom: scaleHeight(10),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   reportHeader: {
     flexDirection: 'row',
@@ -194,13 +195,13 @@ const styles = StyleSheet.create({
     minHeight: scaleHeight(28),
   },
   reportTitle: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(20),
     fontWeight: '700',
     lineHeight: scaleHeight(24),
   },
   period: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(11),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#CAC4D0',
+    backgroundColor: Colors.light.divider,
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(18),
   },
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
   },
   sectionHeading: {
     marginBottom: scaleHeight(14),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     fontWeight: '600',
     lineHeight: scaleHeight(20),
@@ -229,13 +230,13 @@ const styles = StyleSheet.create({
   guidancePanel: {
     overflow: 'hidden',
     borderRadius: scaleWidth(12),
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
     marginHorizontal: scaleWidth(4),
   },
   guidanceText: {
     paddingHorizontal: scaleWidth(18),
     paddingVertical: scaleHeight(12),
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
     textAlign: 'center',
@@ -247,18 +248,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: scaleWidth(8),
     paddingHorizontal: scaleWidth(12),
-    backgroundColor: '#AEAEB0',
+    backgroundColor: Colors.light.divider,
   },
   tipsButtonPressed: {
     opacity: 0.8,
   },
   searchIcon: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(20),
     lineHeight: scaleFont(20),
   },
   tipsButtonText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
   resultsHeading: {
     marginTop: scaleHeight(24),
     marginBottom: scaleHeight(12),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
@@ -279,12 +280,12 @@ const styles = StyleSheet.create({
     gap: scaleHeight(2),
   },
   resultLabel: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
   resultText: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },
@@ -293,7 +294,7 @@ const styles = StyleSheet.create({
   },
   footerDivider: {
     height: 1,
-    backgroundColor: '#CAC4D0',
+    backgroundColor: Colors.light.divider,
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(12),
   },
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
     gap: scaleWidth(12),
   },
   savedText: {
-    color: 'rgba(60, 60, 67, 0.6)',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
@@ -315,15 +316,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(100),
     paddingHorizontal: scaleWidth(16),
   },
   closeButtonPressed: {
-    backgroundColor: '#F3EDF7',
+    backgroundColor: Colors.light.surfaceContainer,
   },
   closeButtonText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),

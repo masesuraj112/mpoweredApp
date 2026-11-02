@@ -10,6 +10,7 @@ import {
     ViewStyle,
 } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 interface ChoiceCardProps {
   title: string;
   /** Pass a string or nested `<Text>` elements */
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   validationMessage: {
-    color: '#B3261E',
+    color: Colors.light.error,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     textAlign: 'right',
@@ -255,22 +256,22 @@ const styles = StyleSheet.create({
   },
   painTrackerContainer: {
     height: scaleHeight(572),
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),
     paddingHorizontal: scaleWidth(19),
     paddingBottom: scaleHeight(12),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   personalCareContainer: {
     flex: 1,
     minHeight: 0,
-    borderColor: '#AEAEB2',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),
     paddingHorizontal: scaleWidth(19),
     paddingBottom: scaleHeight(12),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   painTrackerTitle: {
     fontSize: scaleFont(20),
@@ -283,10 +284,10 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(24),
     letterSpacing: 0.15,
     marginBottom: scaleHeight(10),
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   painTrackerDivider: {
-    borderTopColor: '#CAC4D0',
+    borderTopColor: Colors.light.divider,
     marginBottom: scaleHeight(14),
   },
   painTrackerPrompt: {
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
 });
 
@@ -338,23 +339,23 @@ const footerStyles = StyleSheet.create({
     width: scaleWidth(105),
     height: scaleHeight(31),
     borderWidth: 1,
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(16),
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: scaleWidth(12),
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   navigationButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
   nextButton: {
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   nextButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
@@ -372,21 +373,21 @@ const footerStyles = StyleSheet.create({
     gap: scaleWidth(8),
   },
   recordButtonPressed: {
-    backgroundColor: '#F2F2F5',
+    backgroundColor: Colors.light.background,
   },
   painTrackerRecordButton: {
     width: scaleWidth(105),
     height: scaleHeight(30),
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(16),
     paddingVertical: 0,
     paddingHorizontal: scaleWidth(16),
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   painTrackerPager: {
     width: scaleWidth(54),
     height: scaleHeight(31),
-    borderColor: '#CAC4D0',
+    borderColor: Colors.light.outline,
     borderRadius: scaleWidth(8),
     paddingVertical: 0,
     paddingHorizontal: 0,
@@ -394,21 +395,21 @@ const footerStyles = StyleSheet.create({
   painTrackerRecordText: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: '#FEF7FF',
+    color: Colors.light.onPrimary,
   },
   personalCarePagerText: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   disabledNavigationButton: {
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   disabledNavigationButtonText: {
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   pillText: {
     fontSize: scaleFont(18),

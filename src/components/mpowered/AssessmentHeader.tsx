@@ -2,6 +2,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export function AssessmentHeader() {
   return (
     <View style={styles.topBar}>
@@ -22,7 +23,7 @@ export function AssessmentHeader() {
 const styles = StyleSheet.create({
   topBar: {
     height: scaleHeight(109),
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
     paddingTop: scaleHeight(52),
     paddingHorizontal: scaleWidth(24),
     flexDirection: 'row',
@@ -37,16 +38,16 @@ const styles = StyleSheet.create({
   backArrow: {
     fontSize: scaleFont(28),
     lineHeight: scaleFont(28),
-    color: '#49454F',
+    color: Colors.light.textSecondary,
     marginRight: scaleWidth(8),
   },
   backText: {
     fontSize: scaleFont(16),
-    color: '#49454F',
+    color: Colors.light.textSecondary,
   },
   topBarTitle: {
     fontSize: scaleFont(16),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
   },
 });

@@ -1,6 +1,7 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 interface AssessmentRadioRowProps {
   label: string;
   selected: boolean;
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.divider,
   },
   radio: {
     position: 'absolute',
@@ -58,22 +59,22 @@ const styles = StyleSheet.create({
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderWidth: 2,
-    borderColor: '#49454F',
+    borderColor: Colors.light.outlineStrong,
     borderRadius: scaleWidth(10),
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioSelected: {
-    borderColor: '#5B4A9E',
+    borderColor: Colors.light.primary,
   },
   radioDot: {
     width: scaleWidth(10),
     height: scaleWidth(10),
     borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
+    backgroundColor: Colors.light.primary,
   },
   text: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),

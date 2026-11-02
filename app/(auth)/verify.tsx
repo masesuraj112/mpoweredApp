@@ -23,6 +23,7 @@ import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
 import { createProfile } from '@/services/profile';
 
+import { Colors } from '@/constants/theme';
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
 const CODE_CELL_WIDTH = 40;
 const CODE_CELL_GAP = 10;
@@ -379,20 +380,20 @@ export default function VerifyScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   title: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   phoneNumber: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     fontWeight: '600',
   },
   codeRow: {
@@ -402,11 +403,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E7E0EC',
-    borderColor: '#79747E',
+    backgroundColor: Colors.light.surfaceMuted,
+    borderColor: Colors.light.outline,
   },
   codeDigit: {
-    color: '#000000',
+    color: Colors.light.text,
     fontWeight: '400',
   },
   hiddenInput: {
@@ -421,45 +422,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resendPrompt: {
-    color: '#000000',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   resendButton: {
     justifyContent: 'center',
   },
   resendText: {
-    color: '#6155F5',
+    color: Colors.light.primary,
     fontWeight: '500',
     textDecorationLine: 'underline',
   },
   resendStatus: {
     position: 'absolute',
-    color: '#000000',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   resendCountdown: {
     position: 'absolute',
-    color: '#898A8D',
+    color: Colors.light.textSubtle,
     fontWeight: '500',
   },
   errorText: {
     position: 'absolute',
-    color: '#B3261E',
+    color: Colors.light.error,
   },
   verifyButton: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   verifyButtonDisabled: {
-    backgroundColor: '#EADDFF',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   verifyText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
   verifyTextDisabled: {
-    color: '#6750A4',
+    color: Colors.light.primary,
   },
 });

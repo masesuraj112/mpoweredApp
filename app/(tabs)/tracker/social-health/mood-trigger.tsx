@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function MoodTriggerScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const reminders = useReminders();
@@ -64,7 +65,7 @@ export default function MoodTriggerScreen() {
           value={answers.emotionReflection ?? ''}
           onChangeText={value => updateAnswer('emotionReflection', value)}
           placeholder="i.e: delayed in work due to pain, inability to meet with friends, etc"
-          placeholderTextColor="#B5B5B5"
+          placeholderTextColor={Colors.light.textSubtle}
           textAlignVertical="top"
           style={styles.reflectionInput}
         />
@@ -76,7 +77,7 @@ export default function MoodTriggerScreen() {
 
 const styles = StyleSheet.create({
   prompt: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -85,12 +86,12 @@ const styles = StyleSheet.create({
   reflectionInput: {
     minHeight: scaleHeight(80),
     borderWidth: 1,
-    borderColor: '#DADADA',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(10),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },

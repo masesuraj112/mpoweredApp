@@ -7,6 +7,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { useKeyboardDoneBar } from './KeyboardDoneBar';
 
+import { Colors, Palette } from '@/constants/theme';
 interface ScaleSliderProps {
   titleText: string;
   underLinedText?: string;
@@ -63,8 +64,8 @@ function interpolateColor(from: string, to: string, t: number): string {
 
 function getGradientColors(value: number): [string, string] {
   const t = value / 10;
-  const startColor = '#8B7BC7';
-  const endColor = interpolateColor('#8B7BC7', '#1A1330', t);
+  const startColor = Colors.light.onBrandMuted;
+  const endColor = interpolateColor(Palette.lavenderSoft, Palette.midnight, t);
   return [startColor, endColor];
 }
 
@@ -130,7 +131,7 @@ export function ScaleSliderInput({
           // The iOS number pad has no return key, so this Done bar is the only way to close it.
           inputAccessoryViewID={doneBar.id}
           placeholder="0 to 10"
-          placeholderTextColor="rgba(0, 0, 0, 0.19)"
+          placeholderTextColor={Colors.light.textSubtle}
           value={hasValue ? String(value) : ''}
           onChangeText={changeNumber}
         />
@@ -252,7 +253,7 @@ const personalCareSheet = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: '#000000',
+    color: Colors.light.text,
     marginBottom: scaleHeight(14),
   },
   scoreRow: {
@@ -266,7 +267,7 @@ const personalCareSheet = StyleSheet.create({
     fontWeight: '600',
     lineHeight: scaleHeight(20),
     letterSpacing: 0.1,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   scoreInput: {
     width: scaleWidth(64),
@@ -274,9 +275,9 @@ const personalCareSheet = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.1,
     textAlign: 'center',
-    color: '#1D1B20',
+    color: Colors.light.text,
     borderBottomWidth: 2,
-    borderBottomColor: '#49454F',
+    borderBottomColor: Colors.light.outlineStrong,
     paddingVertical: scaleHeight(2),
   },
   descriptionText: {
@@ -287,7 +288,7 @@ const personalCareSheet = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: '#000000',
+    color: Colors.light.text,
   },
 });
 
@@ -312,7 +313,7 @@ const sliderSheet = StyleSheet.create({
     left: 0,
     width: '100%',
     height: TRACK_HEIGHT,
-    backgroundColor: '#E4DFF5',
+    backgroundColor: Colors.light.surfaceContainer,
     borderRadius: TRACK_HEIGHT / 2,
   },
   trackFill: {
@@ -325,7 +326,7 @@ const sliderSheet = StyleSheet.create({
   bubble: {
     position: 'absolute',
     top: scaleHeight(-30),
-    backgroundColor: '#5B4A9E',
+    backgroundColor: Colors.light.primary,
     borderRadius: scaleWidth(10),
     paddingHorizontal: scaleWidth(10),
     paddingVertical: scaleHeight(4),
@@ -339,7 +340,7 @@ const sliderSheet = StyleSheet.create({
     position: 'absolute',
     top: (ROW_HEIGHT - THUMB_HEIGHT) / 2,
     height: THUMB_HEIGHT,
-    backgroundColor: '#5B4A9E',
+    backgroundColor: Colors.light.primary,
     borderRadius: 0,
     zIndex: 2,
   },

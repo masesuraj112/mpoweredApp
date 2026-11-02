@@ -96,13 +96,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   condition: {
-    color: 'rgba(60, 60, 67, 0.6)',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
   },
   section: {
     gap: scaleHeight(7),

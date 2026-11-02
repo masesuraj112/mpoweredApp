@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { SLEEPING_OPTIONS } from '@/features/assessments/personal-care/options';
 
+import { Colors } from '@/constants/theme';
 export default function SleepingScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const savedIndex = SLEEPING_OPTIONS.indexOf(answers.sleepingLevel ?? '');
@@ -41,7 +42,7 @@ export default function SleepingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   container: {
     flex: 1,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.light.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },

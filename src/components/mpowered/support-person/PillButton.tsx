@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   label: {
-    color: '#FEF7FF',
+    color: Colors.light.onPrimary,
     fontWeight: '500',
   },
   labelSmall: {

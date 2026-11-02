@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.surfaceContainer,
   },
   chipDisabled: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.light.background,
   },
   chipText: {
     color: Colors.light.primary,

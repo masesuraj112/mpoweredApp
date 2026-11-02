@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 
+import { Colors } from '@/constants/theme';
 interface SingleChoiceProps {
   titleText: string,
   questionNumber?: number;
@@ -122,7 +123,7 @@ const stylesSheet = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
 });
 
@@ -135,15 +136,15 @@ const optionStyles = StyleSheet.create({
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.light.divider,
   },
   personalCareList: {
     width: '96%',
     marginLeft: scaleWidth(4),
     borderWidth: 1,
-    borderColor: '#E7E0EC',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(12),
-    backgroundColor: '#FEF7FF',
+    backgroundColor: Colors.light.background,
     overflow: 'hidden',
   },
   personalCareListFixedHeight: {
@@ -158,14 +159,14 @@ const optionStyles = StyleSheet.create({
   },
   personalCareRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.divider,
   },
   circle: {
     width: scaleWidth(22),
     height: scaleWidth(22),
     borderRadius: scaleWidth(11),
     borderWidth: 2,
-    borderColor: '#3A3A3A',
+    borderColor: Colors.light.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: scaleWidth(16),
@@ -175,22 +176,22 @@ const optionStyles = StyleSheet.create({
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderRadius: scaleWidth(10),
-    borderColor: '#49454F',
+    borderColor: Colors.light.outlineStrong,
     marginRight: 0,
   },
   circleSelected: {
-    borderColor: '#5B4A9E',
+    borderColor: Colors.light.primary,
   },
   circleDot: {
     width: scaleWidth(10),
     height: scaleWidth(10),
     borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
+    backgroundColor: Colors.light.primary,
   },
   label: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: Colors.light.text,
     flex: 1,
     flexShrink: 1,
     minWidth: 0,
@@ -200,6 +201,6 @@ const optionStyles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
 });

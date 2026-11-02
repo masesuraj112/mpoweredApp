@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 export interface DropdownOption<T extends string> {
   value: T;
   label: string;
@@ -71,9 +72,9 @@ export function Dropdown<T extends string>({
   );
 }
 
-const SURFACE = '#FEF7FF';
-const OUTLINE = '#79747E';
-const ACCENT = '#5B4A9E';
+const SURFACE = Colors.light.background;
+const OUTLINE = Colors.light.outline;
+const ACCENT = Colors.light.primary;
 
 const styles = StyleSheet.create({
   trigger: {
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: Colors.light.backdrop,
     justifyContent: 'center',
     paddingHorizontal: scaleWidth(32),
   },
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   optionDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.light.divider,
   },
   optionText: {
     fontSize: scaleFont(16),

@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 export default function EmotionScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
   const reminders = useReminders();
@@ -73,7 +74,7 @@ export default function EmotionScreen() {
           value={answers.emotionStrategies ?? ''}
           onChangeText={value => updateAnswer('emotionStrategies', value)}
           placeholder="Write about any strategies you used to manage your emotions"
-          placeholderTextColor="#B3B3B3"
+          placeholderTextColor={Colors.light.textSubtle}
           textAlignVertical="top"
           style={styles.input}
         />
@@ -88,14 +89,14 @@ const styles = StyleSheet.create({
     gap: scaleHeight(12),
   },
   promptText: {
-    color: '#000000',
+    color: Colors.light.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   examples: {
-    color: '#727272',
+    color: Colors.light.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
@@ -103,12 +104,12 @@ const styles = StyleSheet.create({
   input: {
     height: scaleHeight(146),
     borderWidth: 1,
-    borderColor: '#D9D9D9',
+    borderColor: Colors.light.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },

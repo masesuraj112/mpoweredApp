@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
+import { Colors } from '@/constants/theme';
 const CONDITIONS = [
   'Arthritis',
   'Ankylosing spondylitis',
@@ -239,23 +240,23 @@ export default function DiagnosisConditionsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
     alignItems: 'center',
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.light.surface,
   },
   title: {
     position: 'absolute',
     textAlign: 'center',
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   prompt: {
     position: 'absolute',
     textAlign: 'center',
-    color: '#1D1B20',
+    color: Colors.light.text,
     textDecorationLine: 'underline',
     fontWeight: '500',
   },
@@ -265,8 +266,8 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#CAC4D0',
+    backgroundColor: Colors.light.surface,
+    borderColor: Colors.light.outline,
     textAlign: 'left',
   },
   selectedChips: {
@@ -279,19 +280,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F3EDF7',
+    backgroundColor: Colors.light.surfaceContainer,
     maxWidth: 220,
   },
   chipLabel: {
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   chipRemove: {
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   conditionsPanel: {
     position: 'absolute',
-    backgroundColor: '#F3EDF7',
+    backgroundColor: Colors.light.surfaceContainer,
     overflow: 'hidden',
     elevation: 2,
   },
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
   },
   conditionLabel: {
     flex: 1,
-    color: '#1D1B20',
+    color: Colors.light.text,
     fontWeight: '400',
   },
   customConditionRow: {
@@ -317,58 +318,58 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addCustomOptionText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontWeight: '600',
   },
   customConditionInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#79747E',
+    borderColor: Colors.light.outline,
     borderRadius: 4,
     paddingHorizontal: 8,
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   addCustomButton: {
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 4,
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   addCustomButtonDisabled: {
-    backgroundColor: '#D9D0EE',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   addCustomButtonText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
   checkbox: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: '#49454F',
+    borderColor: Colors.light.outlineStrong,
   },
   checkboxSelected: {
-    backgroundColor: '#6750A4',
-    borderColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
   },
   checkmark: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '700',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
   },
   continueButtonDisabled: {
-    backgroundColor: '#D9D0EE',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   continueText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontWeight: '600',
   },
   continueTextDisabled: {
-    color: '#5B4A9E',
+    color: Colors.light.primary,
   },
 });

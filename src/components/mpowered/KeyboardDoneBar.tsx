@@ -2,6 +2,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useId } from 'react';
 import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 /**
  * A "Done" bar shown above the iOS keyboard, for keyboards with no way to close them: multiline
  * inputs (return adds a new line) and number / phone pads (no return key at all). Ignored on
@@ -42,11 +43,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(10),
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#CAC4D0',
-    backgroundColor: '#F7F2FA',
+    borderTopColor: Colors.light.divider,
+    backgroundColor: Colors.light.background,
   },
   doneText: {
-    color: '#6750A4',
+    color: Colors.light.primary,
     fontSize: scaleFont(16),
     fontWeight: '600',
   },

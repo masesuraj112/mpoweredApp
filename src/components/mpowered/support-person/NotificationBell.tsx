@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: '#FF3B30',
+    backgroundColor: Colors.light.error,
   },
   badgeText: {
     color: Colors.light.background,

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
   title: string;
   /** Optional label shown on the right of the top bar, e.g. "Homescreen" */
@@ -11,8 +12,8 @@ interface PrescriptionsHeaderProps {
   titleAccessory?: ReactNode;
 }
 
-const SECONDARY_CONTAINER = '#E8DEF8';
-const ON_SURFACE_VARIANT = '#49454F';
+const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
+const ON_SURFACE_VARIANT = Colors.light.textSecondary;
 
 export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: PrescriptionsHeaderProps) {
   return (

@@ -5,6 +5,7 @@
 import type { ProfileSection } from './profile';
 import type { ChartPoint, HistoryWeek, PainMetric, WeeklyPainRecord } from './tracking';
 
+import { Colors } from '@/constants/theme';
 export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -21,20 +22,20 @@ function text(value: string): string {
 
 const STYLES = `
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1D1B20; margin: 32px; }
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: ${Colors.light.text}; margin: 32px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
   h2 { font-size: 16px; margin: 0 0 4px; }
-  .muted { color: #79747E; font-size: 12px; }
-  .section { border: 1px solid #CAC4D0; border-radius: 8px; padding: 12px 16px; margin-top: 16px; page-break-inside: avoid; }
+  .muted { color: ${Colors.light.textSubtle}; font-size: 12px; }
+  .section { border: 1px solid ${Colors.light.divider}; border-radius: 8px; padding: 12px 16px; margin-top: 16px; page-break-inside: avoid; }
   .item { margin-top: 10px; }
-  .label { font-size: 11px; font-weight: 600; color: #49454F; }
+  .label { font-size: 11px; font-weight: 600; color: ${Colors.light.textSecondary}; }
   .value { font-size: 13px; margin-top: 2px; }
-  .incomplete { font-size: 13px; font-style: italic; color: #79747E; margin-top: 8px; }
+  .incomplete { font-size: 13px; font-style: italic; color: ${Colors.light.textSubtle}; margin-top: 8px; }
   table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid #E5E5E5; }
-  th { color: #49454F; }
-  .done { color: #2E7D32; font-weight: 600; }
-  .missing { color: #B3261E; font-weight: 600; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid ${Colors.light.divider}; }
+  th { color: ${Colors.light.textSecondary}; }
+  .done { color: ${Colors.light.success}; font-weight: 600; }
+  .missing { color: ${Colors.light.error}; font-weight: 600; }
   svg { margin-top: 16px; }
 `;
 
@@ -97,20 +98,20 @@ export function buildChartSvg(points: ChartPoint[], width = 520, height = 220): 
   const grid = [0, 2, 4, 6, 8, 10]
     .map(
       (value) =>
-        `<line x1="${left}" x2="${width - right}" y1="${y(value)}" y2="${y(value)}" stroke="#E0E0E0" />` +
-        `<text x="${left - 8}" y="${y(value) + 4}" font-size="10" text-anchor="end" fill="#525252">${value}</text>`,
+        `<line x1="${left}" x2="${width - right}" y1="${y(value)}" y2="${y(value)}" stroke={Colors.light.textDisabled} />` +
+        `<text x="${left - 8}" y="${y(value) + 4}" font-size="10" text-anchor="end" fill={Colors.light.textSecondary}>${value}</text>`,
     )
     .join('');
   const line = points.length
-    ? `<polyline fill="none" stroke="#6750A4" stroke-width="2" points="${points
+    ? `<polyline fill="none" stroke={Colors.light.primary} stroke-width="2" points="${points
         .map((p, i) => `${x(i)},${y(p.value)}`)
         .join(' ')}" />`
     : '';
   const dots = points
     .map(
       (p, i) =>
-        `<circle cx="${x(i)}" cy="${y(p.value)}" r="4" fill="#6750A4" />` +
-        `<text x="${x(i)}" y="${height - 8}" font-size="10" text-anchor="middle" fill="#525252">${escapeHtml(p.label)}</text>`,
+        `<circle cx="${x(i)}" cy="${y(p.value)}" r="4" fill={Colors.light.primary} />` +
+        `<text x="${x(i)}" y="${height - 8}" font-size="10" text-anchor="middle" fill={Colors.light.textSecondary}>${escapeHtml(p.label)}</text>`,
     )
     .join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${grid}${line}${dots}</svg>`;

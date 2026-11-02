@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.primary,
     borderRadius: scaleWidth(20),
-    backgroundColor: '#F5EFF7',
+    backgroundColor: Colors.light.background,
   },
   message: {
     color: Colors.light.onSurface,
@@ -88,6 +88,6 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   acceptText: {
-    color: '#FEF7FF',
+    color: Colors.light.onPrimary,
   },
 });

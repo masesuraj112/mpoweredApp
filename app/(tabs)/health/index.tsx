@@ -12,6 +12,7 @@ import { ok, run } from '@/lib/result';
 import { getAssessments, getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
 
 const TREND_WEEKS = 6;
@@ -135,8 +136,8 @@ export default function HealthScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = '#F2F2F7';
-const PRIMARY_PURPLE = '#6750A4';
+const GROUPED_BACKGROUND = Colors.light.background;
+const PRIMARY_PURPLE = Colors.light.primary;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderTopWidth: 1,
-    borderTopColor: '#CAC4D0',
+    borderTopColor: Colors.light.divider,
     marginTop: scaleHeight(16),
     marginBottom: scaleHeight(20),
   },
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   profileUpdated: {
     fontSize: scaleFont(11),
     fontWeight: '500',
-    color: 'rgba(60,60,67,0.6)',
+    color: Colors.light.textSecondary,
     marginTop: scaleHeight(6),
   },
   profileRow: {
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
   profileDescription: {
     flex: 1,
     fontSize: scaleFont(12),
-    color: '#1D1B20',
+    color: Colors.light.text,
   },
   openProfileButtonRow: {
     flexDirection: 'row',
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
     borderRadius: scaleWidth(24),
     paddingVertical: scaleHeight(10),
     paddingHorizontal: scaleWidth(20),
-    shadowColor: '#000',
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.15,
     shadowRadius: 3,
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   shortcutText: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: '#1D1B20',
+    color: Colors.light.text,
     textAlign: 'center',
   },
   trendSection: {
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
   trendSubtitle: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: '#1A1A1A',
+    color: Colors.light.text,
     marginTop: scaleHeight(12),
   },
   trendChart: {
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     backgroundColor: PRIMARY_PURPLE,
-    borderColor: '#D9D9D9',
+    borderColor: Colors.light.divider,
     borderWidth: 0.5,
     paddingVertical: scaleHeight(14),
     paddingHorizontal: scaleWidth(8),

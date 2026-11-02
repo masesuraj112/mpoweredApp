@@ -1,5 +1,6 @@
 import { scaleFont } from '@/services/scale';
 import { StyleSheet, Text } from 'react-native';
+import { Colors } from '@/constants/theme';
 
 /** Small grey uppercase heading, e.g. "YOUR PERMISSIONS" or "UPCOMING APPOINTMENT". */
 export function SectionLabel({ children }: { children: string }) {
@@ -12,7 +13,7 @@ export function SectionLabel({ children }: { children: string }) {
 
 const styles = StyleSheet.create({
   label: {
-    color: 'rgba(60, 60, 67, 0.45)',
+    color: Colors.light.textSubtle,
     fontSize: scaleFont(11),
     fontWeight: '600',
     lineHeight: 16.5,

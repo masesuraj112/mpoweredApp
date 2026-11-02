@@ -18,6 +18,7 @@ import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text } from 'react-native';
 
+import { Colors } from '@/constants/theme';
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
@@ -131,10 +132,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   signOutText: {
-    color: '#FFFFFF',
+    color: Colors.light.onPrimary,
     fontSize: 20,
   },
 });

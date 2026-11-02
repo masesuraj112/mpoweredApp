@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { ProfileSection } from '@/features/health-profile/profile';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 interface ProfileSectionCardProps {
   section: ProfileSection;
   /** Shows the week the answers come from under the title */
@@ -45,12 +46,12 @@ export function ProfileSectionCard({ section, showPeriod = false }: ProfileSecti
   );
 }
 
-const GROUPED_TERTIARY = '#F2F2F7';
-const OUTLINE_VARIANT = '#CAC4D0';
-const ON_SURFACE = '#1D1B20';
-const ON_SURFACE_VARIANT = '#49454F';
-const ERROR_CONTAINER = '#F9DEDC';
-const ON_ERROR_CONTAINER = '#410E0B';
+const GROUPED_TERTIARY = Colors.light.background;
+const OUTLINE_VARIANT = Colors.light.outline;
+const ON_SURFACE = Colors.light.text;
+const ON_SURFACE_VARIANT = Colors.light.textSecondary;
+const ERROR_CONTAINER = Colors.light.errorContainer;
+const ON_ERROR_CONTAINER = Colors.light.onErrorContainer;
 
 const styles = StyleSheet.create({
   card: {

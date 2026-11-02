@@ -6,6 +6,7 @@ import { getPainEntryForWeek } from '@/services/assessments';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
+import { Colors } from '@/constants/theme';
 interface PainSummaryProps {
   summary: PainSummaryData;
   onClose?: () => void;
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
   },
   subheading: {
     fontSize: scaleFont(14),
-    color: '#333',
+    color: Colors.light.text,
     marginBottom: scaleHeight(18),
   },
   card: {
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: scaleFont(13),
-    color: '#333',
+    color: Colors.light.text,
     lineHeight: scaleFont(18),
   },
   bulletRow: {
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   intensityLabel: {
     fontSize: scaleFont(13),
     fontWeight: '600',
-    color: '#555',
+    color: Colors.light.textSecondary,
     marginBottom: scaleHeight(4),
   },
   footerContainer: {
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
   },
   footerDivider: {
     borderTopWidth: 1,
-    borderTopColor: '#D0D0D0',
+    borderTopColor: Colors.light.divider,
     marginBottom: scaleHeight(16),
   },
   footerRow: {
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   savedText: {
-    color: '#888',
+    color: Colors.light.textSubtle,
     fontSize: scaleFont(13),
   },
   closeButton: {
