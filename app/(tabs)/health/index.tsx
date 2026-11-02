@@ -37,15 +37,15 @@ export default function HealthScreen() {
   const completed = overview ? completedCount(overview.latest) : 0;
   const trend = overview?.trend ?? [];
 
-  let profileTitle = 'Loading your Mpowered Health Profile…';
+  let profileTitle = 'Loading your MPowered Health Profile…';
   let profileUpdated = '';
   if (state.status === 'error') {
     profileTitle = healthLoadMessage(state.error);
   } else if (overview && updated) {
-    profileTitle = 'Your Mpowered Health Profile has been created';
+    profileTitle = 'Your MPowered Health Profile has been created';
     profileUpdated = `Updated by ${formatLongDate(updated)} · ${completed} of ${ASSESSMENT_TYPES.length} assessments completed`;
   } else if (overview) {
-    profileTitle = 'Your Mpowered Health Profile has not been created yet';
+    profileTitle = 'Your MPowered Health Profile has not been created yet';
     profileUpdated = 'Not updated yet';
   }
 
@@ -93,9 +93,7 @@ export default function HealthScreen() {
 
         <View style={styles.trendSection}>
           <View style={styles.trendInsightRow}>
-            <Text style={styles.trendInsight}>New insights for your M</Text>
-            <Text style={[styles.trendInsight, styles.trendInsightSuperscript]}>powered</Text>
-            <Text style={styles.trendInsight}> plan.</Text>
+            <Text style={styles.trendInsight}>New insights for your MPowered plan.</Text>
           </View>
           <Text style={styles.trendSubtitle}>
             {painTrendMessage(trend) ??
@@ -251,10 +249,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-  },
-  trendInsightSuperscript: {
-    fontSize: scaleFont(10),
-    lineHeight: scaleFont(12),
   },
   trendSubtitle: {
     fontSize: scaleFont(14),

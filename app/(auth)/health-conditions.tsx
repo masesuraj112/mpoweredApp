@@ -35,7 +35,7 @@ export default function HealthConditionsScreen() {
         <Text style={styles.optionText}>No, I haven&apos;t</Text>
       </Pressable>
       <Text style={styles.helperText}>
-        No diagnosis? No problem! You know your body and how you feel so being Health M<Text style={styles.superscript}>Powered</Text> is for you :)
+        No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you :)
       </Text>
       <Pressable
         disabled={selected === null}
@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
   optionSelected: { backgroundColor: Colors.light.secondaryContainer },
   optionText: { color: Colors.light.primary, fontWeight: '600', fontSize: 15 },
   helperText: { textAlign: 'center', marginTop: 24, marginBottom: 32, fontSize: 15, lineHeight: 22 },
-  superscript: { fontSize: 11 },
   continueButton: { backgroundColor: Colors.light.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center' },
   continueText: { color: Colors.light.onPrimary, fontWeight: '700', fontSize: 16 },
   continueButtonDisabled: { backgroundColor: Colors.light.secondaryContainer },

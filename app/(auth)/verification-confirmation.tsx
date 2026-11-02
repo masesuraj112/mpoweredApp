@@ -61,11 +61,7 @@ export default function VerificationConfirmationScreen() {
                 },
               ]}
             >
-              You&apos;re off to an M
-              <Text style={[styles.poweredWord, { fontSize: 20.64 * scale, lineHeight: 40 * scale }]}>
-                Powered
-              </Text>
-              {' start!'}
+              You&apos;re off to an MPowered start!
             </Text>
           </>
         )}
@@ -171,9 +167,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
-  },
-  poweredWord: {
-    fontWeight: '500',
   },
   questionnaireMessage: {
     position: 'absolute',

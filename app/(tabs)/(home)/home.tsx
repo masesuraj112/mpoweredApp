@@ -64,13 +64,10 @@ export default function HomeScreen() {
           <View style={styles.intro}>
             <Text style={styles.greeting}>{getGreeting(name)}</Text>
             <Text style={styles.heading}>
-              Let&apos;s build your M<Text style={styles.superscript}>Powered</Text>
-              {' plan.'}
+              Let&apos;s build your MPowered plan.
             </Text>
             <Text style={styles.description}>
-              Assess your pain intensity and its impacts weekly to obtain your M
-              <Text style={styles.descriptionSuperscript}>Powered</Text>
-              {' plan'}
+              Assess your pain intensity and its impacts weekly to obtain your MPowered plan.
             </Text>
           </View>
 
@@ -207,20 +204,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 24,
-  },
-  superscript: {
-    position: 'relative',
-    top: -5,
-    fontSize: 11,
-    lineHeight: 14,
-    fontWeight: '700',
-  },
-  descriptionSuperscript: {
-    position: 'relative',
-    top: -4,
-    fontSize: 8,
-    lineHeight: 10,
-    fontWeight: '400',
   },
   description: {
     marginTop: 5,
