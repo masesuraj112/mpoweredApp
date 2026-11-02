@@ -20,7 +20,7 @@ How MPowered is shared with testers and the client. **There is no App Store or P
 | ----- | -------------- |
 | Source, CI, workflows | GitHub repository, `.github/workflows/` |
 | Builds and updates | Expo (EAS), project `@mpowered-mha/mpowered-app` (ID in `app.json`) |
-| Backend | One hosted Supabase project (the test project) |
+| Backend | Two Supabase projects: `mpoweredAppTest` (in use) and `mpoweredAppProd` (blank, not connected) |
 
 App identifier (iOS bundle ID and Android package): `au.org.mpowered.app`. It is permanent once an app is in a store, so confirm it with the client first (see [client sign-off](deployment/client-signoff.md)).
 
@@ -31,7 +31,7 @@ App identifier (iOS bundle ID and Android package): `au.org.mpowered.app`. It is
 | Local (`.env`) | `npx expo start` on a developer's machine | The hosted test project |
 | EAS `development`, `preview`, `production` | EAS builds and updates (set on the Expo dashboard) | The same hosted test project |
 
-All three EAS environments currently point at the **same test database**, because no production database exists. When one is created, change only the `production` environment's variables.
+All three EAS environments currently point at the **same test database**, because the production project (`mpoweredAppProd`) is blank and not connected yet. Once all migrations are applied to it and the production checklist is complete, change only the `production` environment's variables.
 
 ## Secrets and who owns them
 
@@ -130,6 +130,6 @@ Why the workflow is manual: [deploy-db.yml](../.github/workflows/deploy-db.yml) 
 
 ### Lower priority
 - Whether a tester needs an Expo account, or membership of the `mpowered-mha` organisation, to open a QR code is unverified.
-- No production Supabase project; all EAS environments use the test project.
+- The production Supabase project (`mpoweredAppProd`) exists but is blank and not connected; all EAS environments use the test project.
 - `npm audit` reports 6 high findings inside Expo's own build tooling (`node-forge`, `zod`). The only offered fix downgrades Expo, so they are left in place.
 - No crash or error monitoring.

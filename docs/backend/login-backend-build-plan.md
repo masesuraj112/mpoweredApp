@@ -447,7 +447,7 @@ Revision 2 (2026-10-14). Everything in sections 1 to 5 above is the original pla
 | L9 | RPC security model | `security invoker` with explicit minimal grants. |
 | L10 | Name length | UI limited to 45; no migration. |
 | L11 | Support person | **B**: `users.user_type`; support persons get a `users` row only. |
-| L14 | Retire the dev harness | Yes: `dev-login` gated behind `__DEV__`, `AuthDebug` removed. |
+| L14 | Retire the dev harness | Yes: `dev-login` gated behind `__DEV__`, `AuthDebug` removed. `dev-login` removed entirely on 2 Nov 2026 (`chore/remove-dev-login`). |
 | L15 | Production config record | `production-auth-checklist.md`. |
 | N1 | A wrong code and an expired code | Supabase returns `otp_expired` for both, so a server rejection maps to `OTP_EXPIRED` (message: "wrong or expired"). `INVALID_OTP` is only for a code that is not six digits. |
 | N2 | `patients.sex` is `NOT NULL` | Sex is required in the app for patients. The column is unchanged and can be relaxed later. |

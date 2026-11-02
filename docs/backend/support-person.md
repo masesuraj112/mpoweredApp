@@ -110,7 +110,6 @@ name, and sign-out doesn't move you anywhere, because bypass keeps every screen 
 
 **Things that look broken but aren't:**
 - **Type errors on routes that exist:** `.expo/types/router.d.ts` is stale. Run `npx expo start` once to regenerate it.
-- **`/dev-login` accounts stay on the sign-in screens:** they have no profile row. This is the same on `main`.
 
 **Manual test checklist:**
 - **Home:**
