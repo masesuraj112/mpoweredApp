@@ -7,6 +7,7 @@ import { fitCanvas } from '@/features/auth/canvas';
 
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
+import { focusCodeInput } from '@/features/auth/focusCodeInput';
 import { authErrorMessage } from '@/features/auth/messages';
 import {
   OTP_LENGTH,
@@ -190,7 +191,7 @@ export default function VerifyScreen() {
               key={index}
               accessibilityRole="button"
               accessibilityLabel={`Enter verification code, digit ${index + 1}`}
-              onPress={() => codeInputRef.current?.focus()}
+              onPress={() => focusCodeInput(codeInputRef.current)}
               style={[
                 styles.codeCell,
                 {
@@ -209,6 +210,8 @@ export default function VerifyScreen() {
           ))}
           <TextInput
             ref={codeInputRef}
+            // Open the keyboard (and the iOS code suggestion) as soon as the screen shows.
+            autoFocus
             accessibilityLabel="Verification code"
             autoComplete="one-time-code"
             keyboardType="number-pad"
