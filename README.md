@@ -118,7 +118,7 @@ You'll be prompted to select the project: choose the **dev** project (not produc
 ## VSCode
 ### 9. install prettier extension
 
-Set your code editor (VS Code) to format automatically using the prettier config already set-up in the repo: install the "Prettier" extension in VS Code, and optionally enable "format on save".
+Install the "Prettier" extension in VS Code. It reads the repo's `.prettierrc.json` (single quotes, 100 characters per line, existing line endings kept). Do not turn on "format on save": most existing files were not formatted with Prettier, so saving would rewrite lines you did not change. Format a file deliberately, only when you are changing most of it.
 
 ## Deployment
 
