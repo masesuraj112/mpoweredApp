@@ -194,7 +194,7 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 ## Phase T5–T7
 - [x] T5.1 Remove the placeholders (done in T3, `6edb526`) and update the docs (`docs/support-person.md`, `docs/testing.md`)
 - [x] T6.1 Full checks and green CI (`fc75921`)
-- [ ] T7.1 Manual QA with two accounts
+- [x] T7.1 Manual QA with two accounts (on dev, 2 Nov 2026, after all 8 migrations were pushed)
 
 ## Decisions
 S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.
