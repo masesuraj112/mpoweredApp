@@ -93,7 +93,8 @@ This installs exactly the versions recorded in `package-lock.json`, including th
 ### 4. Set up environment variables
 
 ```bash
-cp .env.example .env
+cp .env.example .env        # macOS / Linux
+copy .env.example .env      # Windows Command Prompt
 ```
 
 Then fill in `.env` with the real Supabase project URL and key (get these from a teammate or the Supabase dashboard — never commit `.env`).
@@ -154,7 +155,7 @@ From inside the repository folder:
 supabase link
 ```
 
-You'll be prompted to select the project: choose the **dev** project (not production). This connects your local folder to the correct Supabase project, so commands like `supabase db pull` know where to fetch from.
+You'll be prompted to select the project: choose `mpoweredAppTest` (not `mpoweredAppProd`, which is the blank production project). This connects your local folder to the correct Supabase project, so commands like `supabase db pull` know where to fetch from.
 
 ### If something doesn't work (Supabase CLI)
 
@@ -209,6 +210,7 @@ Database tests (pgTAP) are run by CI, which is the reference result. Running the
 | `static-checks` | `npm run lint`, `npm run typecheck` |
 | `unit-tests` | `npm run test:ci`, then uploads the coverage report |
 | `database-tests` | `supabase start`, `supabase test db`, `supabase db lint --local --fail-on error`, and a check that `src/types/database.ts` matches the migrations (if you change a migration, run `supabase gen types typescript --local > src/types/database.ts` and commit it) |
+| `migrations-immutable` | Pull requests only: fails if an existing migration file was edited, renamed or deleted |
 
 See the results in the **Checks** box on a pull request, or on the repository's **Actions** tab.
 
@@ -260,7 +262,7 @@ Avoid `npm run format`: it runs Prettier over the whole repository, and the repo
 | Document | What it covers |
 | -------- | -------------- |
 | [docs/deployment.md](docs/deployment.md) | How the app is built, shared and updated; secrets and who owns them; known gaps |
-| [docs/install-guide.md](docs/install-guide.md) | How testers install the Android build |
+| [docs/install-guide.md](docs/install-guide.md) | How testers install the test app on Android and iPhone |
 | [docs/testing.md](docs/testing.md) | Each rule the tests protect, and which test proves it |
 | [docs/backend/production-auth-checklist.md](docs/backend/production-auth-checklist.md) | What to set up on the production Supabase project before real users sign in |
 | [docs/backend/sms-setup.md](docs/backend/sms-setup.md) | How SMS sign-in codes are set up with Twilio, and how to move to the client's own account |
