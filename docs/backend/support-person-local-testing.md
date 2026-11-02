@@ -2,7 +2,7 @@
 
 Use a **local** Supabase. Until the PR merges, the new migrations are not on the shared dev project, and pushing
 them there early would block everyone's `db push`. The support person app needs a real sign-in, so
-`npx expo start` on its own (or dev-login) is not enough.
+`npx expo start` on its own is not enough.
 
 ## 1. Start the local stack (needs Docker)
 
@@ -35,8 +35,7 @@ Then run `npx expo start -c`.
 | Patient | `0491 570 006` | `123456` |
 | Support person | `0491 570 007` | `123456` |
 
-No SMS is sent: both numbers are test numbers in `supabase/config.toml` (`[auth.sms.test_otp]`). Don't use
-dev-login, because its accounts have no `users` row.
+No SMS is sent: both numbers are test numbers in `supabase/config.toml` (`[auth.sms.test_otp]`).
 
 ## 4. Make the patient
 
