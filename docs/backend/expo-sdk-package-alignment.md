@@ -56,7 +56,6 @@ Your project may not work correctly until you install the expected versions of t
 - **Expo Go** contains its own copy of every native module, so our installed versions never load there. All
   testing so far has been in Expo Go.
 - **CI** runs Jest, lint, typecheck and the database tests. None of them link native code.
-- The dev builds made earlier were from before 29 Oct.
 
 ## 4. Who is affected
 
