@@ -206,7 +206,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 ## Steps
 - [x] N0 Branch, recon and plan
 - [x] N1 Add `expo-notifications` (`~58.1.7`; plugin with no icon until the designer supplies one)
-- [ ] N2 Pure reminder planner
+- [x] N2 Pure reminder planner (`schedule.ts`, `messages.ts`; 23 tests incl. a Sydney daylight saving file)
 - [ ] N3 Reminders service
 - [ ] N4 Keep reminders up to date (`ReminderSync`)
 - [ ] N5 Ask for permission from Settings

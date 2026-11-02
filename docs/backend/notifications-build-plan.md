@@ -61,7 +61,7 @@
 | --- | --- | --- | --- |
 | N-A | **Reminders are scheduled on the phone** with `expo-notifications` local notifications, not pushed from a server. | Works in Expo Go ("Local notifications … remain available in Expo Go", SDK 58 docs); no new back end, migration or Edge Function; everything needed (settings, appointments, assessments) is already readable on the phone. | **Server push:** a device-token table, a scheduled Edge Function and the Expo push service; push doesn't work in Expo Go on Android since SDK 53, and CI can't test Edge Functions. Kept for later if reminders must reach phones that never open the app. |
 | N-B | **Times:** assessment reminders and "the day before" at **9:00 am** local time. **"On the day" is 2 hours before** the appointment, but **not before 7:00 am**; for an appointment before 7:30 am it is 30 minutes before. Examples: 10:30 → 8:30; 8:00 → 7:00; 7:15 → 6:45. | 9 am is a reasonable waking hour. A fixed morning time is hours early for an afternoon appointment; 2 hours gives time to travel, and nobody is woken before 7 unless the appointment is that early. | Fixed 8 am on the day; a user-chosen time (needs a new column and design). |
-| N-C | **"Every N days/weeks" counts from the last completed assessment** (the latest `date` across the five kinds). With no assessment yet, it counts from when reminders were turned on (or the app was opened). Saving an assessment resets it. If the user still hasn't done one, it repeats every N days/weeks. | The point is to "stay on track"; reminding someone who did an assessment yesterday is noise. | A fixed timetable from when the toggle was turned on, regardless of activity. |
+| N-C | **"Every N days/weeks" counts from the last completed assessment** (the latest `date` across the five kinds). With no assessment yet, it is due now: the next 9:00 am (counting from when the app was opened would push it back every time the app opens). Saving an assessment resets it. If the user still hasn't done one, it repeats every N days/weeks. | The point is to "stay on track"; reminding someone who did an assessment yesterday is noise. | A fixed timetable from when the toggle was turned on, regardless of activity. |
 | N-D | **Notification text has no health details.** Appointment: "Appointment tomorrow at 10:30" / "Appointment today at 10:30". Assessment: "Time for your health check-in". | Notifications show on the lock screen. Doctor, service and conditions are health information. | Including the doctor or service name. MHA may revisit the wording; changing it is one file. |
 | N-E | **If permission is denied, the toggle goes back to off** and nothing is saved as on. The screen says notifications are turned off in the phone's settings, with an **Open settings** button. | The saved setting should match what the user will actually get. | Save "on" anyway and remind later. |
 
@@ -132,11 +132,12 @@ planReminders(input: {
 
 - Appointment reminders: for each saved appointment after `now`, a "day before" at 9:00 and/or an "on the day" at
   `min(max(start − 2h, 07:00 that day), start − 30 min)`, when those options are on and the time is after `now`.
-- Assessment reminders: the next due time is `lastAssessmentDate + N days/weeks` at 9:00 (or from `now` with no
+- Assessment reminders: the next due time is `lastAssessmentDate + N days/weeks` at 9:00 (or the next 9:00 with no
   assessment); if that's already passed, the next 9:00 after `now`. Then repeats every N days/weeks.
 - Sorted by time and capped (`MAX_PENDING`, below the iOS limit, with room for the assessment series).
-- Text builders in `src/features/notifications/messages.ts` (N-D), times formatted in 24-hour or the
-  phone's locale **(verify which the app uses elsewhere)**.
+- Text builders in `src/features/notifications/messages.ts` (N-D). Times use the app's 12-hour style
+  (`formatTime`: "2:05 PM").
+- Two reminders at the same time (both at 9:00) are ordered by id, so the result never depends on input order.
 
 ### 4.2 Wrapper: `src/services/notifications.ts`
 
