@@ -37,7 +37,11 @@ const emptyAnswers = {
 let mockData: Record<string, unknown> = {};
 
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
-jest.mock('expo-router', () => ({ router: { replace: (href: unknown) => mockReplace(href) } }));
+jest.mock('expo-router', () => ({
+  router: { replace: (href: unknown) => mockReplace(href) },
+  // The header options the screen sets (back arrow hidden once signed in) aren't part of these tests.
+  Stack: { Screen: () => null },
+}));
 jest.mock('@/components/mpowered/KeyboardDoneBar', () => ({ useKeyboardDoneBar: () => ({ id: undefined, bar: null }) }));
 jest.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ refreshProfile: mockRefreshProfile, holdSignIn: mockHoldSignIn }),

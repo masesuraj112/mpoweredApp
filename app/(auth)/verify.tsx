@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
@@ -145,6 +145,8 @@ export default function VerifyScreen() {
   return (
     // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
     <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
+      {/* Once the code is accepted the person is signed in, so going back to the phone screen would mislead. */}
+      <Stack.Screen options={{ headerBackVisible: !isSignedIn, gestureEnabled: !isSignedIn }} />
       <View
         style={[
           styles.canvas,

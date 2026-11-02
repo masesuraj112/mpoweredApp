@@ -149,7 +149,7 @@ the platform's back arrow only:
 | --- | --- | --- |
 | `index` (welcome splash), `onboarding` (Get started / Sign in) | No (`headerShown: false`) | The start of the flow |
 | `user-type`, `name`, `consent`, `sex`, `demographics`, `health-conditions`, `diagnosis-conditions`, `other-conditions`, `login-bridge`, `phone` | Yes | Ordinary steps |
-| `verify` | Yes, **until the code is accepted**. Then hidden (`navigation.setOptions({ headerBackVisible: false })`) | After a correct code the person is signed in; going back to the phone screen would mislead |
+| `verify` | Yes, **until the code is accepted**. Then hidden, and the iOS swipe-back turned off (`<Stack.Screen options={{ headerBackVisible: !isSignedIn, gestureEnabled: !isSignedIn }} />`) | After a correct code the person is signed in; going back to the phone screen would mislead. The Android Back button is not blocked (it would need a `BackHandler`); not changed, as before |
 | `account-check` (new) | No | The person is signed in; its own "Use a different number" button is the way back (it signs out first) |
 | `verification-confirmation` (the "verified" slides) | No | The account exists; the end of the flow |
 
@@ -159,6 +159,10 @@ the platform's back arrow only:
 - The older screens use the 412×823 canvas. Their first element sits about 168 points down (scaled), clear of the
   header, so nothing is covered. Check on small phones (section 6).
 - The iOS swipe and the Android Back button keep working as now.
+- **Checked against the layouts (F5):** "I am a…" starts 87 canvas units down, below the header on every size. Name,
+  consent, sex, year of birth and the conditions screens start 100 pt from the top of the screen, just under the
+  header on phones with a Dynamic Island (about 106 pt), so the arrow and the first line are close. Confirm on a
+  phone in the manual check.
 
 ### 4.7 What doesn't change
 - `sendVerificationCode`, `verifyCode`, `hasProfile` and `createProfile`.
