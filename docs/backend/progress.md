@@ -198,3 +198,15 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 
 ## Decisions
 S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.
+
+# Sign up vs sign in fix progress
+
+Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status key as above. No migrations.
+
+## Steps
+- [x] F0 Plan written (decisions SU-1 to SU-7 proposed, not yet approved)
+- [ ] F1 Sign-up or sign-in intent in `OnboardingContext`
+- [ ] F2 `nextStepAfterVerify()`
+- [ ] F3 `account-check` screen
+- [ ] F4 `verify.tsx` routes to it
+- [ ] F5 Docs, checks and manual QA
