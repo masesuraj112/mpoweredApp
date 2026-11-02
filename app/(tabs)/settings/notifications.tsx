@@ -38,7 +38,7 @@ export default function NotificationsScreen() {
     const result = await scheduleTestReminder();
     Alert.alert(
       'Test reminder',
-      result.ok ? 'It arrives in about a minute. Leave the app or lock the phone to see it.' : 'It could not be scheduled.',
+      result.ok ? 'It arrives in about 10 seconds. Leave the app or lock the phone to see it.' : 'It could not be scheduled.',
     );
   };
   const showScheduled = async () => {
@@ -133,7 +133,7 @@ export default function NotificationsScreen() {
             <>
               <Text style={styles.sectionTitle}>Developer</Text>
               <View style={styles.group}>
-                <SettingsOption label="Send a test reminder in 1 minute" onPress={sendTestReminder} />
+                <SettingsOption label="Send a test reminder in 10 seconds" onPress={sendTestReminder} />
                 <SettingsOption label="Show scheduled reminders" onPress={showScheduled} />
               </View>
             </>

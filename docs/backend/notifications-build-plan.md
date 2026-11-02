@@ -229,7 +229,7 @@ planReminders(input: {
 
 ### Phase N8 — Docs, checks and manual QA
 - **N8a** A **Developer** section on the Notifications screen, in development builds only (`__DEV__`):
-  "Send a test reminder in 1 minute" (asks permission if needed; opens the Pain Tracker home when tapped) and
+  "Send a test reminder in 10 seconds" (asks permission if needed; opens the Pain Tracker home when tapped) and
   "Show scheduled reminders" (an alert with each scheduled reminder's id and title). The test reminder is not
   cancelled by a re-plan until the app next opens, so leave the app or lock the phone while waiting.
   Commit: `Add a test reminder for development`
@@ -271,7 +271,7 @@ On an iPhone (Expo Go) and an Android phone:
 1. Turn on appointment reminders: the permission prompt appears. Deny: the toggle goes back off with Open settings.
 2. Allow; turn on the day before and on the day; add an appointment for tomorrow: both reminders are pending
    (dev row lists them, or wait for the test reminder).
-3. Dev "test reminder in 1 minute": it arrives with the app closed, and tapping opens the right screen.
+3. Dev "test reminder in 10 seconds": it arrives with the app closed, and tapping opens the right screen.
 4. Change the appointment time: the reminders move. Delete it, or make it a past time: they go.
 5. Assessment every 1 day: complete an assessment, the next reminder is tomorrow at 9:00.
 6. Lock screen shows no doctor or service.
