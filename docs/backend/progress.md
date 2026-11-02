@@ -208,7 +208,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 - [x] N1 Add `expo-notifications` (`~58.1.7`; plugin with no icon until the designer supplies one)
 - [x] N2 Pure reminder planner (`schedule.ts`, `messages.ts`; 23 tests incl. a Sydney daylight saving file)
 - [x] N3 Reminders service (`src/services/notifications.ts`, 11 tests with a fake module)
-- [ ] N4 Keep reminders up to date (`ReminderSync`)
+- [x] N4 Keep reminders up to date (`RemindersProvider`, `syncReminders`; refresh after settings, appointment and assessment saves)
 - [ ] N5 Ask for permission from Settings
 - [ ] N6 Open the right screen from a reminder
 - [ ] N7 Cancel reminders on sign-out and account deletion

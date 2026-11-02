@@ -165,7 +165,7 @@ describe('showRemindersWhileOpen', () => {
   it('shows a banner and plays a sound while the app is open, with no badge', async () => {
     const { fake } = fakeNotifications();
 
-    showRemindersWhileOpen(fake);
+    expect(showRemindersWhileOpen(fake)).toEqual({ ok: true, data: undefined });
 
     const handler = fake.setNotificationHandler.mock.calls[0][0];
     await expect(handler?.handleNotification({} as never)).resolves.toEqual({
@@ -174,5 +174,14 @@ describe('showRemindersWhileOpen', () => {
       shouldPlaySound: true,
       shouldSetBadge: false,
     });
+  });
+
+  it('returns a failure instead of throwing when the native module is missing', () => {
+    const { fake } = fakeNotifications();
+    fake.setNotificationHandler.mockImplementation(() => {
+      throw new TypeError('handleSubscription.remove is not a function');
+    });
+
+    expect(showRemindersWhileOpen(fake).ok).toBe(false);
   });
 });

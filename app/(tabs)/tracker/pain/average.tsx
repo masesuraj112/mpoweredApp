@@ -2,6 +2,7 @@ import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
 import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';
@@ -11,6 +12,7 @@ import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
 
 export default function CurrePainLevel() {
   const { answers, updateAnswer } = usePainAssessment();
+  const reminders = useReminders();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
@@ -28,6 +30,8 @@ export default function CurrePainLevel() {
     const entryDate = answers.entryDate ?? getLocalToday();
 
     const result = await savePainEntry({ ...answers, averagePain }, entryDate);
+    // The next assessment reminder counts from this one.
+    if (result.ok) reminders.refresh();
 
     inFlight.current = false;
     setSaving(false);

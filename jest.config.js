@@ -14,6 +14,8 @@ module.exports = {
     'src/features/notifications/schedule.ts',
     'src/services/notifications.ts',
     'src/features/notifications/messages.ts',
+    'src/features/notifications/syncReminders.ts',
+    'src/features/notifications/RemindersContext.tsx',
     'src/features/care-planner/appointmentDisplay.ts',
     'src/features/care-planner/planDisplay.ts',
     'src/features/care-planner/signature.ts',

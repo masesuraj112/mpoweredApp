@@ -151,14 +151,22 @@ planReminders(input: {
   `applyReminders` cancels all scheduled notifications rather than tracking its own.
 - Takes the `expo-notifications` module as the last optional argument, so tests pass a fake (like the Supabase client).
 
-### 4.3 Keeping reminders up to date: `ReminderSync`
+### 4.3 Keeping reminders up to date: `RemindersProvider`
 
-- A component with no UI in the patient tabs layout (`app/(tabs)/_layout.tsx`), using `useReminderSync()`.
-- Re-plans on mount (sign-in), when `AppState` becomes `active`, and when told to by a small context
-  (`useReminders().refresh()`), called after the settings save, an appointment is saved or changed, and an
-  assessment is saved.
-- Does nothing without permission or when both toggles are off (then it cancels).
-- Errors are swallowed and retried on the next trigger; reminders never block a screen.
+- `src/features/notifications/RemindersContext.tsx` wraps the patient tabs (`app/(tabs)/_layout.tsx`), so only
+  patients get reminders. `useReminders().refresh()` re-plans; outside the provider it does nothing.
+- Re-plans on mount (sign-in or app start), when `AppState` becomes `active`, and on `refresh()`, which is called:
+  - after a notification setting is saved (`useNotificationSettings`);
+  - after an appointment is saved on the Review screen (drafts get no reminders, so editing a draft's details
+    doesn't need one);
+  - after each of the five assessments is saved (the last screen of each: pain `average`, movement and personal
+    care `reflection`, social health `mood-trigger`, management `emotion`).
+- One sync at a time; a `refresh()` during a sync runs one more afterwards.
+- `syncReminders()` (`syncReminders.ts`): no permission → leaves everything alone; both kinds off → cancels;
+  otherwise reads only what the settings need, plans, and schedules. **A failed read keeps the reminders already
+  scheduled**, so a lost connection never wipes them.
+- Sets the notification handler (`showRemindersWhileOpen`) once per app run. It returns a `Result` because
+  `expo-notifications` throws when setting it under Jest.
 
 ### 4.4 Settings screen
 
@@ -189,8 +197,8 @@ planReminders(input: {
   Commit: `Add the reminders service`
 
 ### Phase N4 — Keeping reminders up to date
-- **N4** `src/features/notifications/useReminderSync.ts`, the `RemindersProvider` context, `ReminderSync` in the
-  tabs layout, and `refresh()` calls after settings, appointment and assessment saves.
+- **N4** `syncReminders.ts`, the `RemindersProvider` context in the tabs layout, and `refresh()` calls after
+  settings, appointment and assessment saves (section 4.3).
   Commit: `Keep reminders up to date`
 
 ### Phase N5 — Settings screen
@@ -227,7 +235,8 @@ planReminders(input: {
 | `schedule.test.ts` | Each toggle off/on; day before at 9:00; on the day at 2 h before, not before 7:00, 30 min before for early appointments; past and draft appointments skipped; a passed "day before" skipped; every N days and weeks from the last assessment; no assessment yet; overdue; the cap keeps the nearest; local times kept across the daylight saving change (first Sunday in October / April); ids stable |
 | `messages.test.ts` | Wording has no doctor, service or condition (N-D); today/tomorrow |
 | `notifications.test.ts` | Permission states; channels created before asking; apply cancels then schedules; errors become `Result` failures |
-| `useReminderSync.test.ts` | Re-plans on mount, foreground and `refresh()`; cancels when both off or no permission; an error doesn't throw |
+| `syncReminders.test.ts` | No permission leaves things alone; both off cancels; reads only what's needed; a failed read keeps what's scheduled |
+| `RemindersContext.test.tsx` | Re-plans on mount, foreground and `refresh()`; one sync at a time with one more for refreshes during it; an error doesn't stop it; no-op outside the provider |
 | `routeForReminder.test.ts` | Appointment → Review with its id; assessment → Tracker |
 | `useNotificationSettings.test.ts` (extend) | Turning on asks permission; denied rolls back and sets the denied state |
 | `auth.test.ts` / `useAccountDeletion.test.ts` (extend) | Reminders cancelled |

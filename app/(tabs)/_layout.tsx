@@ -3,6 +3,8 @@ import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import { RemindersProvider } from '@/features/notifications/RemindersContext';
+
 type TabIconName = 'person' | 'folder' | 'planner' | 'settings';
 
 const painTrackerIcon = require('../../assets/images/home-page/stickman.svg');
@@ -42,47 +44,50 @@ function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
 }
 
 export default function TabsLayout() {
+  // Only patients reach the tabs, so only they get reminders (support persons have none).
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#49454F',
-        tabBarInactiveTintColor: '#49454F',
-        tabBarLabelStyle: styles.tabLabel,
-        tabBarStyle: styles.tabBar,
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Pain Tracker',
-          tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
+    <RemindersProvider>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#49454F',
+          tabBarInactiveTintColor: '#49454F',
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarStyle: styles.tabBar,
         }}
-      />
-      <Tabs.Screen
-        name="health"
-        options={{
-          title: 'My Health',
-          tabBarIcon: ({ focused }) => <TabIcon name="folder" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="planner"
-        options={{
-          title: 'Care Planner',
-          tabBarIcon: ({ focused }) => <TabIcon name="planner" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Setting',
-          tabBarIcon: ({ focused }) => <TabIcon name="settings" focused={focused} />,
-        }}
-      />
-      {/* The assessment screens live here but have no tab. `href: null` makes the whole group unreachable on SDK 58, so every push to /tracker/* bounced back to Home. */}
-      <Tabs.Screen name="tracker" options={{ tabBarItemStyle: { display: 'none' } }} />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: 'Pain Tracker',
+            tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
+          }}
+        />
+        <Tabs.Screen
+          name="health"
+          options={{
+            title: 'My Health',
+            tabBarIcon: ({ focused }) => <TabIcon name="folder" focused={focused} />,
+          }}
+        />
+        <Tabs.Screen
+          name="planner"
+          options={{
+            title: 'Care Planner',
+            tabBarIcon: ({ focused }) => <TabIcon name="planner" focused={focused} />,
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Setting',
+            tabBarIcon: ({ focused }) => <TabIcon name="settings" focused={focused} />,
+          }}
+        />
+        {/* The assessment screens live here but have no tab. `href: null` makes the whole group unreachable on SDK 58, so every push to /tracker/* bounced back to Home. */}
+        <Tabs.Screen name="tracker" options={{ tabBarItemStyle: { display: 'none' } }} />
+      </Tabs>
+    </RemindersProvider>
   );
 }
 

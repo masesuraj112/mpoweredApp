@@ -8,7 +8,8 @@ import * as ExpoNotifications from 'expo-notifications';
 import { AndroidImportance, SchedulableTriggerInputTypes } from 'expo-notifications';
 
 import type { Reminder } from '@/features/notifications/schedule';
-import { ok, run, type Result } from '@/lib/result';
+import { mapError } from '@/lib/errors';
+import { fail, ok, run, type Result } from '@/lib/result';
 
 type NotificationsModule = Pick<
   typeof ExpoNotifications,
@@ -103,15 +104,21 @@ export function cancelAllReminders(notifications: NotificationsModule = ExpoNoti
 
 /**
  * How a reminder shows while the app is open: as a banner and in the list, with sound, and no badge
- * (the app has no unread count). Called once when the app starts.
+ * (the app has no unread count). Called once when the app starts. Fails (rather than throwing) where
+ * the native module is missing, such as under Jest.
  */
-export function showRemindersWhileOpen(notifications: NotificationsModule = ExpoNotifications): void {
-  notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
+export function showRemindersWhileOpen(notifications: NotificationsModule = ExpoNotifications): Result<void> {
+  try {
+    notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+    return ok(undefined);
+  } catch (error) {
+    return fail(mapError(error));
+  }
 }

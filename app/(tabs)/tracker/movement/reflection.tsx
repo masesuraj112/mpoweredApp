@@ -4,6 +4,7 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveMovementEntry } from '@/services/assessments';
 import { useRef, useState } from 'react';
 import { countWords, isReflectionTooLong, MAX_REFLECTION_WORDS } from '@/features/assessments/reflection';
@@ -24,6 +25,7 @@ const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
+  const reminders = useReminders();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const wordCount = countWords(answers.reflection);
@@ -41,6 +43,8 @@ export default function ReflectionScreen() {
 
     const entryDate = getLocalToday();
     const result = await saveMovementEntry(answers, entryDate);
+    // The next assessment reminder counts from this one.
+    if (result.ok) reminders.refresh();
 
     inFlight.current = false;
     setSaving(false);
