@@ -105,7 +105,6 @@ export default function ReviewScreen() {
         <>
           <PlanActionBar
             mode={mode}
-            consented={consented}
             onSave={saveAppointment}
             saving={saving}
             onModifyQuestions={() =>
