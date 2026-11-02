@@ -5,16 +5,17 @@ import { createProfile } from '@/services/profile';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fitCanvas } from '@/features/auth/canvas';
 
 export default function LoginBridgeScreen() {
   const { data } = useOnboarding();
   const { session } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
+  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   // A user who is already signed in (they verified a number that had no profile) has nothing
   // left to verify, so the profile is created here instead of going through phone and verify.
@@ -45,8 +46,8 @@ export default function LoginBridgeScreen() {
           {
             width: canvasWidth,
             height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
+            left,
+            top,
           },
         ]}
       >

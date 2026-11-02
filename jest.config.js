@@ -6,7 +6,9 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
+    'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
+    'src/features/assessments/drafts.ts',
     'src/features/assessments/pain/normalise.ts',
     'src/features/assessments/pain/validate.ts',
     'src/features/assessments/pain/messages.ts',
@@ -37,6 +39,7 @@ module.exports = {
     'src/features/assessments/management/messages.ts',
     'src/features/assessments/management/summary.ts',
     'src/features/auth/phone.ts',
+    'src/features/auth/canvas.ts',
     'src/features/auth/otp.ts',
     'src/features/auth/messages.ts',
     'src/features/auth/profile.ts',
