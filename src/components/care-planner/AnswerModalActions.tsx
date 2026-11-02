@@ -116,6 +116,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primaryContainer,
   },
   glyph: {
+    color: colors.text,
     ...Typography.subtitle,
   },
   glyphEnabled: {

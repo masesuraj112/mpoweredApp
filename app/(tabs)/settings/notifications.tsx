@@ -203,7 +203,7 @@ export default function NotificationsScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
+  sectionTitle: { color: colors.text, ...Typography.titleSmall, marginBottom: Spacing.two },
   group: { marginBottom: Spacing.four },
   errorText: { color: colors.error, ...Typography.bodySmall, marginBottom: Spacing.three },
   permission: { gap: Spacing.two, marginBottom: Spacing.four },

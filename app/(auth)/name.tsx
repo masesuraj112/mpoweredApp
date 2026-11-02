@@ -73,11 +73,12 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.six,
     alignItems: 'center'
   },
-  title: { 
+  title: { color: colors.text, 
     ...Typography.title, 
     marginBottom: Spacing.five 
   },
   input: {
+    color: colors.text,
     width: '100%', 
     backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.control,

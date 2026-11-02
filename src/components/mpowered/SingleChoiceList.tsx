@@ -113,6 +113,7 @@ export function SingleChoiceInput({
 
 const useStylesSheet = makeStyles((colors) => ({
   promptText: {
+    color: colors.text,
     ...Typography.bodySmall,
     fontWeight: '600',
   },

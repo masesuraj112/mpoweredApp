@@ -7,10 +7,11 @@ import { savePainEntry } from '@/services/assessments';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
-import { Fonts, Spacing, Typography } from '@/constants/theme';
+import { Fonts, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
+  const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
   const reminders = useReminders();
   const [saving, setSaving] = useState(false);
@@ -69,14 +70,15 @@ export default function CurrePainLevel() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.four, // extra top space to clear the status bar/notch area
   },
   cardTitle: {
+      color: colors.text,
       ...Typography.headline,
       fontFamily: Fonts.headingRegular,
       marginBottom: Spacing.three
   },
-});
+}));

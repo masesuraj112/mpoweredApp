@@ -120,6 +120,7 @@ const useStyles = makeStyles((colors) => ({
     letterSpacing: 0.25,
   },
   bodyEmphasis: {
+    color: colors.text,
     fontWeight: '600',
     letterSpacing: 0.1,
   },

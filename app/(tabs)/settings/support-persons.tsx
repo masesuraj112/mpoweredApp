@@ -201,7 +201,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurfaceVariant,
     ...Typography.bodySmall,
   },
-  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
+  sectionTitle: { color: colors.text, ...Typography.titleSmall, marginBottom: Spacing.two },
   // Same as the Sign out button on the Account page.
   addButton: {
     marginTop: Spacing.two,

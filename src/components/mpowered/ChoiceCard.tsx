@@ -219,6 +219,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceContainer,
   },
   titleText: {
+    color: colors.text,
     ...Typography.headline,
     fontFamily: Fonts.headingRegular,
     marginBottom: Spacing.three,
@@ -236,6 +237,7 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.two,
   },
   promptText: {
+    color: colors.text,
     ...Typography.bodySmall,
     fontWeight: '600',
   },
@@ -270,6 +272,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceContainer,
   },
   painTrackerTitle: {
+    color: colors.text,
     ...Typography.titleSmall,
     fontFamily: Fonts.headingRegular,
     marginBottom: Spacing.two,

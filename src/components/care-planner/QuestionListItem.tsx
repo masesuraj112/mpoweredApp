@@ -85,6 +85,7 @@ const useStyles = makeStyles((colors) => ({
     paddingRight: Spacing.three,
   },
   answerLine: {
+    color: colors.text,
     ...Typography.labelLarge,
   },
   unanswered: {

@@ -75,6 +75,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primary,
   },
   buttonText: {
+    color: colors.text,
     ...Typography.bodySmall,
     fontWeight: '500',
     letterSpacing: 0.1,

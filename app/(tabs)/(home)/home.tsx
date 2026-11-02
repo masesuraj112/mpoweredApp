@@ -293,6 +293,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primaryContainer,
   },
   assessmentButtonText: {
+    color: colors.text,
     ...Typography.bodySmall,
     fontWeight: '500',
   },
@@ -303,6 +304,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onPrimaryContainer,
   },
   arrow: {
+    color: colors.text,
     ...Typography.subtitle,
   },
   buttonPressed: {
@@ -336,6 +338,7 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.caption,
   },
   reflectionCompleteIcon: {
+    color: colors.text,
     ...Typography.title,
   },
   reflectionEdit: {

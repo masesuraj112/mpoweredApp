@@ -62,6 +62,7 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center'
   },
   title: {
+    color: colors.text,
     ...Typography.title,
     marginBottom: Spacing.two
   },
@@ -69,6 +70,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSubtle, marginBottom: Spacing.four 
   },
   input: {
+    color: colors.text,
     width: '100%',
     backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.control,

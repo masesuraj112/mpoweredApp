@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { Colors, type ThemeColors } from '../src/constants/theme';
+import { Colors, Spacing, Typography, useThemeColors, type ThemeColors } from '../src/constants/theme';
 import { WelcomeSplash } from '../src/components/splash/WelcomeSplash';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/startup';
@@ -25,6 +25,7 @@ function RootNavigator() {
   const { session, loading: sessionLoading, hasProfile, profile, profileError, refreshProfile, signInHeld } = useAuth();
 
   const loading = sessionLoading || !fontsReady;
+  const colors = useThemeColors();
 
   useEffect(() => {
     if (!loading) SplashScreen.hide();
@@ -44,8 +45,8 @@ function RootNavigator() {
   // Signed in, but we could not tell whether there is a profile (for example no connection)
   if (session && profileError) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-        <Text style={{ textAlign: 'center', marginBottom: 16 }}>
+      <View style={[styles.message, { backgroundColor: colors.background }]}>
+        <Text style={[styles.messageText, { color: colors.text }]}>
           We could not load your account. Check your connection and try again.
         </Text>
         <Button title="Try again" onPress={refreshProfile} />
@@ -108,6 +109,8 @@ function RootNavigator() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  message: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.four },
+  messageText: { ...Typography.bodyLarge, textAlign: 'center', marginBottom: Spacing.three },
 });
 
 // Screens, headers and the status bar follow the phone's light or dark appearance.

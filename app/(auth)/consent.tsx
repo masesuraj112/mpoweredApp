@@ -41,10 +41,12 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.six
   },
   greeting: {
+    color: colors.text,
     ...Typography.title,
     marginBottom: Spacing.three
   },
   body: {
+    color: colors.text,
     ...Typography.titleSmall,
     marginBottom: Spacing.five
   },
@@ -62,9 +64,11 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.bodyLarge
   },
   legal: {
+    color: colors.text,
     ...Typography.bodySmall
   },
   link: {
+    color: colors.text,
     fontWeight: '700',
     textDecorationLine: 'underline'
   },

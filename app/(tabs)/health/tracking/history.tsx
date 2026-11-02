@@ -193,6 +193,7 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.two,
   },
   status: {
+    color: colors.text,
     ...Typography.caption,
     fontWeight: '600',
   },

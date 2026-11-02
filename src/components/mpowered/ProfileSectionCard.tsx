@@ -113,11 +113,13 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
   },
   itemValueCompact: {
+    color: colors.text,
     ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.4,
   },
   itemValueDetail: {
+    color: colors.text,
     ...Typography.bodySmall,
     letterSpacing: 0.25,
   },

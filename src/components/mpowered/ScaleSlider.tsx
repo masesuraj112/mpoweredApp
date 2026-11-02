@@ -227,9 +227,11 @@ export function ScaleSliderInput({
 
 const useStylesSheet = makeStyles((colors) => ({
   painLevelText: {
+    color: colors.text,
     ...Typography.titleSmall,
   },
   underlineText: {
+    color: colors.text,
     ...Typography.titleSmall,
     borderBottomWidth: 2,
     width: 30,
@@ -240,6 +242,7 @@ const useStylesSheet = makeStyles((colors) => ({
     marginLeft: Spacing.two,
   },
   descriptionText: {
+    color: colors.text,
     marginTop: Spacing.two,
     ...Typography.bodyLarge,
     fontWeight: '700',

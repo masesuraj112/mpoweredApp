@@ -60,10 +60,12 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '500',
   },
   labelSmall: {
+    color: colors.text,
     ...Typography.caption,
     letterSpacing: 0.5,
   },
   labelLarge: {
+    color: colors.text,
     ...Typography.bodySmall,
     letterSpacing: 0.1,
   },

@@ -78,6 +78,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
   },
   titleBold: {
+    color: colors.text,
     fontWeight: '700',
   },
 }));

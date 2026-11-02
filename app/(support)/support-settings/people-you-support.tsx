@@ -13,7 +13,7 @@ import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportedPatient } from '@/features/support-person/types';
 import { useState } from 'react';
 import { Alert, Platform, StyleSheet, Text } from 'react-native';
-import { Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const unlinkIcon = require('../../../assets/images/support-person/unlink.svg');
@@ -22,6 +22,7 @@ const permissionText = (allowed: boolean) => (allowed ? 'Allowed' : 'Not allowed
 
 /** The patients this support person supports, with a popup to see access and unpair (Figma 3911-24201, 3911-24318). */
 export default function PeopleYouSupportScreen() {
+  const styles = useStyles();
   const settingsSubpageStyles = useSettingsSubpageStyles();
   const { status, reload, patients, unpair } = useSupportPerson();
   const [selected, setSelected] = useState<SupportedPatient | null>(null);
@@ -100,7 +101,7 @@ export default function PeopleYouSupportScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   // Same as "Manage support persons" on the patient's Support Persons page.
-  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
-});
+  sectionTitle: { color: colors.text, ...Typography.titleSmall, marginBottom: Spacing.two },
+}));

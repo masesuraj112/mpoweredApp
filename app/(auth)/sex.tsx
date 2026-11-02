@@ -46,7 +46,7 @@ export default function SexScreen() {
 
 const useStyles = makeStyles((colors) => ({
   container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, alignItems: 'center' },
-  title: { ...Typography.title, marginBottom: Spacing.five },
+  title: { color: colors.text, ...Typography.title, marginBottom: Spacing.five },
   option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: Radius.card, paddingVertical: Spacing.three, alignItems: 'center', marginBottom: Spacing.two },
   optionSelected: { backgroundColor: colors.secondaryContainer },
   optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },

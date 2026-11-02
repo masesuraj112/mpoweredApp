@@ -249,6 +249,7 @@ const useStyles = makeStyles((colors) => ({
     textAlign: 'center',
   },
   boldText: {
+    color: colors.text,
     fontWeight: '700',
   },
   tipsButton: {

@@ -97,6 +97,7 @@ const useStyles = makeStyles((colors) => ({
   },
   // Lifting has the longest options, so it uses a smaller size than the other screens.
   optionText: {
+    color: colors.text,
     ...Typography.caption,
   },
 }));

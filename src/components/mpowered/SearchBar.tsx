@@ -28,6 +28,7 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
 
 const useStyles = makeStyles((colors) => ({
   input: {
+    color: colors.text,
     height: 30,
     width: '100%',
     borderRadius: 4,

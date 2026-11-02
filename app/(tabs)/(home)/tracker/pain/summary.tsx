@@ -144,6 +144,7 @@ const useStyles = makeStyles((colors) => ({
     padding: Spacing.four,
   },
   heading: {
+    color: colors.text,
     ...Typography.title,
     marginBottom: Spacing.one,
   },
@@ -172,10 +173,12 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
   },
   cardTitle: {
+    color: colors.text,
     ...Typography.headline,
     fontFamily: Fonts.headingRegular,
   },
   periodText: {
+    color: colors.text,
     ...Typography.caption,
     fontWeight: '600',
   },
@@ -185,6 +188,7 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.three,
   },
   sectionTitle: {
+    color: colors.text,
     ...Typography.subtitle,
     marginTop: Spacing.three,
     marginBottom: Spacing.two,
@@ -200,11 +204,13 @@ const useStyles = makeStyles((colors) => ({
     marginTop: Spacing.one,
   },
   bulletText: {
+    color: colors.text,
     ...Typography.bodySmall,
     fontWeight: 'bold',
     marginTop: Spacing.one,
   },
   boldInline: {
+    color: colors.text,
     fontWeight: 'bold',
   },
   intensityGrid: {
@@ -248,6 +254,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surfaceContainer,
   },
   closeButtonText: {
+    color: colors.text,
     ...Typography.bodyLarge,
     fontWeight: '400',
   },
