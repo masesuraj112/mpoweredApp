@@ -207,7 +207,8 @@ Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status k
 - [x] F0 Plan written; decisions SU-1 to SU-9 approved 3 Nov 2026 (SU-7 wording to be confirmed by the designer)
 - [x] F1 Sign-up or sign-in intent in `OnboardingContext`, set by Get started / Sign in
 - [x] F2 `nextStepAfterVerify()` (`src/features/auth/afterVerify.ts`, every row of the plan's table tested)
-- [ ] F3 `account-check` screen
+- [ ] F3a Hold the sign-in screens (SU-10, approved 3 Nov 2026)
+- [ ] F3b `account-check` screen
 - [ ] F4 `verify.tsx` routes to it
 - [ ] F5 Back arrows on the sign-up and sign-in screens
 - [ ] F6 Docs, checks and manual QA

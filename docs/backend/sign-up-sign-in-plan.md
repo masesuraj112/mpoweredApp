@@ -61,6 +61,7 @@ after verification.
 | SU-6 | "Use a different number" leaves a login with no profile behind (SU-3) | **Accept it.** Nothing can read it, and today's abandoned sign-ups already leave the same thing | Deleting logins needs the service role (the `delete-account` Edge Function), which is more risk than it removes |
 | SU-7 | Wording and layout | **Designer to confirm**; build with the wording above until then | Copy is product's call |
 | SU-8 | How to add the back arrow (4.6) | **The navigation stack's own header**, made transparent and showing only the platform back arrow (`app/(auth)/_layout.tsx`) | One change in one file instead of eleven. Each platform gets its own standard arrow, already accessible, sized and labelled. It only appears when there's a screen to go back to |
+| SU-10 | Keeping "You already have an account" on screen (added 3 Nov 2026) | **A hold flag in `AuthContext`** that the root guard respects (4.5) | Without it the guard sends anyone with a profile straight to Home the moment the code is accepted, so the SU-2 screen would only flash. The alternative, a notice on Home afterwards, would lose the "Use a different number" choice |
 | SU-9 | Which screens get it (4.6) | **All except** the welcome splash, the "Get started / Sign in" screen, the "verified" slides and `account-check`; and `verify` hides it once the code is accepted | Those are the start, the end, or a point where the person is already signed in and going back would mislead (section 4.6) |
 
 ## 4. Design
@@ -109,6 +110,21 @@ nextStepAfterVerify({ intent, hasProfile, answersComplete }): NextStep
 - While it's showing, the person is signed in but has no profile, or hasn't been sent home yet. The root guard keeps
   them in `(auth)`, which is where this screen lives.
 
+### 4.5 Holding the sign-in screens (SU-10)
+
+**Why:** `AuthContext` loads the profile as soon as the code is accepted, and the root guard (`app/_layout.tsx`,
+`canUseApp = session && hasProfile`) then moves anyone with a profile to Home at once. That is how today's silent
+sign-in happens, and it would skip the SU-2 screen.
+
+**Change:**
+- `AuthContext` gets `signInHeld` and `holdSignIn(held: boolean)`. It's cleared automatically when the person signs
+  out.
+- The root guard: `canUseApp = !!session && hasProfile === true && !signInHeld`.
+- `verify.tsx` holds before checking a **sign-up** code, then releases the hold for every next step except
+  `account-exists`, so new accounts and sign-ins go on as before.
+- On `account-check`, **Sign in to my account** releases the hold, so the guard goes Home or to the support person
+  app. **Use a different number** signs out, which also releases it.
+
 ### 4.6 Back arrows (SU-8, SU-9)
 
 **Today:** none of the 15 screens in `app/(auth)` has an on-screen back button. The only way back is the iOS swipe or
@@ -147,7 +163,6 @@ the platform's back arrow only:
 ### 4.7 What doesn't change
 - `sendVerificationCode`, `verifyCode`, `hasProfile` and `createProfile`.
 - The database.
-- The root guard in `app/_layout.tsx`.
 
 ## 5. Steps
 
@@ -156,7 +171,8 @@ the platform's back arrow only:
 | F0 | This plan, and the decisions approved | `Add the sign up vs sign in fix plan` |
 | F1 | `intent` in `OnboardingContext`, set by the two buttons. Context test | `Remember whether the person is signing up or signing in` |
 | F2 | `nextStepAfterVerify()` with a test for every row of 4.2 | `Decide where to go after the code is verified` |
-| F3 | `account-check.tsx` with screen tests: both messages, all three buttons | `Tell people when the account already exists or doesn't exist` |
+| F3a | The hold (4.5): `signInHeld` / `holdSignIn` in `AuthContext`, cleared on sign-out; the root guard respects it. Route tests | `Let the sign-in screens hold off entering the app` |
+| F3b | `account-check.tsx` with screen tests: both messages, all three buttons | `Tell people when the account already exists or doesn't exist` |
 | F4 | `verify.tsx` uses F2 and routes to F3; update the verify tests | `Check sign up and sign in against the account after verifying` |
 | F5 | Back arrows (4.6): the header in `app/(auth)/_layout.tsx`; `verify` hides it once the code is accepted. Route test | `Add a back arrow to the sign-up and sign-in screens` |
 | F6 | Docs (`login-backend.md`, `docs/testing.md`) and progress; full checks; manual QA (section 6) | `Update the docs for sign up vs sign in` |
