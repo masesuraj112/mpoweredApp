@@ -1,9 +1,10 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export function AssessmentHeader() {
+  const styles = useStyles();
   return (
     <View style={styles.topBar}>
       <Pressable
@@ -20,10 +21,10 @@ export function AssessmentHeader() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   topBar: {
     height: scaleHeight(109),
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
     paddingTop: scaleHeight(52),
     paddingHorizontal: scaleWidth(24),
     flexDirection: 'row',
@@ -38,16 +39,16 @@ const styles = StyleSheet.create({
   backArrow: {
     fontSize: scaleFont(28),
     lineHeight: scaleFont(28),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginRight: scaleWidth(8),
   },
   backText: {
     fontSize: scaleFont(16),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   topBarTitle: {
     fontSize: scaleFont(16),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));

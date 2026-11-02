@@ -16,13 +16,14 @@ import { usePersonalDetails } from '@/features/settings/usePersonalDetails';
 import { signOut } from '@/services/auth';
 import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
 export default function ProfileScreen() {
+  const styles = useStyles();
   const { refreshProfile } = useAuth();
   const { state, reload, saving, save } = usePersonalDetails();
   const details = state.status === 'ready' ? state.data : null;
@@ -125,17 +126,17 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   signOutButton: {
     height: 55,
     marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   signOutText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: 20,
   },
-});
+}));

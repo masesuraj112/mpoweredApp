@@ -1,15 +1,16 @@
 import { Image } from 'expo-image';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
+  const styles = useStyles();
   const { refreshProfile } = useAuth();
   const [slide, setSlide] = useState(0);
   const insets = useSafeAreaInsets();
@@ -150,35 +151,35 @@ export default function VerificationConfirmationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   illustration: {
     position: 'absolute',
   },
   startMessage: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   questionnaireMessage: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   suggestionMessage: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
@@ -187,10 +188,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
-});
+}));

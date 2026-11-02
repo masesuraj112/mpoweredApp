@@ -4,10 +4,11 @@ import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function PainCharacteristicsScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
   const [selected, setSelected] = useState<number[]>(() =>
     PAIN_CHARACTERISTICS_OPTIONS.reduce<number[]>((indices, option, index) => {
@@ -71,10 +72,10 @@ export default function PainCharacteristicsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -84,8 +85,8 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(9),
     marginBottom: scaleHeight(18),
   },
-});
+}));

@@ -18,7 +18,7 @@ import { getUserStartWeek } from '@/services/assessments';
 import { getCompletedWeeks } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 function loadHistory() {
   return run(async () => {
     const startWeek = await getUserStartWeek();
@@ -31,6 +31,7 @@ function loadHistory() {
 }
 
 export default function TrackingHistoryScreen() {
+  const styles = useStyles();
   const { state, reload } = useFocusedQuery(loadHistory);
   const weeks = state.status === 'ready' ? state.data : [];
   // undefined until the user taps a week, so the newest week starts open
@@ -127,13 +128,11 @@ export default function TrackingHistoryScreen() {
   );
 }
 
-const PRIMARY_PURPLE = Colors.light.primary;
-const OUTLINE = Colors.light.outline;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
@@ -142,12 +141,12 @@ const styles = StyleSheet.create({
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(24),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: OUTLINE,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(4),
   },
   listItem: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: OUTLINE,
+    borderBottomColor: colors.outline,
   },
   listItemLast: {
     borderBottomWidth: 0,
@@ -162,11 +161,11 @@ const styles = StyleSheet.create({
   weekLabel: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: PRIMARY_PURPLE,
+    color: colors.primary,
   },
   chevron: {
     fontSize: scaleFont(16),
-    color: Colors.light.text,
+    color: colors.text,
   },
   categoryRow: {
     flexDirection: 'row',
@@ -179,14 +178,14 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: scaleFont(14),
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
   },
   categoryLabelMissing: {
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
   },
   weekCount: {
     fontSize: scaleFont(12),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginTop: scaleHeight(2),
   },
   statusRow: {
@@ -199,13 +198,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statusDone: {
-    color: Colors.light.success,
+    color: colors.success,
   },
   statusMissing: {
-    color: Colors.light.error,
+    color: colors.error,
   },
   categoryChevron: {
     fontSize: scaleFont(16),
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
   },
-});
+}));

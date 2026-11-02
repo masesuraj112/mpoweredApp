@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import {
   FlatList,
-  StyleSheet,
   useWindowDimensions,
   View,
   type NativeScrollEvent,
@@ -9,7 +8,7 @@ import {
 } from 'react-native';
 
 import { PagerDots } from '@/components/ui/PagerDots';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 import { ShortcutCard } from './ShortcutCard';
 
@@ -33,6 +32,7 @@ const MAX_CARD_WIDTH = 320;
 
 /** Horizontally snapping row of shortcut cards with tappable pager dots. */
 export function ShortcutCarousel({ shortcuts }: ShortcutCarouselProps) {
+  const styles = useStyles();
   const { width: windowWidth } = useWindowDimensions();
   const listRef = useRef<FlatList<Shortcut>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -93,9 +93,9 @@ function Separator() {
   return <View style={{ width: GAP }} />;
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   band: {
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.one,
   },
@@ -105,4 +105,4 @@ const styles = StyleSheet.create({
   dots: {
     paddingHorizontal: GUTTER - Spacing.three,
   },
-});
+}));

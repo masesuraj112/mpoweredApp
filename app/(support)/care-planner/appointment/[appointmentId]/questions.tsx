@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -32,6 +32,7 @@ function showMessage(title: string, message: string) {
  * patient's "Add Questions for My Appointment", and only for support persons with "Add questions".
  */
 export default function SupportedQuestionsScreen() {
+  const styles = useStyles();
   const params = useLocalSearchParams<{ appointmentId: string; patientId: string }>();
   const appointmentId = Number(params.appointmentId);
   const supportPerson = useSupportPerson();
@@ -156,12 +157,12 @@ export default function SupportedQuestionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   subhead: {
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.4,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   card: {
     gap: Spacing.three,
@@ -172,10 +173,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
-});
+}));

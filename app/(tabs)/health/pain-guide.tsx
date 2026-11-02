@@ -1,13 +1,14 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EmbeddedSite from '@/components/mpowered/EmbeddedSite';
 import { BackButton } from '@/components/ui/BackButton';
-import { Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 const PAIN_GUIDE_URL = 'https://muscha.org/learn-about-your-condition/';
 
 export default function PainGuideScreen() {
+  const styles = useStyles();
   const router = useRouter();
 
   return (
@@ -23,13 +24,13 @@ export default function PainGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   topBar: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
-});
+}));

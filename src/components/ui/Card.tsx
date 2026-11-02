@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, makeStyles } from '@/constants/theme';
 
 type CardProps = {
   /**
@@ -14,23 +14,24 @@ type CardProps = {
 };
 
 export function Card({ variant = 'plain', children, style }: CardProps) {
+  const styles = useStyles();
   return <View style={[styles.base, styles[variant], style]}>{children}</View>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: {
     borderRadius: Radius.card,
     padding: Spacing.three,
   },
   plain: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   muted: {
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
   },
   outlined: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
   },
-});
+}));

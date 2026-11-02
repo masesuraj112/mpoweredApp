@@ -1,7 +1,7 @@
 import { Host, Picker } from '@expo/ui';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 
 export type NativePickerOption<T extends string> = { value: T; label: string };
 
@@ -19,8 +19,9 @@ type NativePickerProps<T extends string> = {
  * the brand. It shows the selected option and opens the system menu of the rest.
  */
 export function NativePicker<T extends string>({ value, options, onChange, accessibilityLabel, style }: NativePickerProps<T>) {
+  const colors = useThemeColors();
   return (
-    <Host matchContents seedColor={Colors.light.primary} accessibilityLabel={accessibilityLabel} style={style}>
+    <Host matchContents seedColor={colors.primary} accessibilityLabel={accessibilityLabel} style={style}>
       <Picker selectedValue={value} onValueChange={(next) => onChange(next as T)} appearance="menu">
         {options.map((option) => (
           <Picker.Item key={option.value} label={option.label} value={option.value} />

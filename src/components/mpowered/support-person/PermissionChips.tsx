@@ -1,10 +1,11 @@
-import { Colors, Radius } from '@/constants/theme';
+import { Radius, makeStyles } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { SectionLabel } from './SectionLabel';
 
 function Chip({ label, allowed }: { label: string; allowed: boolean }) {
+  const styles = useStyles();
   return (
     <View
       style={[styles.chip, !allowed && styles.chipDisabled]}
@@ -23,6 +24,7 @@ function Chip({ label, allowed }: { label: string; allowed: boolean }) {
  * (Figma 3911-25051).
  */
 export function PermissionChips({ canAddQuestions, canAddAnswers }: { canAddQuestions: boolean; canAddAnswers: boolean }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <SectionLabel>Your permissions</SectionLabel>
@@ -34,7 +36,7 @@ export function PermissionChips({ canAddQuestions, canAddAnswers }: { canAddQues
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   section: {
     gap: scaleHeight(7),
   },
@@ -48,18 +50,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   chipDisabled: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   chipText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: scaleFont(11),
     fontWeight: '600',
     letterSpacing: 0.3,
   },
   chipTextDisabled: {
-    color: Colors.light.textDisabled,
+    color: colors.textDisabled,
   },
-});
+}));

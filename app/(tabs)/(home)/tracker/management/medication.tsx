@@ -5,9 +5,9 @@ import { toggleMedicationOption } from '@/features/assessments/management/medica
 import { SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 // TODO: List the user's own prescriptions once the prescriptions backend exists (M5).
 const MEDICATION_OPTIONS = [
   ...SAMPLE_PRESCRIPTION_SCRIPTS.map(script => script.name),
@@ -19,6 +19,7 @@ const MEDICATION_SUPPORTING_TEXT = [
 ];
 
 export default function MedicationScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useManagementAssessment();
   const savedMedications = answers.medications ?? [];
   const noMedication = answers.noMedication === true;
@@ -76,10 +77,10 @@ export default function MedicationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -97,22 +98,22 @@ const styles = StyleSheet.create({
     gap: scaleHeight(10),
   },
   promptText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   helperText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
   },
   sourceText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(18),
   },
-});
+}));

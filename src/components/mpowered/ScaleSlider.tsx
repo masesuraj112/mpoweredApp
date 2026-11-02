@@ -3,11 +3,11 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { useKeyboardDoneBar } from './KeyboardDoneBar';
 
-import { Colors, Palette } from '@/constants/theme';
+import { Palette, makeStyles, useThemeColors } from '@/constants/theme';
 interface ScaleSliderProps {
   titleText: string;
   underLinedText?: string;
@@ -62,9 +62,8 @@ function interpolateColor(from: string, to: string, t: number): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function getGradientColors(value: number): [string, string] {
+function getGradientColors(value: number, startColor: string): [string, string] {
   const t = value / 10;
-  const startColor = Colors.light.onBrandMuted;
   const endColor = interpolateColor(Palette.lavenderSoft, Palette.midnight, t);
   return [startColor, endColor];
 }
@@ -87,6 +86,10 @@ export function ScaleSliderInput({
   variant = 'default',
 
 }: ScaleSliderProps) {
+  const stylesSheet = useStylesSheet();
+  const sliderSheet = useSliderSheet();
+  const personalCareSheet = usePersonalCareSheet();
+  const colors = useThemeColors();
   const [value, setValue] = useState(initialValue ?? 0);
   // Tracks whether a score has been entered so the input can show its placeholder.
   const [hasValue, setHasValue] = useState(initialValue !== undefined);
@@ -131,7 +134,7 @@ export function ScaleSliderInput({
           // The iOS number pad has no return key, so this Done bar is the only way to close it.
           inputAccessoryViewID={doneBar.id}
           placeholder="0 to 10"
-          placeholderTextColor={Colors.light.textSubtle}
+          placeholderTextColor={colors.textSubtle}
           value={hasValue ? String(value) : ''}
           onChangeText={changeNumber}
         />
@@ -183,7 +186,7 @@ export function ScaleSliderInput({
 
         {/* Custom track — filled portion, gradient darkens as value increases */}
         <LinearGradient
-          colors={getGradientColors(value)}
+          colors={getGradientColors(value, colors.onBrandMuted)}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[
@@ -223,7 +226,7 @@ export function ScaleSliderInput({
   );
 }
 
-const stylesSheet = StyleSheet.create({
+const useStylesSheet = makeStyles((colors) => ({
   painLevelText: {
     fontSize: scaleFont(20),
     fontWeight: '700',
@@ -233,7 +236,7 @@ const stylesSheet = StyleSheet.create({
     fontWeight: '700',
     borderBottomWidth: 2,
     width: scaleWidth(30),
-    borderBottomColor: 'black',
+    borderBottomColor: colors.text,
     minWidth: scaleWidth(10),
     textAlign: 'center',
     paddingBottom: scaleHeight(4),
@@ -245,15 +248,15 @@ const stylesSheet = StyleSheet.create({
     fontWeight: '700',
     fontStyle: 'italic',
   },
-});
+}));
 
-const personalCareSheet = StyleSheet.create({
+const usePersonalCareSheet = makeStyles((colors) => ({
   questionText: {
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: scaleHeight(14),
   },
   scoreRow: {
@@ -267,7 +270,7 @@ const personalCareSheet = StyleSheet.create({
     fontWeight: '600',
     lineHeight: scaleHeight(20),
     letterSpacing: 0.1,
-    color: Colors.light.text,
+    color: colors.text,
   },
   scoreInput: {
     width: scaleWidth(64),
@@ -275,9 +278,9 @@ const personalCareSheet = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.1,
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
     borderBottomWidth: 2,
-    borderBottomColor: Colors.light.outlineStrong,
+    borderBottomColor: colors.outlineStrong,
     paddingVertical: scaleHeight(2),
   },
   descriptionText: {
@@ -288,11 +291,11 @@ const personalCareSheet = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));
 
-const sliderSheet = StyleSheet.create({
+const useSliderSheet = makeStyles((colors) => ({
   container: {
     width: '90%',
     height: ROW_HEIGHT,
@@ -313,7 +316,7 @@ const sliderSheet = StyleSheet.create({
     left: 0,
     width: '100%',
     height: TRACK_HEIGHT,
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: TRACK_HEIGHT / 2,
   },
   trackFill: {
@@ -326,22 +329,22 @@ const sliderSheet = StyleSheet.create({
   bubble: {
     position: 'absolute',
     top: scaleHeight(-30),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     borderRadius: scaleWidth(10),
     paddingHorizontal: scaleWidth(10),
     paddingVertical: scaleHeight(4),
     zIndex: 3,
   },
   bubbleText: {
-    color: 'white',
+    color: colors.onPrimary,
     fontWeight: 'bold',
   },
   rectThumb: {
     position: 'absolute',
     top: (ROW_HEIGHT - THUMB_HEIGHT) / 2,
     height: THUMB_HEIGHT,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     borderRadius: 0,
     zIndex: 2,
   },
-});
+}));

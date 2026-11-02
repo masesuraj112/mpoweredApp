@@ -12,17 +12,17 @@ import {
   Linking,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
 const closeToHome = () => router.replace('/home');
 
 function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
+  const styles = useStyles();
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -106,6 +106,7 @@ type SummaryState =
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function SummaryScreen() {
+  const styles = useStyles();
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
@@ -158,6 +159,7 @@ export default function SummaryScreen() {
 }
 
 function ResultSection({ heading, value }: { heading: string; value: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.resultSection}>
       <Text style={styles.resultLabel}>{heading}</Text>
@@ -166,14 +168,14 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
     gap: scaleHeight(16),
   },
   errorText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
     textAlign: 'center',
@@ -183,12 +185,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(24),
     paddingTop: scaleHeight(16),
     paddingBottom: scaleHeight(16),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   heading: {
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(8),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleHeight(29),
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
   subheading: {
     marginHorizontal: scaleWidth(7),
     marginBottom: scaleHeight(20),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },
@@ -204,12 +206,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(18),
     paddingTop: scaleHeight(12),
     paddingBottom: scaleHeight(10),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   reportHeader: {
     flexDirection: 'row',
@@ -219,13 +221,13 @@ const styles = StyleSheet.create({
     minHeight: scaleHeight(28),
   },
   reportTitle: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(20),
     fontWeight: '700',
     lineHeight: scaleHeight(24),
   },
   period: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(11),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(18),
   },
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
   },
   sectionHeading: {
     marginBottom: scaleHeight(14),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '600',
     lineHeight: scaleHeight(20),
@@ -254,13 +256,13 @@ const styles = StyleSheet.create({
   guidancePanel: {
     overflow: 'hidden',
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     marginHorizontal: scaleWidth(4),
   },
   guidanceText: {
     paddingHorizontal: scaleWidth(18),
     paddingVertical: scaleHeight(12),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
     textAlign: 'center',
@@ -272,18 +274,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: scaleWidth(8),
     paddingHorizontal: scaleWidth(12),
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
   tipsButtonPressed: {
     opacity: 0.8,
   },
   searchIcon: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(20),
     lineHeight: scaleFont(20),
   },
   tipsButtonText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
@@ -291,7 +293,7 @@ const styles = StyleSheet.create({
   resultsHeading: {
     marginTop: scaleHeight(24),
     marginBottom: scaleHeight(12),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
@@ -304,12 +306,12 @@ const styles = StyleSheet.create({
     gap: scaleHeight(2),
   },
   resultLabel: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
   resultText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },
@@ -318,7 +320,7 @@ const styles = StyleSheet.create({
     marginTop: scaleHeight(18),
   },
   reflectionHeading: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '600',
     lineHeight: scaleHeight(16),
@@ -331,7 +333,7 @@ const styles = StyleSheet.create({
   },
   footerDivider: {
     height: 1,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(12),
   },
@@ -343,7 +345,7 @@ const styles = StyleSheet.create({
     gap: scaleWidth(12),
   },
   savedText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
@@ -353,17 +355,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(100),
     paddingHorizontal: scaleWidth(16),
   },
   closeButtonPressed: {
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   closeButtonText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
   },
-});
+}));

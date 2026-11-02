@@ -9,10 +9,12 @@ import { saveManagementEntry } from '@/services/management';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function EmotionScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useManagementAssessment();
   const reminders = useReminders();
   const [saving, setSaving] = useState(false);
@@ -74,7 +76,7 @@ export default function EmotionScreen() {
           value={answers.emotionStrategies ?? ''}
           onChangeText={value => updateAnswer('emotionStrategies', value)}
           placeholder="Write about any strategies you used to manage your emotions"
-          placeholderTextColor={Colors.light.textSubtle}
+          placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
           style={styles.input}
         />
@@ -84,19 +86,19 @@ export default function EmotionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   promptContent: {
     gap: scaleHeight(12),
   },
   promptText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   examples: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
@@ -104,13 +106,13 @@ const styles = StyleSheet.create({
   input: {
     height: scaleHeight(146),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },
-});
+}));

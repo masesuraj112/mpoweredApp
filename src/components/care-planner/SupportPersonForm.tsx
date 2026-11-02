@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { PhoneIcon } from '@/components/ui/icons';
 import { TextField } from '@/components/ui/TextField';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 import type {
   SupportPersonDraft,
   SupportPersonErrors,
@@ -18,6 +18,7 @@ type SupportPersonFormProps = {
 
 // Labels and placeholders copied exactly from the Figma design.
 export function SupportPersonForm({ draft, errors, onChange, onBlurField }: SupportPersonFormProps) {
+  const styles = useStyles();
   return (
     <View style={styles.form}>
       <TextField
@@ -86,7 +87,7 @@ export function SupportPersonForm({ draft, errors, onChange, onBlurField }: Supp
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   form: {
     gap: Spacing.four,
   },
@@ -95,11 +96,11 @@ const styles = StyleSheet.create({
   },
   accessLabel: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   accessList: {
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.control + 2,
     paddingHorizontal: Spacing.three,
   },
@@ -108,6 +109,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.outlineStrong,
+    backgroundColor: colors.outlineStrong,
   },
-});
+}));

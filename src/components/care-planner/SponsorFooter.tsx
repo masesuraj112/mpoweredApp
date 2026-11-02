@@ -1,16 +1,17 @@
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 export function SponsorFooter() {
+  const styles = useStyles();
   return <Text style={styles.text}>Supported by ABBVIE</Text>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   text: {
     ...Typography.labelLargeBold,
     paddingHorizontal: Spacing.five,
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));

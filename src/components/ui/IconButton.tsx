@@ -1,7 +1,7 @@
 import { Image, type ImageSource } from 'expo-image';
 import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget } from '@/constants/theme';
+import { MinTapTarget, useThemeColors } from '@/constants/theme';
 
 type IconButtonProps = {
   icon: ImageSource;
@@ -22,6 +22,7 @@ export function IconButton({
   iconSize = 20,
   style,
 }: IconButtonProps) {
+  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -33,7 +34,7 @@ export function IconButton({
       <Image
         source={icon}
         contentFit="contain"
-        tintColor={Colors.light.onSurfaceVariant}
+        tintColor={colors.onSurfaceVariant}
         style={{ width: iconSize, height: iconSize }}
         accessibilityElementsHidden
         importantForAccessibility="no"

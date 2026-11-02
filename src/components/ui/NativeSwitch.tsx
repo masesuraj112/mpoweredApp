@@ -3,7 +3,7 @@ import { semantics } from '@expo/ui/jetpack-compose/modifiers';
 import { labelsHidden } from '@expo/ui/swift-ui/modifiers';
 import { Platform } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 
 type NativeSwitchProps = {
   value: boolean;
@@ -18,9 +18,10 @@ type NativeSwitchProps = {
  * It's named for VoiceOver with a hidden label and for TalkBack with a content description.
  */
 export function NativeSwitch({ value, onValueChange, accessibilityLabel, disabled }: NativeSwitchProps) {
+  const colors = useThemeColors();
   const ios = Platform.OS === 'ios';
   return (
-    <Host matchContents seedColor={Colors.light.primary}>
+    <Host matchContents seedColor={colors.primary}>
       <Switch
         value={value}
         onValueChange={onValueChange}

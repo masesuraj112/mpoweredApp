@@ -2,10 +2,12 @@ import { useOnboarding } from '@/context/Onboarding-Context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function OtherConditionsScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const [text, setText] = useState(data.otherConditions);
   const { noDiagnosis } = useLocalSearchParams<{ noDiagnosis?: string }>();
@@ -34,7 +36,7 @@ export default function OtherConditionsScreen() {
           value={text}
           onChangeText={setText}
           placeholder={isNoDiagnosisPath ? 'Describe your symptoms or how you\'re feeling' : 'Type conditions or symptoms that you know'}
-          placeholderTextColor={Colors.light.textSubtle}
+          placeholderTextColor={colors.textSubtle}
           multiline
           // Return adds a new line, so add a Done bar to close the keyboard.
           inputAccessoryViewID={doneBar.id}
@@ -49,12 +51,12 @@ export default function OtherConditionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: { flex: 1 },
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, paddingBottom: 64 },
   title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
-  subtitle: { textAlign: 'center', color: Colors.light.textSubtle, marginBottom: 24 },
-  input: { backgroundColor: Colors.light.surfaceContainer, borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
-  continueButton: { backgroundColor: Colors.light.primary, width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
-  continueText: { color: Colors.light.onPrimary, fontWeight: '600', fontSize: 14 },
-});
+  subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: 24 },
+  input: { backgroundColor: colors.surfaceContainer, borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
+  continueButton: { backgroundColor: colors.primary, width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
+  continueText: { color: colors.onPrimary, fontWeight: '600', fontSize: 14 },
+}));

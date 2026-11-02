@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
@@ -19,7 +19,7 @@ import {
 import { getPrescription, savePrescription } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
   return (Object.keys(singulars) as T[]).map((value) => ({
@@ -41,6 +41,7 @@ const EMPTY_FORM: PrescriptionForm = {
 type LoadState = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready' };
 
 export default function AddPrescriptionScreen() {
+  const styles = useStyles();
   // Present when opened from the edit button on the prescriptions list
   const { id: idParam } = useLocalSearchParams<{ id?: string }>();
   const id = idParam ? Number(idParam) : undefined;
@@ -242,22 +243,18 @@ export default function AddPrescriptionScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = Colors.light.background;
-const SURFACE = Colors.light.background;
-const OUTLINE = Colors.light.outline;
-const ERROR = Colors.light.error;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
   },
   helperText: {
     fontSize: scaleFont(16),
-    color: 'black',
+    color: colors.text,
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(20),
   },
@@ -278,23 +275,23 @@ const styles = StyleSheet.create({
   label: {
     fontSize: scaleFont(12),
     fontWeight: '500',
-    color: 'black',
+    color: colors.text,
     marginBottom: scaleHeight(8),
   },
   input: {
-    backgroundColor: SURFACE,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: OUTLINE,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(4),
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
     fontSize: scaleFont(16),
-    color: 'black',
+    color: colors.text,
   },
   saveButton: {
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(32),
-    backgroundColor: GROUPED_BACKGROUND,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     paddingVertical: scaleHeight(14),
     alignItems: 'center',
@@ -303,11 +300,11 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   inputError: {
-    borderColor: ERROR,
+    borderColor: colors.error,
   },
   fieldError: {
     fontSize: scaleFont(12),
-    color: ERROR,
+    color: colors.error,
     marginTop: scaleHeight(4),
   },
   formError: {
@@ -317,6 +314,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: scaleFont(12),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
   },
-});
+}));

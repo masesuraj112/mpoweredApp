@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import {
   getAppointmentDateText,
   getAppointmentTitle,
@@ -38,6 +38,7 @@ export function MyAppointmentsSection({
   onAdd,
   onRetry,
 }: MyAppointmentsSectionProps) {
+  const styles = useStyles();
   const prepareButton = <Button label={PREPARE_LABEL} onPress={onPrepare} />;
   const addButtonProminent = (
     <Button label={ADD_LABEL} variant="primary" onPress={onAdd} style={styles.prominentAdd} />
@@ -97,7 +98,7 @@ export function MyAppointmentsSection({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   section: {
     marginHorizontal: Spacing.five,
     padding: Spacing.three,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
   heading: {
     ...Typography.labelLargeBold,
     flexShrink: 1,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   list: {
     gap: Spacing.three,
@@ -128,4 +129,4 @@ const styles = StyleSheet.create({
   action: {
     alignItems: 'center',
   },
-});
+}));

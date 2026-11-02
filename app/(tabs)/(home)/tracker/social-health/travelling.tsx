@@ -3,13 +3,14 @@ import { TRAVELLING_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 // SingleChoiceInput takes a mutable string[]
 const SOCIAL_HEALTH_OPTIONS: string[] = [...TRAVELLING_OPTIONS];
 
 export default function TravellingScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const savedIndex = SOCIAL_HEALTH_OPTIONS.indexOf(answers.travel ?? '');
   const selectedIndex = savedIndex >= 0 ? savedIndex : null;
@@ -43,10 +44,10 @@ export default function TravellingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -56,8 +57,8 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
-});
+}));

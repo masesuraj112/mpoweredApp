@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
@@ -15,10 +15,12 @@ import type { PdfAction } from '@/services/pdf';
 import { getHealthProfile } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 const loadProfile = () => getHealthProfile();
 
 export default function PainProfileScreen() {
+  const colors = useThemeColors();
+  const styles = useStyles();
   const { state, reload } = useFocusedQuery(loadProfile);
   const pdf = usePdfExport();
 
@@ -47,7 +49,7 @@ export default function PainProfileScreen() {
       onPress={() => exportProfile(action)}
     >
       {pdf.busy === action ? (
-        <ActivityIndicator size="small" color={ON_SURFACE} accessibilityLabel="Creating PDF" />
+        <ActivityIndicator size="small" color={colors.text} accessibilityLabel="Creating PDF" />
       ) : (
         <Text style={styles.chipText}>{label}</Text>
       )}
@@ -95,14 +97,11 @@ export default function PainProfileScreen() {
   );
 }
 
-const OUTLINE_VARIANT = Colors.light.outline;
-const ON_SURFACE = Colors.light.text;
-const PRIMARY_PURPLE = Colors.light.primary;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
@@ -118,7 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: scaleWidth(8),
     borderWidth: 1,
-    borderColor: OUTLINE_VARIANT,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(8),
   },
   chipText: {
@@ -126,24 +125,24 @@ const styles = StyleSheet.create({
     lineHeight: scaleFont(16),
     fontWeight: '600',
     letterSpacing: 0.5,
-    color: ON_SURFACE,
+    color: colors.text,
   },
   updatedText: {
     fontSize: scaleFont(12),
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     marginTop: scaleHeight(2),
     marginHorizontal: scaleWidth(38),
   },
   headerDivider: {
     height: 1,
-    backgroundColor: OUTLINE_VARIANT,
+    backgroundColor: colors.outline,
     marginHorizontal: scaleWidth(16),
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(26),
   },
   recordsButton: {
     marginHorizontal: scaleWidth(32),
-    backgroundColor: PRIMARY_PURPLE,
+    backgroundColor: colors.primary,
     borderRadius: scaleWidth(10),
     paddingVertical: scaleHeight(14),
     alignItems: 'center',
@@ -151,6 +150,6 @@ const styles = StyleSheet.create({
   recordsButtonText: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: 'white',
+    color: colors.onPrimary,
   },
-});
+}));

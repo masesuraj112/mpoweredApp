@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
 import { PainIntensityChart } from '@/components/mpowered/PainIntensityChart';
@@ -25,7 +25,7 @@ import type { AppError } from '@/lib/errors';
 import { getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const PAGE_SIZE = 5;
 const ALL_LOCATIONS = '__all__';
 
@@ -35,6 +35,7 @@ type LoadState =
   | { status: 'ready' };
 
 export default function TrackingChartScreen() {
+  const styles = useStyles();
   const [selectedMetric, setSelectedMetric] = useState<PainMetric>('average');
   const [selectedLocation, setSelectedLocation] = useState<string>(ALL_LOCATIONS);
   const [records, setRecords] = useState<WeeklyPainRecord[]>([]);
@@ -208,14 +209,11 @@ export default function TrackingChartScreen() {
   );
 }
 
-const PRIMARY_PURPLE = Colors.light.primary;
-const PRIMARY_CONTAINER = Colors.light.secondaryContainer;
-const OUTLINE_VARIANT = Colors.light.outline;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
@@ -232,43 +230,43 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: scaleFont(20),
     fontWeight: '600',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   filterChip: {
     borderWidth: 1,
-    borderColor: OUTLINE_VARIANT,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(100),
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(6),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     maxWidth: '55%',
   },
   emptyText: {
     fontSize: scaleFont(14),
     lineHeight: scaleFont(20),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginHorizontal: scaleWidth(24),
     marginVertical: scaleHeight(32),
   },
   tableHeader: {
     fontWeight: '600',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   notice: {
     fontSize: scaleFont(12),
-    color: Colors.light.success,
+    color: colors.success,
     textAlign: 'center',
     marginTop: scaleHeight(10),
   },
   noticeError: {
-    color: Colors.light.error,
+    color: colors.error,
   },
   metricRow: {
     flexDirection: 'row',
     marginTop: scaleHeight(16),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(20),
     overflow: 'hidden',
   },
@@ -276,23 +274,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingVertical: scaleHeight(8),
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   metricButtonActive: {
-    backgroundColor: PRIMARY_CONTAINER,
+    backgroundColor: colors.secondaryContainer,
   },
   metricButtonText: {
     fontSize: scaleFont(13),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
   },
   metricButtonTextActive: {
-    color: PRIMARY_PURPLE,
+    color: colors.primary,
   },
   table: {
     marginTop: scaleHeight(16),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(10),
     paddingHorizontal: scaleWidth(12),
   },
@@ -301,7 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: scaleHeight(12),
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
     gap: scaleWidth(8),
   },
   tableRowLast: {
@@ -310,19 +308,19 @@ const styles = StyleSheet.create({
   tableDate: {
     flex: 1.6,
     fontSize: scaleFont(12),
-    color: 'black',
+    color: colors.text,
   },
   tableValue: {
     flex: 1,
     fontSize: scaleFont(12),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
     textAlign: 'center',
   },
   seeMoreButton: {
     alignSelf: 'center',
     marginTop: scaleHeight(16),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(20),
     paddingVertical: scaleHeight(10),
@@ -330,6 +328,6 @@ const styles = StyleSheet.create({
   seeMoreButtonText: {
     fontSize: scaleFont(12),
     fontWeight: '500',
-    color: 'black',
+    color: colors.text,
   },
-});
+}));

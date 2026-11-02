@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router, Stack } from 'expo-router';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
+import { Keyboard, Pressable, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
@@ -23,13 +23,14 @@ import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
 import { createProfile } from '@/services/profile';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 // Six cells: 6 * 40 + 5 * 10 = 290 wide
 const CODE_CELL_WIDTH = 40;
 const CODE_CELL_GAP = 10;
 const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CELL_GAP;
 
 export default function VerifyScreen() {
+  const styles = useStyles();
   const { data } = useOnboarding();
   const { refreshProfile, holdSignIn } = useAuth();
   const [code, setCode] = useState('');
@@ -377,23 +378,23 @@ export default function VerifyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   title: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   phoneNumber: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '600',
   },
   codeRow: {
@@ -403,11 +404,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.surfaceMuted,
-    borderColor: Colors.light.outline,
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.outline,
   },
   codeDigit: {
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '400',
   },
   hiddenInput: {
@@ -422,45 +423,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resendPrompt: {
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   resendButton: {
     justifyContent: 'center',
   },
   resendText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '500',
     textDecorationLine: 'underline',
   },
   resendStatus: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   resendCountdown: {
     position: 'absolute',
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     fontWeight: '500',
   },
   errorText: {
     position: 'absolute',
-    color: Colors.light.error,
+    color: colors.error,
   },
   verifyButton: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   verifyButtonDisabled: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   verifyText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
   verifyTextDisabled: {
-    color: Colors.light.primary,
+    color: colors.primary,
   },
-});
+}));

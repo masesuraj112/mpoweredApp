@@ -1,4 +1,4 @@
-import { ActivityIndicator, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { ActivityIndicator, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain/summary';
@@ -6,13 +6,14 @@ import { getPainEntryForWeek } from '@/services/assessments';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface PainSummaryProps {
   summary: PainSummaryData;
   onClose?: () => void;
 }
 
 function PainSummaryView({ summary, onClose }: PainSummaryProps) {
+  const styles = useStyles();
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -76,6 +77,7 @@ type SummaryState =
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function PainSummary() {
+  const styles = useStyles();
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
@@ -123,6 +125,7 @@ export default function PainSummary() {
 }
 
 function IntensityRow({ label, value, description }: { label: string; value: number; description: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.intensityRow}>
       <Text style={styles.intensityLabel}>{label}: {value}</Text>
@@ -131,7 +134,7 @@ function IntensityRow({ label, value, description }: { label: string; value: num
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -148,13 +151,13 @@ const styles = StyleSheet.create({
   },
   subheading: {
     fontSize: scaleFont(14),
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: scaleHeight(18),
   },
   card: {
     flex: 1,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: colors.text,
     borderRadius: scaleWidth(20),
     paddingHorizontal: scaleWidth(22),
     paddingTop: scaleHeight(20),
@@ -180,7 +183,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderTopWidth: 1,
-    borderTopColor: 'black',
+    borderTopColor: colors.text,
     marginBottom: scaleHeight(16),
   },
   sectionTitle: {
@@ -190,7 +193,7 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: scaleFont(13),
-    color: Colors.light.text,
+    color: colors.text,
     lineHeight: scaleFont(18),
   },
   bulletRow: {
@@ -220,7 +223,7 @@ const styles = StyleSheet.create({
   intensityLabel: {
     fontSize: scaleFont(13),
     fontWeight: '600',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginBottom: scaleHeight(4),
   },
   footerContainer: {
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   },
   footerDivider: {
     borderTopWidth: 1,
-    borderTopColor: Colors.light.divider,
+    borderTopColor: colors.divider,
     marginBottom: scaleHeight(16),
   },
   footerRow: {
@@ -237,12 +240,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   savedText: {
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     fontSize: scaleFont(13),
   },
   closeButton: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: colors.text,
     borderRadius: scaleWidth(24),
     paddingHorizontal: scaleWidth(20),
     paddingVertical: scaleHeight(9),
@@ -251,4 +254,4 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(16),
     fontWeight: '400',
   },
-});
+}));

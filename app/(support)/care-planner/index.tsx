@@ -3,7 +3,7 @@ import { PillButton } from '@/components/mpowered/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
 import { getGreeting } from '@/features/support-person/greeting';
@@ -11,11 +11,12 @@ import { openAppointmentAction } from '@/features/support-person/navigation';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 /** Care Planner home for support persons (Figma 3911-24607, empty state 3896-21458). */
 export default function CarePlannerHomeScreen() {
+  const styles = useStyles();
   const { status, reload, patients, requests } = useSupportPerson();
   // Saved at sign-up. Empty only when browsing with BYPASS_AUTH and no account; the greeting then leaves the name out.
   const name = useAuth().profile?.name ?? '';
@@ -82,10 +83,10 @@ export default function CarePlannerHomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     gap: scaleHeight(12),
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     paddingRight: scaleWidth(6),
   },
   greeting: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: 20,
@@ -110,14 +111,14 @@ const styles = StyleSheet.create({
   title: {
     marginTop: scaleHeight(6),
     paddingHorizontal: scaleWidth(9),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(20),
     fontWeight: '700',
     lineHeight: scaleFont(24),
   },
   body: {
     paddingHorizontal: scaleWidth(9),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: 20,
     letterSpacing: 0.25,
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginTop: scaleHeight(18),
     paddingHorizontal: scaleWidth(11),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(16),
     fontWeight: '700',
     lineHeight: scaleFont(22),
@@ -142,4 +143,4 @@ const styles = StyleSheet.create({
     marginTop: scaleHeight(18),
     paddingHorizontal: scaleWidth(14),
   },
-});
+}));

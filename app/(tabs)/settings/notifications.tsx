@@ -8,7 +8,7 @@ import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from 
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { makeStyles, Spacing } from '@/constants/theme';
 import { syncReminders, type SyncOutcome } from '@/features/notifications/syncReminders';
 import {
   nextSavedAppointment,
@@ -39,6 +39,7 @@ const UNIT_OPTIONS = ['days', 'weeks'];
  * refused the toggle stays off (docs/backend/notifications-build-plan.md, decision N-E).
  */
 export default function NotificationsScreen() {
+  const styles = useStyles();
   const { state, reload, settings, update, saveError } = useNotificationSettings();
   const permission = useReminderPermission();
 
@@ -201,10 +202,10 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = {
+const useStyles = makeStyles((colors) => ({
   sectionTitle: { fontSize: 20, fontWeight: '600' as const, marginBottom: 12 },
   group: { marginBottom: 24 },
-  errorText: { color: Colors.light.error, fontSize: 14, marginBottom: 16 },
+  errorText: { color: colors.error, fontSize: 14, marginBottom: 16 },
   permission: { gap: Spacing.two, marginBottom: Spacing.four },
-  permissionText: { color: Colors.light.onSurface, fontSize: 14, lineHeight: 20 },
-};
+  permissionText: { color: colors.onSurface, fontSize: 14, lineHeight: 20 },
+}));

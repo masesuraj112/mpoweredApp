@@ -1,13 +1,14 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 // TODO: confirm final URLs with the team before shipping
 const TERMS_URL = 'https://mpowered.example/terms';
 const PRIVACY_URL = 'https://mpowered.example/privacy';
 
 export default function ConsentScreen() {
+  const styles = useStyles();
   const { data } = useOnboarding();
 
   // Support persons only need a name and a phone number, so the patient questions are skipped.
@@ -33,7 +34,7 @@ export default function ConsentScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     flex: 1,
     paddingHorizontal: 24,
@@ -51,14 +52,14 @@ const styles = StyleSheet.create({
     marginBottom: 32
   },
   continueButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center',
     marginBottom: 24
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
     fontSize: 16
   },
@@ -70,4 +71,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textDecorationLine: 'underline'
   },
-});
+}));

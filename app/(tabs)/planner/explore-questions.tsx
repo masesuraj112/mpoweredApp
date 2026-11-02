@@ -1,6 +1,6 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionPreviewGroup } from '@/components/care-planner/QuestionPreviewGroup';
@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { missingAssessmentsMessage } from '@/features/care-planner/messages';
 import { useGeneratedQuestions } from '@/features/care-planner/useGeneratedQuestions';
 
@@ -17,6 +17,7 @@ const SUBHEAD =
 
 /** Browse the questions generated for you. It needs no appointment and nothing here can be changed. */
 export default function ExploreQuestionsScreen() {
+  const styles = useStyles();
   const { state, reload, refresh } = useGeneratedQuestions();
 
   // Assessments are completed on other screens. Read again when coming back, so the list is not stale.
@@ -55,15 +56,15 @@ export default function ExploreQuestionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   subhead: {
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.4,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
   },
-});
+}));

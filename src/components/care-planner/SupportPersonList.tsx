@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import { describeAccess, describeContact } from '@/features/care-planner/supportPerson';
 import type { SupportPerson } from '@/features/care-planner/types';
 
@@ -13,6 +13,7 @@ type SupportPersonListProps = {
 
 /** The support people already added to this appointment, each with a Remove button. */
 export function SupportPersonList({ people, onRemove }: SupportPersonListProps) {
+  const styles = useStyles();
   if (people.length === 0) return null;
 
   return (
@@ -42,13 +43,13 @@ export function SupportPersonList({ people, onRemove }: SupportPersonListProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   list: {
     gap: Spacing.two,
   },
   heading: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   row: {
     flexDirection: 'row',
@@ -65,12 +66,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '500',
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   detail: {
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.4,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
-});
+}));

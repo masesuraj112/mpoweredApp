@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import {
   canSaveSelection,
@@ -29,6 +29,7 @@ const HINT =
   'Click the checkbox next to any questions you wish to add to your appointment plan.';
 
 export default function QuestionsScreen() {
+  const styles = useStyles();
   const router = useRouter();
   const { appointmentId, hasAppointment } = useAppointmentIdParam();
 
@@ -159,12 +160,12 @@ export default function QuestionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   subhead: {
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.4,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   card: {
     gap: Spacing.three,
@@ -174,17 +175,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   generatedOn: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
-});
+}));

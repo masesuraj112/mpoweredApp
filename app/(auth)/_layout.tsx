@@ -1,5 +1,5 @@
 import { OnboardingProvider } from '@/context/Onboarding-Context';
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 import { Stack } from 'expo-router';
 
 // A transparent header that shows only the platform's back arrow, so every step can be left without a
@@ -10,7 +10,6 @@ const BACK_ARROW_ONLY = {
   headerTitle: '',
   headerShadowVisible: false,
   headerBackButtonDisplayMode: 'minimal',
-  headerTintColor: Colors.light.primary,
 } as const;
 
 // No back arrow at the start of the flow, on the "verified" slides, or once the person is signed in and
@@ -18,9 +17,10 @@ const BACK_ARROW_ONLY = {
 const NO_HEADER = { headerShown: false } as const;
 
 export default function OnboardingLayout() {
+  const colors = useThemeColors();
   return (
     <OnboardingProvider>
-      <Stack screenOptions={BACK_ARROW_ONLY}>
+      <Stack screenOptions={{ ...BACK_ARROW_ONLY, headerTintColor: colors.primary }}>
         <Stack.Screen name="index" options={NO_HEADER} />
         <Stack.Screen name="onboarding" options={NO_HEADER} />
         <Stack.Screen name="user-type" />

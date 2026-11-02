@@ -1,12 +1,12 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const CONDITIONS = [
   'Arthritis',
   'Ankylosing spondylitis',
@@ -41,6 +41,7 @@ const CONDITION_LABELS: Record<string, string> = {
 };
 
 export default function DiagnosisConditionsScreen() {
+  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -237,26 +238,26 @@ export default function DiagnosisConditionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     alignItems: 'center',
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   title: {
     position: 'absolute',
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   prompt: {
     position: 'absolute',
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
     textDecorationLine: 'underline',
     fontWeight: '500',
   },
@@ -266,8 +267,8 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
-    borderColor: Colors.light.outline,
+    backgroundColor: colors.surface,
+    borderColor: colors.outline,
     textAlign: 'left',
   },
   selectedChips: {
@@ -280,19 +281,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     maxWidth: 220,
   },
   chipLabel: {
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   chipRemove: {
-    color: Colors.light.text,
+    color: colors.text,
   },
   conditionsPanel: {
     position: 'absolute',
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     overflow: 'hidden',
     elevation: 2,
   },
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
   },
   conditionLabel: {
     flex: 1,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '400',
   },
   customConditionRow: {
@@ -318,58 +319,58 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addCustomOptionText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   customConditionInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: 4,
     paddingHorizontal: 8,
-    color: Colors.light.text,
+    color: colors.text,
   },
   addCustomButton: {
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 4,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   addCustomButtonDisabled: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   addCustomButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
   checkbox: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
   },
   checkboxSelected: {
-    backgroundColor: Colors.light.primary,
-    borderColor: Colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   checkmark: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '700',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
   },
   continueButtonDisabled: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
   continueTextDisabled: {
-    color: Colors.light.primary,
+    color: colors.primary,
   },
-});
+}));

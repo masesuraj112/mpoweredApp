@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
@@ -13,12 +13,10 @@ interface TrackingScreenHeaderProps {
   printing?: boolean;
 }
 
-const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
-const PRIMARY_PURPLE = Colors.light.primary;
-const ON_SURFACE_VARIANT = Colors.light.textSecondary;
-const OUTLINE_VARIANT = Colors.light.outline;
 
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <View>
       <View style={styles.topBar}>
@@ -44,7 +42,7 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
           accessibilityState={{ disabled: !onPrintPdf || printing, busy: printing }}
         >
           {printing ? (
-            <ActivityIndicator size="small" color={ON_SURFACE_VARIANT} accessibilityLabel="Creating PDF" />
+            <ActivityIndicator size="small" color={colors.textSecondary} accessibilityLabel="Creating PDF" />
           ) : (
             <Text style={styles.printChipText}>Print PDF</Text>
           )}
@@ -75,9 +73,9 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   topBar: {
-    backgroundColor: SECONDARY_CONTAINER,
+    backgroundColor: colors.secondaryContainer,
     paddingHorizontal: scaleWidth(19),
     paddingTop: scaleHeight(10),
     paddingBottom: scaleHeight(14),
@@ -89,14 +87,14 @@ const styles = StyleSheet.create({
   },
   backChevron: {
     fontSize: scaleFont(22),
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
     marginRight: scaleWidth(2),
     marginTop: -2,
   },
   backText: {
     fontSize: scaleFont(16),
     fontWeight: '500',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   titleRow: {
     flexDirection: 'row',
@@ -110,11 +108,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: scaleFont(20),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
   },
   printChip: {
     borderWidth: 1,
-    borderColor: OUTLINE_VARIANT,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(16),
     paddingHorizontal: scaleWidth(12),
     paddingVertical: scaleHeight(6),
@@ -127,12 +125,12 @@ const styles = StyleSheet.create({
   printChipText: {
     fontSize: scaleFont(12),
     fontWeight: '500',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   tabsRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: OUTLINE_VARIANT,
+    borderBottomColor: colors.outline,
     marginHorizontal: scaleWidth(24),
   },
   tab: {
@@ -143,17 +141,17 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   tabTextActive: {
-    color: PRIMARY_PURPLE,
+    color: colors.primary,
   },
   tabIndicator: {
     position: 'absolute',
     bottom: -1,
     height: 2,
     width: '60%',
-    backgroundColor: PRIMARY_PURPLE,
+    backgroundColor: colors.primary,
     borderRadius: 1,
   },
-});
+}));

@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+
+import { MinTapTarget, Radius, Spacing, makeStyles } from '@/constants/theme';
 
 /** Shared look for the labelled form fields (text, select, date and time). */
-export const fieldStyles = StyleSheet.create({
+export const useFieldStyles = makeStyles((colors) => ({
   container: {
     gap: Spacing.one,
   },
@@ -12,14 +12,14 @@ export const fieldStyles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '500',
     letterSpacing: 0.1,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   optional: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   box: {
     minHeight: MinTapTarget,
@@ -30,12 +30,12 @@ export const fieldStyles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.control - 2,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   boxError: {
-    borderColor: Colors.light.error,
+    borderColor: colors.error,
     borderWidth: 2,
   },
   value: {
@@ -44,16 +44,16 @@ export const fieldStyles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   placeholder: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   error: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.4,
-    color: Colors.light.error,
+    color: colors.error,
   },
-});
+}));

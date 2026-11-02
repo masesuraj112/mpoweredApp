@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -17,7 +17,7 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { deletePrescription, getPrescriptions } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -31,6 +31,7 @@ function showMessage(title: string, message: string) {
 const loadPrescriptions = () => getPrescriptions();
 
 export default function PrescriptionsScreen() {
+  const styles = useStyles();
   const { state, setState, reload } = useFocusedQuery(loadPrescriptions);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const prescriptions = state.status === 'ready' ? state.data : [];
@@ -144,16 +145,10 @@ export default function PrescriptionsScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = Colors.light.background;
-const OUTLINE_VARIANT = Colors.light.outline;
-const PRIMARY_PURPLE = Colors.light.primary;
-const GRAY_2 = Colors.light.outline;
-const ON_SURFACE = Colors.light.text;
-
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
@@ -179,14 +174,14 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: scaleFont(16),
     lineHeight: scaleFont(22),
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     textAlign: 'center',
     marginBottom: scaleHeight(23),
   },
   addButton: {
     width: scaleWidth(172),
     height: scaleHeight(35),
-    backgroundColor: GROUPED_BACKGROUND,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(15),
     alignItems: 'center',
@@ -197,18 +192,18 @@ const styles = StyleSheet.create({
     lineHeight: scaleFont(20),
     fontWeight: '600',
     letterSpacing: 0.1,
-    color: Colors.light.text,
+    color: colors.text,
   },
   listFrame: {
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(24),
     borderWidth: 1,
-    borderColor: GRAY_2,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(12),
     padding: scaleWidth(12),
   },
   list: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: scaleWidth(12),
     overflow: 'hidden',
   },
@@ -220,7 +215,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(8),
     borderBottomWidth: 1,
-    borderBottomColor: OUTLINE_VARIANT,
+    borderBottomColor: colors.outline,
   },
   listItemDeleting: {
     opacity: 0.4,
@@ -233,13 +228,13 @@ const styles = StyleSheet.create({
     lineHeight: scaleFont(20),
     fontWeight: '500',
     letterSpacing: 0.25,
-    color: ON_SURFACE,
+    color: colors.text,
   },
   frequency: {
     fontSize: scaleFont(12),
     lineHeight: scaleFont(16),
     letterSpacing: 0.4,
-    color: ON_SURFACE,
+    color: colors.text,
   },
   iconButton: {
     alignItems: 'center',
@@ -252,7 +247,7 @@ const styles = StyleSheet.create({
   addPrescriptionsButton: {
     marginHorizontal: scaleWidth(24),
     marginTop: scaleHeight(16),
-    backgroundColor: PRIMARY_PURPLE,
+    backgroundColor: colors.primary,
     borderRadius: scaleWidth(10),
     paddingVertical: scaleHeight(14),
     alignItems: 'center',
@@ -260,6 +255,6 @@ const styles = StyleSheet.create({
   addPrescriptionsButtonText: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: 'white',
+    color: colors.onPrimary,
   },
-});
+}));

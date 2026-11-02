@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type AppointmentRowProps = {
   title: string;
@@ -14,6 +14,7 @@ type AppointmentRowProps = {
 };
 
 export function AppointmentRow({ title, dateText, viewAccessibilityLabel, onView }: AppointmentRowProps) {
+  const styles = useStyles();
   return (
     <Card style={styles.card}>
       <View style={styles.details}>
@@ -31,7 +32,7 @@ export function AppointmentRow({ title, dateText, viewAccessibilityLabel, onView
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -46,13 +47,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   date: {
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

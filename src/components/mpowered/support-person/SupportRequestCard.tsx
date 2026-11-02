@@ -1,6 +1,6 @@
-import { Colors, Radius } from '@/constants/theme';
+import { Radius, makeStyles } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 type SupportRequestCardProps = {
   patientName: string;
@@ -10,6 +10,7 @@ type SupportRequestCardProps = {
 
 /** "<Name> has added you as a support person" with Reject and Accept (Figma 3911-24816). */
 export function SupportRequestCard({ patientName, onAccept, onReject }: SupportRequestCardProps) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
       <Text style={styles.message}>{patientName} has added you as a support person</Text>
@@ -35,19 +36,19 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: scaleHeight(16),
     paddingTop: scaleHeight(22),
     paddingBottom: scaleHeight(15),
     paddingHorizontal: scaleWidth(16),
     borderWidth: 1,
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
     borderRadius: scaleWidth(20),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   message: {
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
     fontSize: scaleFont(16),
     fontWeight: '500',
     lineHeight: 24,
@@ -66,17 +67,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.pill,
   },
   pressed: {
     opacity: 0.8,
   },
   reject: {
-    backgroundColor: Colors.light.primaryContainer,
+    backgroundColor: colors.primaryContainer,
   },
   accept: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   buttonText: {
     fontSize: scaleFont(14),
@@ -85,9 +86,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
   },
   rejectText: {
-    color: Colors.light.text,
+    color: colors.text,
   },
   acceptText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
   },
-});
+}));

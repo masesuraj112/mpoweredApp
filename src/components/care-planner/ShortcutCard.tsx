@@ -1,8 +1,8 @@
-import { StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
+import { Text, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 type ShortcutCardProps = {
   title: string;
@@ -13,6 +13,7 @@ type ShortcutCardProps = {
 
 /** A card in the planner carousel that links to another part of the app. */
 export function ShortcutCard({ title, actionLabel, onPress, style }: ShortcutCardProps) {
+  const styles = useStyles();
   return (
     <Card style={[styles.card, style]}>
       <Text style={styles.title}>{title}</Text>
@@ -21,7 +22,7 @@ export function ShortcutCard({ title, actionLabel, onPress, style }: ShortcutCar
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     padding: Spacing.four,
     justifyContent: 'space-between',
@@ -32,9 +33,9 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.text,
+    color: colors.text,
   },
   action: {
     alignSelf: 'flex-start',
   },
-});
+}));

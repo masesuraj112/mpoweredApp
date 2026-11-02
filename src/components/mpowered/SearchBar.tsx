@@ -1,13 +1,15 @@
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
-import { Colors } from '@/constants/theme';
+import { TextInput, TextInputProps } from 'react-native';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 
 type SearchBarProps = TextInputProps & {
   placeholder?: string;
 };
 
 export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBarProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const doneBar = useKeyboardDoneBar();
 
   return (
@@ -16,7 +18,7 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
         {...props}
         inputAccessoryViewID={doneBar.id}
         placeholder={placeholder}
-        placeholderTextColor={Colors.light.textSubtle}
+        placeholderTextColor={colors.textSubtle}
         style={[styles.input, style]}
         accessibilityLabel={props.accessibilityLabel ?? placeholder}
       />
@@ -25,15 +27,15 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   input: {
     height: scaleHeight(30),
     width: '100%',
     borderWidth: 2,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(4),
     paddingHorizontal: scaleWidth(7),
     textAlign: 'center',
     fontSize: scaleFont(14),
   },
-});
+}));

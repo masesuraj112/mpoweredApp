@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type EmptyStateProps = {
   message: string;
@@ -10,6 +10,7 @@ type EmptyStateProps = {
 };
 
 export function EmptyState({ message, children }: EmptyStateProps) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text style={styles.message}>{message}</Text>
@@ -18,7 +19,7 @@ export function EmptyState({ message, children }: EmptyStateProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     alignItems: 'center',
     gap: Spacing.two,
@@ -26,6 +27,6 @@ const styles = StyleSheet.create({
   message: {
     ...Typography.bodyMedium,
     textAlign: 'center',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

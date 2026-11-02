@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 export interface PainTrendPoint {
   /** Short label shown under the point, e.g. "25/05" */
   label: string;
@@ -17,13 +17,11 @@ interface PainTrendChartProps {
 }
 
 const PAIN_SCALE_MAX = 10;
-const LINE_COLOR = Colors.light.primary;
-const LINE_COLOR_LIGHT = Colors.light.onBrandMuted;
-const DATE_LABEL_COLOR = Colors.light.textSubtle;
 // Keeps the edge dots and their centred date labels inside the SVG
 const HORIZONTAL_INSET = scaleWidth(20);
 
 export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendChartProps) {
+  const colors = useThemeColors();
   const [width, setWidth] = useState(0);
 
   if (data.length === 0) {
@@ -57,14 +55,14 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
         <Svg width={width} height={height}>
           <Defs>
             <LinearGradient id="painTrendFill" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={LINE_COLOR} stopOpacity={0.25} />
-              <Stop offset="1" stopColor={LINE_COLOR} stopOpacity={0} />
+              <Stop offset="0" stopColor={colors.primary} stopOpacity={0.25} />
+              <Stop offset="1" stopColor={colors.primary} stopOpacity={0} />
             </LinearGradient>
           </Defs>
 
           {areaPath.length > 0 && <Path d={areaPath} fill="url(#painTrendFill)" />}
 
-          <Path d={linePath} stroke={LINE_COLOR} strokeWidth={2} fill="none" />
+          <Path d={linePath} stroke={colors.primary} strokeWidth={2} fill="none" />
 
           {points.map((point, index) => {
             const isEndpoint = index === 0 || index === points.length - 1;
@@ -75,7 +73,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   y={point.y - scaleHeight(8)}
                   fontSize={scaleFont(11)}
                   fontWeight="700"
-                  fill={Colors.light.text}
+                  fill={colors.text}
                   textAnchor="middle"
                 >
                   {isEndpoint ? point.value : ''}
@@ -84,7 +82,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   cx={point.x}
                   cy={point.y}
                   r={index === points.length - 1 ? 6 : 4}
-                  fill={index === 0 ? LINE_COLOR_LIGHT : LINE_COLOR}
+                  fill={index === 0 ? colors.onBrandMuted : colors.primary}
                   stroke={index === points.length - 1 ? 'white' : 'none'}
                   strokeWidth={2}
                 />
@@ -94,7 +92,7 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                   fontSize={scaleFont(12)}
                   fontWeight="500"
                   letterSpacing={0.5}
-                  fill={DATE_LABEL_COLOR}
+                  fill={colors.textSubtle}
                   textAnchor="middle"
                 >
                   {point.label}

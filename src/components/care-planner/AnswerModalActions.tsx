@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
+import { MinTapTarget, Spacing, makeStyles } from '@/constants/theme';
 
 type AnswerModalActionsProps = {
   canGoPrevious: boolean;
@@ -22,6 +22,7 @@ export function AnswerModalActions({
   onSave,
   saving,
 }: AnswerModalActionsProps) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       <View style={styles.arrows}>
@@ -56,6 +57,7 @@ type StepButtonProps = {
 };
 
 function StepButton({ label, glyph, enabled, onPress }: StepButtonProps) {
+  const styles = useStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -76,7 +78,7 @@ function StepButton({ label, glyph, enabled, onPress }: StepButtonProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -106,22 +108,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
   },
   stepEnabled: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   stepDisabled: {
-    backgroundColor: Colors.light.primaryContainer,
+    backgroundColor: colors.primaryContainer,
   },
   glyph: {
     fontSize: 18,
     lineHeight: 22,
   },
   glyphEnabled: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
   },
   glyphDisabled: {
-    color: Colors.light.outlineStrong,
+    color: colors.outlineStrong,
   },
-});
+}));

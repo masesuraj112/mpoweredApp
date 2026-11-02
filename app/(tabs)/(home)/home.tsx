@@ -10,13 +10,12 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors, Gradients } from '@/constants/theme';
+import { Gradients, makeStyles } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 type Assessment = {
   id: WeeklyAssessmentId;
@@ -38,6 +37,7 @@ const ASSESSMENTS: Assessment[] = [
 ];
 
 export default function HomeScreen() {
+  const styles = useStyles();
   const name = useAuth().profile?.name ?? '';
   const {
     recorded: recordedAssessments,
@@ -167,10 +167,10 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   hero: {
     marginBottom: 24,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   greeting: {
-    color: Colors.light.onBrandMuted,
+    color: colors.onBrandMuted,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
   },
   heading: {
     marginTop: 16,
-    color: Colors.light.onBrand,
+    color: colors.onBrand,
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 24,
   },
   description: {
     marginTop: 5,
-    color: Colors.light.onBrandMuted,
+    color: colors.onBrandMuted,
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 0.25,
@@ -216,12 +216,12 @@ const styles = StyleSheet.create({
     height: 10,
     overflow: 'hidden',
     borderRadius: 5,
-    backgroundColor: Colors.light.brandTrack,
+    backgroundColor: colors.brandTrack,
   },
   progressFill: {
     height: '100%',
     borderRadius: 5,
-    backgroundColor: Colors.light.onBrandMuted,
+    backgroundColor: colors.onBrandMuted,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   progressLabel: {
-    color: Colors.light.onBrand,
+    color: colors.onBrand,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
   progressError: {
     marginTop: 4,
-    color: Colors.light.onBrand,
+    color: colors.onBrand,
     fontSize: 12,
     lineHeight: 16,
   },
@@ -246,11 +246,11 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 14,
     borderRadius: 12,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   panelHeading: {
     marginBottom: 16,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
     lineHeight: 22,
@@ -266,20 +266,20 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   assessmentCopy: {
     flex: 1,
     gap: 2,
   },
   assessmentTitle: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
   },
   updatedText: {
-    color: Colors.light.success,
+    color: colors.success,
     fontSize: 11,
     lineHeight: 14,
     letterSpacing: 0.3,
@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   recordButton: {
-    borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.primary,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   editButton: {
-    borderColor: Colors.light.primaryContainer,
-    backgroundColor: Colors.light.primaryContainer,
+    borderColor: colors.primaryContainer,
+    backgroundColor: colors.primaryContainer,
   },
   assessmentButtonText: {
     fontSize: 14,
@@ -308,10 +308,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   recordButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
   },
   editButtonText: {
-    color: Colors.light.onPrimaryContainer,
+    color: colors.onPrimaryContainer,
   },
   arrow: {
     fontSize: 18,
@@ -328,16 +328,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 24,
     borderRadius: 12,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   plus: {
-    color: Colors.light.primaryDeep,
+    color: colors.primaryDeep,
     fontSize: 28,
     fontWeight: '400',
     lineHeight: 30,
   },
   reflectionText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   reflectionStatus: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 11,
     lineHeight: 16,
   },
@@ -355,18 +355,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   reflectionEdit: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
   supported: {
     marginTop: 'auto',
     paddingTop: 22,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 11,
     fontWeight: '600',
     lineHeight: 16,
     letterSpacing: 0.5,
     textAlign: 'center',
   },
-});
+}));

@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { formatForDisplay, toE164 } from '@/features/auth/phone';
@@ -18,6 +18,7 @@ export type AccountCheckReason = 'account-exists' | 'no-account';
  * (docs/backend/sign-up-sign-in-plan.md, SU-2 to SU-4). The person is signed in here.
  */
 export default function AccountCheckScreen() {
+  const styles = useStyles();
   const { reason } = useLocalSearchParams<{ reason?: string }>();
   const accountExists = reason === 'account-exists';
   const { data, updateData } = useOnboarding();
@@ -86,10 +87,10 @@ export default function AccountCheckScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     flexGrow: 1,
@@ -101,18 +102,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 32,
     fontWeight: '600',
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   body: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   error: {
     ...Typography.bodyMedium,
-    color: Colors.light.error,
+    color: colors.error,
   },
   actions: {
     gap: Spacing.three,
     marginTop: Spacing.three,
   },
-});
+}));

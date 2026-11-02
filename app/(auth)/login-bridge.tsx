@@ -5,12 +5,13 @@ import { seesPatientIntro } from '@/features/auth/patientIntro';
 import { createProfile } from '@/services/profile';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function LoginBridgeScreen() {
+  const styles = useStyles();
   const { data } = useOnboarding();
   const { session, refreshProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
@@ -116,41 +117,41 @@ export default function LoginBridgeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   copy: {
     position: 'absolute',
     justifyContent: 'center',
   },
   greeting: {
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
     marginBottom: 28,
   },
   message: {
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   errorText: {
     position: 'absolute',
-    color: Colors.light.error,
+    color: colors.error,
     textAlign: 'center',
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
-});
+}));

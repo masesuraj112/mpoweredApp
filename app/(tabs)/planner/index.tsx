@@ -1,16 +1,17 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MyAppointmentsSection } from '@/components/care-planner/MyAppointmentsSection';
 import { PlannerIntro } from '@/components/care-planner/PlannerIntro';
 import { ShortcutCarousel, type Shortcut } from '@/components/care-planner/ShortcutCarousel';
 import { SponsorFooter } from '@/components/care-planner/SponsorFooter';
-import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
+import { BottomTabInset, Spacing, makeStyles } from '@/constants/theme';
 import { useAppointments } from '@/features/care-planner/useAppointments';
 
 export default function PlannerScreen() {
+  const styles = useStyles();
   const router = useRouter();
   const { reload, refresh, ...appointments } = useAppointments();
 
@@ -64,14 +65,14 @@ export default function PlannerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     gap: Spacing.four,
     paddingTop: Spacing.four,
     paddingBottom: BottomTabInset + Spacing.four,
   },
-});
+}));

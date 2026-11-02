@@ -2,11 +2,12 @@ import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function GeneralScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const savedActivities = answers.generalActivities ?? [];
   const selected = GENERAL_ACTIVITY_OPTIONS.reduce<number[]>((indices, activity, index) => {
@@ -56,10 +57,10 @@ export default function GeneralScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -69,12 +70,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   prompt: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -83,4 +84,4 @@ const styles = StyleSheet.create({
   underlinedPrompt: {
     textDecorationLine: 'underline',
   },
-});
+}));

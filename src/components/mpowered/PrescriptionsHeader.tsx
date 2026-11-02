@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
   title: string;
   /** Optional label shown on the right of the top bar, e.g. "Homescreen" */
@@ -12,10 +12,9 @@ interface PrescriptionsHeaderProps {
   titleAccessory?: ReactNode;
 }
 
-const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
-const ON_SURFACE_VARIANT = Colors.light.textSecondary;
 
 export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: PrescriptionsHeaderProps) {
+  const styles = useStyles();
   return (
     <View>
       <View style={styles.topBar}>
@@ -41,9 +40,9 @@ export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: Pres
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   topBar: {
-    backgroundColor: SECONDARY_CONTAINER,
+    backgroundColor: colors.secondaryContainer,
     paddingHorizontal: scaleWidth(19),
     paddingTop: scaleHeight(10),
     paddingBottom: scaleHeight(14),
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
   topBarLabel: {
     fontSize: scaleFont(16),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
   },
   backRow: {
     flexDirection: 'row',
@@ -63,14 +62,14 @@ const styles = StyleSheet.create({
   },
   backChevron: {
     fontSize: scaleFont(22),
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
     marginRight: scaleWidth(2),
     marginTop: -2,
   },
   backText: {
     fontSize: scaleFont(16),
     fontWeight: '500',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   titleRow: {
     flexDirection: 'row',
@@ -83,6 +82,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontSize: scaleFont(20),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
   },
-});
+}));

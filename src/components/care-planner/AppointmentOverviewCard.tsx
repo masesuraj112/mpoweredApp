@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type AppointmentOverviewCardProps = {
   dateText: string;
@@ -16,6 +16,7 @@ export function AppointmentOverviewCard({
   healthService,
   supportPerson,
 }: AppointmentOverviewCardProps) {
+  const styles = useStyles();
   return (
     <Card variant="muted" style={styles.card}>
       <OverviewRow label="Appointment date" value={dateText} />
@@ -27,6 +28,7 @@ export function AppointmentOverviewCard({
 }
 
 function OverviewRow({ label, value }: { label: string; value: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
@@ -35,7 +37,7 @@ function OverviewRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: Spacing.three,
     paddingHorizontal: Spacing.three,
@@ -45,12 +47,12 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   value: {
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 0.25,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

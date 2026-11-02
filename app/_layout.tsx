@@ -1,7 +1,9 @@
-import { Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type Theme } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Colors, type ThemeColors } from '../src/constants/theme';
 import { WelcomeSplash } from '../src/components/splash/WelcomeSplash';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/startup';
@@ -102,10 +104,35 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
 });
 
+// Screens, headers and the status bar follow the phone's light or dark appearance.
+function navigationTheme(base: Theme, colors: ThemeColors): Theme {
+  return {
+    ...base,
+    colors: {
+      ...base.colors,
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.text,
+      border: colors.divider,
+      notification: colors.error,
+    },
+  };
+}
+
+const navigationThemes = {
+  light: navigationTheme(DefaultTheme, Colors.light),
+  dark: navigationTheme(DarkTheme, Colors.dark),
+};
+
 export default function RootLayout() {
+  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+    <ThemeProvider value={navigationThemes[scheme]}>
+      <StatusBar style="auto" />
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

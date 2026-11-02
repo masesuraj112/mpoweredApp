@@ -3,10 +3,10 @@ import { DatePickerDialog, TimePickerDialog } from '@expo/ui/jetpack-compose';
 import { DatePicker } from '@expo/ui/swift-ui';
 import { datePickerStyle } from '@expo/ui/swift-ui/modifiers';
 import { useMemo, useState } from 'react';
-import { Modal, Platform, StyleSheet, View } from 'react-native';
+import { Modal, Platform, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, makeStyles, useThemeColors } from '@/constants/theme';
 import {
   defaultDateTime,
   formatLocalTimestamp,
@@ -43,6 +43,8 @@ function useStart(value: LocalDateTime | null, now: Date | undefined): LocalDate
 }
 
 function IosDateTimeCard({ value, now, onConfirm, onCancel }: DateTimePickerModalProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const start = useStart(value, now);
   const [selected, setSelected] = useState<Date>(() => toLocalDate(start));
 
@@ -50,7 +52,7 @@ function IosDateTimeCard({ value, now, onConfirm, onCancel }: DateTimePickerModa
     <Modal transparent animationType="fade" visible onRequestClose={onCancel} statusBarTranslucent>
       <View style={styles.backdrop}>
         <View accessibilityViewIsModal style={styles.card}>
-          <Host matchContents seedColor={Colors.light.primary} style={styles.picker}>
+          <Host matchContents seedColor={colors.primary} style={styles.picker}>
             <DatePicker
               title="Appointment date and time"
               selection={selected}
@@ -75,6 +77,7 @@ function IosDateTimeCard({ value, now, onConfirm, onCancel }: DateTimePickerModa
 }
 
 function AndroidDateTimeDialogs({ value, now, onConfirm, onCancel }: DateTimePickerModalProps) {
+  const colors = useThemeColors();
   const start = useStart(value, now);
   // The date is chosen first; the time dialog then opens on that day.
   const [day, setDay] = useState<CalendarDay | null>(null);
@@ -84,14 +87,14 @@ function AndroidDateTimeDialogs({ value, now, onConfirm, onCancel }: DateTimePic
       {day === null ? (
         <DatePickerDialog
           initialDate={toUtcMidnightString(start)}
-          color={Colors.light.primary}
+          color={colors.primary}
           onDateSelected={(date) => setDay(fromUtcMidnight(date))}
           onDismissRequest={onCancel}
         />
       ) : (
         <TimePickerDialog
           initialDate={formatLocalTimestamp({ ...day, hour: start.hour, minute: start.minute })}
-          color={Colors.light.primary}
+          color={colors.primary}
           onDateSelected={(date) => onConfirm({ ...day, hour: date.getHours(), minute: date.getMinutes() })}
           onDismissRequest={onCancel}
         />
@@ -100,19 +103,19 @@ function AndroidDateTimeDialogs({ value, now, onConfirm, onCancel }: DateTimePic
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   backdrop: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.three,
-    backgroundColor: Colors.light.backdrop,
+    backgroundColor: colors.backdrop,
   },
   card: {
     width: '100%',
     maxWidth: 400,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
   },
   picker: {
@@ -126,4 +129,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
-});
+}));

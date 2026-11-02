@@ -1,6 +1,6 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Platform, StyleSheet, Text } from 'react-native';
+import { Alert, Platform, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { displayOrPlaceholder, formatShortAppointmentDate, isPlanEmpty } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
@@ -32,6 +32,7 @@ function showMessage(title: string, message: string) {
  * and built from the same components. What can be changed depends on the patient's permissions.
  */
 export default function SupportedAppointmentPlanScreen() {
+  const styles = useStyles();
   // openAnswer: set by "Add doctor's answer" to open the answer box straight away.
   const params = useLocalSearchParams<{ appointmentId: string; patientId: string; openAnswer?: string }>();
   const appointmentId = Number(params.appointmentId);
@@ -168,7 +169,7 @@ export default function SupportedAppointmentPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
@@ -178,13 +179,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.4,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   sectionTitle: {
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

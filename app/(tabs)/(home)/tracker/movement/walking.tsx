@@ -3,9 +3,9 @@ import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export const WALKING_OPTIONS = [
   'Pain does not prevent me walking any distance',
   'Pain prevents me from walking more than 2 kilometres',
@@ -19,6 +19,7 @@ export const WALKING_OPTIONS = [
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function WalkingScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useMovementAssessment();
 
   const handleNext = () => {
@@ -66,10 +67,10 @@ export default function WalkingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -80,12 +81,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   promptText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -100,8 +101,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
   },
-});
+}));

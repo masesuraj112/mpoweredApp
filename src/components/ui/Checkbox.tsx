@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget, Spacing, Typography } from '@/constants/theme';
+import { MinTapTarget, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 /**
  * Box and tick dimensions. These are the same numbers as the default checkbox in
@@ -32,6 +32,7 @@ export function Checkbox({
   accessibilityLabel,
   style,
 }: CheckboxProps) {
+  const styles = useStyles();
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -56,7 +57,7 @@ export function Checkbox({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     minHeight: MinTapTarget,
     flexDirection: 'row',
@@ -70,25 +71,25 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.labelLargeBold,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   box: {
     width: CHECKBOX_BOX_SIZE,
     height: CHECKBOX_BOX_SIZE,
     borderRadius: CHECKBOX_RADIUS,
     borderWidth: CHECKBOX_BORDER_WIDTH,
-    borderColor: Colors.light.controlBorder,
+    borderColor: colors.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
   boxChecked: {
-    borderColor: Colors.light.controlChecked,
-    backgroundColor: Colors.light.controlChecked,
+    borderColor: colors.controlChecked,
+    backgroundColor: colors.controlChecked,
   },
   tick: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: CHECKBOX_TICK_SIZE,
     fontWeight: '700',
   },
-});
+}));

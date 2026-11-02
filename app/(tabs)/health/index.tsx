@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PainTrendChart } from '@/components/mpowered/PainTrendChart';
 import { ASSESSMENT_TYPES } from '@/features/health-profile/assessment-types';
@@ -12,7 +12,7 @@ import { ok, run } from '@/lib/result';
 import { getAssessments, getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
 
@@ -31,6 +31,7 @@ function loadOverview() {
 }
 
 export default function HealthScreen() {
+  const styles = useStyles();
   const { state } = useFocusedQuery(loadOverview);
   const overview = state.status === 'ready' ? state.data : null;
 
@@ -135,13 +136,11 @@ export default function HealthScreen() {
   );
 }
 
-const GROUPED_BACKGROUND = Colors.light.background;
-const PRIMARY_PURPLE = Colors.light.primary;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
@@ -149,18 +148,18 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
     marginTop: scaleHeight(24),
     marginHorizontal: scaleWidth(24),
   },
   divider: {
     borderTopWidth: 1,
-    borderTopColor: Colors.light.divider,
+    borderTopColor: colors.divider,
     marginTop: scaleHeight(16),
     marginBottom: scaleHeight(20),
   },
   profileCard: {
-    backgroundColor: GROUPED_BACKGROUND,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     marginHorizontal: scaleWidth(24),
     padding: scaleWidth(16),
@@ -168,12 +167,12 @@ const styles = StyleSheet.create({
   profileTitle: {
     fontSize: scaleFont(16),
     fontWeight: '500',
-    color: 'black',
+    color: colors.text,
   },
   profileUpdated: {
     fontSize: scaleFont(11),
     fontWeight: '500',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginTop: scaleHeight(6),
   },
   profileRow: {
@@ -189,7 +188,7 @@ const styles = StyleSheet.create({
   profileDescription: {
     flex: 1,
     fontSize: scaleFont(12),
-    color: Colors.light.text,
+    color: colors.text,
   },
   openProfileButtonRow: {
     flexDirection: 'row',
@@ -197,11 +196,11 @@ const styles = StyleSheet.create({
     marginTop: scaleHeight(16),
   },
   openProfileButton: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: scaleWidth(24),
     paddingVertical: scaleHeight(10),
     paddingHorizontal: scaleWidth(20),
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.15,
     shadowRadius: 3,
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
   openProfileButtonText: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: 'black',
+    color: colors.text,
   },
   shortcutRow: {
     flexDirection: 'row',
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
   },
   shortcutCard: {
     flex: 1,
-    backgroundColor: GROUPED_BACKGROUND,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     minHeight: scaleHeight(61),
     justifyContent: 'center',
@@ -230,11 +229,11 @@ const styles = StyleSheet.create({
   shortcutText: {
     fontSize: scaleFont(14),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
   },
   trendSection: {
-    backgroundColor: GROUPED_BACKGROUND,
+    backgroundColor: colors.background,
     marginTop: scaleHeight(24),
     paddingHorizontal: scaleWidth(29),
     paddingTop: scaleHeight(24),
@@ -244,7 +243,7 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(16),
     fontWeight: '700',
     fontStyle: 'italic',
-    color: 'black',
+    color: colors.text,
   },
   trendInsightRow: {
     flexDirection: 'row',
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
   trendSubtitle: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: scaleHeight(12),
   },
   trendChart: {
@@ -268,8 +267,8 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: PRIMARY_PURPLE,
-    borderColor: Colors.light.divider,
+    backgroundColor: colors.primary,
+    borderColor: colors.divider,
     borderWidth: 0.5,
     paddingVertical: scaleHeight(14),
     paddingHorizontal: scaleWidth(8),
@@ -287,7 +286,7 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: scaleFont(11),
     fontWeight: '500',
-    color: 'white',
+    color: colors.onPrimary,
     textAlign: 'center',
   },
-});
+}));

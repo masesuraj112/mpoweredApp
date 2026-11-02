@@ -9,17 +9,18 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
 export default function ActivityScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
 
   // Keep the raw text locally so partial input like "0" or "1." isn't rewritten mid-typing.
@@ -59,7 +60,7 @@ export default function ActivityScreen() {
             onChangeText={handleChange}
             keyboardType="decimal-pad"
             placeholder="Input number only"
-            placeholderTextColor={Colors.light.textSubtle}
+            placeholderTextColor={colors.textSubtle}
             maxLength={5}
             style={[styles.input, isOverMax && styles.inputError]}
             accessibilityLabel="Hours active per day"
@@ -85,8 +86,8 @@ export default function ActivityScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.light.surface },
+const useStyles = makeStyles((colors) => ({
+  screen: { flex: 1, backgroundColor: colors.surface },
   container: {
     flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
@@ -96,38 +97,38 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   input: {
     height: scaleHeight(56),
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(4),
     paddingHorizontal: scaleWidth(16),
     fontSize: scaleFont(16),
-    color: Colors.light.text,
+    color: colors.text,
   },
   inputError: {
-    borderColor: Colors.light.error,
+    borderColor: colors.error,
   },
   helper: {
     marginTop: scaleHeight(16),
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     letterSpacing: 0.4,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   accessoryBar: {
     alignItems: 'flex-end',
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(10),
   },
   accessoryDone: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: scaleFont(16),
     fontWeight: '600',
   },
-});
+}));

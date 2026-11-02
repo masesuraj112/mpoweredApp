@@ -1,7 +1,7 @@
-import { Colors, Radius } from '@/constants/theme';
+import { Radius, makeStyles } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 const arrowIcon = require('../../../../assets/images/support-person/arrow-right.svg');
 
@@ -14,6 +14,7 @@ type PillButtonProps = {
 
 /** Purple rounded button with a white arrow (Figma 3911-24700, 3911-24669). */
 export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) {
+  const styles = useStyles();
   const large = size === 'large';
 
   return (
@@ -32,13 +33,13 @@ export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   small: {
     alignSelf: 'flex-end',
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   label: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '500',
   },
   labelSmall: {
@@ -72,4 +73,4 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
   },
-});
+}));

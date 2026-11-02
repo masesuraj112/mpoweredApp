@@ -9,10 +9,12 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { saveSocialHealthEntry } from '@/services/social-health';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
+import { Text, TextInput } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function MoodTriggerScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const reminders = useReminders();
   const doneBar = useKeyboardDoneBar();
@@ -65,7 +67,7 @@ export default function MoodTriggerScreen() {
           value={answers.emotionReflection ?? ''}
           onChangeText={value => updateAnswer('emotionReflection', value)}
           placeholder="i.e: delayed in work due to pain, inability to meet with friends, etc"
-          placeholderTextColor={Colors.light.textSubtle}
+          placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
           style={styles.reflectionInput}
         />
@@ -75,9 +77,9 @@ export default function MoodTriggerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   prompt: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -86,13 +88,13 @@ const styles = StyleSheet.create({
   reflectionInput: {
     minHeight: scaleHeight(80),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(10),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
-});
+}));

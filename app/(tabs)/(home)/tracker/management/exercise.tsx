@@ -3,10 +3,11 @@ import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function ExerciseScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useManagementAssessment();
   const handleNext = () => {
     if (!answers.exerciseDays) {
@@ -68,10 +69,10 @@ export default function ExerciseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -89,14 +90,14 @@ const styles = StyleSheet.create({
     gap: scaleHeight(12),
   },
   promptText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   examples: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
     width: '96%',
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     paddingHorizontal: scaleWidth(16),
   },
   optionRow: {
@@ -116,31 +117,31 @@ const styles = StyleSheet.create({
   },
   optionDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   radio: {
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderWidth: 2,
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
     borderRadius: scaleWidth(10),
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioSelected: {
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
   },
   radioDot: {
     width: scaleWidth(10),
     height: scaleWidth(10),
     borderRadius: scaleWidth(5),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   optionText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
   },
-});
+}));

@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { SignaturePad } from '@/components/ui/SignaturePad';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import type { SignatureData } from '@/features/care-planner/signature';
 
 type ConsentSignatureSectionProps = {
@@ -24,6 +24,7 @@ export function ConsentSignatureSection({
   onDrawEnd,
   disabled,
 }: ConsentSignatureSectionProps) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <Text style={styles.label}>{SIGNATURE_LABEL}</Text>
@@ -41,19 +42,19 @@ export function ConsentSignatureSection({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   section: {
     gap: Spacing.two,
   },
   label: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   statement: {
     fontSize: 11,
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

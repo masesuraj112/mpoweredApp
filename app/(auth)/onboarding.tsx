@@ -1,12 +1,12 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const SLIDES = [
   {
     heading: 'Track your pain and its impacts weekly',
@@ -33,6 +33,7 @@ const SLIDES = [
 ];
 
 export default function OnboardingCarousel() {
+  const styles = useStyles();
   const { updateData } = useOnboarding();
   const [index, setIndex] = useState(0);
   const { width, height } = useWindowDimensions();
@@ -115,7 +116,7 @@ export default function OnboardingCarousel() {
 
 
 // Styles
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
     container: {
         flex: 1,
     },
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   imageSlide: {
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
 
   copyArea: {
@@ -156,16 +157,16 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: Colors.light.surfaceContainer,
+        backgroundColor: colors.surfaceContainer,
     },
 
     dotActive: {
         width: 20,
-        backgroundColor: Colors.light.primaryDeep,
+        backgroundColor: colors.primaryDeep,
     },
 
     primaryButton: {
-        backgroundColor: Colors.light.primary,
+        backgroundColor: colors.primary,
         marginHorizontal: 24,
         paddingVertical: 16,
         borderRadius: 12,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     },
 
     primaryButtonText: {
-        color: Colors.light.onPrimary,
+        color: colors.onPrimary,
         fontWeight: '600',
         fontSize: 16
     },
@@ -183,4 +184,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginVertical: 16,
     }
-});
+}));

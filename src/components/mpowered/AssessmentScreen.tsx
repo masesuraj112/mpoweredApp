@@ -1,8 +1,8 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 /**
  * Page shell for assessment questions: white background, page title, then the question card.
  *
@@ -12,6 +12,7 @@ import { Colors } from '@/constants/theme';
  * On iOS, inputs can also add a "Done" bar above the keyboard with `useKeyboardDoneBar`.
  */
 export function AssessmentScreen({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     // Not exposed to screen readers: it's a convenience, not a control.
     <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
@@ -23,10 +24,10 @@ export function AssessmentScreen({ title, children }: { title: string; children:
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
-});
+}));

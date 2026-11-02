@@ -1,6 +1,6 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles, useThemeColors } from '@/constants/theme';
 
 type LoadingStateProps = {
   /** Read by screen readers; optionally displayed under the spinner. */
@@ -9,6 +9,8 @@ type LoadingStateProps = {
 };
 
 export function LoadingState({ label = 'Loading', showLabel = false }: LoadingStateProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <View
       accessible
@@ -16,13 +18,13 @@ export function LoadingState({ label = 'Loading', showLabel = false }: LoadingSt
       accessibilityLabel={label}
       style={styles.container}
     >
-      <ActivityIndicator color={Colors.light.primary} />
+      <ActivityIndicator color={colors.primary} />
       {showLabel ? <Text style={styles.label}>{label}</Text> : null}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -31,6 +33,6 @@ const styles = StyleSheet.create({
   label: {
     marginTop: Spacing.two,
     fontSize: 14,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

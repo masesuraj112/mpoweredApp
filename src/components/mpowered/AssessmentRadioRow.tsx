@@ -1,7 +1,7 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { Pressable, StyleProp, Text, TextStyle, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface AssessmentRadioRowProps {
   label: string;
   selected: boolean;
@@ -21,6 +21,7 @@ export function AssessmentRadioRow({
   isLast = false,
   textStyle,
 }: AssessmentRadioRowProps) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -40,7 +41,7 @@ export function AssessmentRadioRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     minHeight: 0,
     justifyContent: 'center',
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   radio: {
     position: 'absolute',
@@ -59,24 +60,24 @@ const styles = StyleSheet.create({
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderWidth: 2,
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
     borderRadius: scaleWidth(10),
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioSelected: {
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
   },
   radioDot: {
     width: scaleWidth(10),
     height: scaleWidth(10),
     borderRadius: scaleWidth(5),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   text: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
   },
-});
+}));

@@ -2,12 +2,13 @@ import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { PERSONAL_CARE_OPTIONS } from '@/features/assessments/personal-care/options';
 
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function CareScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const savedIndex = PERSONAL_CARE_OPTIONS.indexOf(answers.personalCareLevel ?? '');
   const selectedIndex = savedIndex >= 0 ? savedIndex : null;
@@ -40,10 +41,10 @@ export default function CareScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -53,8 +54,8 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
-});
+}));

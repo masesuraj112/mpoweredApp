@@ -4,11 +4,11 @@ import { sendVerificationCode } from '@/services/auth';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
   if (localNumber.length <= 4) return localNumber;
@@ -17,6 +17,8 @@ const formatPhoneNumber = (digits: string) => {
 };
 
 export default function PhoneScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumber(data.phoneNumber.replace(/\D/g, '')));
   const [showPhoneError, setShowPhoneError] = useState(false);
@@ -95,7 +97,7 @@ export default function PhoneScreen() {
               borderTopLeftRadius: 4 * scale,
               borderTopRightRadius: 4 * scale,
               borderBottomWidth: scale,
-              borderBottomColor: isValidPhoneNumber ? Colors.light.primary : Colors.light.outlineStrong,
+              borderBottomColor: isValidPhoneNumber ? colors.primary : colors.outlineStrong,
             },
           ]}
         >
@@ -104,7 +106,7 @@ export default function PhoneScreen() {
             value={phoneNumber}
             onChangeText={handlePhoneNumberChange}
             placeholder="04xx xxx xxx"
-            placeholderTextColor={Colors.light.text}
+            placeholderTextColor={colors.text}
             keyboardType="phone-pad"
             // The iOS phone pad has no return key, so add a Done bar to close it.
             inputAccessoryViewID={doneBar.id}
@@ -192,60 +194,60 @@ export default function PhoneScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   title: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     fontWeight: '500',
   },
   inputContainer: {
     position: 'absolute',
-    backgroundColor: Colors.light.surfaceContainer,
-    borderBottomColor: Colors.light.outlineStrong,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomColor: colors.outlineStrong,
     overflow: 'hidden',
   },
   input: {
     flex: 1,
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   helperText: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     textAlignVertical: 'center',
     fontWeight: '400',
   },
   phoneError: {
     position: 'absolute',
-    color: Colors.light.error,
+    color: colors.error,
     textAlign: 'center',
   },
   continueButton: {
     position: 'absolute',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   continueButtonDisabled: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
   continueTextDisabled: {
-    color: Colors.light.primary,
+    color: colors.primary,
   },
-});
+}));

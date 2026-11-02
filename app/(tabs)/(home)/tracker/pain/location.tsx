@@ -5,13 +5,15 @@ import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
 export default function PainLocationScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = usePainAssessment();
   const savedLocations = answers.painLocations ?? [];
   const [selectedPresets, setSelectedPresets] = useState<number[]>(() =>
@@ -106,7 +108,7 @@ export default function PainLocationScreen() {
               value={draftOtherLocation}
               onChangeText={setDraftOtherLocation}
               placeholder="Knee"
-              placeholderTextColor={Colors.light.text}
+              placeholderTextColor={colors.text}
               style={styles.input}
               accessibilityLabel="Other pain location"
               inputAccessoryViewID={doneBar.id}
@@ -163,10 +165,10 @@ export default function PainLocationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(9),
     marginBottom: scaleHeight(18),
   },
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.backdrop,
+    backgroundColor: colors.backdrop,
     padding: scaleWidth(24),
   },
   modalContent: {
@@ -192,13 +194,13 @@ const styles = StyleSheet.create({
     maxWidth: scaleWidth(386),
     height: scaleHeight(242),
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     paddingTop: scaleHeight(12),
     paddingHorizontal: scaleWidth(16),
     paddingBottom: scaleHeight(8),
   },
   modalLabel: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     fontWeight: '400',
     lineHeight: scaleHeight(16),
@@ -206,16 +208,16 @@ const styles = StyleSheet.create({
   },
   input: {
     height: scaleHeight(40),
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: scaleWidth(2),
     paddingHorizontal: scaleWidth(4),
     paddingVertical: 0,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
   previousLabel: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     marginTop: scaleHeight(8),
@@ -228,12 +230,12 @@ const styles = StyleSheet.create({
   previousLocation: {
     height: scaleHeight(30),
     justifyContent: 'center',
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
     borderRadius: scaleWidth(2),
     paddingHorizontal: scaleWidth(4),
   },
   previousLocationText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
@@ -251,7 +253,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(16),
   },
   cancelButtonText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
@@ -261,13 +263,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(16),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   okButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
-});
+}));

@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, makeStyles } from '@/constants/theme';
 
 const lightbulbIcon = require('../../../assets/images/care-planner/lightbulb.png');
 
@@ -11,6 +11,7 @@ type QuestionHintBannerProps = {
 
 /** A short tip with a light bulb icon. */
 export function QuestionHintBanner({ message }: QuestionHintBannerProps) {
+  const styles = useStyles();
   return (
     <View style={styles.banner}>
       <Image
@@ -25,14 +26,14 @@ export function QuestionHintBanner({ message }: QuestionHintBannerProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
     padding: Spacing.three,
     borderRadius: Radius.control,
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
   },
   icon: {
     width: 32,
@@ -45,6 +46,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));

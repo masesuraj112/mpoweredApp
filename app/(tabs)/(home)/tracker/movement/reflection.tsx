@@ -15,16 +15,17 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
   const reminders = useReminders();
   const [saving, setSaving] = useState(false);
@@ -89,7 +90,7 @@ export default function ReflectionScreen() {
               value={answers.reflection ?? ''}
               onChangeText={text => updateAnswer('reflection', text)}
               placeholder="For instance, when pain occurred, you lie down for the whole day"
-              placeholderTextColor={Colors.light.textSubtle}
+              placeholderTextColor={colors.textSubtle}
               multiline
               textAlignVertical="top"
               style={styles.input}
@@ -116,8 +117,8 @@ export default function ReflectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.light.surface },
+const useStyles = makeStyles((colors) => ({
+  screen: { flex: 1, backgroundColor: colors.surface },
   container: {
     flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -135,21 +136,21 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: scaleHeight(120),
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(4),
     padding: scaleWidth(16),
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
-    color: Colors.light.text,
+    color: colors.text,
   },
   accessoryBar: {
     alignItems: 'flex-end',
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(10),
   },
   accessoryDone: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: scaleFont(16),
     fontWeight: '600',
   },
@@ -157,10 +158,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: scaleHeight(6),
     fontSize: scaleFont(12),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   counterOver: { 
-    color: Colors.light.error, 
+    color: colors.error, 
     fontWeight: '600', 
   },
-});
+}));

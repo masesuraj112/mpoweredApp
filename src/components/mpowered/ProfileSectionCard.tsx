@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import type { ProfileSection } from '@/features/health-profile/profile';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface ProfileSectionCardProps {
   section: ProfileSection;
   /** Shows the week the answers come from under the title */
@@ -10,6 +10,7 @@ interface ProfileSectionCardProps {
 }
 
 export function ProfileSectionCard({ section, showPeriod = false }: ProfileSectionCardProps) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
       <View style={styles.titleRow}>
@@ -46,16 +47,10 @@ export function ProfileSectionCard({ section, showPeriod = false }: ProfileSecti
   );
 }
 
-const GROUPED_TERTIARY = Colors.light.background;
-const OUTLINE_VARIANT = Colors.light.outline;
-const ON_SURFACE = Colors.light.text;
-const ON_SURFACE_VARIANT = Colors.light.textSecondary;
-const ERROR_CONTAINER = Colors.light.errorContainer;
-const ON_ERROR_CONTAINER = Colors.light.onErrorContainer;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
-    backgroundColor: GROUPED_TERTIARY,
+    backgroundColor: colors.background,
     borderRadius: scaleWidth(12),
     marginHorizontal: scaleWidth(32),
     marginBottom: scaleHeight(25),
@@ -72,10 +67,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontSize: scaleFont(20),
     lineHeight: scaleFont(24),
-    color: 'black',
+    color: colors.text,
   },
   incompleteBadge: {
-    backgroundColor: ERROR_CONTAINER,
+    backgroundColor: colors.errorContainer,
     borderRadius: scaleWidth(8),
     paddingHorizontal: scaleWidth(8),
     paddingVertical: scaleHeight(2),
@@ -84,19 +79,19 @@ const styles = StyleSheet.create({
   incompleteBadgeText: {
     fontSize: scaleFont(11),
     fontWeight: '600',
-    color: ON_ERROR_CONTAINER,
+    color: colors.onErrorContainer,
   },
   cardSubtitle: {
     fontSize: scaleFont(12),
     lineHeight: scaleFont(16),
     letterSpacing: 0.4,
-    color: ON_SURFACE,
+    color: colors.text,
     marginHorizontal: scaleWidth(26),
     marginTop: scaleHeight(4),
   },
   cardDivider: {
     height: 1,
-    backgroundColor: OUTLINE_VARIANT,
+    backgroundColor: colors.outline,
     marginHorizontal: scaleWidth(26),
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(6),
@@ -113,13 +108,13 @@ const styles = StyleSheet.create({
     lineHeight: scaleFont(16),
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   itemValue: {
     fontSize: scaleFont(16),
     lineHeight: scaleFont(24),
     letterSpacing: 0.5,
-    color: ON_SURFACE,
+    color: colors.text,
   },
   itemValueCompact: {
     fontSize: scaleFont(12),
@@ -136,8 +131,8 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(14),
     lineHeight: scaleFont(20),
     fontStyle: 'italic',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
     paddingHorizontal: scaleWidth(30),
     paddingVertical: scaleHeight(8),
   },
-});
+}));

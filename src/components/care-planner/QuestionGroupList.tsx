@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import {
   getAnswerLine,
   getEditAnswerLabel,
@@ -18,6 +18,7 @@ type QuestionGroupListProps = {
 };
 
 export function QuestionGroupList({ group, onEditAnswer }: QuestionGroupListProps) {
+  const styles = useStyles();
   return (
     <View style={styles.group}>
       <Text accessibilityRole="header" style={styles.title}>
@@ -44,16 +45,16 @@ export function QuestionGroupList({ group, onEditAnswer }: QuestionGroupListProp
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   group: {
     gap: Spacing.two,
   },
   title: {
     ...Typography.labelLargeBold,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   card: {
     paddingVertical: Spacing.one,
     paddingHorizontal: 0,
   },
-});
+}));

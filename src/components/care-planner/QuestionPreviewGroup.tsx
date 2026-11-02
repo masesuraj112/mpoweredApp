@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import type { SuggestedQuestionGroup } from '@/features/care-planner/suggestionTypes';
 
 type QuestionPreviewGroupProps = {
@@ -9,6 +9,7 @@ type QuestionPreviewGroupProps = {
 
 /** A heading and its questions as plain text: nothing here can be ticked or edited. */
 export function QuestionPreviewGroup({ group }: QuestionPreviewGroupProps) {
+  const styles = useStyles();
   return (
     <View style={styles.group}>
       <Text accessibilityRole="header" style={styles.title}>
@@ -25,13 +26,13 @@ export function QuestionPreviewGroup({ group }: QuestionPreviewGroupProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   group: {
     gap: Spacing.two,
   },
   title: {
     ...Typography.labelLarge,
-    color: Colors.light.text,
+    color: colors.text,
   },
   list: {
     gap: Spacing.half,
@@ -40,9 +41,9 @@ const styles = StyleSheet.create({
   },
   question: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.three,
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
   },
-});
+}));

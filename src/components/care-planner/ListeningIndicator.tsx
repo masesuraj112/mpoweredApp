@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type ListeningIndicatorProps = {
   listening: boolean;
@@ -13,6 +13,7 @@ type ListeningIndicatorProps = {
 
 /** "Listening…" while dictating, otherwise a short message about why dictation is not running. */
 export function ListeningIndicator({ listening, message, onOpenSettings }: ListeningIndicatorProps) {
+  const styles = useStyles();
   if (listening) {
     return (
       <Text accessibilityLiveRegion="polite" style={[styles.text, styles.listening]}>
@@ -33,17 +34,17 @@ export function ListeningIndicator({ listening, message, onOpenSettings }: Liste
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   message: {
     gap: Spacing.two,
     alignItems: 'flex-start',
   },
   text: {
     ...Typography.bodyMedium,
-    color: Colors.light.text,
+    color: colors.text,
   },
   listening: {
-    color: Colors.light.listening,
+    color: colors.listening,
     fontWeight: '700',
   },
-});
+}));

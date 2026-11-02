@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 import { Button } from './Button';
 
@@ -11,6 +11,7 @@ type ErrorStateProps = {
 };
 
 export function ErrorState({ message, onRetry, retryLabel = 'Try again' }: ErrorStateProps) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text accessibilityRole="alert" style={styles.message}>
@@ -21,7 +22,7 @@ export function ErrorState({ message, onRetry, retryLabel = 'Try again' }: Error
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     alignItems: 'center',
     gap: Spacing.two,
@@ -32,6 +33,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '500',
     textAlign: 'center',
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

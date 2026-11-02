@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 
-import { fieldStyles } from './fieldStyles';
+import { useFieldStyles } from './fieldStyles';
 
 type TextFieldProps = {
   label: string;
@@ -43,6 +43,8 @@ export function TextField({
   onBlur,
   trailingIcon,
 }: TextFieldProps) {
+  const fieldStyles = useFieldStyles();
+  const colors = useThemeColors();
   return (
     <View style={fieldStyles.container}>
       <Text style={fieldStyles.label}>{label}</Text>
@@ -55,7 +57,7 @@ export function TextField({
           onFocus={onFocus}
           onBlur={onBlur}
           placeholder={placeholder}
-          placeholderTextColor={Colors.light.textSecondary}
+          placeholderTextColor={colors.textSecondary}
           maxLength={maxLength}
           autoCapitalize={autoCapitalize}
           autoCorrect={autoCorrect}

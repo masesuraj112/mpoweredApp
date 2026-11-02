@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
 
@@ -36,6 +36,7 @@ export function Button({
   accessibilityHint,
   style,
 }: ButtonProps) {
+  const styles = useStyles();
   const dimWhenDisabled = variant === 'elevated' || variant === 'tonal';
   const labelStyle = [
     styles.label,
@@ -75,7 +76,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   // The touch target is at least 48dp tall even though the visible shape is shorter.
   target: {
     minHeight: MinTapTarget,
@@ -92,46 +93,46 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
   },
   elevated: {
-    backgroundColor: Colors.light.background,
-    shadowColor: Colors.light.shadow,
+    backgroundColor: colors.background,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 2,
   },
   tonal: {
-    backgroundColor: Colors.light.primaryContainer,
+    backgroundColor: colors.primaryContainer,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
   },
   primary: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
     borderRadius: Radius.control,
     paddingVertical: Spacing.three,
   },
   outlined: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
     borderRadius: Radius.control,
     paddingVertical: Spacing.three,
   },
   label: {
     ...Typography.labelLarge,
-    color: Colors.light.secondary,
+    color: colors.secondary,
   },
   tonalLabel: {
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   primaryLabel: {
     fontWeight: '600',
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
   },
   outlinedLabel: {
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
   },
   pressed: {
     opacity: 0.8,
@@ -139,4 +140,4 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
-});
+}));

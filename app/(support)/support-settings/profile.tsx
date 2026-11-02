@@ -6,14 +6,14 @@ import {
   SettingsModalText,
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { formatForDisplay } from '@/features/auth/phone';
 import { signOut } from '@/services/auth';
 import { updateProfile } from '@/services/profile';
 import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 
@@ -23,6 +23,7 @@ const accountIcon = require('../../../assets/images/settings/account.svg');
  * apply (docs/support-person.md, section 4.2a). They can change their name (docs/settings-backend.md, Q3).
  */
 export default function SupportAccountScreen() {
+  const styles = useStyles();
   const { profile, refreshProfile } = useAuth();
   const [isPersonalDetailsOpen, setIsPersonalDetailsOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
@@ -98,17 +99,17 @@ export default function SupportAccountScreen() {
 }
 
 // Same as the Sign out button on the patient's Account page.
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   signOutButton: {
     height: 55,
     marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   signOutText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: 20,
   },
-});
+}));

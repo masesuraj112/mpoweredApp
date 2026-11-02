@@ -1,9 +1,9 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
-import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Keyboard, Modal, Pressable, ScrollView, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
 /* -------------------------------------------------------------------------- */
@@ -57,6 +57,7 @@ export function SettingsModal({
   scrollable = false,
   children,
 }: SettingsModalProps) {
+  const styles = useStyles();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -109,6 +110,7 @@ export function SettingsModal({
 
 /** Plain body copy for message-style popups (e.g. "Your password has been changed."). */
 export function SettingsModalText({ children }: { children: ReactNode }) {
+  const styles = useStyles();
   return <Text style={styles.bodyText}>{children}</Text>;
 }
 
@@ -139,6 +141,7 @@ export function SettingsModalField({
   showEditIcon = true,
   ...inputProps
 }: SettingsModalFieldProps) {
+  const styles = useStyles();
   const [revealed, setRevealed] = useState(false);
 
   const passwordProps: TextInputProps = password
@@ -192,6 +195,7 @@ export function SettingsModalField({
 
 /** Bold heading above a block of content, e.g. "Access permissions". */
 export function SettingsModalSection({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -202,6 +206,7 @@ export function SettingsModalSection({ title, children }: { title: string; child
 
 /** Bordered card that stacks its children as rows, with a divider between each. */
 export function SettingsModalGroup({ children }: { children: ReactNode }) {
+  const styles = useStyles();
   const rows = Children.toArray(children);
   return (
     <View style={styles.group}>
@@ -225,6 +230,7 @@ export function SettingsModalToggleRow({
   value: boolean;
   onValueChange: (value: boolean) => void;
 }) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -235,6 +241,7 @@ export function SettingsModalToggleRow({
 
 /** Read-only label with a short grey value on the right, e.g. a permission the user can't change. */
 export function SettingsModalInfoRow({ label, value }: { label: string; value: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.row} accessible accessibilityLabel={`${label}: ${value}`}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -259,6 +266,7 @@ export function SettingsModalActionRow({
   icon?: number;
   destructive?: boolean;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -278,6 +286,7 @@ export function SettingsModalActionRow({
  * Sits above the Cancel / Ok buttons so open dropdown menus draw on top of them.
  */
 export function SettingsModalInlineRow({ label, children }: { label: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.inlineRow}>
       <Text style={styles.inlineLabel}>{label}</Text>
@@ -290,13 +299,13 @@ export function SettingsModalInlineRow({ label, children }: { label: string; chi
 /*  Styles                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   overlay: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 13,
-    backgroundColor: Colors.light.backdrop,
+    backgroundColor: colors.backdrop,
   },
   card: {
     width: '100%',
@@ -306,26 +315,26 @@ const styles = StyleSheet.create({
     paddingTop: 28,
     paddingBottom: 8,
     borderRadius: 12,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   scroll: {
     flexGrow: 0,
   },
   title: {
     marginBottom: 18,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
   errorText: {
     marginBottom: 4,
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: 12,
     lineHeight: 16,
   },
   bodyText: {
     marginBottom: 16,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 16,
     lineHeight: 24,
   },
@@ -343,7 +352,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -353,13 +362,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   confirmButtonDisabled: {
     opacity: 0.5,
   },
   confirmText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -370,11 +379,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: 'center',
     borderRadius: 4,
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     paddingHorizontal: 16,
   },
   fieldLabel: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 12,
     lineHeight: 16,
   },
@@ -382,7 +391,7 @@ const styles = StyleSheet.create({
     height: 26,
     padding: 0,
     paddingRight: 44,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 16,
   },
   editIcon: {
@@ -398,7 +407,7 @@ const styles = StyleSheet.create({
     bottom: 16,
   },
   revealText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -410,20 +419,20 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: 12,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
   group: {
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: 12,
     overflow: 'hidden',
   },
   divider: {
     height: 1,
     marginHorizontal: 12,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
   row: {
     minHeight: 56,
@@ -438,17 +447,17 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     flex: 1,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 16,
     lineHeight: 24,
   },
   rowValue: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 14,
     lineHeight: 20,
   },
   destructiveText: {
-    color: Colors.light.error,
+    color: colors.error,
   },
   rowIcon: {
     width: 24,
@@ -462,8 +471,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   inlineLabel: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 20,
     lineHeight: 24,
   },
-});
+}));

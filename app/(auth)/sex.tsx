@@ -1,9 +1,9 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
   { label: 'Male', value: 'male' as const },
@@ -11,6 +11,7 @@ const OPTIONS = [
 ];
 
 export default function SexScreen() {
+  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState(data.sex);
 
@@ -43,15 +44,15 @@ export default function SexScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, alignItems: 'center' },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 32 },
-  option: { width: '100%', backgroundColor: Colors.light.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
-  optionSelected: { backgroundColor: Colors.light.secondaryContainer },
-  optionText: { color: Colors.light.primary, fontWeight: '600', fontSize: 15 },
-  continueButton: { backgroundColor: Colors.light.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
-  continueButtonDisabled: { backgroundColor: Colors.light.secondaryContainer },
-  continueText: { color: Colors.light.onPrimary, fontWeight: '700', fontSize: 16 },
-  continueTextDisabled: { color: Colors.light.primary },
-  tip: { textAlign: 'center', color: Colors.light.textSubtle, marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
-});
+  option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
+  optionSelected: { backgroundColor: colors.secondaryContainer },
+  optionText: { color: colors.primary, fontWeight: '600', fontSize: 15 },
+  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
+  continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
+  continueText: { color: colors.onPrimary, fontWeight: '700', fontSize: 16 },
+  continueTextDisabled: { color: colors.primary },
+  tip: { textAlign: 'center', color: colors.textSubtle, marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
+}));

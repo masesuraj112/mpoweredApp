@@ -9,15 +9,15 @@ import {
   Linking,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
 
 function MovementSummaryView({ summary, onClose }: { summary: MovementSummaryData; onClose: () => void }) {
+  const styles = useStyles();
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -104,6 +104,7 @@ type SummaryState =
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function SummaryScreen() {
+  const styles = useStyles();
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
@@ -156,6 +157,7 @@ export default function SummaryScreen() {
 }
 
 function ResultSection({ heading, value }: { heading: string; value: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.resultSection}>
       <Text style={styles.resultLabel}>{heading}</Text>
@@ -164,37 +166,37 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, paddingHorizontal: scaleWidth(24), paddingTop: scaleHeight(16), paddingBottom: scaleHeight(16), backgroundColor: Colors.light.surface },
-  heading: { marginLeft: scaleWidth(7), marginBottom: scaleHeight(8), color: Colors.light.text, fontSize: scaleFont(24), fontWeight: '600', lineHeight: scaleHeight(29) },
-  subheading: { marginHorizontal: scaleWidth(7), marginBottom: scaleHeight(20), color: Colors.light.text, fontSize: scaleFont(12), lineHeight: scaleHeight(16), letterSpacing: 0.4 },
-  reportCard: { flex: 1, minHeight: 0, borderWidth: 1, borderColor: Colors.light.outline, borderRadius: scaleWidth(12), paddingHorizontal: scaleWidth(18), paddingTop: scaleHeight(12), paddingBottom: scaleHeight(10), backgroundColor: Colors.light.surface },
+const useStyles = makeStyles((colors) => ({
+  screen: { flex: 1, paddingHorizontal: scaleWidth(24), paddingTop: scaleHeight(16), paddingBottom: scaleHeight(16), backgroundColor: colors.surface },
+  heading: { marginLeft: scaleWidth(7), marginBottom: scaleHeight(8), color: colors.text, fontSize: scaleFont(24), fontWeight: '600', lineHeight: scaleHeight(29) },
+  subheading: { marginHorizontal: scaleWidth(7), marginBottom: scaleHeight(20), color: colors.text, fontSize: scaleFont(12), lineHeight: scaleHeight(16), letterSpacing: 0.4 },
+  reportCard: { flex: 1, minHeight: 0, borderWidth: 1, borderColor: colors.outline, borderRadius: scaleWidth(12), paddingHorizontal: scaleWidth(18), paddingTop: scaleHeight(12), paddingBottom: scaleHeight(10), backgroundColor: colors.surface },
   reportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: scaleWidth(10), minHeight: scaleHeight(28) },
-  reportTitle: { color: Colors.light.text, fontSize: scaleFont(20), fontWeight: '700', lineHeight: scaleHeight(24) },
-  period: { color: Colors.light.text, fontSize: scaleFont(11), fontWeight: '600', lineHeight: scaleHeight(16), textAlign: 'right' },
-  divider: { height: 1, backgroundColor: Colors.light.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(18) },
+  reportTitle: { color: colors.text, fontSize: scaleFont(20), fontWeight: '700', lineHeight: scaleHeight(24) },
+  period: { color: colors.text, fontSize: scaleFont(11), fontWeight: '600', lineHeight: scaleHeight(16), textAlign: 'right' },
+  divider: { height: 1, backgroundColor: colors.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(18) },
   reportScroll: { flex: 1, minHeight: 0 },
   reportContent: { paddingBottom: scaleHeight(12) },
-  sectionHeading: { marginBottom: scaleHeight(14), color: Colors.light.text, fontSize: scaleFont(14), fontWeight: '600', lineHeight: scaleHeight(20) },
-  guidancePanel: { overflow: 'hidden', borderRadius: scaleWidth(12), backgroundColor: Colors.light.background, marginHorizontal: scaleWidth(4) },
-  guidanceText: { paddingHorizontal: scaleWidth(18), paddingVertical: scaleHeight(12), color: Colors.light.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
-  tipsButton: { minHeight: scaleHeight(44), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scaleWidth(8), paddingHorizontal: scaleWidth(12), backgroundColor: Colors.light.divider },
+  sectionHeading: { marginBottom: scaleHeight(14), color: colors.text, fontSize: scaleFont(14), fontWeight: '600', lineHeight: scaleHeight(20) },
+  guidancePanel: { overflow: 'hidden', borderRadius: scaleWidth(12), backgroundColor: colors.background, marginHorizontal: scaleWidth(4) },
+  guidanceText: { paddingHorizontal: scaleWidth(18), paddingVertical: scaleHeight(12), color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
+  tipsButton: { minHeight: scaleHeight(44), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scaleWidth(8), paddingHorizontal: scaleWidth(12), backgroundColor: colors.divider },
   tipsButtonPressed: { opacity: 0.8 },
-  searchIcon: { color: Colors.light.text, fontSize: scaleFont(20), lineHeight: scaleFont(20) },
-  tipsButtonText: { color: Colors.light.text, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
-  resultsHeading: { marginTop: scaleHeight(24), marginBottom: scaleHeight(12), color: Colors.light.text, fontSize: scaleFont(12), fontWeight: '600', lineHeight: scaleHeight(16) },
+  searchIcon: { color: colors.text, fontSize: scaleFont(20), lineHeight: scaleFont(20) },
+  tipsButtonText: { color: colors.text, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
+  resultsHeading: { marginTop: scaleHeight(24), marginBottom: scaleHeight(12), color: colors.text, fontSize: scaleFont(12), fontWeight: '600', lineHeight: scaleHeight(16) },
   resultsList: { gap: scaleHeight(12), paddingHorizontal: scaleWidth(14) },
   resultSection: { gap: scaleHeight(2) },
-  resultLabel: { color: Colors.light.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
-  resultText: { color: Colors.light.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
-  reflectionText: { marginHorizontal: scaleWidth(14), color: Colors.light.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
+  resultLabel: { color: colors.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
+  resultText: { color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
+  reflectionText: { marginHorizontal: scaleWidth(14), color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
   footer: { flexShrink: 0 },
-  footerDivider: { height: 1, backgroundColor: Colors.light.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(12) },
+  footerDivider: { height: 1, backgroundColor: colors.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(12) },
   footerRow: { minHeight: scaleHeight(34), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: scaleWidth(12) },
-  savedText: { color: Colors.light.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
-  closeButton: { minWidth: scaleWidth(105), height: scaleHeight(30), alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.light.outline, borderRadius: scaleWidth(100), paddingHorizontal: scaleWidth(16) },
-  closeButtonPressed: { backgroundColor: Colors.light.surfaceContainer },
-  closeButtonText: { color: Colors.light.textSecondary, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
+  savedText: { color: colors.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
+  closeButton: { minWidth: scaleWidth(105), height: scaleHeight(30), alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.outline, borderRadius: scaleWidth(100), paddingHorizontal: scaleWidth(16) },
+  closeButtonPressed: { backgroundColor: colors.surfaceContainer },
+  closeButtonText: { color: colors.textSecondary, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
   centered: { justifyContent: 'center', alignItems: 'center', gap: scaleHeight(16) },
-  errorText: { color: Colors.light.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
-});
+  errorText: { color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
+}));

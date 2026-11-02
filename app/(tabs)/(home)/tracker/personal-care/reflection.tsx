@@ -14,10 +14,12 @@ import { savePersonalCareEntry } from '@/services/assessments';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
+import { Text, TextInput } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const reminders = useReminders();
   const doneBar = useKeyboardDoneBar();
@@ -73,7 +75,7 @@ export default function ReflectionScreen() {
           value={answers.reflection ?? ''}
           onChangeText={value => updateAnswer('reflection', value)}
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"
-          placeholderTextColor={Colors.light.textSubtle}
+          placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
           style={styles.reflectionInput}
         />
@@ -86,9 +88,9 @@ export default function ReflectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   prompt: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -97,24 +99,24 @@ const styles = StyleSheet.create({
   reflectionInput: {
     minHeight: scaleHeight(80),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     paddingHorizontal: scaleWidth(14),
     paddingVertical: scaleHeight(10),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
   counter: {
     marginTop: scaleHeight(6),
     textAlign: 'right',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
   },
   counterOver: {
-    color: Colors.light.error,
+    color: colors.error,
     fontWeight: '600',
   },
-});
+}));

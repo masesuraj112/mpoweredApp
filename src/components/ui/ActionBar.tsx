@@ -1,7 +1,7 @@
 import { Children, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 type ActionBarProps = {
   /** The buttons. `single` is one centred button; `pair` is two side by side. */
@@ -11,6 +11,7 @@ type ActionBarProps = {
 
 /** Bar at the bottom of a screen. It sits below the scrolling content, never over it. */
 export function ActionBar({ children, layout = 'single' }: ActionBarProps) {
+  const styles = useStyles();
   const pair = layout === 'pair';
 
   return (
@@ -22,12 +23,12 @@ export function ActionBar({ children, layout = 'single' }: ActionBarProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   bar: {
     paddingVertical: Spacing.two,
     borderTopWidth: 2,
-    borderTopColor: Colors.light.backgroundElement,
-    backgroundColor: Colors.light.background,
+    borderTopColor: colors.backgroundElement,
+    backgroundColor: colors.background,
   },
   singleBar: {
     alignItems: 'center',
@@ -47,4 +48,4 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: 160,
   },
-});
+}));

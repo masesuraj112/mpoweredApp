@@ -1,10 +1,10 @@
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { displayOrPlaceholder } from '@/features/care-planner/planDisplay';
 import { formatAppointmentTime } from '@/features/support-person/appointments';
 import type { Appointment } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { PillButton } from './PillButton';
 
@@ -22,6 +22,7 @@ type AppointmentCardProps = {
 
 /** Date, practitioner and health service, with optional action buttons (Figma 3911-24689). */
 export function AppointmentCard({ appointment, actions = [] }: AppointmentCardProps) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -57,7 +58,7 @@ export function AppointmentCard({ appointment, actions = [] }: AppointmentCardPr
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: scaleHeight(4),
     paddingTop: scaleHeight(10),
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     paddingLeft: scaleWidth(11),
     paddingRight: scaleWidth(10),
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   body: {
     flexDirection: 'row',
@@ -96,16 +97,16 @@ const styles = StyleSheet.create({
   },
   date: {
     flexShrink: 1,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
     fontSize: scaleFont(13),
     fontWeight: '600',
     lineHeight: 19.5,
   },
   detailText: {
     flexShrink: 1,
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     fontSize: scaleFont(12),
     lineHeight: 18,
     letterSpacing: 0.4,
   },
-});
+}));

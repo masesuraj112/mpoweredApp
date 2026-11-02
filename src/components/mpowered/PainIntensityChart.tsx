@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { scaleFont, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 export interface PainIntensityPoint {
   /** Short label shown under the point, e.g. "24/05" */
   label: string;
@@ -17,14 +17,12 @@ interface PainIntensityChartProps {
 }
 
 const PAIN_SCALE_MAX = 10;
-const LINE_COLOR = Colors.light.primary;
-const GRID_COLOR = Colors.light.textDisabled;
-const AXIS_TEXT_COLOR = Colors.light.textSecondary;
 const Y_AXIS_WIDTH = 18;
 // Keeps the edge dots and their centred date labels inside the plot area
 const HORIZONTAL_INSET = scaleWidth(16);
 
 export function PainIntensityChart({ data, height = 270 }: PainIntensityChartProps) {
+  const colors = useThemeColors();
   const [width, setWidth] = useState(0);
 
   const plotWidth = Math.max(width - Y_AXIS_WIDTH - HORIZONTAL_INSET * 2, 0);
@@ -58,8 +56,8 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
         <Svg width={width} height={height}>
           <Defs>
             <LinearGradient id="painIntensityFill" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={LINE_COLOR} stopOpacity={0.35} />
-              <Stop offset="1" stopColor={LINE_COLOR} stopOpacity={0.05} />
+              <Stop offset="0" stopColor={colors.primary} stopOpacity={0.35} />
+              <Stop offset="1" stopColor={colors.primary} stopOpacity={0.05} />
             </LinearGradient>
           </Defs>
 
@@ -72,7 +70,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
                 y1={y}
                 x2={width}
                 y2={y}
-                stroke={GRID_COLOR}
+                stroke={colors.textDisabled}
                 strokeWidth={1}
               />
             );
@@ -86,7 +84,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
                 x={Y_AXIS_WIDTH - 6}
                 y={y + 3}
                 fontSize={scaleFont(10)}
-                fill={AXIS_TEXT_COLOR}
+                fill={colors.textSecondary}
                 textAnchor="end"
               >
                 {tick}
@@ -96,10 +94,10 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
 
           {areaPath.length > 0 && <Path d={areaPath} fill="url(#painIntensityFill)" />}
 
-          {points.length > 1 && <Path d={linePath} stroke={LINE_COLOR} strokeWidth={2} fill="none" />}
+          {points.length > 1 && <Path d={linePath} stroke={colors.primary} strokeWidth={2} fill="none" />}
 
           {points.map((point) => (
-            <Circle key={point.label} cx={point.x} cy={point.y} r={4} fill={LINE_COLOR} />
+            <Circle key={point.label} cx={point.x} cy={point.y} r={4} fill={colors.primary} />
           ))}
 
           {points.map((point) => (
@@ -108,7 +106,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
               x={point.x}
               y={height - 4}
               fontSize={scaleFont(10)}
-              fill={AXIS_TEXT_COLOR}
+              fill={colors.textSecondary}
               textAnchor="middle"
             >
               {point.label}

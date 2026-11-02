@@ -1,7 +1,8 @@
-import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsSubpage, useSettingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
 import { Text } from 'react-native';
 
 export default function PrivacyScreen() {
+  const settingsSubpageStyles = useSettingsSubpageStyles();
   return (
     <SettingsSubpage title="Privacy Policy">
       <Text style={settingsSubpageStyles.placeholder}>Privacy policy coming soon.</Text>

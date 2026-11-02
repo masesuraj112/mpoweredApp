@@ -1,7 +1,7 @@
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { Checkbox } from '@/components/ui/Checkbox';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type RecordingConsentRowProps = {
   /** True once the consent has been signed. The tick is set by that, not by tapping the row. */
@@ -14,6 +14,7 @@ const CONSENT_LABEL = 'Ask consent for recording answers (Required)';
 
 /** The row for consent to record answers. Tapping it opens the consent screen. */
 export function RecordingConsentRow({ checked, onPress }: RecordingConsentRowProps) {
+  const styles = useStyles();
   return (
     <Checkbox
       checked={checked}
@@ -25,16 +26,16 @@ export function RecordingConsentRow({ checked, onPress }: RecordingConsentRowPro
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     borderRadius: Radius.control,
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
   },
   label: {
     ...Typography.labelLargeBold,
     textDecorationLine: 'underline',
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
-});
+}));

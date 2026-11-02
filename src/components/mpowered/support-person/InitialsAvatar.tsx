@@ -1,10 +1,11 @@
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { getInitials } from '@/features/support-person/appointments';
 import { scaleFont, scaleWidth } from '@/services/scale';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 /** Purple initials in a light circle, e.g. "JC" for Jane Cooper (Figma 3911-24650). */
 export function InitialsAvatar({ name, size = 35 }: { name: string; size?: number }) {
+  const styles = useStyles();
   const diameter = scaleWidth(size);
 
   return (
@@ -19,14 +20,14 @@ export function InitialsAvatar({ name, size = 35 }: { name: string; size?: numbe
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   circle: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   initials: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '700',
   },
-});
+}));

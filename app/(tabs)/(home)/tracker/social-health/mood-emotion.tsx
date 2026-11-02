@@ -5,9 +5,9 @@ import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
 const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
   frustrated: {
@@ -40,6 +40,7 @@ const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; icon
 const MOOD_EMOTIONS = MOOD_EMOTION_VALUES.map(value => ({ value, ...MOOD_ICONS[value] }));
 
 export default function MoodEmotionScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const selected = MOOD_EMOTIONS.find(emotion => emotion.value === answers.moodEmotion);
   // Only show the mandatory message once the user has tried to continue without a selection.
@@ -112,10 +113,10 @@ export default function MoodEmotionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
   },
   hintText: {
     marginTop: scaleHeight(1),
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
   },
   emojiRow: {
     flexDirection: 'row',
@@ -174,6 +175,6 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));

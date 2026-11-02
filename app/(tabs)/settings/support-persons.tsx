@@ -11,7 +11,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { formatForDisplay } from '@/features/auth/phone';
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import {
   EMPTY_SUPPORT_PERSON_DRAFT,
@@ -23,7 +23,7 @@ import {
 import type { SupportPerson } from '@/features/care-planner/types';
 import { useMySupportPersons } from '@/features/care-planner/useMySupportPersons';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const deleteIcon = require('../../../assets/images/settings/delete.svg');
@@ -41,6 +41,7 @@ const draftFrom = (person: SupportPerson): PersonDraft => ({
 });
 
 export default function SupportPersonsScreen() {
+  const styles = useStyles();
   const { state, reload, busy, actionError, clearActionError, save: savePerson, remove } =
     useMySupportPersons();
   // The popup edits a copy ("draft") so Cancel discards changes. null = popup closed.
@@ -195,9 +196,9 @@ export default function SupportPersonsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   status: {
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
     fontSize: 14,
   },
   sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
@@ -208,10 +209,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   addButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: 20,
   },
-});
+}));

@@ -1,7 +1,7 @@
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { Checkbox } from '@/components/ui/Checkbox';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type SuggestedQuestionRowProps = {
   text: string;
@@ -18,6 +18,7 @@ export function SuggestedQuestionRow({
   onToggle,
   accessibilityLabel,
 }: SuggestedQuestionRowProps) {
+  const styles = useStyles();
   return (
     <Checkbox
       checked={checked}
@@ -29,14 +30,14 @@ export function SuggestedQuestionRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
   },
   text: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

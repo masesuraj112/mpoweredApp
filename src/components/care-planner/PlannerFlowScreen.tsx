@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, Text, View, type ScrollViewProps } from 'react-native';
+import { ScrollView, Text, View, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/ui/BackButton';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 type PlannerFlowScreenProps = {
   title: string;
@@ -30,6 +30,7 @@ export function PlannerFlowScreen({
   scrollEnabled,
   keyboardShouldPersistTaps,
 }: PlannerFlowScreenProps) {
+  const styles = useStyles();
   const router = useRouter();
 
   return (
@@ -55,10 +56,10 @@ export function PlannerFlowScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   topBar: {
     paddingHorizontal: Spacing.three,
@@ -73,9 +74,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     lineHeight: 24,
-    color: Colors.light.text,
+    color: colors.text,
   },
   titleBold: {
     fontWeight: '700',
   },
-});
+}));

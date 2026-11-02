@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type BackButtonProps = {
   onPress: () => void;
@@ -8,6 +8,7 @@ type BackButtonProps = {
 };
 
 export function BackButton({ onPress, label = 'Back' }: BackButtonProps) {
+  const styles = useStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -24,7 +25,7 @@ export function BackButton({ onPress, label = 'Back' }: BackButtonProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   target: {
     alignSelf: 'flex-start',
     minHeight: MinTapTarget,
@@ -38,13 +39,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     borderRadius: Radius.pill,
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   text: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSecondaryContainer,
+    color: colors.onSecondaryContainer,
   },
   pressed: {
     opacity: 0.8,
   },
-});
+}));

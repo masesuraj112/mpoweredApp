@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 
 export function PlannerIntro() {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text accessibilityRole="header" style={styles.title}>
@@ -17,7 +18,7 @@ export function PlannerIntro() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     paddingHorizontal: Spacing.five,
     gap: Spacing.three,
@@ -27,16 +28,16 @@ const styles = StyleSheet.create({
     lineHeight: 29,
     fontWeight: '600',
     letterSpacing: -0.48,
-    color: Colors.light.text,
+    color: colors.text,
   },
   rule: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
   subtitle: {
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 0.25,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

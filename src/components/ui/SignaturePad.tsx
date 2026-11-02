@@ -10,7 +10,7 @@ import {
 import Svg, { Path } from 'react-native-svg';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, makeStyles, useThemeColors } from '@/constants/theme';
 import {
   strokeToPathData,
   type Point,
@@ -55,6 +55,8 @@ export function SignaturePad({
   clearLabel = 'Clear',
   style,
 }: SignaturePadProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const [size, setSize] = useState({ width: 0, height });
   const [currentPath, setCurrentPath] = useState('');
   const points = useRef<Point[]>([]);
@@ -119,9 +121,9 @@ export function SignaturePad({
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           <Svg width="100%" height="100%">
             {value?.paths.map((path, index) => (
-              <Path key={index} d={path} {...strokeProps} />
+              <Path key={index} d={path} {...strokeProps} stroke={colors.onSurface} />
             ))}
-            {currentPath ? <Path d={currentPath} {...strokeProps} /> : null}
+            {currentPath ? <Path d={currentPath} {...strokeProps} stroke={colors.onSurface} /> : null}
           </Svg>
         </View>
       </View>
@@ -139,19 +141,18 @@ export function SignaturePad({
 }
 
 const strokeProps = {
-  stroke: Colors.light.onSurface,
   strokeWidth: STROKE_WIDTH,
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   fill: 'none',
 } as const;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   surface: {
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.control / 2,
-    backgroundColor: Colors.light.backgroundElement,
+    backgroundColor: colors.backgroundElement,
     overflow: 'hidden',
   },
   surfaceDisabled: {
@@ -161,4 +162,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: Spacing.two,
   },
-});
+}));

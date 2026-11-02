@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
-import { Colors, MinTapTarget } from '@/constants/theme';
+import { MinTapTarget, makeStyles } from '@/constants/theme';
 import type { DictationStatus } from '@/features/care-planner/voice-recording';
 
 const microphoneIcon = require('../../../assets/images/care-planner/microphone.png');
@@ -19,6 +19,7 @@ type DictationButtonProps = {
  * (a still ring when the person has reduce motion turned on). The label says what a press does.
  */
 export function DictationButton({ status, onPress }: DictationButtonProps) {
+  const styles = useStyles();
   const listening = status === 'listening';
   const busy = status === 'requestingPermission' || status === 'processing';
   const unavailable = status === 'unavailable';
@@ -91,7 +92,7 @@ export function DictationButton({ status, onPress }: DictationButtonProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   target: {
     minWidth: MinTapTarget,
     minHeight: MinTapTarget,
@@ -113,19 +114,19 @@ const styles = StyleSheet.create({
   circleActive: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.listening,
+    backgroundColor: colors.listening,
   },
   stopSquare: {
     width: 18,
     height: 18,
     borderRadius: 3,
-    backgroundColor: Colors.light.onPrimary,
+    backgroundColor: colors.onPrimary,
   },
   ring: {
     ...StyleSheet.absoluteFill,
     borderRadius: SIZE / 2,
     borderWidth: 3,
-    borderColor: Colors.light.listening,
+    borderColor: colors.listening,
   },
   ringStill: {
     transform: [{ scale: 1.25 }],
@@ -134,4 +135,4 @@ const styles = StyleSheet.create({
   unavailable: {
     opacity: 0.4,
   },
-});
+}));

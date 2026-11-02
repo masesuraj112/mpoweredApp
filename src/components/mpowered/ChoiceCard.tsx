@@ -4,13 +4,12 @@ import {
     Keyboard,
     Pressable,
     StyleProp,
-    StyleSheet,
     Text,
     View,
     ViewStyle,
 } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface ChoiceCardProps {
   title: string;
   /** Pass a string or nested `<Text>` elements */
@@ -45,6 +44,8 @@ export function ChoiceCard({
   variant = 'default',
   style,
 }: ChoiceCardProps) {
+  const footerStyles = useFooterStyles();
+  const styles = useStyles();
   const isPainTracker = variant === 'painTracker';
   const isPersonalCare = variant === 'personalCare';
   const isManagement = variant === 'management';
@@ -210,10 +211,10 @@ export function ChoiceCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: colors.text,
     borderRadius: scaleWidth(20),
     paddingTop: scaleHeight(24),
     paddingHorizontal: scaleWidth(20),
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderTopWidth: 1,
-    borderTopColor: 'black',
+    borderTopColor: colors.text,
     width: '100%',
     marginBottom: scaleHeight(20),
   },
@@ -241,7 +242,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   validationMessage: {
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     textAlign: 'right',
@@ -256,22 +257,22 @@ const styles = StyleSheet.create({
   },
   painTrackerContainer: {
     height: scaleHeight(572),
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),
     paddingHorizontal: scaleWidth(19),
     paddingBottom: scaleHeight(12),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   personalCareContainer: {
     flex: 1,
     minHeight: 0,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(12),
     paddingTop: scaleHeight(16),
     paddingHorizontal: scaleWidth(19),
     paddingBottom: scaleHeight(12),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   painTrackerTitle: {
     fontSize: scaleFont(20),
@@ -284,10 +285,10 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(24),
     letterSpacing: 0.15,
     marginBottom: scaleHeight(10),
-    color: Colors.light.text,
+    color: colors.text,
   },
   painTrackerDivider: {
-    borderTopColor: Colors.light.divider,
+    borderTopColor: colors.divider,
     marginBottom: scaleHeight(14),
   },
   painTrackerPrompt: {
@@ -305,11 +306,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));
 
-const footerStyles = StyleSheet.create({
+const useFooterStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -339,29 +340,29 @@ const footerStyles = StyleSheet.create({
     width: scaleWidth(105),
     height: scaleHeight(31),
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(16),
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: scaleWidth(12),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   navigationButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
   nextButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   nextButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
   pill: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: colors.text,
     borderRadius: scaleWidth(24),
     paddingVertical: scaleHeight(10),
     paddingHorizontal: scaleWidth(22),
@@ -373,21 +374,21 @@ const footerStyles = StyleSheet.create({
     gap: scaleWidth(8),
   },
   recordButtonPressed: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   painTrackerRecordButton: {
     width: scaleWidth(105),
     height: scaleHeight(30),
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(16),
     paddingVertical: 0,
     paddingHorizontal: scaleWidth(16),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   painTrackerPager: {
     width: scaleWidth(54),
     height: scaleHeight(31),
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(8),
     paddingVertical: 0,
     paddingHorizontal: 0,
@@ -395,30 +396,30 @@ const footerStyles = StyleSheet.create({
   painTrackerRecordText: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
   },
   personalCarePagerText: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   disabledNavigationButton: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
   },
   disabledNavigationButtonText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   pillText: {
     fontSize: scaleFont(18),
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
   },
   arrow: {
     fontSize: scaleFont(18),
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
   },
-});
+}));

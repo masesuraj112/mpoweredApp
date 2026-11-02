@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IconButton } from '@/components/ui/IconButton';
-import { Colors, MinTapTarget, Spacing, Typography } from '@/constants/theme';
+import { MinTapTarget, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
@@ -32,6 +32,7 @@ export function QuestionListItem({
   onEditAnswer,
   showDivider,
 }: QuestionListItemProps) {
+  const styles = useStyles();
   const content = (
     <>
       <Text style={[styles.answerLine, answered ? styles.answered : styles.unanswered]}>
@@ -61,7 +62,7 @@ export function QuestionListItem({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.light.outline,
+    borderTopColor: colors.outline,
   },
   text: {
     flex: 1,
@@ -87,13 +88,13 @@ const styles = StyleSheet.create({
     ...Typography.labelLarge,
   },
   unanswered: {
-    color: Colors.light.error,
+    color: colors.error,
   },
   answered: {
-    color: Colors.light.success,
+    color: colors.success,
   },
   question: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

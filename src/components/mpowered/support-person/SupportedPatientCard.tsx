@@ -1,9 +1,9 @@
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { getNextAppointment } from '@/features/support-person/appointments';
 import { APPOINTMENT_ACTION_LABELS } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { AppointmentCard } from './AppointmentCard';
 import { InitialsAvatar } from './InitialsAvatar';
@@ -23,6 +23,7 @@ type SupportedPatientCardProps = {
  * who they are, the support person's permissions, their next appointment, and a link to the rest.
  */
 export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointments }: SupportedPatientCardProps) {
+  const styles = useStyles();
   const next = getNextAppointment(patient.appointments);
 
   return (
@@ -69,16 +70,16 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: scaleHeight(9),
     paddingTop: scaleHeight(17),
     paddingBottom: scaleHeight(15),
     paddingHorizontal: scaleWidth(14),
     borderWidth: 1,
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
     borderRadius: scaleWidth(20),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -90,21 +91,21 @@ const styles = StyleSheet.create({
     gap: scaleHeight(2),
   },
   name: {
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
     fontSize: scaleFont(15),
     fontWeight: '700',
     lineHeight: 20,
   },
   condition: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     lineHeight: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   section: {
     gap: scaleHeight(7),
   },
-});
+}));

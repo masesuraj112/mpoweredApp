@@ -1,9 +1,9 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface SingleChoiceProps {
   titleText: string,
   questionNumber?: number;
@@ -36,6 +36,8 @@ export function SingleChoiceInput({
   cardHeight,
   scrollable = true,
 }: SingleChoiceProps) {
+  const optionStyles = useOptionStyles();
+  const stylesSheet = useStylesSheet();
   const isScrollable = variant === 'personalCare' && scrollable;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const currentSelectedIndex = controlledSelectedIndex !== undefined ? controlledSelectedIndex : selectedIndex;
@@ -110,7 +112,7 @@ export function SingleChoiceInput({
   );
 }
 
-const stylesSheet = StyleSheet.create({
+const useStylesSheet = makeStyles((colors) => ({
   promptText: {
     fontSize: scaleFont(15),
     fontWeight: '600',
@@ -123,11 +125,11 @@ const stylesSheet = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));
 
-const optionStyles = StyleSheet.create({
+const useOptionStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -136,15 +138,15 @@ const optionStyles = StyleSheet.create({
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   personalCareList: {
     width: '96%',
     marginLeft: scaleWidth(4),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     overflow: 'hidden',
   },
   personalCareListFixedHeight: {
@@ -159,14 +161,14 @@ const optionStyles = StyleSheet.create({
   },
   personalCareRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   circle: {
     width: scaleWidth(22),
     height: scaleWidth(22),
     borderRadius: scaleWidth(11),
     borderWidth: 2,
-    borderColor: Colors.light.controlBorder,
+    borderColor: colors.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: scaleWidth(16),
@@ -176,22 +178,22 @@ const optionStyles = StyleSheet.create({
     width: scaleWidth(20),
     height: scaleWidth(20),
     borderRadius: scaleWidth(10),
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
     marginRight: 0,
   },
   circleSelected: {
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
   },
   circleDot: {
     width: scaleWidth(10),
     height: scaleWidth(10),
     borderRadius: scaleWidth(5),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   label: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     flex: 1,
     flexShrink: 1,
     minWidth: 0,
@@ -201,6 +203,6 @@ const optionStyles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
-    color: Colors.light.text,
+    color: colors.text,
   },
-});
+}));

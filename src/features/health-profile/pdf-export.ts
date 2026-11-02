@@ -98,20 +98,20 @@ export function buildChartSvg(points: ChartPoint[], width = 520, height = 220): 
   const grid = [0, 2, 4, 6, 8, 10]
     .map(
       (value) =>
-        `<line x1="${left}" x2="${width - right}" y1="${y(value)}" y2="${y(value)}" stroke={Colors.light.textDisabled} />` +
-        `<text x="${left - 8}" y="${y(value) + 4}" font-size="10" text-anchor="end" fill={Colors.light.textSecondary}>${value}</text>`,
+        `<line x1="${left}" x2="${width - right}" y1="${y(value)}" y2="${y(value)}" stroke="${Colors.light.textDisabled}" />` +
+        `<text x="${left - 8}" y="${y(value) + 4}" font-size="10" text-anchor="end" fill="${Colors.light.textSecondary}">${value}</text>`,
     )
     .join('');
   const line = points.length
-    ? `<polyline fill="none" stroke={Colors.light.primary} stroke-width="2" points="${points
+    ? `<polyline fill="none" stroke="${Colors.light.primary}" stroke-width="2" points="${points
         .map((p, i) => `${x(i)},${y(p.value)}`)
         .join(' ')}" />`
     : '';
   const dots = points
     .map(
       (p, i) =>
-        `<circle cx="${x(i)}" cy="${y(p.value)}" r="4" fill={Colors.light.primary} />` +
-        `<text x="${x(i)}" y="${height - 8}" font-size="10" text-anchor="middle" fill={Colors.light.textSecondary}>${escapeHtml(p.label)}</text>`,
+        `<circle cx="${x(i)}" cy="${y(p.value)}" r="4" fill="${Colors.light.primary}" />` +
+        `<text x="${x(i)}" y="${height - 8}" font-size="10" text-anchor="middle" fill="${Colors.light.textSecondary}">${escapeHtml(p.label)}</text>`,
     )
     .join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${grid}${line}${dots}</svg>`;

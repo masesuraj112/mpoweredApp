@@ -6,7 +6,7 @@ import {
   SettingsModalInfoRow,
   SettingsModalSection,
 } from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsOption, SettingsSubpage, useSettingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -21,6 +21,7 @@ const permissionText = (allowed: boolean) => (allowed ? 'Allowed' : 'Not allowed
 
 /** The patients this support person supports, with a popup to see access and unpair (Figma 3911-24201, 3911-24318). */
 export default function PeopleYouSupportScreen() {
+  const settingsSubpageStyles = useSettingsSubpageStyles();
   const { status, reload, patients, unpair } = useSupportPerson();
   const [selected, setSelected] = useState<SupportedPatient | null>(null);
   const [unpairError, setUnpairError] = useState('');

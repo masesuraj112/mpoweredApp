@@ -1,11 +1,12 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 export default function HealthConditionsScreen() {
+  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState(data.hasDiagnosis);
 
@@ -49,15 +50,15 @@ export default function HealthConditionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, alignItems: 'center' },
   title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 32 },
-  option: { width: '100%', backgroundColor: Colors.light.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
-  optionSelected: { backgroundColor: Colors.light.secondaryContainer },
-  optionText: { color: Colors.light.primary, fontWeight: '600', fontSize: 15 },
+  option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
+  optionSelected: { backgroundColor: colors.secondaryContainer },
+  optionText: { color: colors.primary, fontWeight: '600', fontSize: 15 },
   helperText: { textAlign: 'center', marginTop: 24, marginBottom: 32, fontSize: 15, lineHeight: 22 },
-  continueButton: { backgroundColor: Colors.light.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center' },
-  continueText: { color: Colors.light.onPrimary, fontWeight: '700', fontSize: 16 },
-  continueButtonDisabled: { backgroundColor: Colors.light.secondaryContainer },
-  continueTextDisabled: { color: Colors.light.primary },
-});
+  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center' },
+  continueText: { color: colors.onPrimary, fontWeight: '700', fontSize: 16 },
+  continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
+  continueTextDisabled: { color: colors.primary },
+}));

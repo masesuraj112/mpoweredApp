@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 import { getSuggestionLabel } from '@/features/care-planner/suggestionSelection';
 import type { SuggestedQuestionGroup } from '@/features/care-planner/suggestionTypes';
 
@@ -17,6 +17,7 @@ export function QuestionSuggestionGroup({
   selectedIds,
   onToggle,
 }: QuestionSuggestionGroupProps) {
+  const styles = useStyles();
   return (
     <View style={styles.group}>
       <Text accessibilityRole="header" style={styles.title}>
@@ -37,17 +38,17 @@ export function QuestionSuggestionGroup({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   group: {
     gap: Spacing.two,
   },
   title: {
     ...Typography.labelLarge,
-    color: Colors.light.text,
+    color: colors.text,
   },
   list: {
     gap: Spacing.half,
     borderRadius: 16,
     overflow: 'hidden',
   },
-});
+}));

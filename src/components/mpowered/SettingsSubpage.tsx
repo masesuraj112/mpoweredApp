@@ -1,13 +1,14 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Stack } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Pressable, ScrollView, Text } from 'react-native';
 import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <>
       {/* The page title lives in the native header (a large title on iOS, as in the Settings app). */}
@@ -26,9 +27,9 @@ export function SettingsSubpage({ title, children }: { title: string; children: 
   );
 }
 
-export const settingsSubpageStyles = StyleSheet.create({
+export const useSettingsSubpageStyles = makeStyles((colors) => ({
   placeholder: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
@@ -36,14 +37,14 @@ export const settingsSubpageStyles = StyleSheet.create({
     minHeight: scaleHeight(48),
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   linkText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: scaleFont(16),
     lineHeight: scaleHeight(24),
   },
-});
+}));
 
 export function SettingsOption({
   icon,
@@ -63,6 +64,7 @@ export function SettingsOption({
   /** What a screen reader says for the row, when `trailing` shows something it should hear too. Defaults to `label`. */
   accessibilityLabel?: string;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -112,10 +114,10 @@ export function SettingsSelect({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   content: {
     flexGrow: 1,
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: scaleWidth(16),
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(12),
     marginBottom: scaleHeight(16),
   },
@@ -147,16 +149,16 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     flex: 1,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(20),
     lineHeight: scaleHeight(24),
   },
   optionArrow: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(26),
     lineHeight: scaleFont(26),
   },
   destructiveText: {
-    color: Colors.light.error,
+    color: colors.error,
   },
-});
+}));

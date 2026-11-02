@@ -2,13 +2,14 @@
 // until they work, and the Settings home hides the Display row (see docs/settings-backend.md).
 // import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 // import { useState } from 'react';
-import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsSubpage, useSettingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
 import { Text } from 'react-native';
 
 // const textSizeIcon = require('../../../assets/images/settings/textsize.svg');
 // const darkModeIcon = require('../../../assets/images/settings/darkmode.svg');
 
 export default function DisplayScreen() {
+  const settingsSubpageStyles = useSettingsSubpageStyles();
   // const [darkMode, setDarkMode] = useState(false);
   // const [textSize, setTextSize] = useState('Medium');
 

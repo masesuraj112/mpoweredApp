@@ -4,7 +4,7 @@ import { PermissionChips } from '@/components/mpowered/support-person/Permission
 import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
@@ -12,10 +12,12 @@ import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/sup
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const { status, reload, getPatient } = useSupportPerson();
   const patient = getPatient(patientId);
@@ -25,7 +27,7 @@ export default function PatientAppointmentsScreen() {
       options={{
         headerShown: true,
         title: patient ? `${patient.name}’s Appointments` : 'Appointments',
-        headerTintColor: Colors.light.primary,
+        headerTintColor: colors.primary,
         headerBackTitle: 'Care Planner',
       }}
     />
@@ -107,6 +109,7 @@ type AppointmentSectionProps = {
 };
 
 function AppointmentSection({ title, emptyText, appointments, patient, isUpcoming }: AppointmentSectionProps) {
+  const styles = useStyles();
   const actionTypes = getAppointmentActions(patient, isUpcoming);
 
   return (
@@ -130,10 +133,10 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     gap: scaleHeight(20),
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleFont(29),
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
   },
   condition: {
     marginLeft: scaleWidth(4),
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '600',
     lineHeight: 20,
@@ -168,7 +171,7 @@ const styles = StyleSheet.create({
     gap: scaleHeight(7),
   },
   empty: {
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
     fontSize: scaleFont(14),
     lineHeight: 20,
     letterSpacing: 0.25,
@@ -176,4 +179,4 @@ const styles = StyleSheet.create({
   notFound: {
     padding: scaleWidth(25),
   },
-});
+}));

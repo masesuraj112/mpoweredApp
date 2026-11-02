@@ -2,13 +2,14 @@ import { useOnboarding } from '@/context/Onboarding-Context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const isValidName = (value: string) =>
   /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(value.trim());
 
 export default function NameScreen() {
+  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const [name, setName] = useState(data.name);
   const [showNameError, setShowNameError] = useState(false);
@@ -62,7 +63,7 @@ export default function NameScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
   },
@@ -79,14 +80,14 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%', 
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
   },
   nameError: {
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: 13,
     marginTop: 8,
     textAlign: 'center',
@@ -96,27 +97,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 24,
     marginBottom: 24,
-    color: Colors.light.text
+    color: colors.text
   },
   continueButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     width: '100%',
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center'
   },
   continueButtonDisabled: {
-    backgroundColor: Colors.light.secondaryContainer
+    backgroundColor: colors.secondaryContainer
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
     fontSize: 16 }
     ,
   footnote: { 
     textAlign: 'center',
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     marginTop: 24,
     fontSize: 13
   },
-});
+}));

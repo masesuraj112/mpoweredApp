@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { AccessibilityInfo, StyleSheet, Text } from 'react-native';
+import { AccessibilityInfo, Text } from 'react-native';
 
 import { PlannerFlowScreen } from '@/components/care-planner/PlannerFlowScreen';
 import { QuestionHintBanner } from '@/components/care-planner/QuestionHintBanner';
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { SUPPORT_PEOPLE_LIMIT_MESSAGE } from '@/features/care-planner/supportPerson';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
@@ -24,6 +24,7 @@ const INTRO =
   'You can nominate someone to help you prepare for your appointment or you can skip below.';
 
 export default function SupportPersonScreen() {
+  const styles = useStyles();
   const router = useRouter();
   const { appointmentId } = useAppointmentIdParam();
   const form = useSupportPerson(appointmentId);
@@ -127,7 +128,7 @@ export default function SupportPersonScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: Spacing.four,
     padding: Spacing.four,
@@ -139,6 +140,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

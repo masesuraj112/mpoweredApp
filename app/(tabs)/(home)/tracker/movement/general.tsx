@@ -1,14 +1,15 @@
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function GeneralScreen() {
+  const styles = useStyles();
   const { answers, updateAnswer } = useMovementAssessment();
   const selected = answers.generalImpacts ?? [];
   
@@ -79,10 +80,10 @@ return (
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   container: {
     flex: 1,
@@ -93,12 +94,12 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: scaleFont(24),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginLeft: scaleWidth(7),
     marginBottom: scaleHeight(18),
   },
   promptText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderRadius: scaleWidth(12),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     overflow: 'hidden',
     paddingHorizontal: scaleWidth(8),
   },
@@ -127,10 +128,10 @@ const styles = StyleSheet.create({
   },
   optionDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   optionText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     fontWeight: '500',
     lineHeight: scaleHeight(20),
@@ -143,18 +144,18 @@ const styles = StyleSheet.create({
     width: scaleWidth(18),
     height: scaleWidth(18),
     borderWidth: 2,
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
     borderRadius: scaleWidth(2),
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxSelected: {
-    borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.primary,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   checkmark: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: scaleFont(12),
     fontWeight: '700',
   },
-});
+}));

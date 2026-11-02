@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { NativePicker } from './NativePicker';
-import { fieldStyles } from './fieldStyles';
+import { useFieldStyles } from './fieldStyles';
 
 export type SelectOption = {
   /** Shown to the person and passed to `onChange`. */
@@ -36,6 +36,7 @@ export function Select({
   clearable = false,
   clearLabel = 'Clear selection',
 }: SelectProps) {
+  const fieldStyles = useFieldStyles();
   // Before anything is chosen the menu shows the placeholder; once chosen, a clearable field offers
   // the clear entry instead, so the person can go back to nothing.
   const showNone = value === null || clearable;

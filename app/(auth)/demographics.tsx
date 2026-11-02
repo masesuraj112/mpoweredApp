@@ -2,10 +2,11 @@ import { useOnboarding } from '@/context/Onboarding-Context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 export default function DemographicsScreen() {
+  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const [yearOfBirth, setYearOfBirth] = useState(data.yearOfBirth?.toString() ?? '');
   const currentYear = new Date().getFullYear();
@@ -50,7 +51,7 @@ export default function DemographicsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
   },
@@ -66,11 +67,11 @@ const styles = StyleSheet.create({
     marginBottom: 8
   },
   optional: {
-    color: Colors.light.textSubtle, marginBottom: 24 
+    color: colors.textSubtle, marginBottom: 24 
   },
   input: {
     width: '100%',
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -79,22 +80,22 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   continueButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     width: '100%',
     paddingVertical: 16,
     borderRadius: 24,
     alignItems: 'center'
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
     fontSize: 16
   },
   tip: {
     textAlign: 'center',
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     marginTop: 24,
     fontSize: 13,
     paddingHorizontal: 16
 },
-});
+}));

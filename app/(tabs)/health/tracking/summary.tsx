@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -14,11 +14,12 @@ import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
 export default function WeekSummaryScreen() {
+  const styles = useStyles();
   const params = useLocalSearchParams<{ type?: string; weekStart?: string }>();
   const type = isAssessmentType(params.type) ? params.type : null;
   const weekStart = params.weekStart && ISO_DATE.test(params.weekStart) ? params.weekStart : null;
@@ -66,20 +67,17 @@ export default function WeekSummaryScreen() {
   );
 }
 
-const SECONDARY_CONTAINER = Colors.light.secondaryContainer;
-const ON_SURFACE_VARIANT = Colors.light.textSecondary;
-const OUTLINE_VARIANT = Colors.light.outline;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
   },
   content: {
     paddingBottom: scaleHeight(40),
   },
   topBar: {
-    backgroundColor: SECONDARY_CONTAINER,
+    backgroundColor: colors.secondaryContainer,
     paddingHorizontal: scaleWidth(19),
     paddingTop: scaleHeight(10),
     paddingBottom: scaleHeight(14),
@@ -91,33 +89,33 @@ const styles = StyleSheet.create({
   },
   backChevron: {
     fontSize: scaleFont(22),
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
     marginRight: scaleWidth(2),
     marginTop: -2,
   },
   backText: {
     fontSize: scaleFont(16),
     fontWeight: '500',
-    color: ON_SURFACE_VARIANT,
+    color: colors.textSecondary,
   },
   title: {
     fontSize: scaleFont(22),
     fontWeight: '600',
-    color: 'black',
+    color: colors.text,
     marginTop: scaleHeight(20),
     marginHorizontal: scaleWidth(24),
   },
   period: {
     fontSize: scaleFont(12),
-    color: Colors.light.textSubtle,
+    color: colors.textSubtle,
     marginTop: scaleHeight(4),
     marginHorizontal: scaleWidth(24),
   },
   divider: {
     height: 1,
-    backgroundColor: OUTLINE_VARIANT,
+    backgroundColor: colors.outline,
     marginHorizontal: scaleWidth(16),
     marginTop: scaleHeight(8),
     marginBottom: scaleHeight(26),
   },
-});
+}));

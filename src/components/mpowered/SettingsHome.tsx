@@ -1,9 +1,9 @@
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { signOut } from '@/services/auth';
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export type SettingsRowProps = {
@@ -18,6 +18,8 @@ export type SettingsRowProps = {
  * Shared by the patient app and the support person app, which pass different rows.
  */
 export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
@@ -55,13 +57,14 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
         accessibilityState={{ disabled: isSigningOut }}
         style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
       >
-        {isSigningOut ? <ActivityIndicator color={Colors.light.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
+        {isSigningOut ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
       </Pressable>
     </SafeAreaView>
   );
 }
 
 function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps & { isLast: boolean }) {
+  const styles = useStyles();
   return (
     <Pressable
       onPress={onPress}
@@ -82,15 +85,15 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
     paddingHorizontal: scaleWidth(29),
     paddingTop: scaleHeight(36),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   title: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleHeight(29),
@@ -99,12 +102,12 @@ const styles = StyleSheet.create({
     height: 1,
     marginTop: scaleHeight(16),
     marginBottom: scaleHeight(23),
-    backgroundColor: Colors.light.divider,
+    backgroundColor: colors.divider,
   },
   rowsCard: {
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
     borderRadius: scaleWidth(12),
     paddingHorizontal: scaleWidth(20),
   },
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   rowPressed: {
     opacity: 0.65,
@@ -124,18 +127,18 @@ const styles = StyleSheet.create({
   rowIcon: {
     width: scaleWidth(24),
     height: scaleWidth(24),
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
     fontSize: scaleFont(21),
     textAlign: 'center',
   },
   rowLabel: {
     flex: 1,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
     fontSize: scaleFont(20),
     lineHeight: scaleHeight(24),
   },
   chevron: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(26),
     lineHeight: scaleFont(26),
   },
@@ -145,14 +148,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: scaleWidth(8),
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   signOutPressed: {
     opacity: 0.8,
   },
   signOutText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: scaleFont(20),
     lineHeight: scaleHeight(24),
   },
-});
+}));

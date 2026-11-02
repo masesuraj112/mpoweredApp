@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text } from 'react-native';
+import { Alert, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, makeStyles } from '@/constants/theme';
 import {
   displayOrPlaceholder,
   formatShortAppointmentDate,
@@ -26,6 +26,7 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { markAppointmentSaved, saveAnswers } from '@/services/care-planner';
 
 export default function ReviewScreen() {
+  const styles = useStyles();
   const router = useRouter();
   const { appointmentId } = useAppointmentIdParam();
   const state = useAppointmentPlan(appointmentId);
@@ -183,7 +184,7 @@ export default function ReviewScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: {
     gap: Spacing.three,
     padding: Spacing.three,
@@ -193,13 +194,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '500',
     letterSpacing: 0.4,
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
   },
   sectionTitle: {
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '500',
     letterSpacing: 0.5,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type ConsentDetailFieldProps = {
   label: string;
@@ -9,6 +9,7 @@ type ConsentDetailFieldProps = {
 
 /** A labelled, read-only value (appointment date, doctor, health service). */
 export function ConsentDetailField({ label, value }: ConsentDetailFieldProps) {
+  const styles = useStyles();
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -19,13 +20,13 @@ export function ConsentDetailField({ label, value }: ConsentDetailFieldProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   field: {
     gap: Spacing.two,
   },
   label: {
     ...Typography.labelLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   valueBox: {
     minHeight: 48,
@@ -33,12 +34,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.control - 2,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   value: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
-});
+}));

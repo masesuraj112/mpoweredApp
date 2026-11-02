@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { Colors, MinTapTarget } from '@/constants/theme';
+import { MinTapTarget, makeStyles } from '@/constants/theme';
 
 type PagerDotsProps = {
   count: number;
@@ -10,6 +10,7 @@ type PagerDotsProps = {
 
 /** A row of tappable dots. Each dot announces "card N of COUNT" so paging never relies on swiping. */
 export function PagerDots({ count, activeIndex, onSelect }: PagerDotsProps) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       {Array.from({ length: count }, (_, index) => {
@@ -30,7 +31,7 @@ export function PagerDots({ count, activeIndex, onSelect }: PagerDotsProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -47,10 +48,10 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     width: 28,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   dotInactive: {
     width: 6,
-    backgroundColor: Colors.light.outlineStrong,
+    backgroundColor: colors.outlineStrong,
   },
-});
+}));

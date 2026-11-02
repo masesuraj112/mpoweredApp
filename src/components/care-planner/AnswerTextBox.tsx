@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type AnswerTextBoxProps = {
   /** The question being answered. Shown as the label and spoken as the field's name. */
@@ -19,6 +19,7 @@ export function AnswerTextBox({
   listening,
   editable = true,
 }: AnswerTextBoxProps) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text style={styles.question}>{question}</Text>
@@ -35,26 +36,26 @@ export function AnswerTextBox({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     gap: Spacing.two,
   },
   question: {
     ...Typography.bodyLarge,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   input: {
     ...Typography.bodyLarge,
     minHeight: 160,
     padding: Spacing.three,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: Radius.control - 2,
-    backgroundColor: Colors.light.backgroundElement,
-    color: Colors.light.onSurface,
+    backgroundColor: colors.backgroundElement,
+    color: colors.onSurface,
   },
   inputListening: {
     borderWidth: 3,
-    borderColor: Colors.light.listening,
+    borderColor: colors.listening,
   },
-});
+}));

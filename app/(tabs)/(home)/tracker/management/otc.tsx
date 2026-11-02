@@ -4,10 +4,12 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function OtcScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useManagementAssessment();
   const doneBar = useKeyboardDoneBar();
 
@@ -34,7 +36,7 @@ export default function OtcScreen() {
             value={answers.otcMedication ?? ''}
             onChangeText={value => updateAnswer('otcMedication', value)}
             placeholder="Input name of over the counter medication"
-            placeholderTextColor={Colors.light.textSubtle}
+            placeholderTextColor={colors.textSubtle}
             textAlignVertical="top"
             style={styles.input}
           />
@@ -45,9 +47,9 @@ export default function OtcScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   prompt: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     fontWeight: '500',
     lineHeight: scaleHeight(16),
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(4),
   },
   helperText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(12),
     fontStyle: 'italic',
     lineHeight: scaleHeight(18),
@@ -66,13 +68,13 @@ const styles = StyleSheet.create({
   input: {
     height: scaleHeight(146),
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(8),
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
     paddingHorizontal: scaleWidth(16),
     paddingVertical: scaleHeight(12),
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
   },
-});
+}));

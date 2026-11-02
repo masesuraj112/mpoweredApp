@@ -7,14 +7,13 @@ import {
   Modal,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
 import { appendDictatedText } from '@/features/care-planner/answerDrafts';
 import type { AnswerInput, PlanQuestion } from '@/features/care-planner/planTypes';
 import { useAnswerDrafts } from '@/features/care-planner/useAnswerDrafts';
@@ -43,6 +42,7 @@ const MIC_HINT = 'Press the microphone to change answer';
  * asking first if there is unsaved text. The dimmed backdrop does not close the box.
  */
 export function AnswerModal({ questions, initialQuestionId, onSave, onClose }: AnswerModalProps) {
+  const styles = useStyles();
   const { height: windowHeight } = useWindowDimensions();
   const drafts = useAnswerDrafts(questions, initialQuestionId);
   const [saving, setSaving] = useState(false);
@@ -209,19 +209,19 @@ export function AnswerModal({ questions, initialQuestionId, onSave, onClose }: A
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   backdrop: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.three,
-    backgroundColor: Colors.light.backdrop,
+    backgroundColor: colors.backdrop,
   },
   box: {
     width: '100%',
     maxWidth: 440,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     overflow: 'hidden',
   },
   scroll: {
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     ...Typography.bodyMedium,
     flex: 1,
     minWidth: 0,
-    color: Colors.light.onSurface,
+    color: colors.onSurface,
   },
   error: {
     gap: Spacing.two,
@@ -250,10 +250,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
-    color: Colors.light.error,
+    color: colors.error,
   },
   actions: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
-});
+}));

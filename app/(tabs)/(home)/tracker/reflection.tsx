@@ -6,14 +6,15 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const [reflection, setReflection] = useState('');
   // The text as last saved, so leaving without changes does not save again.
   const [savedText, setSavedText] = useState('');
@@ -111,7 +112,7 @@ export default function ReflectionScreen() {
             multiline
             onChangeText={setReflection}
             placeholder="Write your reflection here..."
-            placeholderTextColor={Colors.light.textSubtle}
+            placeholderTextColor={colors.textSubtle}
             style={styles.input}
             textAlignVertical="top"
             value={reflection}
@@ -140,10 +141,10 @@ export default function ReflectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   content: {
     alignSelf: 'center',
@@ -163,24 +164,24 @@ const styles = StyleSheet.create({
   },
   backArrow: {
     marginRight: 8,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 28,
     lineHeight: 28,
   },
   backText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 16,
   },
   heading: {
     marginBottom: 8,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 30,
   },
   description: {
     marginBottom: 20,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: 14,
     lineHeight: 20,
   },
@@ -188,9 +189,9 @@ const styles = StyleSheet.create({
     minHeight: 220,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: 12,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: 16,
     lineHeight: 24,
   },
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 12,
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: 13,
     lineHeight: 18,
   },
@@ -209,17 +210,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
     borderRadius: 100,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   saveButtonDisabled: {
     opacity: 0.5,
   },
   saveButtonText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontSize: 15,
     fontWeight: '600',
   },
   pressed: {
     opacity: 0.8,
   },
-});
+}));

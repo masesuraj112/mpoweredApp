@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
 
-import { fieldStyles } from '@/components/ui/fieldStyles';
+import { useFieldStyles } from '@/components/ui/fieldStyles';
 import { CalendarIcon } from '@/components/ui/icons';
 
 type DateTimeFieldProps = {
@@ -14,6 +14,7 @@ type DateTimeFieldProps = {
 
 /** The "Appointment date and time" field. Pressing it opens the picker. */
 export function DateTimeField({ label, placeholder, displayValue, error, onPress }: DateTimeFieldProps) {
+  const fieldStyles = useFieldStyles();
   return (
     <View style={fieldStyles.container}>
       <Text style={fieldStyles.label}>{label}</Text>

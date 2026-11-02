@@ -1,10 +1,10 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { SearchBar } from './SearchBar';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
@@ -58,6 +58,7 @@ export function MultiChoiceList({
   listHeight,
   selectedChipsEnabled,
 }: MultiChoiceListProps) {
+  const styles = useStyles();
   const [internalSelected, setInternalSelected] = useState<number[]>([]);
   const isControlled = selectedIndices !== undefined;
   const selected = isControlled ? selectedIndices : internalSelected;
@@ -206,6 +207,7 @@ function OptionRow({
   onPress: (index: number) => void;
   variant: 'default' | 'painTracker' | 'personalCare' | 'management';
 }) {
+  const styles = useStyles();
   const isAssessment = variant !== 'default';
   const isPersonalCare = variant === 'personalCare' || variant === 'management';
   return (
@@ -244,26 +246,26 @@ function OptionRow({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   // The prompt is passed into ChoiceCard's single promptText style, so the
   // bold/sub-line split is handled here with its own text styles instead.
   promptBold: {
     fontSize: scaleFont(15),
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
   },
   promptSub: {
     fontSize: scaleFont(13),
     fontStyle: 'italic',
     fontWeight: '400',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
 
   // Matches the screenshot: the option rows sit in their own bordered box
   // inside the card, distinct from ChoiceCard's own outer border.
   optionsBox: {
     borderWidth: 1,
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(14),
     width: '100%',
     overflow: 'hidden',
@@ -284,21 +286,21 @@ const styles = StyleSheet.create({
   selectedChip: {
     minHeight: scaleHeight(30),
     borderWidth: 1,
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
     borderRadius: scaleWidth(16),
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: colors.secondaryContainer,
     flexDirection: 'row',
     alignItems: 'center',
     gap: scaleWidth(16),
     paddingHorizontal: scaleWidth(16),
   },
   selectedChipText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(14),
     fontWeight: '500',
   },
   selectedChipClose: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontSize: scaleFont(24),
     lineHeight: scaleFont(20),
   },
@@ -307,9 +309,9 @@ const styles = StyleSheet.create({
     minHeight: 0,
     width: '100%',
     alignSelf: 'flex-start',
-    borderColor: Colors.light.divider,
+    borderColor: colors.divider,
     borderRadius: scaleWidth(5),
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   // Fixed-height box. `flex: 0` must override the `flex: 1` from the styles above: on native,
   // Yoga turns any `flex > 0` into a flex basis of 0, which beats `height` (and ignores
@@ -336,7 +338,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   scrollContentGrow: {
     flexGrow: 1,
@@ -355,7 +357,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   supportingText: {
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(12),
     lineHeight: scaleHeight(16),
     letterSpacing: 0.4,
@@ -370,11 +372,11 @@ const styles = StyleSheet.create({
   },
   personalCareRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.divider,
+    borderBottomColor: colors.divider,
   },
 
   box: {
@@ -382,23 +384,23 @@ const styles = StyleSheet.create({
     height: scaleWidth(24),
     borderRadius: scaleWidth(6),
     borderWidth: 2,
-    borderColor: Colors.light.controlBorder,
+    borderColor: colors.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
   boxSelected: {
-    borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.primary,
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   painTrackerBox: {
     width: scaleWidth(18),
     height: scaleWidth(18),
     borderRadius: scaleWidth(2),
-    borderColor: Colors.light.outlineStrong,
+    borderColor: colors.outlineStrong,
   },
   checkmark: {
-    color: 'white',
+    color: colors.onPrimary,
     fontSize: scaleFont(14),
     fontWeight: '700',
   },
@@ -406,7 +408,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: scaleFont(16),
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     flex: 1,
     flexShrink: 1,
     minWidth: 0
@@ -414,10 +416,10 @@ const styles = StyleSheet.create({
   painTrackerLabel: {
     fontSize: scaleFont(14),
     fontWeight: '500',
-    color: Colors.light.text,
+    color: colors.text,
   },
   personalCareLabel: {
     lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
   },
-});
+}));

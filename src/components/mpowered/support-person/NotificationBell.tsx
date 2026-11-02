@@ -1,7 +1,7 @@
-import { Colors, Radius } from '@/constants/theme';
+import { Radius, makeStyles } from '@/constants/theme';
 import { scaleFont } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 const bellIcon = require('../../../../assets/images/support-person/bell.svg');
 
@@ -13,6 +13,7 @@ type NotificationBellProps = {
 
 /** Bell with a red count badge, hidden when there's nothing new (Figma 3911-24703). */
 export function NotificationBell({ count, onPress }: NotificationBellProps) {
+  const styles = useStyles();
   const label = count > 0 ? `Support person requests, ${count} new` : 'Support person requests';
   const content = (
     <>
@@ -48,7 +49,7 @@ export function NotificationBell({ count, onPress }: NotificationBellProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   container: {
     width: 31,
     height: 30,
@@ -79,12 +80,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: Colors.light.error,
+    backgroundColor: colors.error,
   },
   badgeText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: scaleFont(9),
     fontWeight: '700',
     lineHeight: 13.5,
   },
-});
+}));

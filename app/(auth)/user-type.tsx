@@ -1,10 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
-import { Colors } from '@/constants/theme';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 type UserType = 'patient' | 'support-person';
 
 const OPTIONS: {
@@ -60,6 +60,8 @@ const OPTIONS: {
 ];
 
 export default function UserTypeScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -200,7 +202,7 @@ export default function UserTypeScreen() {
                         height: 6 * scale,
                         borderRadius: 3 * scale,
                         marginRight: 10 * scale,
-                        backgroundColor: selected ? Colors.light.primary : Colors.light.outline,
+                        backgroundColor: selected ? colors.primary : colors.outline,
                       },
                     ]}
                   />
@@ -245,60 +247,60 @@ export default function UserTypeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   canvas: {
     position: 'absolute',
-    backgroundColor: Colors.light.surface,
+    backgroundColor: colors.surface,
   },
   title: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     fontWeight: '500',
   },
   subtitle: {
     position: 'absolute',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     fontWeight: '400',
   },
   optionCard: {
     position: 'absolute',
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderColor: 'transparent',
   },
   optionCardSelected: {
-    borderColor: Colors.light.primary,
+    borderColor: colors.primary,
   },
   optionTitle: {
     position: 'absolute',
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '600',
   },
   optionDescription: {
     position: 'absolute',
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '400',
   },
   radioOuter: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: Colors.light.outline,
+    borderColor: colors.outline,
   },
   radioOuterSelected: {
-    backgroundColor: Colors.light.primaryDeep,
+    backgroundColor: colors.primaryDeep,
   },
   radioInner: {
-    backgroundColor: Colors.light.primaryDeep,
+    backgroundColor: colors.primaryDeep,
   },
   divider: {
     position: 'absolute',
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   benefitRow: {
     position: 'absolute',
@@ -307,23 +309,23 @@ const styles = StyleSheet.create({
   },
   benefitBullet: {},
   benefitText: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '400',
   },
   continueButton: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   continueButtonDisabled: {
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   continueText: {
-    color: Colors.light.onPrimary,
+    color: colors.onPrimary,
     fontWeight: '600',
   },
   continueTextDisabled: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

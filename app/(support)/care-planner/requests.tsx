@@ -2,15 +2,16 @@ import { NotificationBell } from '@/components/mpowered/support-person/Notificat
 import { SupportRequestCard } from '@/components/mpowered/support-person/SupportRequestCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors } from '@/constants/theme';
+import { makeStyles } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 /** Pending requests from patients to add this user as their support person (Figma 3911-24738). */
 export default function SupportRequestsScreen() {
+  const styles = useStyles();
   const { status, reload, requests, acceptRequest, rejectRequest } = useSupportPerson();
 
   // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
@@ -78,10 +79,10 @@ export default function SupportRequestsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     gap: scaleHeight(15),
@@ -98,16 +99,16 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: Colors.light.text,
+    color: colors.text,
     fontSize: scaleFont(24),
     fontWeight: '600',
     lineHeight: scaleFont(29),
     letterSpacing: -0.48,
   },
   empty: {
-    color: Colors.light.onSurfaceVariant,
+    color: colors.onSurfaceVariant,
     fontSize: scaleFont(14),
     lineHeight: 20,
     letterSpacing: 0.25,
   },
-});
+}));
