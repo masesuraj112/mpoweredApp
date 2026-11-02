@@ -23,6 +23,21 @@
 | `expo-notifications` | — | **Not installed** |
 | Support persons | `app/(support)/support-settings/index.tsx` | No Notifications page (Figma 3896-21559). The bell on their Care Planner is an in-app count, not a notification |
 
+### 0.1 Checked in the SDK 58 docs (N0/N1, 2 Nov 2026)
+
+| Question | Answer |
+| --- | --- |
+| Local notifications in Expo Go? | Yes: "Local notifications (in-app notifications) remain available in Expo Go." Only remote push is missing on Android |
+| Package | `expo-notifications` `~58.1.7` (`npx expo install expo-notifications`) |
+| Trigger for one reminder | `{ type: SchedulableTriggerInputTypes.DATE, date, channelId? }`; `delivery` defaults to `'bestEffort'` |
+| Other triggers | `CALENDAR`, `DAILY`, `MONTHLY`, `TIME_INTERVAL`, `WEEKLY` (weekday 1 = Sunday), `YEARLY`. Not used: the planner works out every date itself |
+| Android channels | Required from Android 8; without one a "Miscellaneous" channel is made. **The Android 13+ permission prompt does not appear until a channel exists**, so channels are created before asking |
+| Android permissions | `RECEIVE_BOOT_COMPLETED` is added by the library, so scheduled reminders are restored after a restart. `SCHEDULE_EXACT_ALARM` is only for exact timing (not used) |
+| Config plugin | Not needed for local notifications in Expo Go; its options take effect in a new build only. Added with `color` and `enableRemoteNotifications: false` (no APNs entitlement, since nothing is pushed) |
+| Notification icon (Android) | Must be a 96×96 all-white PNG with transparency. The repo has none (`android-icon-monochrome.png` is a 432×432 adaptive icon), so **no `icon` is set** and Android uses the app icon. Ask the designer for one (follow-up) |
+| iOS pending limit | Not in the Expo docs. Apple's documented limit is the 64 soonest; the planner caps below it |
+| Without `setNotificationHandler` | Notifications are shown with banner, list, sound and badge. Set it so a reminder while the app is open still shows a banner, without a badge |
+
 ## 1. Guardrails
 
 1. **Read the SDK 58 docs** (`https://docs.expo.dev/versions/v58.0.0/sdk/notifications/`) before writing code
@@ -57,7 +72,7 @@
 - **Only the phone the user is signed in on** gets reminders, and each phone plans its own.
 - **Sign-out and account deletion cancel** every reminder on that phone.
 - **The permission prompt appears when a toggle is turned on**, never at app start.
-- **iOS keeps at most 64 pending notifications per app (verify).** The planner caps the list and keeps the nearest first.
+- **iOS keeps only the 64 soonest pending notifications per app** (Apple's limit; section 0.1). The planner caps the list and keeps the nearest first.
 - **Android:** two channels, "Assessment reminders" and "Appointment reminders", and best-effort timing. No
   `SCHEDULE_EXACT_ALARM` (Google Play restricts it, and a few minutes' drift is fine for reminders).
 - **Tapping a reminder:** an appointment reminder opens that appointment's Review screen
@@ -156,9 +171,9 @@ planReminders(input: {
   Commit: `Add the notifications build plan` (this file and the progress checklist).
 
 ### Phase N1 — Package and config
-- **N1** `npx expo install expo-notifications`; add `"expo-notifications"` to `plugins` in `app.json` with the
-  app's notification icon and colour **(verify options)**. Note in the PR that a dev build must be rebuilt;
-  Expo Go needs nothing.
+- **N1** `npx expo install expo-notifications`; add `"expo-notifications"` to `plugins` in `app.json` with
+  `color` and `enableRemoteNotifications: false` (section 0.1; no icon yet). Note in the PR that a dev build must
+  be rebuilt; Expo Go needs nothing.
   Commit: `Add expo-notifications`
 
 ### Phase N2 — Pure planner

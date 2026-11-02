@@ -205,7 +205,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 
 ## Steps
 - [x] N0 Branch, recon and plan
-- [ ] N1 Add `expo-notifications`
+- [x] N1 Add `expo-notifications` (`~58.1.7`; plugin with no icon until the designer supplies one)
 - [ ] N2 Pure reminder planner
 - [ ] N3 Reminders service
 - [ ] N4 Keep reminders up to date (`ReminderSync`)
