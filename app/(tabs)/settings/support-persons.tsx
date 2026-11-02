@@ -11,9 +11,11 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { formatForDisplay } from '@/features/auth/phone';
+import { Colors } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import {
   EMPTY_SUPPORT_PERSON_DRAFT,
+  invitationStatusLabel,
   toSupportPerson,
   validateSupportPerson,
   type SupportPersonDraft,
@@ -112,14 +114,20 @@ export default function SupportPersonsScreen() {
       {state.status === 'ready' && people.length === 0 && (
         <EmptyState message="You have not added a support person yet." />
       )}
-      {people.map(person => (
-        <SettingsOption
-          key={person.supportPersonId}
-          icon={accountIcon}
-          label={person.name}
-          onPress={() => openDraft(draftFrom(person))}
-        />
-      ))}
+      {people.map(person => {
+        // Pending until they accept; declined if they rejected or unpaired (they can be added again).
+        const status = invitationStatusLabel(person.status);
+        return (
+          <SettingsOption
+            key={person.supportPersonId}
+            icon={accountIcon}
+            label={person.name}
+            accessibilityLabel={status ? `${person.name}, ${status}` : person.name}
+            trailing={status ? <Text style={styles.status}>{status} →</Text> : undefined}
+            onPress={() => openDraft(draftFrom(person))}
+          />
+        );
+      })}
       {state.status === 'ready' && (
         <Pressable
           onPress={() => openDraft({ ...EMPTY_SUPPORT_PERSON_DRAFT })}
@@ -188,6 +196,10 @@ export default function SupportPersonsScreen() {
 }
 
 const styles = StyleSheet.create({
+  status: {
+    color: Colors.light.onSurfaceVariant,
+    fontSize: 14,
+  },
   sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
   // Same as the Sign out button on the Account page.
   addButton: {
