@@ -9,6 +9,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/features/splash/startup.ts',
     'src/features/splash/useMinimumDuration.ts',
+    'src/features/auth/afterVerify.ts',
+    'src/features/auth/patientIntro.ts',
     'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
     'src/features/assessments/drafts.ts',

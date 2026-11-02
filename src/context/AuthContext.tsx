@@ -18,6 +18,13 @@ type AuthContextType = {
   profileError: AppError | null;
   /** Checks again whether the signed-in user has a profile. */
   refreshProfile: () => void;
+  /**
+   * True while the sign-in screens must stay on screen even though the user has a profile: after a
+   * sign-up code for a number that already has an account, until they choose what to do
+   * (docs/backend/sign-up-sign-in-plan.md, SU-10). Cleared on sign-out.
+   */
+  signInHeld: boolean;
+  holdSignIn: (held: boolean) => void;
 };
 
 // Following React documentation, intialised the context with undefined and handle it in the useAuth hook to ensure that the context is used within a provider.
@@ -31,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<{ userId: string; value: UserProfile | null } | null>(null);
     const [profileFailure, setProfileFailure] = useState<{ userId: string; error: AppError } | null>(null);
     const [profileCheck, setProfileCheck] = useState(0);
+    const [signInHeld, setSignInHeld] = useState(false);
     const userId = session?.user?.id ?? null;
     const currentProfile = userId !== null && profile?.userId === userId ? profile : null;
     const hasProfile = userId === null ? false : currentProfile ? currentProfile.value !== null : null;
@@ -52,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // outlive a sign-out (this also covers account deletion and an expired session).
             // Reminders are cancelled for the same reason.
             if (event === 'SIGNED_OUT') {
+                if (mounted) setSignInHeld(false);
                 clearAssessmentDrafts().catch((error: unknown) => {
                     console.error('[Assessment] Failed to clear local drafts:', error);
                 });
@@ -98,6 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile: currentProfile?.value ?? null,
         profileError,
         refreshProfile,
+        signInHeld,
+        holdSignIn: setSignInHeld,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

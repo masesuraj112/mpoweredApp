@@ -235,3 +235,18 @@ Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Sta
 
 ## Decisions
 I-A to I-G settled on 2 Nov 2026 (see the plan's section 2).
+# Sign up vs sign in fix progress
+
+Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status key as above. No migrations.
+
+## Steps
+- [x] F0 Plan written; decisions SU-1 to SU-9 approved 3 Nov 2026 (SU-7 wording to be confirmed by the designer)
+- [x] F1 Sign-up or sign-in intent in `OnboardingContext`, set by Get started / Sign in
+- [x] F2 `nextStepAfterVerify()` (`src/features/auth/afterVerify.ts`, every row of the plan's table tested)
+- [x] F3a Hold the sign-in screens (SU-10, approved 3 Nov 2026): `signInHeld` / `holdSignIn` in `AuthContext`, root guard
+- [x] F3b `account-check` screen (`app/(auth)/account-check.tsx`, 7 screen tests)
+- [x] F4 `verify.tsx` holds a sign-up, uses `nextStepAfterVerify()` and routes mismatches to `account-check` (5 screen tests)
+- [x] F5 Back arrows on the sign-up and sign-in screens (`app/(auth)/_layout.tsx`; verify hides it once signed in; 5 route tests)
+- [x] F6 Docs (`login-backend.md` flow and root guard, `docs/testing.md` rows) and full checks
+- [x] F6b Manual QA on a phone (plan section 6), passed 3 Nov 2026; wording confirmed (SU-7)
+- [x] F7 New support persons skip the patient "You're off to an MPowered start" slides (found in testing, 3 Nov 2026)
