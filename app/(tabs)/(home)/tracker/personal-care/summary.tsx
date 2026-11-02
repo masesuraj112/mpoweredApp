@@ -1,29 +1,38 @@
-import { TIPS_URL } from '@/constants/socialHealthOptions';
-import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
+import { assessmentSaveMessage } from '@/features/assessments/messages';
 import {
-  toSocialHealthSummary,
-  type SocialHealthSummaryData,
-} from '@/features/assessments/social-health/summary';
+  toPersonalCareSummary,
+  type PersonalCareSummaryData,
+} from '@/features/assessments/personal-care/summary';
+import { getPersonalCareEntryForWeek } from '@/services/assessments';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { getSocialHealthEntryForWeek } from '@/services/social-health';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { Colors } from '@/constants/theme';
-function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSummaryData; onClose: () => void }) {
-  const impact = summary.impactPhrase;
+const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
+const closeToHome = () => router.replace('/home');
+
+function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
       <Text style={styles.subheading}>
-        Your answers help your doctor focus on what matters most to your daily life.
+        This helps guide your treatment and support your recovery.
       </Text>
 
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
-          <Text style={styles.reportTitle}>My Social Health</Text>
+          <Text style={styles.reportTitle}>My Personal Care</Text>
           <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
@@ -35,43 +44,39 @@ function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSu
         >
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
-            <Text style={styles.guidanceText}>
-              {impact ? (
-                <>
-                  Your answers indicate that pain <Text style={styles.boldText}>{impact}</Text> your ability to enjoy
-                  social activities.
-                </>
-              ) : (
-                'Not enough answers to summarise how pain affects your social activities.'
-              )}
-              {'\n'}With the right treatment and support, you can stay more active and connected.
-            </Text>
+            <Text style={styles.guidanceText}>{summary.message}</Text>
             <Pressable
-              onPress={() => Linking.openURL(TIPS_URL)}
+              onPress={() => Linking.openURL(DAILY_LIVING_TIPS_URL)}
               accessibilityRole="link"
-              accessibilityLabel="Explore tips on managing emotions"
+              accessibilityLabel="Explore tips on daily living"
               style={({ pressed }) => [styles.tipsButton, pressed && styles.tipsButtonPressed]}
             >
               <Text style={styles.searchIcon}>⌕</Text>
-              <Text style={styles.tipsButtonText}>Explore tips on managing emotions</Text>
+              <Text style={styles.tipsButtonText}>Explore tips on daily living</Text>
             </Pressable>
           </View>
 
           <Text style={styles.resultsHeading}>My results:</Text>
           <View style={styles.resultsList}>
-            <ResultSection heading="Social life:" value={summary.results.socialLife} />
-            <ResultSection heading="Travelling:" value={summary.results.travelling} />
-            <ResultSection heading="Mood:" value={summary.results.mood} />
-            <ResultSection heading="Relation with others:" value={summary.results.relationWithOthers} />
-            <ResultSection heading="Enjoyment of life:" value={summary.results.enjoymentOfLife} />
+            <ResultSection
+              heading="General Activities:"
+              value={summary.generalActivities.join(', ') || 'No activities selected.'}
+            />
+            <ResultSection
+              heading="Personal care (washing, dressing, etc)"
+              value={summary.personalCareLevel || 'No response recorded.'}
+            />
+            <ResultSection
+              heading="Sleeping:"
+              value={summary.sleepingLevel || 'No response recorded.'}
+            />
           </View>
 
           <View style={styles.reflectionSection}>
-            <Text style={styles.reflectionHeading}>My reflections on mood:</Text>
-            <View style={[styles.resultsList, styles.reflectionList]}>
-              <ResultSection heading="General Mood:" value={summary.generalMood} />
-              <ResultSection heading="Triggers:" value={summary.triggers} />
-            </View>
+            <Text style={styles.reflectionHeading}>My reflections:</Text>
+            <Text style={[styles.resultText, styles.reflectionText]}>
+              {summary.reflection || 'No reflections added.'}
+            </Text>
           </View>
         </ScrollView>
 
@@ -79,7 +84,14 @@ function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSu
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
-            <CloseButton onPress={onClose} />
+            <Pressable
+              onPress={closeToHome}
+              accessibilityRole="button"
+              accessibilityLabel="Close summary"
+              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -90,26 +102,26 @@ function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSu
 type SummaryState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; summary: SocialHealthSummaryData };
+  | { status: 'ready'; summary: PersonalCareSummaryData };
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/(tabs)/home');
+  const close = () => router.replace('/home');
 
   useEffect(() => {
     if (!weekStart) return;
     let cancelled = false;
-    getSocialHealthEntryForWeek(weekStart).then(result => {
+    getPersonalCareEntryForWeek(weekStart).then(result => {
       if (cancelled) return;
       if (!result.ok) {
-        setState({ status: 'error', message: socialHealthSaveMessage(result.error) });
+        setState({ status: 'error', message: assessmentSaveMessage(result.error, 'personal care') });
       } else if (!result.data) {
         setState({ status: 'error', message: 'We could not find your saved entry.' });
       } else {
-        setState({ status: 'ready', summary: toSocialHealthSummary(result.data) });
+        setState({ status: 'ready', summary: toPersonalCareSummary(result.data) });
       }
     });
     return () => {
@@ -122,33 +134,26 @@ export default function SummaryScreen() {
     : { status: 'error', message: 'We could not find the week to show.' };
 
   if (view.status === 'ready') {
-    return <SocialHealthSummaryView summary={view.summary} onClose={close} />;
+    return <PersonalCareSummaryView summary={view.summary} />;
   }
-
   return (
     <View style={[styles.screen, styles.centered]}>
       {view.status === 'loading' ? (
         <ActivityIndicator accessibilityLabel="Loading your summary" />
       ) : (
         <>
-          <Text style={styles.resultText}>{view.message}</Text>
-          <CloseButton onPress={close} />
+          <Text style={styles.errorText}>{view.message}</Text>
+          <Pressable
+            onPress={close}
+            accessibilityRole="button"
+            accessibilityLabel="Close summary"
+            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+          >
+            <Text style={styles.closeButtonText}>Close</Text>
+          </Pressable>
         </>
       )}
     </View>
-  );
-}
-
-function CloseButton({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel="Close summary"
-      style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-    >
-      <Text style={styles.closeButtonText}>Close</Text>
-    </Pressable>
   );
 }
 
@@ -166,6 +171,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: scaleHeight(16),
+  },
+  errorText: {
+    color: Colors.light.text,
+    fontSize: scaleFont(14),
+    lineHeight: scaleHeight(20),
+    textAlign: 'center',
   },
   screen: {
     flex: 1,
@@ -254,9 +265,6 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(20),
     textAlign: 'center',
   },
-  boldText: {
-    fontWeight: '700',
-  },
   tipsButton: {
     minHeight: scaleHeight(44),
     flexDirection: 'row',
@@ -315,8 +323,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: scaleHeight(16),
   },
-  reflectionList: {
-    marginTop: scaleHeight(4),
+  reflectionText: {
+    paddingLeft: scaleWidth(14),
   },
   footer: {
     flexShrink: 0,

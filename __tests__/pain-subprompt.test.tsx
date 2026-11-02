@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react-native';
-import PainCharacteristicsScreen from '../app/(tabs)/tracker/pain/characteristics';
-import PainLocationScreen from '../app/(tabs)/tracker/pain/location';
+import PainCharacteristicsScreen from '../app/(tabs)/(home)/tracker/pain/characteristics';
+import PainLocationScreen from '../app/(tabs)/(home)/tracker/pain/location';
 import { PainAssessmentProvider } from '@/features/assessments/pain/context';
 
 jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn(), replace: jest.fn() } }));

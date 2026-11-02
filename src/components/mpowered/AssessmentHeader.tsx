@@ -7,7 +7,7 @@ export function AssessmentHeader() {
   return (
     <View style={styles.topBar}>
       <Pressable
-        onPress={() => router.replace('/(tabs)/home')}
+        onPress={() => router.replace('/home')}
         accessibilityRole="button"
         accessibilityLabel="Back to Home"
         style={styles.backButton}

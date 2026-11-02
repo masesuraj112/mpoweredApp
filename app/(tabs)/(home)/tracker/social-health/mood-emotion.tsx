@@ -11,28 +11,28 @@ import { Colors } from '@/constants/theme';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
 const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
   frustrated: {
-    icon: require('../../../../assets/images/social-health/frustrated-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/frustrated-selected.svg'),
+    icon: require('@/assets/images/social-health/frustrated-unselected.svg'),
+    selectedIcon: require('@/assets/images/social-health/frustrated-selected.svg'),
     iconHeight: 24,
   },
   sad: {
-    icon: require('../../../../assets/images/social-health/sad-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/sad-selected.svg'),
+    icon: require('@/assets/images/social-health/sad-unselected.svg'),
+    selectedIcon: require('@/assets/images/social-health/sad-selected.svg'),
     iconHeight: 24,
   },
   okay: {
-    icon: require('../../../../assets/images/social-health/okay-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/okay-selected.svg'),
+    icon: require('@/assets/images/social-health/okay-unselected.svg'),
+    selectedIcon: require('@/assets/images/social-health/okay-selected.svg'),
     iconHeight: 24,
   },
   calm: {
-    icon: require('../../../../assets/images/social-health/calm-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/calm-selected.svg'),
+    icon: require('@/assets/images/social-health/calm-unselected.svg'),
+    selectedIcon: require('@/assets/images/social-health/calm-selected.svg'),
     iconHeight: 25,
   },
   delighted: {
-    icon: require('../../../../assets/images/social-health/delighted-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/delighted-selected.svg'),
+    icon: require('@/assets/images/social-health/delighted-unselected.svg'),
+    selectedIcon: require('@/assets/images/social-health/delighted-selected.svg'),
     iconHeight: 25,
   },
 };

@@ -1,17 +1,19 @@
-import { MANAGEMENT_TIPS_URL } from '@/constants/managementOptions';
-import { managementSaveMessage } from '@/features/assessments/management/messages';
+import { TIPS_URL } from '@/constants/socialHealthOptions';
+import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
 import {
-  toManagementSummary,
-  type ManagementSummaryData,
-} from '@/features/assessments/management/summary';
-import { getManagementEntryForWeek } from '@/services/management';
+  toSocialHealthSummary,
+  type SocialHealthSummaryData,
+} from '@/features/assessments/social-health/summary';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { getSocialHealthEntryForWeek } from '@/services/social-health';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '@/constants/theme';
-function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummaryData; onClose: () => void }) {
+function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSummaryData; onClose: () => void }) {
+  const impact = summary.impactPhrase;
+
   return (
     <View style={styles.screen}>
       <Text style={styles.heading}>My Pain Summary</Text>
@@ -21,7 +23,7 @@ function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummar
 
       <View style={styles.reportCard}>
         <View style={styles.reportHeader}>
-          <Text style={styles.reportTitle}>My Management</Text>
+          <Text style={styles.reportTitle}>My Social Health</Text>
           <Text style={styles.period}>Period: {summary.period}</Text>
         </View>
         <View style={styles.divider} />
@@ -33,39 +35,51 @@ function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummar
         >
           <Text style={styles.sectionHeading}>Summary</Text>
           <View style={styles.guidancePanel}>
-            <Text style={styles.guidanceText}>{summary.summarySentence}</Text>
+            <Text style={styles.guidanceText}>
+              {impact ? (
+                <>
+                  Your answers indicate that pain <Text style={styles.boldText}>{impact}</Text> your ability to enjoy
+                  social activities.
+                </>
+              ) : (
+                'Not enough answers to summarise how pain affects your social activities.'
+              )}
+              {'\n'}With the right treatment and support, you can stay more active and connected.
+            </Text>
             <Pressable
-              onPress={() => Linking.openURL(MANAGEMENT_TIPS_URL)}
+              onPress={() => Linking.openURL(TIPS_URL)}
               accessibilityRole="link"
-              accessibilityLabel="Explore tips on managing pain"
+              accessibilityLabel="Explore tips on managing emotions"
               style={({ pressed }) => [styles.tipsButton, pressed && styles.tipsButtonPressed]}
             >
               <Text style={styles.searchIcon}>⌕</Text>
-              <Text style={styles.tipsButtonText}>Explore tips on managing pain</Text>
+              <Text style={styles.tipsButtonText}>Explore tips on managing emotions</Text>
             </Pressable>
           </View>
 
           <Text style={styles.resultsHeading}>My results:</Text>
           <View style={styles.resultsList}>
-            <ResultSection heading="Medication:" value={summary.medicationResult} />
-            <ResultSection heading="Exercise:" value={summary.exerciseResult} />
-            <ResultSection heading="Emotion:" value={summary.emotionResult} />
+            <ResultSection heading="Social life:" value={summary.results.socialLife} />
+            <ResultSection heading="Travelling:" value={summary.results.travelling} />
+            <ResultSection heading="Mood:" value={summary.results.mood} />
+            <ResultSection heading="Relation with others:" value={summary.results.relationWithOthers} />
+            <ResultSection heading="Enjoyment of life:" value={summary.results.enjoymentOfLife} />
+          </View>
+
+          <View style={styles.reflectionSection}>
+            <Text style={styles.reflectionHeading}>My reflections on mood:</Text>
+            <View style={[styles.resultsList, styles.reflectionList]}>
+              <ResultSection heading="General Mood:" value={summary.generalMood} />
+              <ResultSection heading="Triggers:" value={summary.triggers} />
+            </View>
           </View>
         </ScrollView>
 
         <View style={styles.footer}>
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
-            {/* TODO: Persist this report to the My Health before showing its saved status. */}
-            <Text style={styles.savedText}>Saved to My Health</Text>
-            <Pressable
-              onPress={onClose}
-              accessibilityRole="button"
-              accessibilityLabel="Close summary"
-              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
+            <Text style={styles.savedText}>Saved to Care Journal</Text>
+            <CloseButton onPress={onClose} />
           </View>
         </View>
       </View>
@@ -76,26 +90,26 @@ function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummar
 type SummaryState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; summary: ManagementSummaryData };
+  | { status: 'ready'; summary: SocialHealthSummaryData };
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/(tabs)/home');
+  const close = () => router.replace('/home');
 
   useEffect(() => {
     if (!weekStart) return;
     let cancelled = false;
-    getManagementEntryForWeek(weekStart).then(result => {
+    getSocialHealthEntryForWeek(weekStart).then(result => {
       if (cancelled) return;
       if (!result.ok) {
-        setState({ status: 'error', message: managementSaveMessage(result.error) });
+        setState({ status: 'error', message: socialHealthSaveMessage(result.error) });
       } else if (!result.data) {
         setState({ status: 'error', message: 'We could not find your saved entry.' });
       } else {
-        setState({ status: 'ready', summary: toManagementSummary(result.data) });
+        setState({ status: 'ready', summary: toSocialHealthSummary(result.data) });
       }
     });
     return () => {
@@ -108,7 +122,7 @@ export default function SummaryScreen() {
     : { status: 'error', message: 'We could not find the week to show.' };
 
   if (view.status === 'ready') {
-    return <ManagementSummaryView summary={view.summary} onClose={close} />;
+    return <SocialHealthSummaryView summary={view.summary} onClose={close} />;
   }
 
   return (
@@ -172,9 +186,8 @@ const styles = StyleSheet.create({
     marginHorizontal: scaleWidth(7),
     marginBottom: scaleHeight(20),
     color: Colors.light.text,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.4,
+    fontSize: scaleFont(14),
+    lineHeight: scaleHeight(20),
   },
   reportCard: {
     flex: 1,
@@ -241,6 +254,9 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(20),
     textAlign: 'center',
   },
+  boldText: {
+    fontWeight: '700',
+  },
   tipsButton: {
     minHeight: scaleHeight(44),
     flexDirection: 'row',
@@ -288,6 +304,19 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     fontSize: scaleFont(14),
     lineHeight: scaleHeight(20),
+  },
+  reflectionSection: {
+    gap: scaleHeight(8),
+    marginTop: scaleHeight(18),
+  },
+  reflectionHeading: {
+    color: Colors.light.text,
+    fontSize: scaleFont(12),
+    fontWeight: '600',
+    lineHeight: scaleHeight(16),
+  },
+  reflectionList: {
+    marginTop: scaleHeight(4),
   },
   footer: {
     flexShrink: 0,

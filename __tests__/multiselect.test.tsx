@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
-import MedicationScreen from '../app/(tabs)/tracker/management/medication';
-import GeneralScreen from '../app/(tabs)/tracker/personal-care/general';
+import MedicationScreen from '../app/(tabs)/(home)/tracker/management/medication';
+import GeneralScreen from '../app/(tabs)/(home)/tracker/personal-care/general';
 import { ManagementAssessmentProvider } from '@/features/assessments/management/context';
 import { PersonalCareAssessmentProvider } from '@/features/assessments/personal-care/context';
 

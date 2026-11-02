@@ -79,7 +79,7 @@ export default function PainSummary() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/(tabs)/home');
+  const close = () => router.replace('/home');
 
   useEffect(() => {
     if (!weekStart) return;
