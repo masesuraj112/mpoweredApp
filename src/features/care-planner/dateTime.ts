@@ -192,3 +192,35 @@ export function isPastDateTime(value: LocalDateTime, now: Date): boolean {
 export function defaultDateTime(now: Date): LocalDateTime {
   return { ...toCalendarDay(now), hour: DEFAULT_HOUR_24, minute: 0 };
 }
+
+/**
+ * The value as a JS Date in the device's own time zone, for the native date pickers. Built from local
+ * components, so the wall-clock time is kept (never through UTC).
+ */
+export function toLocalDate(value: LocalDateTime): Date {
+  return new Date(value.year, value.month - 1, value.day, value.hour, value.minute);
+}
+
+/** A native picker's Date read back as local wall-clock time. */
+export function fromLocalDate(date: Date): LocalDateTime {
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+  };
+}
+
+/**
+ * Material (Android) calendars hold a date as midnight UTC, so this is how one is handed a day. It is
+ * only ever used for the picker's own value, never stored.
+ */
+export function toUtcMidnightString({ year, month, day }: CalendarDay): string {
+  return `${String(year).padStart(4, '0')}-${pad2(month)}-${pad2(day)}T00:00:00Z`;
+}
+
+/** The day a Material calendar picked, read without a time-zone shift (it reports midnight UTC). */
+export function fromUtcMidnight(date: Date): CalendarDay {
+  return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1, day: date.getUTCDate() };
+}

@@ -26,38 +26,6 @@ export function CalendarIcon({ size = 20, color = Colors.light.text }: IconProps
   );
 }
 
-export function ChevronDownIcon({ size = 20, color = Colors.light.text }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
-      <Path d="M6 9l6 6 6-6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-export function ChevronLeftIcon({ size = 20, color = Colors.light.text }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
-      <Path d="M15 6l-6 6 6 6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-export function ChevronRightIcon({ size = 20, color = Colors.light.text }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
-      <Path d="M9 6l6 6-6 6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-export function CheckIcon({ size = 20, color = Colors.light.text }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
-      <Path d="M5 12.5l4.5 4.5L19 7.5" stroke={color} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
 export function PhoneIcon({ size = 20, color = Colors.light.text }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>

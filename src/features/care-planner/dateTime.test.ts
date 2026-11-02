@@ -7,6 +7,8 @@ import {
   formatDisplayDateTime,
   formatLocalTimestamp,
   formatTime,
+  fromLocalDate,
+  fromUtcMidnight,
   isPastDateTime,
   isSameDay,
   isValidDay,
@@ -14,6 +16,8 @@ import {
   snapMinute,
   to12Hour,
   to24Hour,
+  toLocalDate,
+  toUtcMidnightString,
   weekdayIndexMondayFirst,
 } from './dateTime';
 
@@ -237,5 +241,31 @@ describe('isPastDateTime and defaultDateTime', () => {
 
   it('suggests today at 9:00 AM', () => {
     expect(defaultDateTime(NOW)).toEqual({ year: 2026, month: 10, day: 21, hour: 9, minute: 0 });
+  });
+});
+
+describe('native picker conversions', () => {
+  it('turns a local value into a Date and back without changing the wall-clock time', () => {
+    const value = { year: 2026, month: 11, day: 5, hour: 9, minute: 15 };
+    const date = toLocalDate(value);
+
+    expect([date.getHours(), date.getMinutes()]).toEqual([9, 15]);
+    expect(fromLocalDate(date)).toEqual(value);
+  });
+
+  it('keeps the time across the daylight saving change', () => {
+    // Sydney moves its clocks forward on 4 October 2026; 10:00 that morning is still 10:00.
+    const value = { year: 2026, month: 10, day: 4, hour: 10, minute: 0 };
+    expect(fromLocalDate(toLocalDate(value))).toEqual(value);
+  });
+
+  it('hands a Material calendar the day as midnight UTC', () => {
+    expect(toUtcMidnightString({ year: 2026, month: 3, day: 7 })).toBe('2026-03-07T00:00:00Z');
+  });
+
+  it('reads the picked day back without a time-zone shift', () => {
+    // Midnight UTC on 5 November is 11 AM on 5 November in Sydney, but late on 4 November in the Americas.
+    expect(fromUtcMidnight(new Date(Date.UTC(2026, 10, 5)))).toEqual({ year: 2026, month: 11, day: 5 });
+    expect(fromUtcMidnight(new Date('2026-03-07T00:00:00Z'))).toEqual({ year: 2026, month: 3, day: 7 });
   });
 });
