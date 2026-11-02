@@ -198,3 +198,21 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 
 ## Decisions
 S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.
+
+# App icons and splash progress
+
+Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Status key as above. No migrations.
+
+## Steps
+- [x] I0 Branch and plan
+- [ ] I1 MPowered name and iOS icon (`.icon`)
+- [ ] I2 Android, fallback, notification and splash images from `mpoweredicon.svg`
+- [ ] I3 Native splash (M on `#391777`, held until the session is read)
+- [ ] I4 `WelcomeSplash` component
+- [ ] I5 Show it: "Welcome to" signed out (3 s), "Welcome back to" signed in (at least 1.5 s)
+- [ ] I6a App config assets guard test
+- [ ] I6b Docs and green CI
+- [ ] I6c Manual QA on a preview build (iPhone and Android)
+
+## Decisions
+I-A to I-F settled on 2 Nov 2026 (see the plan's section 2).
