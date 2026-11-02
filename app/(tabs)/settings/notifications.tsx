@@ -11,8 +11,9 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
 import { useReminderPermission } from '@/features/notifications/useReminderPermission';
 import { useNotificationSettings } from '@/features/settings/useNotificationSettings';
+import { listScheduledReminders, scheduleTestReminder } from '@/services/notifications';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 const COUNT_OPTIONS = ['1', '2', '3', '4', '5', '6', '7'];
 const UNIT_OPTIONS = ['days', 'weeks'];
@@ -29,6 +30,21 @@ export default function NotificationsScreen() {
     const on = Object.values(change)[0];
     if (on && !(await permission.ensure())) return;
     update(change);
+  };
+
+  // Development builds only (manual QA, docs/backend/notifications-build-plan.md section 6.4).
+  const sendTestReminder = async () => {
+    if (!(await permission.ensure())) return;
+    const result = await scheduleTestReminder();
+    Alert.alert(
+      'Test reminder',
+      result.ok ? 'It arrives in about a minute. Leave the app or lock the phone to see it.' : 'It could not be scheduled.',
+    );
+  };
+  const showScheduled = async () => {
+    const result = await listScheduledReminders();
+    const lines = result.ok ? result.data.map(r => `${r.id}: ${r.title}`) : ['Could not read them.'];
+    Alert.alert(`Scheduled reminders (${result.ok ? result.data.length : '?'})`, lines.join('\n') || 'None');
   };
 
   // --- Screenshot 2: "Assessment reminders frequency" popup -----------------
@@ -113,6 +129,15 @@ export default function NotificationsScreen() {
             />
             <SettingsOption label="Set reminder frequency" onPress={openAppointment} />
           </View>
+          {__DEV__ && (
+            <>
+              <Text style={styles.sectionTitle}>Developer</Text>
+              <View style={styles.group}>
+                <SettingsOption label="Send a test reminder in 1 minute" onPress={sendTestReminder} />
+                <SettingsOption label="Show scheduled reminders" onPress={showScheduled} />
+              </View>
+            </>
+          )}
         </>
       )}
 

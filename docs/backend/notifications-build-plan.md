@@ -228,7 +228,10 @@ planReminders(input: {
   Commit: `Cancel reminders on sign-out and account deletion`
 
 ### Phase N8 — Docs, checks and manual QA
-- **N8a** A dev-only (`__DEV__`) "Send a test reminder in 1 minute" row on the Notifications screen.
+- **N8a** A **Developer** section on the Notifications screen, in development builds only (`__DEV__`):
+  "Send a test reminder in 1 minute" (asks permission if needed; opens the Pain Tracker home when tapped) and
+  "Show scheduled reminders" (an alert with each scheduled reminder's id and title). The test reminder is not
+  cancelled by a re-plan until the app next opens, so leave the app or lock the phone while waiting.
   Commit: `Add a test reminder for development`
 - **N8b** Update `docs/testing.md`, `settings-backend.md` (reminders now sent) and `progress.md`. Full checks, green CI.
   Commit: `Update the docs for notifications`

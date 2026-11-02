@@ -18,6 +18,7 @@ type NotificationsModule = Pick<
   | 'setNotificationChannelAsync'
   | 'scheduleNotificationAsync'
   | 'cancelAllScheduledNotificationsAsync'
+  | 'getAllScheduledNotificationsAsync'
   | 'setNotificationHandler'
 >;
 
@@ -91,6 +92,40 @@ export function applyReminders(
       });
     }
     return ok(undefined);
+  });
+}
+
+/** Development only: one reminder in `seconds`, to check how reminders arrive and open. */
+export function scheduleTestReminder(
+  seconds = 60,
+  notifications: NotificationsModule = ExpoNotifications,
+): Promise<Result<void>> {
+  return run(async () => {
+    await createChannels(notifications);
+    await notifications.scheduleNotificationAsync({
+      identifier: 'test-reminder',
+      content: {
+        title: 'Test reminder',
+        body: 'This is how MPowered reminders look.',
+        data: { target: { kind: 'assessment' } },
+      },
+      trigger: {
+        type: SchedulableTriggerInputTypes.DATE,
+        date: Date.now() + seconds * 1000,
+        channelId: REMINDER_CHANNELS.assessment.id,
+      },
+    });
+    return ok(undefined);
+  });
+}
+
+/** Development only: the ids and titles of the reminders scheduled on this phone. */
+export function listScheduledReminders(
+  notifications: NotificationsModule = ExpoNotifications,
+): Promise<Result<{ id: string; title: string }[]>> {
+  return run(async () => {
+    const scheduled = await notifications.getAllScheduledNotificationsAsync();
+    return ok(scheduled.map((request) => ({ id: request.identifier, title: request.content.title ?? '' })));
   });
 }
 

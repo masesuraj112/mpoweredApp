@@ -7,8 +7,10 @@ import {
   applyReminders,
   cancelAllReminders,
   getReminderPermission,
+  listScheduledReminders,
   REMINDER_CHANNELS,
   requestReminderPermission,
+  scheduleTestReminder,
   showRemindersWhileOpen,
 } from './notifications';
 
@@ -38,6 +40,10 @@ function fakeNotifications(permission: Partial<ExpoNotifications.NotificationPer
     cancelAllScheduledNotificationsAsync: jest.fn(async () => {
       calls.push('cancel-all');
     }),
+    getAllScheduledNotificationsAsync: jest.fn(async () => [
+      { identifier: 'assessment:0', content: { title: 'Time for your health check-in' } },
+      { identifier: 'other', content: { title: null } },
+    ]),
     setNotificationHandler: jest.fn(),
   } as unknown as Fake;
   return { fake, calls };
@@ -183,5 +189,36 @@ describe('showRemindersWhileOpen', () => {
     });
 
     expect(showRemindersWhileOpen(fake).ok).toBe(false);
+  });
+});
+
+describe('development helpers', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('schedules one test reminder a minute from now without cancelling the others', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
+    const { fake, calls } = fakeNotifications();
+
+    expect(await scheduleTestReminder(60, fake)).toEqual({ ok: true, data: undefined });
+
+    expect(calls).not.toContain('cancel-all');
+    expect(fake.scheduleNotificationAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        identifier: 'test-reminder',
+        trigger: expect.objectContaining({ date: 1_060_000, channelId: REMINDER_CHANNELS.assessment.id }),
+      }),
+    );
+  });
+
+  it('lists the scheduled reminders by id and title', async () => {
+    const { fake } = fakeNotifications();
+
+    expect(await listScheduledReminders(fake)).toEqual({
+      ok: true,
+      data: [
+        { id: 'assessment:0', title: 'Time for your health check-in' },
+        { id: 'other', title: '' },
+      ],
+    });
   });
 });
