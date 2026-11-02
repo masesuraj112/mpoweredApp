@@ -182,9 +182,27 @@ App start ── native splash (M on #391777) ── held until the session is r
   Commit: `Update the docs for the app icons and splash`
 - **I6c** Manual QA on a preview build (section 6.3).
 
-## 5. Icon generation (filled in at I2)
+## 5. Icon generation
 
-The commands used, so the PNGs can be regenerated from `mpoweredicon.svg`.
+`scripts/generate-icons.js` makes every PNG from `assets/mpowered-app-icon.icon/Assets/mpoweredicon.svg`. It reuses
+the logo's one path unchanged and only sizes, places and colours it. The renderer is not a project dependency:
+
+```bash
+npm install --no-save @resvg/resvg-js@2.6.2
+node scripts/generate-icons.js
+```
+
+| File | Size | Logo | Colours |
+| --- | --- | --- | --- |
+| `android-icon-foreground.png` | 1024×1024 | 440 wide (about 43%, inside the 66% safe zone and clear of a circle mask) | `#D0BCFE` on transparent |
+| `android-icon-monochrome.png` | 1024×1024 | 440 wide | white on transparent (Android tints it) |
+| `icon.png` (fallback) | 1024×1024 | 640 wide | `#D0BCFE` on `#392C5C` |
+| `notification-icon.png` | 96×96 | 80 wide | white on transparent |
+| `favicon.png` | 48×48 | 38 wide | `#D0BCFE` on `#392C5C` |
+| `splash-icon.png` | 1024×903 | full width | `#D0BCFE` on transparent |
+
+The adaptive icon's background is the colour `#392C5C` in `app.json`; `android-icon-background.png` is deleted.
+Checked by eye on 2 Nov 2026, including a circle-masked preview of the adaptive icon.
 
 ## 6. Testing plan
 
