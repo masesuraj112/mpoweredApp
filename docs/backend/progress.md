@@ -211,7 +211,7 @@ Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Sta
 - [x] I4 `WelcomeSplash` component (`SplashColors` tokens; Figma wordmark and waves SVGs; render test)
 - [x] I5 Show it: "Welcome to" signed out (3 s), "Welcome back to" signed in (at least 3 s, an overlay on the navigator)
 - [x] I6a App config assets guard test (`__tests__/unit/app-config-assets.test.ts`; checked it fails with an icon missing)
-- [ ] I6b Docs and green CI
+- [x] I6b Docs (`docs/testing.md` rows and manual note); CI to confirm on the PR
 - [ ] I6c Manual QA on a preview build (iPhone and Android)
 
 ## Decisions
