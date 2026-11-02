@@ -5,6 +5,7 @@ import {
   EMPTY_SUPPORT_PERSON_DRAFT,
   findPersonWithPhone,
   hasErrors,
+  invitationStatusLabel,
   availableSupportPeople,
   canAddAnotherPerson,
   isDraftEmpty,
@@ -234,5 +235,19 @@ describe('saved numbers are not silently reused', () => {
     expect(validateSupportPerson(draft({ name: 'Mum', phone: '12345' }), [dad]).phone).toBe(
       MOBILE_REQUIRED_MESSAGE,
     );
+  });
+});
+
+describe('invitationStatusLabel', () => {
+  it.each([
+    ['pending', 'Pending'],
+    ['accepted', 'Accepted'],
+    ['declined', 'Declined'],
+  ] as const)('describes %s as %s', (status, label) => {
+    expect(invitationStatusLabel(status)).toBe(label);
+  });
+
+  it('shows nothing when the database has no status yet', () => {
+    expect(invitationStatusLabel(undefined)).toBeNull();
   });
 });
