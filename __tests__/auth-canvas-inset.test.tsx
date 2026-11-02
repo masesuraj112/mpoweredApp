@@ -4,6 +4,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import VerificationConfirmationScreen from '../app/(auth)/verification-confirmation';
 
+// The window the canvas is fitted to: the same 360 x 780 phone as the safe-area metrics below.
+jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
+  __esModule: true,
+  default: () => ({ width: 360, height: 780, scale: 2, fontScale: 1 }),
+}));
 jest.mock('@/context/AuthContext', () => ({ useAuth: () => ({ refreshProfile: jest.fn() }) }));
 
 // A phone with on-screen navigation buttons: 24 of the top edge and 48 of the bottom edge belong to the system.
@@ -13,7 +18,9 @@ const metrics = {
 };
 
 describe('sign-in screens on a fixed-size canvas', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
   afterEach(() => jest.useRealTimers());
 
   it('keeps the canvas between the status bar and the system navigation buttons', async () => {
