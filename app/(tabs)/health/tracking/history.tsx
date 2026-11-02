@@ -50,8 +50,8 @@ export default function TrackingHistoryScreen() {
     pdf.run('print', () => buildHistoryHtml(weeks, formatLongDate(getLocalToday())));
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
         <TrackingScreenHeader
           activeTab="history"
           onPrintPdf={weeks.length > 0 ? printPdf : undefined}

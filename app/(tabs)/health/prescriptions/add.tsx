@@ -108,7 +108,7 @@ export default function AddPrescriptionScreen() {
 
   if (!isValidId) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <PrescriptionsHeader title="Edit prescription" />
         <ErrorState message="We could not find this prescription." />
       </SafeAreaView>
@@ -117,7 +117,7 @@ export default function AddPrescriptionScreen() {
 
   if (loadState.status !== 'ready') {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <PrescriptionsHeader title="Edit prescription" />
         {loadState.status === 'loading' ? (
           <LoadingState label="Loading prescription" />
@@ -129,8 +129,8 @@ export default function AddPrescriptionScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
         <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
 
         <Text style={styles.helperText}>Type the name of your medication</Text>

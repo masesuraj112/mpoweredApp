@@ -1,11 +1,14 @@
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export function AssessmentHeader() {
   const styles = useStyles();
+  const insets = useSafeAreaInsets();
+  // The bar's colour runs up behind the status bar to the top of the screen.
   return (
-    <View style={styles.topBar}>
+    <View style={[styles.topBar, { paddingTop: insets.top + Spacing.two }]}>
       <Pressable
         onPress={() => router.replace('/home')}
         accessibilityRole="button"
@@ -22,9 +25,8 @@ export function AssessmentHeader() {
 
 const useStyles = makeStyles((colors) => ({
   topBar: {
-    height: 109,
     backgroundColor: colors.secondaryContainer,
-    paddingTop: Spacing.six,
+    paddingBottom: Spacing.three,
     paddingHorizontal: Spacing.four,
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { makeStyles, Spacing, Typography } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
@@ -14,9 +15,11 @@ interface PrescriptionsHeaderProps {
 
 export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: PrescriptionsHeaderProps) {
   const styles = useStyles();
+  const insets = useSafeAreaInsets();
   return (
     <View>
-      <View style={styles.topBar}>
+      {/* The bar's colour runs up behind the status bar to the top of the screen. */}
+      <View style={[styles.topBar, { paddingTop: insets.top + Spacing.two }]}>
         {/* Back always returns to the start of My Health, however deep in the stack we are */}
         <Pressable
           style={styles.backRow}

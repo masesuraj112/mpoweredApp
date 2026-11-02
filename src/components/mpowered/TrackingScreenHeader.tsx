@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
@@ -15,10 +16,12 @@ interface TrackingScreenHeaderProps {
 
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
   const styles = useStyles();
+  const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   return (
     <View>
-      <View style={styles.topBar}>
+      {/* The bar's colour runs up behind the status bar to the top of the screen. */}
+      <View style={[styles.topBar, { paddingTop: insets.top + Spacing.two }]}>
         {/* Back always returns to the start of My Health, however deep in the stack we are */}
         <Pressable
           style={styles.backRow}

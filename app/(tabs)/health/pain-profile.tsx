@@ -63,8 +63,8 @@ export default function PainProfileScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
         <PrescriptionsHeader
           title="My Pain Profiles"
           topBarLabel="Homescreen"

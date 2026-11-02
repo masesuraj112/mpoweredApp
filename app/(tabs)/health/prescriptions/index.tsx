@@ -72,8 +72,8 @@ export default function PrescriptionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
         <PrescriptionsHeader title="My Prescriptions" />
 
         {state.status === 'loading' && <LoadingState label="Loading your prescriptions" />}
