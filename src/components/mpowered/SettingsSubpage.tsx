@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNode, useState } from 'react';
 
+import { NativeSwitch } from '@/components/ui/NativeSwitch';
 import { Colors } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -68,6 +69,7 @@ export function SettingsOption({
   );
 }
 
+/** The platform's own switch, for a row's trailing slot. */
 export function SettingsToggle({
   value,
   onValueChange,
@@ -77,17 +79,7 @@ export function SettingsToggle({
   onValueChange: (value: boolean) => void;
   accessibilityLabel?: string;
 }) {
-  return (
-    <Pressable
-      onPress={() => onValueChange(!value)}
-      accessibilityRole="switch"
-      accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ checked: value }}
-      style={[styles.toggle, value && styles.toggleOn]}
-    >
-      <View style={[styles.toggleThumb, value && styles.toggleThumbOn]} />
-    </Pressable>
-  );
+  return <NativeSwitch value={value} onValueChange={onValueChange} accessibilityLabel={accessibilityLabel} />;
 }
 
 export function SettingsSelect({
@@ -190,29 +182,6 @@ const styles = StyleSheet.create({
   },
   destructiveText: {
     color: Colors.light.error,
-  },
-  toggle: {
-    width: scaleWidth(72),
-    height: scaleHeight(40),
-    padding: scaleWidth(4),
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: scaleWidth(20),
-    backgroundColor: Colors.light.surfaceContainer,
-  },
-  toggleOn: {
-    backgroundColor: Colors.light.secondaryContainer,
-  },
-  toggleThumb: {
-    width: scaleWidth(28),
-    height: scaleWidth(28),
-    borderRadius: scaleWidth(14),
-    backgroundColor: Colors.light.secondaryContainer,
-  },
-  toggleThumbOn: {
-    alignSelf: 'flex-end',
-    backgroundColor: Colors.light.primary,
   },
   select: {
     minWidth: scaleWidth(106),
