@@ -4,6 +4,7 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { managementSaveMessage } from '@/features/assessments/management/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveManagementEntry } from '@/services/management';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -12,6 +13,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function EmotionScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
+  const reminders = useReminders();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
@@ -26,6 +28,8 @@ export default function EmotionScreen() {
 
     const entryDate = answers.entryDate ?? getLocalToday();
     const result = await saveManagementEntry(answers, entryDate);
+    // The next assessment reminder counts from this one.
+    if (result.ok) reminders.refresh();
 
     inFlight.current = false;
     setSaving(false);

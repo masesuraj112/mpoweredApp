@@ -200,7 +200,7 @@ last optional argument, never send a user or patient id, always filter `users` b
 - Load the settings when the screen opens.
 - Save straight away when a toggle changes, and when the user taps Ok in either popup.
 - If a save fails, put the previous value back.
-- No reminders are scheduled yet: this branch only stores the choices.
+- No reminders are scheduled yet: this branch only stores the choices. (Reminders are sent since `feature/notifications`: `notifications-build-plan.md`.)
 
 ### 8. Export my data (shared `app/(tabs)/settings/legal.tsx`)
 The support person Legal page re-exports this screen, so one button serves both apps.
@@ -314,7 +314,7 @@ parts no automated test covers. Tick each one in the PR description, with a note
 - [ ] The first visit shows the defaults: both off, every 3 days, day-before and on-the-day off.
 - [ ] Each toggle, the frequency popup (for example every 2 weeks) and the appointment popup are kept after a restart.
 - [ ] In flight mode a change flips back, with "We could not save that change…" at the top.
-- [ ] No reminders arrive; this branch only stores the choices.
+- [ ] No reminders arrive; this branch only stores the choices. (True for this branch; `feature/notifications` sends them.)
 
 ### Export my data (commits 11–13)
 - [ ] Tapping it shows "Preparing your data…", then the share sheet with `mpowered-my-data-YYYY-MM-DD.json` (today's date).
@@ -426,5 +426,5 @@ Notes:
 - The support person Account page already has no Change password, email or Face ID.
 - **Privacy policy and Terms** (`settings/privacy.tsx`, `settings/terms.tsx`) only say "coming soon", and nothing
   links to `terms.tsx`. Content to write, not backend work. Both apps share them.
-- **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7).
+- **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7). `feature/notifications` makes them send reminders.
 - **Export my data / Account deletion** currently do `() => undefined`. They are kept because steps 8 and 9 make them work.

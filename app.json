@@ -41,6 +41,13 @@
       "expo-web-browser",
       "expo-sharing",
       [
+        "expo-notifications",
+        {
+          "color": "#208AEF",
+          "enableRemoteNotifications": false
+        }
+      ],
+      [
         "expo-speech-recognition",
         {
           "microphonePermission": "MPowered uses the microphone so you can speak your doctor's answer instead of typing it. Audio is not stored.",
