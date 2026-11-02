@@ -198,3 +198,23 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 
 ## Decisions
 S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.
+
+# Notifications progress
+
+Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key as above. No migrations.
+
+## Steps
+- [x] N0 Branch, recon and plan
+- [ ] N1 Add `expo-notifications`
+- [ ] N2 Pure reminder planner
+- [ ] N3 Reminders service
+- [ ] N4 Keep reminders up to date (`ReminderSync`)
+- [ ] N5 Ask for permission from Settings
+- [ ] N6 Open the right screen from a reminder
+- [ ] N7 Cancel reminders on sign-out and account deletion
+- [ ] N8a Dev-only test reminder
+- [ ] N8b Docs and green CI
+- [ ] N8c Manual QA on iPhone and Android
+
+## Decisions
+N-A to N-E settled on 2 Nov 2026 (see the plan's section 2). MHA may revisit the notification wording (N-D).
