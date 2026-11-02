@@ -24,12 +24,26 @@ user-type -> name -> consent -> (patient only) sex -> demographics -> health-con
                        v
                      verify -> verifyCode (code accepted = signed in)
                        |
-                       +-- profile exists ........... root guard opens the tabs (home)
+                       |  started from Get started (sign up):
                        +-- no profile, answers complete -> createProfile -> confirmation slides -> home
-                       +-- no profile, no answers ...... onboarding (user-type), profile made at login-bridge
+                       +-- profile exists ............. account-check "You already have an account"
+                       |                                  (Sign in to my account -> home, or Use a different number)
+                       |  started from Sign in:
+                       +-- profile exists ............. root guard opens the tabs (home)
+                       +-- no profile ................. account-check "No account found"
+                                                          (Create an account -> user-type, or Use a different number)
 ```
 
-Sign in (from the slides) goes straight to `phone`. Sign-in and sign-up are the same call: an unknown number gets a code like any other, and the app never says whether an account exists. Whether the user has a profile is checked only **after** the code is accepted.
+The next step after a correct code comes from `nextStepAfterVerify()` (`src/features/auth/afterVerify.ts`), using
+which button the person started from (`intent` in `OnboardingContext`) and whether the number has a profile. Without
+an intent (a deep link) it behaves as before: profile → home, otherwise create the profile or ask the sign-up
+questions. Design and decisions: `sign-up-sign-in-plan.md`.
+
+Every step from "I am a…" to Verify has a back arrow in the top left (the stack's own header, transparent; set in
+`app/(auth)/_layout.tsx`). There's none on the slides, the "verified" slides or `account-check`, and Verify hides it
+once the code is accepted.
+
+Sign in (from the slides) goes straight to `phone`. Sign-in and sign-up are the same call: an unknown number gets a code like any other, and the app never says whether an account exists **before** the code is accepted (decision L6). Whether the user has a profile is checked only after the code is accepted, which proves the number is theirs, so `account-check` reveals nothing to anyone else.
 
 The onboarding answers live in memory only (`OnboardingProvider` inside the `(auth)` layout) until the profile is written. The provider is unmounted when the auth screens are hidden, so signing out leaves it empty.
 
@@ -37,10 +51,13 @@ The onboarding answers live in memory only (`OnboardingProvider` inside the `(au
 
 - `(tabs)` is reachable only with a **session and a profile** (`hasProfile === true`).
 - Everything else stays in `(auth)`, including a signed-in user whose profile check is still running.
+- A **held** sign-in also stays in `(auth)` (`signInHeld` in `AuthContext`): Verify holds before checking a sign-up
+  code, so a number that already has an account can be asked about on `account-check` instead of opening straight
+  away. "Sign in to my account" releases the hold; signing out always clears it.
 - If the profile check fails (for example no connection) a retry screen is shown.
 - `EXPO_PUBLIC_BYPASS_AUTH=true` makes every route reachable, in development builds only.
 
-`AuthContext` exposes `session`, `user`, `loading`, `hasProfile` (`null` while checking), `profileError` and `refreshProfile()`. The confirmation screen calls `refreshProfile()` when the user taps Continue, which is what opens the tabs for a new user.
+`AuthContext` exposes `session`, `user`, `loading`, `hasProfile` (`null` while checking), `profileError`, `refreshProfile()`, and `signInHeld` with `holdSignIn()`. The confirmation screen calls `refreshProfile()` when the user taps Continue, which is what opens the tabs for a new user.
 
 ## Services
 
