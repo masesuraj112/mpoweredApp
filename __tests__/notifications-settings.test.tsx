@@ -12,6 +12,7 @@ const mockEnsure = jest.fn();
 const mockOpenSettings = jest.fn();
 let mockDenied = false;
 
+jest.mock('@/lib/supabase', () => ({ supabase: {} }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useRouter: () => ({ back: jest.fn() }) }));
 jest.mock('@/features/settings/useNotificationSettings', () => ({
   useNotificationSettings: () => ({

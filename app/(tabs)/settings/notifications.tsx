@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
+import { syncReminders, type SyncOutcome } from '@/features/notifications/syncReminders';
 import { useReminderPermission } from '@/features/notifications/useReminderPermission';
 import { useNotificationSettings } from '@/features/settings/useNotificationSettings';
 import { listScheduledReminders, scheduleTestReminder } from '@/services/notifications';
@@ -16,6 +17,14 @@ import { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 
 const COUNT_OPTIONS = ['1', '2', '3', '4', '5', '6', '7'];
+
+// Development only: what a re-plan did, for "Re-plan reminders now".
+const SYNC_OUTCOME_TEXT: Record<SyncOutcome, string> = {
+  scheduled: 'Planned and scheduled.',
+  cancelled: 'Both kinds of reminder are off, so everything was cancelled.',
+  'no-permission': 'Notifications are not allowed for this app, so nothing changed.',
+  failed: 'Could not read the settings, appointments or assessments (connection or sign-in?).',
+};
 const UNIT_OPTIONS = ['days', 'weeks'];
 
 /**
@@ -40,6 +49,12 @@ export default function NotificationsScreen() {
       'Test reminder',
       result.ok ? 'It arrives in about 10 seconds. Leave the app or lock the phone to see it.' : 'It could not be scheduled.',
     );
+  };
+  const replanNow = async () => {
+    const outcome = await syncReminders(new Date());
+    const scheduled = await listScheduledReminders();
+    const count = scheduled.ok ? scheduled.data.length : '?';
+    Alert.alert('Re-plan reminders', `${SYNC_OUTCOME_TEXT[outcome]}\nScheduled now: ${count}`);
   };
   const showScheduled = async () => {
     const result = await listScheduledReminders();
@@ -134,6 +149,7 @@ export default function NotificationsScreen() {
               <Text style={styles.sectionTitle}>Developer</Text>
               <View style={styles.group}>
                 <SettingsOption label="Send a test reminder in 10 seconds" onPress={sendTestReminder} />
+                <SettingsOption label="Re-plan reminders now" onPress={replanNow} />
                 <SettingsOption label="Show scheduled reminders" onPress={showScheduled} />
               </View>
             </>
