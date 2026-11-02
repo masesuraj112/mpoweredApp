@@ -38,6 +38,7 @@ module.exports = {
     'src/features/assessments/management/messages.ts',
     'src/features/assessments/management/summary.ts',
     'src/features/auth/phone.ts',
+    'src/features/auth/canvas.ts',
     'src/features/auth/otp.ts',
     'src/features/auth/messages.ts',
     'src/features/auth/profile.ts',

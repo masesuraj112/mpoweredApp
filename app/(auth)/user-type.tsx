@@ -1,6 +1,8 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fitCanvas } from '@/features/auth/canvas';
 
 type UserType = 'patient' | 'support-person';
 
@@ -58,10 +60,9 @@ const OPTIONS: {
 
 export default function UserTypeScreen() {
   const { data, updateData } = useOnboarding();
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
+  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   const handleContinue = () => router.push('/(auth)/name');
 
@@ -73,8 +74,8 @@ export default function UserTypeScreen() {
           {
             width: canvasWidth,
             height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
+            left,
+            top,
           },
         ]}
       >

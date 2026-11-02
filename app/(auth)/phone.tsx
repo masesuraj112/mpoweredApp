@@ -5,6 +5,8 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fitCanvas } from '@/features/auth/canvas';
 
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
@@ -22,10 +24,9 @@ export default function PhoneScreen() {
   const doneBar = useKeyboardDoneBar();
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
+  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   const handleContinue = async () => {
     if (isSending) return;
@@ -61,8 +62,8 @@ export default function PhoneScreen() {
           {
             width: canvasWidth,
             height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
+            left,
+            top,
           },
         ]}
       >
