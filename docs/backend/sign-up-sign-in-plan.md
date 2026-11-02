@@ -84,6 +84,7 @@ nextStepAfterVerify({ intent, hasProfile, answersComplete }): NextStep
 | intent | hasProfile | answers complete | Next |
 | --- | --- | --- | --- |
 | sign-up | false | true | `create-profile` (today's path) |
+| sign-up | false | false (shouldn't happen: sign-up asks the questions before the code) | `sign-up-questions` |
 | sign-up | **true** | any | **`account-exists`** (SU-2) |
 | sign-in | true | any | `home` |
 | sign-in | **false** | any | **`no-account`** (SU-3) |

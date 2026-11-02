@@ -6,6 +6,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
+    'src/features/auth/afterVerify.ts',
     'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
     'src/features/assessments/drafts.ts',
