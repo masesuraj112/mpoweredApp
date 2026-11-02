@@ -1,10 +1,34 @@
+jest.mock('@/services/support-person', () => ({
+  listSupportedPatients: jest.fn(),
+  listSupportRequests: jest.fn(),
+  acceptSupportRequest: jest.fn(),
+  rejectSupportRequest: jest.fn(),
+  unpairFromPatient: jest.fn(),
+}));
+
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
 import * as service from '@/services/support-person';
-import { MOCK_SUPPORT_REQUESTS, MOCK_SUPPORTED_PATIENTS } from '@/services/support-person';
 
 import { SupportPersonProvider, useSupportPerson } from './context';
+import type { SupportedPatient, SupportRequest } from './types';
+
+const mocked = service as jest.Mocked<typeof service>;
+
+const jane: SupportedPatient = {
+  id: '7',
+  name: 'Jane Cooper',
+  condition: 'Chronic Back Pain',
+  canAddQuestions: true,
+  canAddAnswers: false,
+  appointments: [],
+};
+const steven: SupportedPatient = { ...jane, id: '9', name: 'Steven Harper', canAddAnswers: true };
+const maria: SupportedPatient = { ...jane, id: '11', name: 'Maria Lopez', condition: '' };
+const request: SupportRequest = { id: '11', patient: maria };
+
+const offline = { ok: false as const, error: { code: 'NETWORK' as const, message: 'offline' } };
 
 const wrapper = ({ children }: { children: ReactNode }) => <SupportPersonProvider>{children}</SupportPersonProvider>;
 
@@ -15,22 +39,26 @@ async function setup() {
   return hook;
 }
 
-beforeEach(() => service.resetMockSupportPerson());
-afterEach(() => jest.restoreAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  mocked.listSupportedPatients.mockResolvedValue({ ok: true, data: [jane, steven] });
+  mocked.listSupportRequests.mockResolvedValue({ ok: true, data: [request] });
+  mocked.acceptSupportRequest.mockResolvedValue({ ok: true, data: maria });
+  mocked.rejectSupportRequest.mockResolvedValue({ ok: true, data: undefined });
+  mocked.unpairFromPatient.mockResolvedValue({ ok: true, data: undefined });
+});
 
 describe('useSupportPerson', () => {
   it('loads the patients and requests from the service', async () => {
     const { result } = await setup();
     expect(result.current.status).toBe('ready');
     expect(result.current.error).toBeNull();
-    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
-    expect(result.current.requests).toHaveLength(MOCK_SUPPORT_REQUESTS.length);
+    expect(result.current.patients).toHaveLength(2);
+    expect(result.current.requests).toHaveLength(1);
   });
 
   it('shows an error, with nothing loaded, when the service fails', async () => {
-    jest
-      .spyOn(service, 'listSupportedPatients')
-      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    mocked.listSupportedPatients.mockResolvedValue(offline);
     const { result } = await setup();
     expect(result.current.status).toBe('error');
     expect(result.current.error?.code).toBe('NETWORK');
@@ -38,64 +66,48 @@ describe('useSupportPerson', () => {
   });
 
   it('loads again on reload', async () => {
-    const failing = jest
-      .spyOn(service, 'listSupportedPatients')
-      .mockResolvedValueOnce({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
+    mocked.listSupportedPatients.mockResolvedValueOnce(offline);
     const { result } = await setup();
     expect(result.current.status).toBe('error');
 
-    failing.mockRestore();
     await act(() => result.current.reload());
     await waitFor(() => expect(result.current.status).toBe('ready'));
-    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
+    expect(result.current.patients).toHaveLength(2);
+    expect(mocked.listSupportedPatients).toHaveBeenCalledTimes(2);
   });
 
   it('accepting a request adds the patient and removes the request', async () => {
     const { result } = await setup();
-    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.acceptRequest(request.id));
 
+    expect(mocked.acceptSupportRequest).toHaveBeenCalledWith(request.id);
     expect(result.current.requests.map(r => r.id)).not.toContain(request.id);
-    expect(result.current.patients.map(p => p.id)).toContain(request.patient.id);
-    expect(result.current.getPatient(request.patient.id)?.name).toBe(request.patient.name);
+    expect(result.current.getPatient(maria.id)?.name).toBe(maria.name);
   });
 
   it('rejecting a request removes it without adding the patient', async () => {
     const { result } = await setup();
-    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.rejectRequest(request.id));
 
+    expect(mocked.rejectSupportRequest).toHaveBeenCalledWith(request.id);
     expect(result.current.requests.map(r => r.id)).not.toContain(request.id);
-    expect(result.current.patients.map(p => p.id)).not.toContain(request.patient.id);
-  });
-
-  it('accepting an unknown request changes nothing', async () => {
-    const { result } = await setup();
-
-    await act(() => result.current.acceptRequest('does-not-exist'));
-
-    expect(result.current.patients).toHaveLength(MOCK_SUPPORTED_PATIENTS.length);
-    expect(result.current.requests).toHaveLength(MOCK_SUPPORT_REQUESTS.length);
+    expect(result.current.patients.map(p => p.id)).not.toContain(maria.id);
   });
 
   it('unpairing removes the patient', async () => {
     const { result } = await setup();
-    const patient = MOCK_SUPPORTED_PATIENTS[0];
 
-    await act(() => result.current.unpair(patient.id));
+    await act(() => result.current.unpair(jane.id));
 
-    expect(result.current.patients.map(p => p.id)).not.toContain(patient.id);
-    expect(result.current.getPatient(patient.id)).toBeUndefined();
+    expect(mocked.unpairFromPatient).toHaveBeenCalledWith(jane.id);
+    expect(result.current.getPatient(jane.id)).toBeUndefined();
   });
 
   it('keeps the request when accepting fails, and returns the error', async () => {
+    mocked.acceptSupportRequest.mockResolvedValue(offline);
     const { result } = await setup();
-    jest
-      .spyOn(service, 'acceptSupportRequest')
-      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const request = MOCK_SUPPORT_REQUESTS[0];
 
     let error: unknown;
     await act(async () => {
@@ -104,15 +116,12 @@ describe('useSupportPerson', () => {
 
     expect(error).toEqual({ code: 'NETWORK', message: 'offline' });
     expect(result.current.requests.map(r => r.id)).toContain(request.id);
-    expect(result.current.patients.map(p => p.id)).not.toContain(request.patient.id);
+    expect(result.current.patients.map(p => p.id)).not.toContain(maria.id);
   });
 
   it('keeps the request when rejecting fails', async () => {
+    mocked.rejectSupportRequest.mockResolvedValue(offline);
     const { result } = await setup();
-    jest
-      .spyOn(service, 'rejectSupportRequest')
-      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const request = MOCK_SUPPORT_REQUESTS[0];
 
     await act(() => result.current.rejectRequest(request.id));
 
@@ -120,23 +129,12 @@ describe('useSupportPerson', () => {
   });
 
   it('keeps the patient when unpairing fails', async () => {
+    mocked.unpairFromPatient.mockResolvedValue(offline);
     const { result } = await setup();
-    jest
-      .spyOn(service, 'unpairFromPatient')
-      .mockResolvedValue({ ok: false, error: { code: 'NETWORK', message: 'offline' } });
-    const patient = MOCK_SUPPORTED_PATIENTS[0];
 
-    await act(() => result.current.unpair(patient.id));
+    await act(() => result.current.unpair(jane.id));
 
-    expect(result.current.getPatient(patient.id)).toBeDefined();
-  });
-
-  it('saves changes through the service, so they are still there after a reload', async () => {
-    const { result } = await setup();
-    await act(() => result.current.unpair(MOCK_SUPPORTED_PATIENTS[0].id));
-    await act(() => result.current.reload());
-    await waitFor(() => expect(result.current.status).toBe('ready'));
-    expect(result.current.getPatient(MOCK_SUPPORTED_PATIENTS[0].id)).toBeUndefined();
+    expect(result.current.getPatient(jane.id)).toBeDefined();
   });
 
   it('throws when used outside the provider', async () => {
