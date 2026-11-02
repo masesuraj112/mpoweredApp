@@ -123,6 +123,9 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Support person database errors map to app codes (permission errors are `NOT_ALLOWED`, never `VALIDATION`) and have friendly messages | `errors.test.ts`; `messages.test.ts` | Unit | `unit-tests` |
 | The support person service sends the exact function arguments and maps rows, including patients with no appointments | `support-person.test.ts`; `src/features/support-person/mappers.test.ts` | Service, Unit | `unit-tests` |
 | The patient's Support persons list shows each invitation's status | `supportPerson.test.ts` (`invitationStatusLabel`); `mappers.test.ts` (status) | Unit | `unit-tests` |
+| Every icon, splash and favicon path in `app.json` exists, the iOS Icon Composer file is complete, and the app is named MPowered | `__tests__/unit/app-config-assets.test.ts` | Unit | `unit-tests` |
+| The welcome splash shows each greeting as one heading ("Welcome to MPowered"), the footer, and hides the decorative waves from screen readers | `src/components/splash/WelcomeSplash.test.tsx` | Screen | `unit-tests` |
+| Opening the app signed in shows "Welcome back to" for at least 3 s and until the profile loads, never when signing in, and not for a profile error or a missing profile | `startup.test.ts`; `useMinimumDuration.test.ts`; `__tests__/root-routing.test.tsx` | Unit, Screen | `unit-tests` |
 | No lint errors, no type errors | `npm run lint`, `npm run typecheck` | Static | `static-checks` |
 
 ## Not automated
@@ -149,6 +152,7 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The Settings screens (Account in both apps, Notifications, Privacy/Data and Legal), the share sheet for Export my data, and the account deletion popups: checked by hand with the same checklist.
 - The support person app's screens (requests, people you support, appointment plan, Add questions), the consent line and the hidden answer pen before consent, and the empty-condition layout: checked by hand with the two-account list in `docs/backend/support-person-backend-build-plan.md` step T7.
 - Two people editing the same plan at once: last save wins (not tested; `docs/support-person.md` section 5).
+- The app icons on the home screen (iOS glass, dark and tinted; Android masks and themed icons), the native splash and its fade into the welcome splash, and how the welcome splash looks: checked by hand on a preview build with the list in `docs/backend/app-icons-and-splash-plan.md` section 6.3 (Expo Go shows neither the icon nor the native splash).
 
 ## Not tested / deferred
 
