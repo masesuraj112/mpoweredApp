@@ -146,6 +146,9 @@ planReminders(input: {
 - `applyReminders(reminders)`: cancel the reminders this app scheduled, then schedule the list with `DATE`
   triggers. Returns `Result<void>`.
 - `cancelAllReminders()`.
+- `showRemindersWhileOpen()`: the notification handler (banner, list and sound while the app is open; no badge). Called once at start-up in N4.
+- Channels use `AndroidImportance.DEFAULT` (sound, no pop-over banner on Android). The app schedules nothing else, so
+  `applyReminders` cancels all scheduled notifications rather than tracking its own.
 - Takes the `expo-notifications` module as the last optional argument, so tests pass a fake (like the Supabase client).
 
 ### 4.3 Keeping reminders up to date: `ReminderSync`

@@ -12,6 +12,7 @@ module.exports = {
     'src/features/assessments/pain/messages.ts',
     'src/features/assessments/pain/summary.ts',
     'src/features/notifications/schedule.ts',
+    'src/services/notifications.ts',
     'src/features/notifications/messages.ts',
     'src/features/care-planner/appointmentDisplay.ts',
     'src/features/care-planner/planDisplay.ts',
