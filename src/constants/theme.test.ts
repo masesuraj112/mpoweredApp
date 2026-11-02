@@ -68,6 +68,11 @@ describe.each(['light', 'dark'] as const)('%s theme contrast (WCAG AA)', (scheme
     expect(contrast(c[fg], c[bg])).toBeGreaterThanOrEqual(min);
   });
 
+  // Not a WCAG rule (boxes are not controls), but a box must visibly stand apart from the page.
+  it.each(['surfaceContainer', 'secondaryContainer'] as const)('%s stands out from the background', (box) => {
+    expect(contrast(c[box], c.background)).toBeGreaterThanOrEqual(1.2);
+  });
+
   it('keeps white text readable across the whole brand gradient', () => {
     for (const stop of Gradients.brand) expect(contrast(c.onBrand, stop)).toBeGreaterThanOrEqual(TEXT);
   });
