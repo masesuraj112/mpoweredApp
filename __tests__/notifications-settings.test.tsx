@@ -13,7 +13,12 @@ const mockOpenSettings = jest.fn();
 let mockDenied = false;
 
 jest.mock('@/lib/supabase', () => ({ supabase: {} }));
-jest.mock('expo-router', () => ({ router: { back: jest.fn() }, useRouter: () => ({ back: jest.fn() }) }));
+jest.mock('expo-router', () => ({
+  router: { back: jest.fn() },
+  useRouter: () => ({ back: jest.fn() }),
+  // The page sets its title on the native header, which isn't part of these tests.
+  Stack: { Screen: () => null },
+}));
 jest.mock('@/features/settings/useNotificationSettings', () => ({
   useNotificationSettings: () => ({
     state: { status: 'ready' },

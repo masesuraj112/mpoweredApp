@@ -1,7 +1,7 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
+import { Stack } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
@@ -9,13 +9,20 @@ import { NativeSwitch } from '@/components/ui/NativeSwitch';
 import { Colors } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      {/* The whole page scrolls, so nothing is cut off on a small phone or with large text. */}
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>{title}</Text>
+    <>
+      {/* The page title lives in the native header (a large title on iOS, as in the Settings app). */}
+      <Stack.Screen options={{ title, headerLargeTitle: true }} />
+      {/* The whole page scrolls, so nothing is cut off on a small phone or with large text. The scroll view
+          sits under the native header, which sets its insets. */}
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+      >
         {children}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 
@@ -109,13 +116,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: Colors.light.surface,
-  },
-  title: {
-    marginBottom: scaleHeight(24),
-    color: Colors.light.text,
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleHeight(29),
   },
   content: {
     flexGrow: 1,

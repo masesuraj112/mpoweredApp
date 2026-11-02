@@ -1,14 +1,11 @@
-import { BackHeader } from '@/components/mpowered/BackHeader';
 import { Stack } from 'expo-router';
 
+import { Colors } from '@/constants/theme';
+
+// The platform's own header: each page sets its title (SettingsSubpage), and Back is labelled Settings.
 export default function SupportSettingsLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        header: ({ navigation }) => <BackHeader title="Settings" onBack={() => navigation.goBack()} />,
-      }}
-    >
+    <Stack screenOptions={{ headerTintColor: Colors.light.primary, headerBackTitle: 'Settings' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );

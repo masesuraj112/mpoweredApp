@@ -1,4 +1,3 @@
-import { BackHeader } from '@/components/mpowered/BackHeader';
 import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
 import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
 import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
@@ -12,7 +11,7 @@ import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
@@ -25,9 +24,9 @@ export default function PatientAppointmentsScreen() {
     <Stack.Screen
       options={{
         headerShown: true,
-        header: () => (
-          <BackHeader title={patient ? `${patient.name}’s Appointments` : 'Appointments'} onBack={() => router.back()} />
-        ),
+        title: patient ? `${patient.name}’s Appointments` : 'Appointments',
+        headerTintColor: Colors.light.primary,
+        headerBackTitle: 'Care Planner',
       }}
     />
   );
