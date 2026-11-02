@@ -105,7 +105,7 @@ const useStyles = makeStyles((colors) => ({
   },
   title: {
     flex: 1,
-    ...Typography.titleSmall,
+    ...Typography.display,
     color: colors.text,
   },
   printChip: {

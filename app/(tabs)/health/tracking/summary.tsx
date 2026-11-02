@@ -99,7 +99,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
   },
   title: {
-    ...Typography.title,
+    ...Typography.display,
     color: colors.text,
     marginTop: Spacing.three,
     marginHorizontal: Spacing.four,

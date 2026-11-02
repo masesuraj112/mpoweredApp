@@ -24,7 +24,7 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.three,
   },
   title: {
-    ...Typography.title,
+    ...Typography.display,
     letterSpacing: -0.48,
     color: colors.text,
   },

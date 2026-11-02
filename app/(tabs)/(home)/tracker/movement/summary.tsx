@@ -167,7 +167,7 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
 
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.three, backgroundColor: colors.surface },
-  heading: { marginLeft: Spacing.two, marginBottom: Spacing.two, color: colors.text, ...Typography.title },
+  heading: { marginLeft: Spacing.two, marginBottom: Spacing.two, color: colors.text, ...Typography.display },
   subheading: { marginHorizontal: Spacing.two, marginBottom: Spacing.three, color: colors.text, ...Typography.caption, letterSpacing: 0.4 },
   reportCard: { flex: 1, minHeight: 0, borderRadius: Radius.card, paddingHorizontal: Spacing.three, paddingTop: Spacing.three, paddingBottom: Spacing.two, backgroundColor: colors.surfaceContainer },
   reportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two, minHeight: 28 },

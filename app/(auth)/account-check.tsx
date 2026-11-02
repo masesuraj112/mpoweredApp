@@ -100,7 +100,7 @@ const useStyles = makeStyles((colors) => ({
     padding: Spacing.four,
   },
   title: {
-    ...Typography.title,
+    ...Typography.display,
     color: colors.onSurface,
   },
   body: {

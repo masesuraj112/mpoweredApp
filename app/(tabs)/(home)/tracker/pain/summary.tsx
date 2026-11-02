@@ -145,7 +145,7 @@ const useStyles = makeStyles((colors) => ({
   },
   heading: {
     color: colors.text,
-    ...Typography.title,
+    ...Typography.display,
     marginBottom: Spacing.one,
   },
   subheading: {

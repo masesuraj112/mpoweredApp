@@ -52,7 +52,7 @@ export default function HealthConditionsScreen() {
 
 const useStyles = makeStyles((colors) => ({
   container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, alignItems: 'center' },
-  title: { color: colors.text, ...Typography.titleSmall, textAlign: 'center', marginBottom: Spacing.five },
+  title: { color: colors.text, ...Typography.display, textAlign: 'center', marginBottom: Spacing.five },
   option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: Radius.card, paddingVertical: Spacing.three, alignItems: 'center', marginBottom: Spacing.two },
   optionSelected: { backgroundColor: colors.secondaryContainer },
   optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },

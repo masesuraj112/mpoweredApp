@@ -71,7 +71,7 @@ const useStyles = makeStyles((colors) => ({
     paddingBottom: Spacing.three,
   },
   pageTitle: {
-    ...Typography.title,
+    ...Typography.display,
     color: colors.text,
     marginLeft: Spacing.two,
     marginBottom: Spacing.three,

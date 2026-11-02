@@ -146,7 +146,7 @@ const useStyles = makeStyles((colors) => ({
     paddingBottom: Spacing.five,
   },
   pageTitle: {
-    ...Typography.title,
+    ...Typography.display,
     color: colors.text,
     marginTop: Spacing.four,
     marginHorizontal: Spacing.four,

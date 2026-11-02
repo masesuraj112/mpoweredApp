@@ -100,7 +100,7 @@ const useStyles = makeStyles((colors) => ({
   title: {
     flex: 1,
     color: colors.text,
-    ...Typography.title,
+    ...Typography.display,
     letterSpacing: -0.48,
   },
   empty: {

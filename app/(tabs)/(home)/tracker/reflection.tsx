@@ -172,7 +172,7 @@ const useStyles = makeStyles((colors) => ({
   heading: {
     marginBottom: Spacing.two,
     color: colors.text,
-    ...Typography.title,
+    ...Typography.display,
   },
   description: {
     marginBottom: Spacing.three,

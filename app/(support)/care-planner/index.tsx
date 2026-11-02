@@ -111,7 +111,7 @@ const useStyles = makeStyles((colors) => ({
     marginTop: Spacing.one,
     paddingHorizontal: Spacing.two,
     color: colors.text,
-    ...Typography.titleSmall,
+    ...Typography.display,
   },
   body: {
     paddingHorizontal: Spacing.two,

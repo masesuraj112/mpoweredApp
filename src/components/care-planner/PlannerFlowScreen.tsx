@@ -73,7 +73,7 @@ const useStyles = makeStyles((colors) => ({
     paddingBottom: Spacing.four,
   },
   title: {
-    ...Typography.titleSmall,
+    ...Typography.display,
     color: colors.text,
   },
   // Headings are already Sulphur Point Bold; a fontWeight on a custom font can lose the face on iOS.

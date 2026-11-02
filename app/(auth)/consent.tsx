@@ -42,7 +42,7 @@ const useStyles = makeStyles((colors) => ({
   },
   greeting: {
     color: colors.text,
-    ...Typography.title,
+    ...Typography.display,
     marginBottom: Spacing.three
   },
   body: {

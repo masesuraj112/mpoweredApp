@@ -99,7 +99,7 @@ const useStyles = makeStyles((colors) => ({
   },
   title: {
     color: colors.text,
-    ...Typography.title,
+    ...Typography.display,
   },
   titleDivider: {
     height: 1,

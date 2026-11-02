@@ -74,7 +74,7 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center'
   },
   title: { color: colors.text, 
-    ...Typography.title, 
+    ...Typography.display, 
     marginBottom: Spacing.five 
   },
   input: {

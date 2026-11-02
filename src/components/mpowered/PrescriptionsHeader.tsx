@@ -79,7 +79,7 @@ const useStyles = makeStyles((colors) => ({
   },
   title: {
     flexShrink: 1,
-    ...Typography.titleSmall,
+    ...Typography.display,
     color: colors.text,
   },
 }));

@@ -54,7 +54,7 @@ export default function OtherConditionsScreen() {
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1 },
   container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, paddingBottom: Spacing.six },
-  title: { color: colors.text, ...Typography.titleSmall, textAlign: 'center', marginBottom: Spacing.two },
+  title: { color: colors.text, ...Typography.display, textAlign: 'center', marginBottom: Spacing.two },
   subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: Spacing.four },
   input: { color: colors.text, backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall, marginBottom: 'auto' },
   continueButton: {

@@ -197,7 +197,7 @@ const useStyles = makeStyles((colors) => ({
   heading: {
     marginTop: Spacing.three,
     color: colors.onBrand,
-    ...Typography.titleSmall,
+    ...Typography.display,
   },
   description: {
     marginTop: Spacing.one,

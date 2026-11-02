@@ -3,7 +3,7 @@ import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constan
 /** Shared text and field styles for the sign-in and sign-up steps, so every step reads the same. */
 export const useAuthStyles = makeStyles((colors) => ({
   title: {
-    ...Typography.title,
+    ...Typography.display,
     color: colors.text,
     textAlign: 'center',
   },
