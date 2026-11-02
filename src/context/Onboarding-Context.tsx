@@ -2,6 +2,8 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 
 type Sex = 'female' | 'male' | 'prefer not to say' | null;
 type UserType = 'patient' | 'support-person' | null;
+/** Which button started the flow on the first screen: "Get started" or "Sign in". null before either is tapped. */
+export type AuthIntent = 'sign-up' | 'sign-in' | null;
 
 interface OnboardingData {
     name: string;
@@ -12,6 +14,7 @@ interface OnboardingData {
     conditions: string[];
     otherConditions: string;
     phoneNumber: string;
+    intent: AuthIntent;
 }
 
 interface OnboardingContextValue {
@@ -29,6 +32,7 @@ const initData: OnboardingData = {
     conditions: [],
     otherConditions: '',
     phoneNumber: '',
+    intent: null,
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | undefined> (undefined);
