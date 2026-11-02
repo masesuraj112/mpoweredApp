@@ -4,7 +4,7 @@ import { ScrollView, Text, View, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/ui/BackButton';
-import { ContentColumn, Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type PlannerFlowScreenProps = {
   title: string;
@@ -74,11 +74,10 @@ const useStyles = makeStyles((colors) => ({
   },
   title: {
     ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
     color: colors.text,
   },
+  // Headings are already Sulphur Point Bold; a fontWeight on a custom font can lose the face on iOS.
   titleBold: {
     color: colors.text,
-    fontWeight: '700',
   },
 }));

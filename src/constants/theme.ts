@@ -159,12 +159,11 @@ export const Gradients = {
 } as const;
 
 /**
- * Headings use Sulphur Point (loaded in app/_layout.tsx); all other text uses the device's own font. A
- * custom font carries its weight in the family name, so heading styles set no `fontWeight`.
+ * Headings use Sulphur Point Bold (loaded in app/_layout.tsx); all other text uses the device's own font.
+ * A custom font carries its weight in the family name, so heading styles set no `fontWeight`.
  */
 export const Fonts = {
   heading: 'SulphurPoint_700Bold',
-  headingRegular: 'SulphurPoint_400Regular',
 } as const;
 
 /** Spread into a native Stack's screen options so header titles use the heading font too. */

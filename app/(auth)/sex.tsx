@@ -1,15 +1,9 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { router } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Pressable, Text, View } from 'react-native';
 
-
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
   { label: 'Male', value: 'male' as const },
@@ -38,12 +32,13 @@ export default function SexScreen() {
           <Text style={styles.optionText}>{opt.label}</Text>
         </Pressable>
       ))}
-    <Button
-      label="Continue"
-      variant="primary"
-      onPress={handleContinue}
-      disabled={!selected}
-    />
+    <Pressable
+        disabled={!selected}
+        style={[styles.continueButton, !selected && styles.continueButtonDisabled]}
+        onPress={handleContinue}
+    >
+  <Text style={[styles.continueText, !selected && styles.continueTextDisabled]}>Continue</Text>
+    </Pressable>
       <Text style={styles.tip}>💡 Research shows that people may experience pain differently depending on their sex</Text>
     </View>
   );
@@ -55,5 +50,9 @@ const useStyles = makeStyles((colors) => ({
   option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: Radius.card, paddingVertical: Spacing.three, alignItems: 'center', marginBottom: Spacing.two },
   optionSelected: { backgroundColor: colors.secondaryContainer },
   optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },
+  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: Spacing.three, borderRadius: Radius.control, alignItems: 'center', marginTop: Spacing.three, minHeight: MinTapTarget },
+  continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
+  continueText: { color: colors.onPrimary, fontWeight: '700', ...Typography.bodyLarge },
+  continueTextDisabled: { color: colors.primary },
   tip: { textAlign: 'center', color: colors.textSubtle, marginTop: Spacing.five, ...Typography.caption, paddingHorizontal: Spacing.three },
 }));

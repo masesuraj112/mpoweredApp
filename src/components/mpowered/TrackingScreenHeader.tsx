@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { Fonts, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
@@ -86,7 +86,6 @@ const useStyles = makeStyles((colors) => ({
   },
   backChevron: {
     ...Typography.title,
-    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
     marginRight: Spacing.half,
     marginTop: -Spacing.half,

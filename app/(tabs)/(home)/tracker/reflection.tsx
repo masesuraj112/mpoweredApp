@@ -1,11 +1,7 @@
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
-
 import { getWeeklyReflection, saveWeeklyReflection } from '@/services/home';
-
 import { router, useFocusEffect } from 'expo-router';
-
 import { useCallback, useState } from 'react';
-
 import {
   ActivityIndicator,
   Pressable,
@@ -13,13 +9,9 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
-import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -129,13 +121,21 @@ export default function ReflectionScreen() {
 
         {error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
 
-        <Button
-          label={isSaving ? 'Saving…' : isComplete ? 'Save changes' : 'Save reflection'}
-          variant="primary"
-          onPress={save}
-          disabled={isLoading || isSaving || !reflection.trim()}
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel={isComplete ? 'Save changes' : 'Save reflection'}
-        />
+          disabled={isLoading || isSaving || !reflection.trim()}
+          onPress={save}
+          style={({ pressed }) => [
+            styles.saveButton,
+            (isLoading || isSaving || !reflection.trim()) && styles.saveButtonDisabled,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Text style={styles.saveButtonText}>
+            {isSaving ? 'Saving…' : isComplete ? 'Save changes' : 'Save reflection'}
+          </Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -164,7 +164,6 @@ const useStyles = makeStyles((colors) => ({
     marginRight: Spacing.two,
     color: colors.textSecondary,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
   },
   backText: {
     color: colors.textSecondary,
@@ -197,6 +196,22 @@ const useStyles = makeStyles((colors) => ({
     marginTop: Spacing.two,
     color: colors.error,
     ...Typography.caption,
+  },
+  saveButton: {
+    minHeight: MinTapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.three,
+    borderRadius: Radius.control,
+    backgroundColor: colors.primary,
+  },
+  saveButtonDisabled: {
+    opacity: 0.5,
+  },
+  saveButtonText: {
+    color: colors.onPrimary,
+    ...Typography.bodySmall,
+    fontWeight: '600',
   },
   pressed: {
     opacity: 0.8,

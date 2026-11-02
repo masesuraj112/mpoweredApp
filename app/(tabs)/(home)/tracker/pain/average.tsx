@@ -6,8 +6,8 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
-import { Fonts, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { Keyboard, Pressable, Text } from 'react-native';
+import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
@@ -78,7 +78,6 @@ const useStyles = makeStyles((colors) => ({
   cardTitle: {
       color: colors.text,
       ...Typography.headline,
-      fontFamily: Fonts.headingRegular,
       marginBottom: Spacing.three
   },
 }));

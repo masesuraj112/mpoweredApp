@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import type { ProfileSection } from '@/features/health-profile/profile';
 
-import { Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface ProfileSectionCardProps {
   section: ProfileSection;
   /** Shows the week the answers come from under the title */
@@ -65,7 +65,6 @@ const useStyles = makeStyles((colors) => ({
   cardTitle: {
     flexShrink: 1,
     ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
     color: colors.text,
   },
   incompleteBadge: {

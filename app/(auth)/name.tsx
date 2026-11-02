@@ -1,17 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-
 import { router } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const isValidName = (value: string) =>
   /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(value.trim());
 
@@ -58,11 +51,12 @@ export default function NameScreen() {
           </Text>
         )}
         <Text style={styles.subtext}>Your health and wellbeing is uniquely YOU!</Text>
-        <Button
-          label="Continue"
-          variant="primary"
+        <Pressable
           onPress={handleContinue}
-        />
+          style={[styles.continueButton, !hasName && styles.continueButtonDisabled]}
+        >
+          <Text style={styles.continueText}>Continue</Text>
+        </Pressable>
         <Text style={styles.footnote}>By having your name, we will know how to address you :)</Text>
       </KeyboardAvoidingView>
     </Pressable>
@@ -105,6 +99,22 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.four,
     color: colors.text
   },
+  continueButton: {
+    backgroundColor: colors.primary,
+    width: '100%',
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    minHeight: MinTapTarget
+  },
+  continueButtonDisabled: {
+    backgroundColor: colors.secondaryContainer
+  },
+  continueText: {
+    color: colors.onPrimary,
+    fontWeight: '600',
+    ...Typography.bodyLarge }
+    ,
   footnote: { 
     textAlign: 'center',
     color: colors.textSubtle,

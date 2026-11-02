@@ -1,36 +1,22 @@
 import { Image } from 'expo-image';
-
 import { router } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
-
 import { ErrorState } from '@/components/ui/ErrorState';
-
 import { LoadingState } from '@/components/ui/LoadingState';
-
 import { healthLoadMessage } from '@/features/health-profile/messages';
-
 import {
   formatFrequency,
   formatPrescriptionName,
   prescriptionErrorMessage,
   type Prescription,
 } from '@/features/health-profile/prescriptions';
-
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
-
 import { deletePrescription, getPrescriptions } from '@/services/health';
 
-
-import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -101,11 +87,12 @@ export default function PrescriptionsScreen() {
               <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" />
             </View>
             <Text style={styles.emptyText}>Prescriptions list is empty</Text>
-            <Button
-              label="Add prescription"
-              variant="primary"
+            <Pressable
+              style={styles.addButton}
               onPress={() => router.push('/health/prescriptions/add')}
-            />
+            >
+              <Text style={styles.addButtonText}>Add prescription</Text>
+            </Pressable>
           </View>
         ) : (
           <>
@@ -144,11 +131,12 @@ export default function PrescriptionsScreen() {
               </View>
             </View>
 
-            <Button
-              label="Add prescriptions"
-              variant="primary"
+            <Pressable
+              style={styles.addPrescriptionsButton}
               onPress={() => router.push('/health/prescriptions/add')}
-            />
+            >
+              <Text style={styles.addPrescriptionsButtonText}>Add prescriptions</Text>
+            </Pressable>
           </>
         )}
       </ScrollView>
@@ -188,6 +176,22 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSubtle,
     textAlign: 'center',
     marginBottom: Spacing.four,
+  },
+  addButton: {
+    width: 172,
+    backgroundColor: colors.background,
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.three,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
+  },
+  addButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    letterSpacing: 0.1,
+    color: colors.text,
   },
   listFrame: {
     marginHorizontal: Spacing.four,
@@ -235,5 +239,19 @@ const useStyles = makeStyles((colors) => ({
   icon: {
     width: 24,
     height: 24,
+  },
+  addPrescriptionsButton: {
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
+    backgroundColor: colors.primary,
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+    minHeight: MinTapTarget,
+  },
+  addPrescriptionsButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    color: colors.onPrimary,
   },
 }));

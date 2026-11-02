@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ContentColumn, Fonts, Gradients, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, Gradients, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 type Assessment = {
   id: WeeklyAssessmentId;
@@ -323,7 +323,6 @@ const useStyles = makeStyles((colors) => ({
   plus: {
     color: colors.primaryDeep,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
   },
   reflectionText: {
     color: colors.text,

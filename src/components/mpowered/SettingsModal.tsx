@@ -1,15 +1,9 @@
 import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-
 import { Image } from 'expo-image';
-
 import { Children, Fragment, ReactNode, useState } from 'react';
-
 import { Keyboard, Modal, Pressable, ScrollView, Text, TextInput, TextInputProps, View } from 'react-native';
 
-
-import { Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
 /* -------------------------------------------------------------------------- */
@@ -88,20 +82,25 @@ export function SettingsModal({
           )}
           <View style={styles.actions}>
             {!hideCancel && (
-              <Button
-                label={cancelLabel}
-                variant="outlined"
+              <Pressable
                 onPress={onClose}
+                accessibilityRole="button"
                 accessibilityLabel={cancelLabel}
-              />
+                style={styles.cancelButton}
+              >
+                <Text style={styles.cancelText}>{cancelLabel}</Text>
+              </Pressable>
             )}
-            <Button
-              label={confirmLabel}
-              variant="primary"
+            <Pressable
               onPress={onConfirm ?? onClose}
               disabled={confirmDisabled}
+              accessibilityRole="button"
               accessibilityLabel={confirmLabel}
-            />
+              accessibilityState={{ disabled: confirmDisabled }}
+              style={[styles.confirmButton, confirmDisabled && styles.confirmButtonDisabled]}
+            >
+              <Text style={styles.confirmText}>{confirmLabel}</Text>
+            </Pressable>
           </View>
         </Pressable>
       </View>
@@ -344,6 +343,34 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.four,
     marginTop: Spacing.one,
   },
+  cancelButton: {
+    minWidth: 54,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelText: {
+    color: colors.primary,
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
+  confirmButton: {
+    width: 105,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.control,
+    backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
+  },
+  confirmButtonDisabled: {
+    opacity: 0.5,
+  },
+  confirmText: {
+    color: colors.onPrimary,
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
 
   // Text field
   field: {
@@ -441,6 +468,5 @@ const useStyles = makeStyles((colors) => ({
   inlineLabel: {
     color: colors.text,
     ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
   },
 }));

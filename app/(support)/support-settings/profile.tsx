@@ -5,25 +5,15 @@ import {
   SettingsModalInfoRow,
   SettingsModalText,
 } from '@/components/mpowered/SettingsModal';
-
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
-
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
-
 import { formatForDisplay } from '@/features/auth/phone';
-
 import { signOut } from '@/services/auth';
-
 import { updateProfile } from '@/services/profile';
-
 import { NAME_MAX_LENGTH } from '@/services/validation';
-
 import { useState } from 'react';
-
-import { Alert } from 'react-native';
-import { Button } from '@/components/ui/Button';
-
+import { Alert, Pressable, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 
@@ -72,11 +62,9 @@ export default function SupportAccountScreen() {
   return (
     <SettingsSubpage title="Account">
       <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
-      <Button
-        label="Sign out"
-        variant="outlined"
-        onPress={handleSignOut}
-      />
+      <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
+        <Text style={styles.signOutText}>Sign out</Text>
+      </Pressable>
 
       <SettingsModal
         visible={isPersonalDetailsOpen}
@@ -112,4 +100,17 @@ export default function SupportAccountScreen() {
 
 // Same as the Sign out button on the patient's Account page.
 const useStyles = makeStyles((colors) => ({
+  signOutButton: {
+    marginTop: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.control,
+    backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
+  },
+  signOutText: {
+    color: colors.onPrimary,
+    ...Typography.titleSmall,
+  },
 }));

@@ -6,7 +6,7 @@ import { Text } from 'react-native';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { BrandText } from '@/components/brand/BrandText';
 import { Button } from '@/components/ui/Button';
-import { Fonts, Typography, makeStyles } from '@/constants/theme';
+import { Typography, makeStyles } from '@/constants/theme';
 
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
@@ -81,7 +81,6 @@ const useStyles = makeStyles((colors) => ({
   },
   message: {
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
     color: colors.text,
     textAlign: 'center',
   },

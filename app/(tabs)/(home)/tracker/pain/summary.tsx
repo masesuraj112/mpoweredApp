@@ -5,7 +5,7 @@ import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain
 import { getPainEntryForWeek } from '@/services/assessments';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 interface PainSummaryProps {
   summary: PainSummaryData;
   onClose?: () => void;
@@ -175,7 +175,6 @@ const useStyles = makeStyles((colors) => ({
   cardTitle: {
     color: colors.text,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
   },
   periodText: {
     color: colors.text,

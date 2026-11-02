@@ -1,14 +1,14 @@
 import { ReactNode } from 'react';
 import {
     Keyboard,
+    Pressable,
     StyleProp,
     Text,
     View,
     ViewStyle,
 } from 'react-native';
 
-import { Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 interface ChoiceCardProps {
   title: string;
   /** Pass a string or nested `<Text>` elements */
@@ -142,34 +142,67 @@ export function ChoiceCard({
             <View style={footerStyles.navigationGroup}>
               {/* First steps omit Previous when no previous route is provided. */}
               {(!isFlowAssessment || onPrevious) && (
-                <Button
-                  label="Prev"
-                  leadingGlyph="←"
-                  accessibilityLabel="Previous"
-                  variant="outlined"
+                <Pressable
                   onPress={handlePrevious}
                   disabled={previousDisabled || !onPrevious}
-                />
+                  accessibilityRole="button"
+                  accessibilityLabel="Previous"
+                  accessibilityState={{ disabled: previousDisabled || !onPrevious }}
+                  style={[footerStyles.navigationButton, (previousDisabled || !onPrevious) && footerStyles.buttonDisabled]}
+                >
+                  <Text style={footerStyles.navigationButtonText}>← Prev</Text>
+                </Pressable>
               )}
-              <Button
-                label={isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
-                trailingGlyph={isLastQuestion ? undefined : '→'}
-                variant="primary"
+              <Pressable
                 onPress={handleRecord}
                 disabled={disabled || isRecording || !onRecord}
-              />
+                accessibilityRole="button"
+                accessibilityLabel={isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
+                accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
+                style={[
+                  footerStyles.navigationButton,
+                  (disabled || isRecording || !onRecord) &&
+                    footerStyles.disabledNavigationButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    footerStyles.nextButtonText,
+                    (disabled || isRecording || !onRecord) &&
+                      footerStyles.disabledNavigationButtonText,
+                  ]}
+                >
+                  {isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
+                </Text>
+              </Pressable>
             </View>
           )}
 
           {showRecord && (
-            <Button
-              label={isRecording ? 'Recording…' : 'Record'}
-              trailingGlyph={isRecording ? undefined : '→'}
-              accessibilityLabel="Record answer"
-              variant="primary"
+            <Pressable
               onPress={handleRecord}
               disabled={disabled || isRecording}
-            />
+              accessibilityRole="button"
+              accessibilityLabel="Record answer"
+              accessibilityState={{ disabled: disabled || isRecording }}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={({ pressed }) => [
+                footerStyles.pill,
+                footerStyles.recordButton,
+                isAssessment && footerStyles.painTrackerRecordButton,
+                pressed && footerStyles.recordButtonPressed,
+                (disabled || isRecording) && footerStyles.buttonDisabled,
+              ]}
+            >
+              <Text style={[footerStyles.pillText, isAssessment && footerStyles.painTrackerRecordText]}>
+                {isRecording ? 'Recording...' : 'Record'}
+              </Text>
+              {!isRecording && (
+                <Text style={[footerStyles.arrow, isAssessment && footerStyles.painTrackerRecordText]}>
+                  →
+                </Text>
+              )}
+            </Pressable>
           )}
         </View>
       )}
@@ -188,7 +221,6 @@ const useStyles = makeStyles((colors) => ({
   titleText: {
     color: colors.text,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
     marginBottom: Spacing.three,
   },
   divider: {
@@ -241,7 +273,6 @@ const useStyles = makeStyles((colors) => ({
   painTrackerTitle: {
     color: colors.text,
     ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
     marginBottom: Spacing.two,
   },
   personalCareTitle: {
@@ -299,6 +330,29 @@ const useFooterStyles = makeStyles((colors) => ({
     alignItems: 'center',
     gap: Spacing.three,
   },
+  navigationButton: {
+    width: 105,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.three,
+    backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
+  },
+  navigationButtonText: {
+    color: colors.onPrimary,
+    ...Typography.bodySmall,
+    fontWeight: '500',
+  },
+  nextButton: {
+    backgroundColor: colors.primary,
+  },
+  nextButtonText: {
+    color: colors.onPrimary,
+    ...Typography.bodySmall,
+    fontWeight: '500',
+  },
   pill: {
     borderRadius: Radius.pill,
     paddingVertical: Spacing.two,
@@ -308,6 +362,20 @@ const useFooterStyles = makeStyles((colors) => ({
     justifyContent: 'center',
     backgroundColor: colors.surfaceContainer,
   },
+  recordButton: {
+    gap: Spacing.two,
+  },
+  recordButtonPressed: {
+    backgroundColor: colors.background,
+  },
+  painTrackerRecordButton: {
+    width: 105,
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    backgroundColor: colors.primary,
+    minHeight: MinTapTarget,
+  },
   painTrackerPager: {
     width: 54,
     height: 31,
@@ -315,12 +383,31 @@ const useFooterStyles = makeStyles((colors) => ({
     paddingVertical: 0,
     paddingHorizontal: 0,
   },
+  painTrackerRecordText: {
+    ...Typography.bodySmall,
+    fontWeight: '500',
+    color: colors.onPrimary,
+  },
   personalCarePagerText: {
     ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.textSecondary,
   },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  disabledNavigationButton: {
+    backgroundColor: colors.secondaryContainer,
+  },
+  disabledNavigationButtonText: {
+    color: colors.textSecondary,
+  },
   pillText: {
+    ...Typography.subtitle,
+    fontWeight: '400',
+    color: colors.text,
+  },
+  arrow: {
     ...Typography.subtitle,
     fontWeight: '400',
     color: colors.text,

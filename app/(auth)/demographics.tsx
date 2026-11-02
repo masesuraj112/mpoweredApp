@@ -1,17 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-
 import { router } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 export default function DemographicsScreen() {
   const styles = useStyles();
   const { data, updateData } = useOnboarding();
@@ -49,11 +42,9 @@ export default function DemographicsScreen() {
           style={styles.input}
         />
         {doneBar.bar}
-        <Button
-          label="Continue"
-          variant="primary"
-          onPress={handleContinue}
-        />
+        <Pressable style={styles.continueButton} onPress={handleContinue}>
+          <Text style={styles.continueText}>Continue</Text>
+        </Pressable>
         <Text style={styles.tip}>💡 Research shows that people can feel pain differently depending on their age</Text>
       </KeyboardAvoidingView>
     </Pressable>
@@ -88,6 +79,19 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.bodyLarge,
     textAlign: 'center',
     marginBottom: Spacing.five
+  },
+  continueButton: {
+    backgroundColor: colors.primary,
+    width: '100%',
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    minHeight: MinTapTarget
+  },
+  continueText: {
+    color: colors.onPrimary,
+    fontWeight: '600',
+    ...Typography.bodyLarge
   },
   tip: {
     textAlign: 'center',

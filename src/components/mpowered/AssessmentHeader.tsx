@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-import { Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export function AssessmentHeader() {
   const styles = useStyles();
   return (
@@ -37,7 +37,6 @@ const useStyles = makeStyles((colors) => ({
   },
   backArrow: {
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
     marginRight: Spacing.two,
   },

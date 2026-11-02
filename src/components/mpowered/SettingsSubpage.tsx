@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
-import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
   return (
@@ -148,12 +148,10 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     color: colors.text,
     ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
   },
   optionArrow: {
     color: colors.text,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
   },
   destructiveText: {
     color: colors.error,

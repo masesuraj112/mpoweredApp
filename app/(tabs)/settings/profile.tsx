@@ -5,33 +5,20 @@ import {
   SettingsModalInfoRow,
   SettingsModalText,
 } from '@/components/mpowered/SettingsModal';
-
 // Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
 // import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
-
 import { ErrorState } from '@/components/ui/ErrorState';
-
 import { LoadingState } from '@/components/ui/LoadingState';
-
 import { useAuth } from '@/context/AuthContext';
-
 import { formatForDisplay } from '@/features/auth/phone';
-
 import { usePersonalDetails } from '@/features/settings/usePersonalDetails';
-
 import { signOut } from '@/services/auth';
-
 import { NAME_MAX_LENGTH } from '@/services/validation';
-
 import { useState } from 'react';
+import { Alert, Pressable, Text } from 'react-native';
 
-import { Alert } from 'react-native';
-
-import { makeStyles } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
@@ -99,11 +86,9 @@ export default function ProfileScreen() {
         label="Enable FaceID"
         trailing={<SettingsToggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />}
       /> */}
-      <Button
-        label="Sign out"
-        variant="outlined"
-        onPress={handleSignOut}
-      />
+      <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
+        <Text style={styles.signOutText}>Sign out</Text>
+      </Pressable>
 
       <SettingsModal
         visible={isPersonalDetailsOpen}
@@ -142,4 +127,17 @@ export default function ProfileScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
+  signOutButton: {
+    marginTop: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.control,
+    backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
+  },
+  signOutText: {
+    color: colors.onPrimary,
+    ...Typography.titleSmall,
+  },
 }));

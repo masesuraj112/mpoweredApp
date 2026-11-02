@@ -15,8 +15,8 @@ jest.mock('expo-notifications', () => ({
 }));
 
 // @expo/ui draws real SwiftUI / Compose views, which Jest can't render or tap. Stand in plain React Native
-// views that behave the same: a Host that passes its props through, and a Switch and Button that respond
-// to presses and carry their name and state for screen readers (as the native ones do).
+// views that behave the same: a Host that passes its props through, and a Switch that toggles when
+// pressed and carries its name and state for screen readers (as the native one does).
 jest.mock('@expo/ui', () => {
   const React = require('react');
   const { Pressable, View } = require('react-native');
@@ -32,22 +32,6 @@ jest.mock('@expo/ui', () => {
         testID,
         onPress: () => onValueChange(!value),
       }),
-    // A button named by its accessibilityLabel modifier when there is one (as VoiceOver hears it), else its text.
-    Button: ({ label, onPress, disabled, modifiers = [] }) => {
-      const { Text } = require('react-native');
-      const named = modifiers.find((modifier) => modifier.$type === 'accessibilityLabel');
-      return React.createElement(
-        Pressable,
-        {
-          accessibilityRole: 'button',
-          accessibilityLabel: named ? named.label : label,
-          accessibilityState: { disabled: !!disabled },
-          disabled,
-          onPress,
-        },
-        React.createElement(Text, null, label),
-      );
-    },
     // A menu picker: one pressable per option, so a test can choose one by its label.
     Picker: Object.assign(
       ({ selectedValue, onValueChange, children }) =>

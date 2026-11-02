@@ -13,7 +13,7 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 
-import { ContentColumn, Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
@@ -89,7 +89,6 @@ const useStyles = makeStyles((colors) => ({
   },
   backChevron: {
     ...Typography.title,
-    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
     marginRight: Spacing.half,
     marginTop: -Spacing.half,

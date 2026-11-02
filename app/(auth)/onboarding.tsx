@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 
-import { Button } from '@/components/ui/Button';
 import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 const SLIDES = [
@@ -96,15 +95,16 @@ export default function OnboardingCarousel() {
 
       {/* Remember which one was tapped: after the code, the app checks it against the account (sign-up-sign-in-plan.md). */}
       <View style={styles.actions}>
-        <Button
-          label="Get started"
-          trailingGlyph="→"
-          variant="primary"
+        <Pressable
+          accessibilityRole="button"
+          style={styles.primaryButton}
           onPress={() => {
             updateData({ intent: 'sign-up' });
             router.push('/(auth)/user-type');
           }}
-        />
+        >
+          <Text style={styles.primaryButtonText}>Get started →</Text>
+        </Pressable>
         <Pressable
           accessibilityRole="button"
           style={styles.signInButton}
@@ -175,6 +175,20 @@ const useStyles = makeStyles((colors) => ({
     actions: {
         ...ContentColumn,
         paddingHorizontal: Spacing.four,
+    },
+
+    primaryButton: {
+        backgroundColor: colors.primary,
+        paddingVertical: Spacing.three,
+        borderRadius: Radius.control,
+        alignItems: 'center',
+        minHeight: MinTapTarget,
+    },
+
+    primaryButtonText: {
+        color: colors.onPrimary,
+        fontWeight: '600',
+        ...Typography.bodyLarge,
     },
 
     signInButton: {

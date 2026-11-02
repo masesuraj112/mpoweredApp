@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
   title: string;
   /** Optional label shown on the right of the top bar, e.g. "Homescreen" */
@@ -61,7 +61,6 @@ const useStyles = makeStyles((colors) => ({
   },
   backChevron: {
     ...Typography.title,
-    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
     marginRight: Spacing.half,
     marginTop: -Spacing.half,

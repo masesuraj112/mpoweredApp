@@ -1,12 +1,8 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { router } from 'expo-router';
+import { Linking, Pressable, Text, View } from 'react-native';
 
-import { Linking, Text, View } from 'react-native';
-
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 // TODO: confirm final URLs with the team before shipping
 const TERMS_URL = 'https://mpowered.example/terms';
 const PRIVACY_URL = 'https://mpowered.example/privacy';
@@ -24,11 +20,9 @@ export default function ConsentScreen() {
       <Text style={styles.greeting}>Hello {data.name || 'there'} 👋</Text>
       <Text style={styles.body}>A few quick questions so we can make things more relevant for you</Text>
 
-      <Button
-        label="Continue"
-        variant="primary"
-        onPress={handleContinue}
-      />
+      <Pressable style={styles.continueButton} onPress={handleContinue}>
+        <Text style={styles.continueText}>Continue</Text>
+      </Pressable>
 
       <Text style={styles.legal}>
         By continuing you agree to MPowered&apos;s{' '}
@@ -55,6 +49,19 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
     ...Typography.titleSmall,
     marginBottom: Spacing.five
+  },
+  continueButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    marginBottom: Spacing.four,
+    minHeight: MinTapTarget
+  },
+  continueText: {
+    color: colors.onPrimary,
+    fontWeight: '600',
+    ...Typography.bodyLarge
   },
   legal: {
     color: colors.text,

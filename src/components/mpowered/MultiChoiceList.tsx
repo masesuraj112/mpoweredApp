@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { SearchBar } from './SearchBar';
 
-import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
@@ -298,7 +298,6 @@ const useStyles = makeStyles((colors) => ({
   selectedChipClose: {
     color: colors.textSecondary,
     ...Typography.title,
-    fontFamily: Fonts.headingRegular,
   },
   painTrackerOptionsBox: {
     flex: 1,

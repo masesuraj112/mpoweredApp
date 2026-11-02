@@ -1,17 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { router } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Pressable, Text, View } from 'react-native';
 
-
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
-
-import { Button } from '@/components/ui/Button';
-
 export default function HealthConditionsScreen() {
   const styles = useStyles();
   const { data, updateData } = useOnboarding();
@@ -46,12 +39,13 @@ export default function HealthConditionsScreen() {
       <BrandText style={styles.helperText}>
         {'No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you :)'}
       </BrandText>
-      <Button
-        label="Continue"
-        variant="primary"
-        onPress={handleContinue}
+      <Pressable
         disabled={selected === null}
-      />
+        style={[styles.continueButton, selected === null && styles.continueButtonDisabled]}
+        onPress={handleContinue}
+      >
+        <Text style={[styles.continueText, selected === null && styles.continueTextDisabled]}>Continue</Text>
+      </Pressable>
     </View>
   );
 }
@@ -63,4 +57,8 @@ const useStyles = makeStyles((colors) => ({
   optionSelected: { backgroundColor: colors.secondaryContainer },
   optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },
   helperText: { color: colors.text, textAlign: 'center', marginTop: Spacing.four, marginBottom: Spacing.five, ...Typography.bodySmall },
+  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: Spacing.three, borderRadius: Radius.control, alignItems: 'center', minHeight: MinTapTarget },
+  continueText: { color: colors.onPrimary, fontWeight: '700', ...Typography.bodyLarge },
+  continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
+  continueTextDisabled: { color: colors.primary },
 }));

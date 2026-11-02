@@ -1,17 +1,10 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
-
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-
 import { router, useLocalSearchParams } from 'expo-router';
-
 import { useState } from 'react';
-
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-
-import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function OtherConditionsScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -50,11 +43,9 @@ export default function OtherConditionsScreen() {
           style={styles.input}
         />
         {doneBar.bar}
-        <Button
-          label="Continue"
-          variant="primary"
-          onPress={handleContinue}
-        />
+        <Pressable style={styles.continueButton} onPress={handleContinue}>
+          <Text style={styles.continueText}>Continue</Text>
+        </Pressable>
       </KeyboardAvoidingView>
     </Pressable>
   );
@@ -66,4 +57,6 @@ const useStyles = makeStyles((colors) => ({
   title: { color: colors.text, ...Typography.titleSmall, textAlign: 'center', marginBottom: Spacing.two },
   subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: Spacing.four },
   input: { color: colors.text, backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall, marginBottom: 'auto' },
+  continueButton: { backgroundColor: colors.primary, width: '100%', maxWidth: 306, borderRadius: Radius.control, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: Spacing.five, paddingVertical: Spacing.three, minHeight: MinTapTarget },
+  continueText: { color: colors.onPrimary, fontWeight: '600', ...Typography.bodySmall },
 }));

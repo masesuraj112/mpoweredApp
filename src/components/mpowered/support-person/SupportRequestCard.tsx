@@ -1,7 +1,5 @@
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
-import { Text, View } from 'react-native';
-import { Button } from '@/components/ui/Button';
-
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { Pressable, Text, View } from 'react-native';
 
 type SupportRequestCardProps = {
   patientName: string;
@@ -16,18 +14,22 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
     <View style={styles.card}>
       <Text style={styles.message}>{patientName} has added you as a support person</Text>
       <View style={styles.buttons}>
-        <Button
-          label="Reject"
-          variant="outlined"
+        <Pressable
           onPress={onReject}
+          accessibilityRole="button"
           accessibilityLabel={`Reject request from ${patientName}`}
-        />
-        <Button
-          label="Accept"
-          variant="primary"
+          style={({ pressed }) => [styles.button, styles.reject, pressed && styles.pressed]}
+        >
+          <Text style={[styles.buttonText, styles.rejectText]}>Reject</Text>
+        </Pressable>
+        <Pressable
           onPress={onAccept}
+          accessibilityRole="button"
           accessibilityLabel={`Accept request from ${patientName}`}
-        />
+          style={({ pressed }) => [styles.button, styles.accept, pressed && styles.pressed]}
+        >
+          <Text style={[styles.buttonText, styles.acceptText]}>Accept</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -52,5 +54,36 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     gap: Spacing.four,
     paddingHorizontal: Spacing.one,
+  },
+  button: {
+    flex: 1,
+    minHeight: MinTapTarget,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.control,
+    backgroundColor: colors.surfaceContainer,
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+  reject: {
+    backgroundColor: colors.primaryContainer,
+  },
+  accept: {
+    backgroundColor: colors.primary,
+  },
+  buttonText: {
+    color: colors.text,
+    ...Typography.bodySmall,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+  },
+  rejectText: {
+    color: colors.text,
+  },
+  acceptText: {
+    color: colors.onPrimary,
   },
 }));
