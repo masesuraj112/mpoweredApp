@@ -267,7 +267,7 @@ Avoid `npm run format`: it runs Prettier over the whole repository, and the repo
 | [docs/backend/production-auth-checklist.md](docs/backend/production-auth-checklist.md) | What to set up on the production Supabase project before real users sign in |
 | [docs/backend/sms-setup.md](docs/backend/sms-setup.md) | How SMS sign-in codes are set up with Twilio, and how to move to the client's own account |
 | [docs/backend/testing-and-cicd.md](docs/backend/testing-and-cicd.md) | The testing and CI/CD design, including database deployment |
-| [docs/settings-backend.md](docs/settings-backend.md), [docs/support-person.md](docs/support-person.md) | How the Settings and support-person features work |
+| [docs/backend/settings-backend.md](docs/backend/settings-backend.md), [docs/backend/support-person.md](docs/backend/support-person.md) | How the Settings and support-person features work |
 | [docs/deployment/client-signoff.md](docs/deployment/client-signoff.md) | Questions about delivery and ownership still to be agreed with the client |
 
 The remaining files in `docs/backend/` (the login, Care Planner and support-person build plans, the Twilio integration guide, the progress trackers and the stub inventory) record how the back end was built and the decisions made along the way. Read them for history and reasoning, not as instructions for new work. `AGENTS.md` and `CLAUDE.md` hold the project's coding rules.
