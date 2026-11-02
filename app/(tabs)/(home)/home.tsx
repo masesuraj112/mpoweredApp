@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors, Gradients } from '@/constants/theme';
+import { BrandText } from '@/components/brand/BrandText';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -63,12 +64,10 @@ export default function HomeScreen() {
         <LinearGradient colors={Gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
           <View style={styles.intro}>
             <Text style={styles.greeting}>{getGreeting(name)}</Text>
-            <Text style={styles.heading}>
-              Let&apos;s build your MPowered plan.
-            </Text>
-            <Text style={styles.description}>
-              Assess your pain intensity and its impacts weekly to obtain your MPowered plan.
-            </Text>
+            <BrandText style={styles.heading}>{'Let’s build your MPowered plan.'}</BrandText>
+            <BrandText style={styles.description}>
+              {'Assess your pain intensity and its impacts weekly to obtain your MPowered plan.'}
+            </BrandText>
           </View>
 
           <View

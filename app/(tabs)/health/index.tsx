@@ -13,6 +13,7 @@ import { getAssessments, getPainEntries } from '@/services/health';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 import { Colors } from '@/constants/theme';
+import { BrandText } from '@/components/brand/BrandText';
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
 
 const TREND_WEEKS = 6;
@@ -59,7 +60,7 @@ export default function HealthScreen() {
           style={styles.profileCard}
           onPress={() => router.push('/health/pain-profile')}
         >
-          <Text style={styles.profileTitle}>{profileTitle}</Text>
+          <BrandText style={styles.profileTitle}>{profileTitle}</BrandText>
           {profileUpdated !== '' && <Text style={styles.profileUpdated}>{profileUpdated}</Text>}
 
           <View style={styles.profileRow}>
@@ -93,7 +94,7 @@ export default function HealthScreen() {
 
         <View style={styles.trendSection}>
           <View style={styles.trendInsightRow}>
-            <Text style={styles.trendInsight}>New insights for your MPowered plan.</Text>
+            <BrandText style={styles.trendInsight}>{'New insights for your MPowered plan.'}</BrandText>
           </View>
           <Text style={styles.trendSubtitle}>
             {painTrendMessage(trend) ??

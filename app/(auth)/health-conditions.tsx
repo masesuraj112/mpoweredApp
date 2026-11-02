@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '@/constants/theme';
+import { BrandText } from '@/components/brand/BrandText';
 export default function HealthConditionsScreen() {
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState(data.hasDiagnosis);
@@ -34,9 +35,9 @@ export default function HealthConditionsScreen() {
       >
         <Text style={styles.optionText}>No, I haven&apos;t</Text>
       </Pressable>
-      <Text style={styles.helperText}>
-        No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you :)
-      </Text>
+      <BrandText style={styles.helperText}>
+        {'No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you :)'}
+      </BrandText>
       <Pressable
         disabled={selected === null}
         style={[styles.continueButton, selected === null && styles.continueButtonDisabled]}

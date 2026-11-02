@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
 import { Colors } from '@/constants/theme';
+import { BrandText } from '@/components/brand/BrandText';
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
@@ -48,7 +49,7 @@ export default function VerificationConfirmationScreen() {
                 { left: 137 * scale, top: 240 * scale, width: 154 * scale, height: 154 * scale },
               ]}
             />
-            <Text
+            <BrandText
               style={[
                 styles.startMessage,
                 {
@@ -61,8 +62,8 @@ export default function VerificationConfirmationScreen() {
                 },
               ]}
             >
-              You&apos;re off to an MPowered start!
-            </Text>
+              {'You’re off to an MPowered start!'}
+            </BrandText>
           </>
         )}
 
