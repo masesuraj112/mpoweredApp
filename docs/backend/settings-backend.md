@@ -26,9 +26,9 @@ Built by the login, support person front end and Care Planner branches. Reuse it
   - Services: `sendVerificationCode(phone)` and `verifyCode(phone, code)` in `src/services/auth.ts`.
   - Helpers: `OTP_LENGTH`, `RESEND_SECONDS`, `sanitiseCode`, `isCodeComplete` (`src/features/auth/otp.ts`),
     `authErrorMessage` (`src/features/auth/messages.ts`), `formatForDisplay` (`src/features/auth/phone.ts`).
-  - Not sign-in paths: `app/(auth)/dev-login.tsx` (email and password, development builds only, nothing links
-    to it) and the Email provider, which `supabase/config.toml` still enables for local and CI use. Turning it
-    off in production is on `docs/backend/production-auth-checklist.md`. Both belong to the login work, not this branch.
+  - Not a sign-in path: the Email provider, which `supabase/config.toml` still enables for local and CI use. Turning
+    it off in production is on `docs/backend/production-auth-checklist.md`. It belongs to the login work, not this
+    branch. (The email and password `dev-login` screen was removed on 2 Nov 2026.)
 - **Profile in the app:** `getProfile()` in `src/services/auth.ts` returns `{ userType, name, phone }`, and
   `AuthContext` exposes it as `profile`, with `refreshProfile()`.
 - **Sign out:** `signOut()` in `src/services/auth.ts`, used by both Account pages.
@@ -293,8 +293,8 @@ parts no automated test covers. Tick each one in the PR description, with a note
       `verify_jwt = false` from `supabase/config.toml`; the function checks the sign-in token itself.
 - [ ] **App:** `.env` points at the dev project, `EXPO_PUBLIC_BYPASS_AUTH=false`, `npx expo start -c`, open in
       Expo Go on a phone.
-- [ ] **Accounts:** a patient and a support person on dev test numbers (dev-login accounts have no `users` row
-      and can't reach the tabs), plus a **throwaway** account for the deletion checks. Deletion is
+- [ ] **Accounts:** a patient and a support person on dev test numbers, plus a **throwaway** account for the
+      deletion checks. Deletion is
       permanent. A real number only gets codes if it's verified on the Twilio trial account.
 
 ### Account: patient (commits 1–6)
