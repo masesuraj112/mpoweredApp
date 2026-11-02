@@ -205,7 +205,7 @@ Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Sta
 
 ## Steps
 - [x] I0 Branch and plan
-- [ ] I1 MPowered name and iOS icon (`.icon`)
+- [x] I1 MPowered name and iOS icon (`.icon`); template and 8 Oct draft icons deleted (I-G)
 - [ ] I2 Android, fallback, notification and splash images from `mpoweredicon.svg`
 - [ ] I3 Native splash (M on `#391777`, held until the session is read)
 - [ ] I4 `WelcomeSplash` component
@@ -215,4 +215,4 @@ Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Sta
 - [ ] I6c Manual QA on a preview build (iPhone and Android)
 
 ## Decisions
-I-A to I-F settled on 2 Nov 2026 (see the plan's section 2).
+I-A to I-G settled on 2 Nov 2026 (see the plan's section 2).

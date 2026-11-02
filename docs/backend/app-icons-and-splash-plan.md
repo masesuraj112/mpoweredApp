@@ -29,7 +29,7 @@
 | In-app splash | `app/(auth)/index.tsx` | Old design (purple, "Welcome to... MPowered"), absolute 412×823 canvas, `scale` font sizes, fake home bar. Signed-out users only, 3 s, then onboarding. Signed-in users see the blank gap, then Home |
 | Web favicon | `web.favicon` (48) | Expo template |
 | Notification icon (Android) | — | None (gap from `feature/notifications`) |
-| Untracked copies | `.assets/` (hidden: a copy of `expo.icon`, the `.icon`, `.DS_Store`) | To delete |
+| Earlier icon draft | `.assets/expo.icon` (tracked, `e8fec45`, 8 Oct): the "M" as a 35px outline, scale 1.9, glass off. Never used by `app.json` | Deleted in I1 (decision I-G); git history keeps it |
 
 ## 1. Guardrails
 
@@ -57,6 +57,7 @@
 | I-C | **Android icons are generated from `mpoweredicon.svg`:** adaptive foreground (the "M" inside the ~66% safe zone, transparent), background colour `#392C5C`, monochrome (the "M" in one flat colour), a white 96×96 notification icon, the 1024 fallback `icon.png` (the "M" on `#392C5C`) and the favicon. | No designer export exists; the logo is one flat-colour vector, so every size is sharp. | Wait for the designer. |
 | I-D | **Native splash: the lavender "M" on `#391777`** (the top of the in-app gradient), the same in dark mode. A short fade hands over to the in-app splash. | Android 12+ splash screens allow only a centred icon on a solid colour, so the full design can't be native. | Plain purple with no logo. |
 | I-E | **When the in-app splash shows:** signed out, "Welcome to" for 3 s, then onboarding (as now). Signed in, "Welcome back to" while the session and profile load, **at least 1.5 s**, then Home. The native splash stays up until the session is known (`preventAutoHideAsync`), so there is no blank gap. | Fills the blank gap with the design meant for it, without slowing returning users down much. | Fixed 3 s for both; signed-out only. |
+| I-G | **The 8 Oct outlined-M draft (`.assets/expo.icon`) is deleted**; the filled-M `mpowered-app-icon.icon` replaces it. | It was never wired up, and the new file is the current design. Git history keeps it. | Keep it unused; use it instead. |
 | I-F | **System font**, not Inter. | The app doesn't load Inter anywhere; no new dependency. | Load `@expo-google-fonts/inter`. |
 
 ### Rules that follow
@@ -148,8 +149,8 @@ App start ── native splash (M on #391777) ── held until the session is r
   Commit: `Add the app icons and splash build plan`
 
 ### Phase I1 — Name and iOS icon
-- **I1** `name` → `MPowered`; `ios.icon` → `./assets/mpowered-app-icon.icon` (add it to git); delete
-  `assets/expo.icon` and the untracked `.assets/`; add `.DS_Store` to `.gitignore` if missing.
+- **I1** `name` → `MPowered`; `ios.icon` → `./assets/mpowered-app-icon.icon` (add it to git); delete the template
+  `assets/expo.icon` and the earlier draft `.assets/expo.icon` (I-G). `.DS_Store` is already in `.gitignore`.
   Commit: `Use the MPowered name and iOS icon`
 
 ### Phase I2 — Android and fallback icons

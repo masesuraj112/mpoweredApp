@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mpowered-app",
+    "name": "MPowered",
     "slug": "mpowered-app",
     "owner": "mpowered-mha",
     "version": "1.0.0",
@@ -9,7 +9,7 @@
     "scheme": "mpoweredapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/mpowered-app-icon.icon",
       "bundleIdentifier": "au.org.mpowered.app"
     },
     "android": {
