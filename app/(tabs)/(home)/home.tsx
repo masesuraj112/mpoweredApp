@@ -4,16 +4,16 @@ import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgr
 import { formatDayMonth } from '@/features/assessments/week';
 import { getGreeting } from '@/features/support-person/greeting';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { setStatusBarStyle } from 'expo-status-bar';
+import { useCallback, useState } from 'react';
 import {
-  Platform,
   Pressable,
   ScrollView,
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ContentColumn, Gradients, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
@@ -38,6 +38,7 @@ const ASSESSMENTS: Assessment[] = [
 
 export default function HomeScreen() {
   const styles = useStyles();
+  const insets = useSafeAreaInsets();
   const name = useAuth().profile?.name ?? '';
   const {
     recorded: recordedAssessments,
@@ -54,49 +55,67 @@ export default function HomeScreen() {
     router.push(assessment.route);
   };
 
+  // White status bar text over the gradient while this screen shows; the app's default everywhere else.
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle('light');
+      return () => setStatusBarStyle('auto');
+    }, []),
+  );
+
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+    // The hero runs under the status bar, so only the bottom edge is kept clear here.
+    <SafeAreaView style={styles.screen} edges={['bottom']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
       >
-        {/* The week at a glance, on the brand gradient. */}
-        <LinearGradient colors={Gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-          <View style={styles.intro}>
-            <Text style={styles.greeting}>{getGreeting(name)}</Text>
-            <BrandText style={styles.heading}>{'Let’s build your MPowered plan.'}</BrandText>
-            <BrandText style={styles.description}>
-              {'Assess your pain intensity and its impacts weekly to obtain your MPowered plan.'}
-            </BrandText>
-          </View>
+        {/* The week at a glance, on the brand gradient, from the top of the screen to both edges. */}
+        <LinearGradient
+          colors={Gradients.brand}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.hero, { paddingTop: insets.top + Spacing.four }]}>
+          <View style={styles.heroContent}>
+            <View style={styles.intro}>
+              <Text style={styles.greeting}>{getGreeting(name)}</Text>
+              <BrandText style={styles.heading}>{'Let’s build your MPowered plan.'}</BrandText>
+              <BrandText style={styles.description}>
+                {'Assess your pain intensity and its impacts weekly to obtain your MPowered plan.'}
+              </BrandText>
+            </View>
 
-          <View
-            style={styles.progressSection}
-            accessibilityLabel={`This week's progress: ${progress} of 5 assessments`}
-          >
             <View
-              style={styles.progressTrack}
-              onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+              style={styles.progressSection}
+              accessibilityLabel={`This week's progress: ${progress} of 5 assessments`}
             >
               <View
-                style={[
-                  styles.progressFill,
-                  { width: trackWidth * (progress / ASSESSMENTS.length) },
-                ]}
-              />
+                style={styles.progressTrack}
+                onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+              >
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: trackWidth * (progress / ASSESSMENTS.length) },
+                  ]}
+                />
+              </View>
+              <View style={styles.progressLabels}>
+                <Text style={styles.progressLabel}>This week&apos;s progress</Text>
+                <Text style={styles.progressLabel}>
+                  {progress}/{ASSESSMENTS.length} assessments
+                </Text>
+              </View>
+              {progressError && <Text style={styles.progressError}>{progressError}</Text>}
             </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>This week&apos;s progress</Text>
-              <Text style={styles.progressLabel}>
-                {progress}/{ASSESSMENTS.length} assessments
-              </Text>
-            </View>
-            {progressError && <Text style={styles.progressError}>{progressError}</Text>}
           </View>
         </LinearGradient>
 
-        <View style={styles.assessmentPanel}>
-          <Text style={styles.panelHeading}>This week’s assessment</Text>
+        <View style={styles.body}>
+          <Text accessibilityRole="header" style={styles.sectionHeading}>
+            This week’s assessments
+          </Text>
           <View style={styles.assessmentList}>
             {ASSESSMENTS.map((assessment) => {
               const recordedDate = recordedAssessments.get(assessment.id);
@@ -141,27 +160,27 @@ export default function HomeScreen() {
               );
             })}
           </View>
-        </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
-          onPress={() => router.push('/tracker/reflection')}
-          style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
-        >
-          <Text style={[styles.plus, hasReflection && styles.reflectionCompleteIcon]}>
-            {hasReflection ? '✓' : '+'}
-          </Text>
-          <View style={styles.reflectionCopy}>
-            <Text style={styles.reflectionText}>
-              {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
+            onPress={() => router.push('/tracker/reflection')}
+            style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
+          >
+            <Text style={[styles.plus, hasReflection && styles.reflectionCompleteIcon]}>
+              {hasReflection ? '✓' : '+'}
             </Text>
-            {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
-          </View>
-          {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
-        </Pressable>
+            <View style={styles.reflectionCopy}>
+              <Text style={styles.reflectionText}>
+                {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
+              </Text>
+              {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
+            </View>
+            {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
+          </Pressable>
 
-        <Text style={styles.supported}>Supported by ABBVIE</Text>
+          <Text style={styles.supported}>Supported by ABBVIE</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -173,17 +192,23 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   hero: {
-    marginBottom: Spacing.four,
-    padding: Spacing.four,
-    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.five,
+    paddingBottom: Spacing.four,
+    borderBottomLeftRadius: Radius.card * 2,
+    borderBottomRightRadius: Radius.card * 2,
     overflow: 'hidden',
   },
-  scrollContent: {
+  heroContent: {
     ...ContentColumn,
+  },
+  scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: Spacing.five,
-    paddingTop: Platform.OS === 'web' ? 90 : 39,
     paddingBottom: Spacing.three,
+  },
+  body: {
+    ...ContentColumn,
+    paddingHorizontal: Spacing.five,
+    paddingTop: Spacing.four,
   },
   intro: {
     marginBottom: Spacing.three,
@@ -233,18 +258,10 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onBrand,
     ...Typography.caption,
   },
-  assessmentPanel: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.three,
-    borderRadius: Radius.card,
-    backgroundColor: colors.surfaceContainer,
-  },
-  panelHeading: {
+  sectionHeading: {
     marginBottom: Spacing.three,
     color: colors.text,
-    ...Typography.bodyLarge,
-    fontWeight: '700',
+    ...Typography.titleSmall,
   },
   assessmentList: {
     gap: Spacing.three,
@@ -255,9 +272,10 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.two,
-    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   assessmentCopy: {
     flex: 1,
