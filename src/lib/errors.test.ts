@@ -124,6 +124,34 @@ describe('mapError: errors raised by the Care Planner functions (P0001)', () => 
   });
 });
 
+describe('mapError: errors raised by the support person functions (P0001)', () => {
+  it.each(['NOT_A_SUPPORT_PERSON', 'NO_QUESTIONS_PERMISSION', 'NO_ANSWERS_PERMISSION'])(
+    '%s means not allowed and keeps its message',
+    (name) => {
+      expect(mapError(dbError('P0001', name))).toEqual({ code: 'NOT_ALLOWED', message: name });
+    },
+  );
+
+  it('NO_QUESTIONS_PERMISSION is never read as the validation message NO_QUESTIONS inside it', () => {
+    expect(mapError(dbError('P0001', 'NO_QUESTIONS_PERMISSION')).code).not.toBe('VALIDATION');
+  });
+
+  it('NO_QUESTIONS on its own is still a validation error', () => {
+    expect(mapError(dbError('P0001', 'NO_QUESTIONS'))).toEqual({
+      code: 'VALIDATION',
+      message: 'NO_QUESTIONS',
+      detail: 'NO_QUESTIONS',
+    });
+  });
+
+  it.each(['REQUEST_NOT_FOUND', 'PATIENT_NOT_FOUND', 'APPOINTMENT_NOT_FOUND'])(
+    '%s maps to NOT_FOUND and keeps its message, so the screen can say what was missing',
+    (name) => {
+      expect(mapError(dbError('P0001', name))).toEqual({ code: 'NOT_FOUND', message: name });
+    },
+  );
+});
+
 describe('mapError: Supabase Auth error codes', () => {
   it('an expired or unusable code (otp_expired) gives OTP_EXPIRED', () => {
     expect(mapError(dbError('otp_expired', 'Token has expired or is invalid')).code).toBe(
