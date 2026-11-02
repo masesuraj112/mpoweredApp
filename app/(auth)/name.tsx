@@ -57,7 +57,7 @@ export default function NameScreen() {
         >
           <Text style={styles.continueText}>Continue</Text>
         </Pressable>
-        <Text style={styles.footnote}>By having your name, we will know how to address you :)</Text>
+        <Text style={styles.footnote}>By having your name, we will know how to address you.</Text>
       </KeyboardAvoidingView>
     </Pressable>
   );

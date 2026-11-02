@@ -66,7 +66,7 @@ export default function HealthScreen() {
           <View style={styles.profileRow}>
             <Image source={painProfileIcon} style={styles.profileIcon} contentFit="contain" />
             <Text style={styles.profileDescription}>
-              This pain profile will be generated each time you complete the impact questions :)
+              This pain profile will be generated each time you complete the impact questions.
             </Text>
           </View>
 

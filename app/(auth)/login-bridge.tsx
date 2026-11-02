@@ -58,7 +58,7 @@ export default function LoginBridgeScreen() {
         />
       }>
       <Text accessibilityRole="header" style={auth.title}>
-        Thank you, {data.name || 'there'} 😃
+        Thank you, {data.name || 'there'}
       </Text>
       <Text style={styles.message}>
         Finally, let’s link this information to your account so the next time you open this app, you can just log

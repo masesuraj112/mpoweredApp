@@ -45,7 +45,7 @@ export default function DemographicsScreen() {
         <Pressable style={styles.continueButton} onPress={handleContinue}>
           <Text style={styles.continueText}>Continue</Text>
         </Pressable>
-        <Text style={styles.tip}>💡 Research shows that people can feel pain differently depending on their age</Text>
+        <Text style={styles.tip}>Research shows that people can feel pain differently depending on their age</Text>
       </KeyboardAvoidingView>
     </Pressable>
   );

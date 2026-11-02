@@ -39,7 +39,7 @@ export default function SexScreen() {
     >
   <Text style={[styles.continueText, !selected && styles.continueTextDisabled]}>Continue</Text>
     </Pressable>
-      <Text style={styles.tip}>💡 Research shows that people may experience pain differently depending on their sex</Text>
+      <Text style={styles.tip}>Research shows that people may experience pain differently depending on their sex</Text>
     </View>
   );
 }

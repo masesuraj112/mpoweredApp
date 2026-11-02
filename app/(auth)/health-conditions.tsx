@@ -37,7 +37,7 @@ export default function HealthConditionsScreen() {
         <Text style={styles.optionText}>No, I haven&apos;t</Text>
       </Pressable>
       <BrandText style={styles.helperText}>
-        {'No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you :)'}
+        {'No diagnosis? No problem! You know your body and how you feel so being Health MPowered is for you.'}
       </BrandText>
       <Pressable
         disabled={selected === null}

@@ -17,7 +17,7 @@ export default function ConsentScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.greeting}>Hello {data.name || 'there'} 👋</Text>
+      <Text style={styles.greeting}>Hello {data.name || 'there'}</Text>
       <Text style={styles.body}>A few quick questions so we can make things more relevant for you</Text>
 
       <Pressable style={styles.continueButton} onPress={handleContinue}>
