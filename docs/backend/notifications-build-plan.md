@@ -170,9 +170,16 @@ planReminders(input: {
 
 ### 4.4 Settings screen
 
-- Turning either toggle **on** asks for permission first. Granted: save as today. Denied: toggle back off,
-  show the message and **Open settings** (`Linking.openSettings()`).
-- When permission was revoked in the phone's settings, the screen says so on open.
+- `useReminderPermission()` (`src/features/notifications/useReminderPermission.ts`): reads the permission without
+  asking, reads it again when the app returns to the foreground (the person may have changed it in the phone's
+  settings), `ensure()` asks only when needed, and `openSettings()` opens the app's page in the phone's settings.
+- Turning either toggle **on** calls `ensure()` first. Allowed: save as before. Refused: nothing is saved, so the
+  toggle stays off (N-E). Turning a toggle off never asks.
+- While permission is denied, the screen says "Notifications are turned off for MPowered in your phone's
+  settings, so reminders can't be shown." with an **Open settings** button. This also covers permission taken
+  away later in the phone's settings.
+- The two toggles now have accessibility labels ("Assessment reminders", "Appointment reminders"); before, both
+  were unnamed switches.
 
 ## 5. Steps
 
@@ -238,7 +245,8 @@ planReminders(input: {
 | `syncReminders.test.ts` | No permission leaves things alone; both off cancels; reads only what's needed; a failed read keeps what's scheduled |
 | `RemindersContext.test.tsx` | Re-plans on mount, foreground and `refresh()`; one sync at a time with one more for refreshes during it; an error doesn't stop it; no-op outside the provider |
 | `routeForReminder.test.ts` | Appointment → Review with its id; assessment → Tracker |
-| `useNotificationSettings.test.ts` (extend) | Turning on asks permission; denied rolls back and sets the denied state |
+| `useReminderPermission.test.ts` | Reads without asking; doesn't ask when allowed; asks when undecided; refusal marks denied; a failed read is unknown, not refused; re-reads on foreground; opens settings |
+| `__tests__/notifications-settings.test.tsx` | Turning on asks then saves; refused saves nothing; turning off never asks; the denied message and Open settings |
 | `auth.test.ts` / `useAccountDeletion.test.ts` (extend) | Reminders cancelled |
 
 ### 6.3 Rows to add to `docs/testing.md`
