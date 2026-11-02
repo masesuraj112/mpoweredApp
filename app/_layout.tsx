@@ -22,9 +22,11 @@ function RootNavigator() {
     if (!loading) SplashScreen.hide();
   }, [loading]);
 
-  // Whether the app opened signed in, fixed once the session has been read (not changed by signing in later).
+  // Whether the app opened signed in, fixed once the session has been read. Signing out ends it for good, so
+  // signing in again later in the same run never shows "Welcome back to" over the sign-in screens.
   const [startedSignedIn, setStartedSignedIn] = useState<boolean | null>(null);
   if (!loading && startedSignedIn === null) setStartedSignedIn(!!session);
+  if (!loading && startedSignedIn && !session) setStartedSignedIn(false);
   const minimumElapsed = useMinimumDuration(WELCOME_SPLASH_MS, !loading);
   const welcomeBack = showWelcomeBack({ startedSignedIn, hasProfile, profileError, minimumElapsed });
 

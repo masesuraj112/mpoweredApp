@@ -166,4 +166,20 @@ describe('root layout routing', () => {
     expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeNull();
     expect(await screen.findByText('patient home')).toBeTruthy();
   });
+
+  it('does not show "Welcome back to" when signing in again after signing out', async () => {
+    mockAuth = patient;
+    await renderRouter(screens, { initialUrl: '/' });
+    await skipWelcomeBack();
+    await screen.findByText('patient home');
+
+    await setAuth(mockSignedOut);
+    await screen.findByText('auth screen');
+    // The code is accepted and the profile is still being checked.
+    await setAuth({ ...patient, hasProfile: null, profile: null });
+
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeNull();
+    await setAuth(patient);
+    expect(await screen.findByText('patient home')).toBeTruthy();
+  });
 });
