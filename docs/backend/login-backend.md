@@ -104,12 +104,12 @@ supabase db push
 
 ## Signing in as a developer
 
-SMS is not connected yet. The dev project and the local/CI stack use a **test OTP**: a fictional number mapped to a fixed code, so no SMS is sent.
+Real SMS is connected on the dev project through Twilio (see `sms-setup.md`), but developers do not use it. The dev project and the local/CI stack use a **test OTP**: a fictional number mapped to a fixed code, so no SMS is sent and no Twilio message is created.
 
 1. Point `.env` at the dev project (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; see `.env.example`) and set `EXPO_PUBLIC_BYPASS_AUTH=false`.
 2. Start the app with `npx expo start -c` and open it in Expo Go.
 3. Choose **Get started**, answer the onboarding questions, and enter the test number on the phone screen.
-4. Enter the code for that number within the expiry time (60 seconds on the dev project).
+4. Enter the code for that number within the expiry time (120 seconds).
 
 The number and code are configured in two places, both **development only**: the dev project's Phone provider settings (dashboard) and `[auth.sms.test_otp]` in `supabase/config.toml`. Ask a teammate for the number; use a different fictional number for each developer. Never add test numbers to the production project (see `production-auth-checklist.md`).
 
@@ -119,7 +119,7 @@ The old email and password harness (`dev-login`) only exists in development buil
 
 ## Not built yet
 
-- Twilio and real SMS (decision L1 and the Twilio sprint), including the resend interval and code expiry (L3).
+- Production SMS: an MHA-owned Twilio account and Australian sender, a separate production Supabase project, and the items in `production-auth-checklist.md` section 4 and 5. Real SMS already works on the dev project (personal Twilio trial account, test data only; see `sms-setup.md`). The resend interval and code expiry (L3) are settled: 60 s and 120 s, with MHA sign-off pending.
 - Session length and storage encryption (L12, L13).
 - Phone number change and re-verification (L17).
 - What happens to password and Face ID settings for phone users (L16). The Account screen still assumes an email and password.

@@ -81,7 +81,7 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 ## Open decisions
 | ID | Decision | Status |
 | --- | --- | --- |
-| L3 | Resend interval / OTP expiry | ⏳ |
+| L3 | Resend interval / OTP expiry | ✅ 60 s resend, 120 s expiry (MHA sign-off pending) |
 | L6 | Sign-in and sign-up share `sendVerificationCode` | ✅ settled (2026-10-14) |
 | L7 | Returning-user routing, stop using `hasOnboarded` | ✅ settled (2026-10-14) |
 | L9 | RPC security model (invoker vs definer) | ✅ settled: invoker |
