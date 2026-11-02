@@ -60,7 +60,7 @@ Mismatched versions are a common source of "it works on my machine" bugs.
 | npm      | 11.19.0     |
 | Expo SDK | 58 (installed by `npm ci`: 58.0.19) |
 
-> Node v24.20.0 is the version CI uses; Expo SDK 58 accepts Node 22.13 or later in the 22 line, 24.3 or later in the 24 line, and 26 or later. React Native's version (0.88) is managed automatically by Expo. You don't install or track it separately.
+> Node v24.20.0 is the version CI uses and the one in `.nvmrc` (run `nvm use` if you manage Node with nvm). Expo SDK 58 accepts Node 22.13 or later in the 22 line, 24.3 or later in the 24 line, and 26 or later. React Native's version (0.88) is managed automatically by Expo. You don't install or track it separately.
 
 ### 1. Install Node.js
 
@@ -136,7 +136,7 @@ Confirm it installed correctly:
 supabase --version
 ```
 
-Should print a version number. If it does, you're set. The repository also lists `supabase` (^2.120.0) as a dev dependency, so `npx supabase <command>` works after `npm ci` without a global install.
+Should print a version number. If it does, you're set. The repository also lists `supabase` 2.116.0 (the version CI uses) as a dev dependency, so `npx supabase <command>` works after `npm ci` without a global install. Prefer that version when generating types, so the result matches CI's check.
 
 ### 7. Log in to Supabase via the CLI
 
