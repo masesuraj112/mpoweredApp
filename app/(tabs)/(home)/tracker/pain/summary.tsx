@@ -246,11 +246,14 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.caption,
   },
   closeButton: {
-    borderRadius: Radius.control,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
     backgroundColor: colors.surfaceContainer,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   closeButtonText: {
     color: colors.text,

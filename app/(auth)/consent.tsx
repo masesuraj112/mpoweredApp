@@ -52,11 +52,14 @@ const useStyles = makeStyles((colors) => ({
   },
   continueButton: {
     backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
-    borderRadius: Radius.control,
     alignItems: 'center',
     marginBottom: Spacing.four,
-    minHeight: MinTapTarget
+    minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   continueText: {
     color: colors.onPrimary,

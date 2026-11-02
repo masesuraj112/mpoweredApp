@@ -289,13 +289,15 @@ const useStyles = makeStyles((colors) => ({
     borderBottomColor: colors.outline,
   },
   saveButton: {
-    marginHorizontal: Spacing.four,
     marginTop: Spacing.five,
     backgroundColor: colors.background,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
     alignItems: 'center',
     minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   saveButtonDisabled: {
     opacity: 0.6,

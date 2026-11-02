@@ -101,11 +101,13 @@ const useStyles = makeStyles((colors) => ({
   },
   continueButton: {
     backgroundColor: colors.primary,
-    width: '100%',
-    paddingVertical: Spacing.three,
-    borderRadius: Radius.control,
     alignItems: 'center',
-    minHeight: MinTapTarget
+    minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   continueButtonDisabled: {
     backgroundColor: colors.secondaryContainer

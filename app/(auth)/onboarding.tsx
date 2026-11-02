@@ -179,10 +179,14 @@ const useStyles = makeStyles((colors) => ({
 
     primaryButton: {
         backgroundColor: colors.primary,
-        paddingVertical: Spacing.three,
-        borderRadius: Radius.control,
         alignItems: 'center',
         minHeight: MinTapTarget,
+        borderRadius: Radius.pill,
+        paddingHorizontal: Spacing.four,
+        paddingVertical: Spacing.two,
+        justifyContent: 'center',
+        alignSelf: 'center',
+
     },
 
     primaryButtonText: {

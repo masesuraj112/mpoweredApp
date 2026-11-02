@@ -77,19 +77,22 @@ export function Button({
 }
 
 const useStyles = makeStyles((colors) => ({
-  // The touch target is at least 48dp tall even though the visible shape is shorter.
+  // Buttons hug their label and sit centred, clear of the edges of whatever holds them. A caller can
+  // still place one with `style` (for example `alignSelf: 'stretch'` in a pair).
   target: {
     minHeight: MinTapTarget,
     minWidth: MinTapTarget,
     justifyContent: 'center',
+    alignSelf: 'center',
   },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.two,
+    minHeight: MinTapTarget,
     paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
+    paddingHorizontal: Spacing.four,
     borderRadius: Radius.pill,
   },
   elevated: {
@@ -107,13 +110,9 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primary,
     borderWidth: 1,
     borderColor: colors.primary,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
   },
   outlined: {
     backgroundColor: colors.secondaryContainer,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
   },
   label: {
     ...Typography.labelLarge,

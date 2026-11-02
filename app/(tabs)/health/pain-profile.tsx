@@ -139,12 +139,14 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.four,
   },
   recordsButton: {
-    marginHorizontal: Spacing.five,
     backgroundColor: colors.primary,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
     alignItems: 'center',
     minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   recordsButtonText: {
     ...Typography.bodySmall,

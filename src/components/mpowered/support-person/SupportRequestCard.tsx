@@ -58,12 +58,12 @@ const useStyles = makeStyles((colors) => ({
   button: {
     flex: 1,
     minHeight: MinTapTarget,
-    paddingVertical: Spacing.three,
-    paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.control,
     backgroundColor: colors.surfaceContainer,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
   },
   pressed: {
     opacity: 0.8,

@@ -37,9 +37,12 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.control,
     backgroundColor: colors.primary,
     minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
   },
   small: {
     alignSelf: 'flex-end',

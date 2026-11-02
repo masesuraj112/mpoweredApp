@@ -202,8 +202,11 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.three,
-    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
   },
   saveButtonDisabled: {
     opacity: 0.5,

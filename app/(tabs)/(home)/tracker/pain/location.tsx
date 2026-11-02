@@ -242,9 +242,13 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.two,
   },
   cancelButton: {
-    height: 48,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    minHeight: MinTapTarget,
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   cancelButtonText: {
     color: colors.primary,
@@ -252,13 +256,14 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '500',
   },
   okButton: {
-    width: 105,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.control,
     backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
   },
   okButtonText: {
     color: colors.onPrimary,

@@ -344,10 +344,13 @@ const useStyles = makeStyles((colors) => ({
     marginTop: Spacing.one,
   },
   cancelButton: {
-    minWidth: 54,
-    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    minHeight: MinTapTarget,
+    alignSelf: 'center',
   },
   cancelText: {
     color: colors.primary,
@@ -355,13 +358,14 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '600',
   },
   confirmButton: {
-    width: 105,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.control,
     backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
   },
   confirmButtonDisabled: {
     opacity: 0.5,
