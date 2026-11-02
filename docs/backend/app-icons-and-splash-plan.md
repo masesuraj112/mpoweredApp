@@ -40,8 +40,8 @@
    accessibility labels.
 3. **Use the Figma assets as exported** (the wordmark and the waves). Never redraw, edit or inline their paths.
    Download them with the URLs `get_design_context` returns; never ship a temporary Figma URL.
-4. **Generated icon PNGs come only from `mpoweredicon.svg`.** Record the exact commands in this file so they can
-   be re-run. No new runtime dependency for this.
+4. **Generated icon PNGs come only from `mpoweredicon.svg`.** Record their sizes and colours in this file (section 5).
+   No new dependency for this.
 5. **Keep `slug`, `ios.bundleIdentifier` and `android.package`.** Only `name` changes.
 6. One commit per step (imperative, no prefix). `npm run typecheck`, `npm run lint` and `npm test` before each.
 7. Don't run `npm run format` over the repo. Keep each file's line endings.
@@ -157,7 +157,7 @@ App start ── native splash (M on #391777) ── held until the session is r
 - **I2** Generate from `mpoweredicon.svg`: `android-icon-foreground.png` (1024), `android-icon-monochrome.png`
   (1024), `icon.png` (1024, on `#392C5C`), `notification-icon.png` (96, white), `favicon.png` (48), and the splash
   `splash-icon.png` (1024, lavender, transparent). Update `app.json`, delete `android-icon-background.png`.
-  Record the commands in section 5. Check each image by eye.
+  Record the sizes and colours in section 5. Check each image by eye.
   Commit: `Add the MPowered Android icons`
 
 ### Phase I3 — Native splash
@@ -184,13 +184,9 @@ App start ── native splash (M on #391777) ── held until the session is r
 
 ## 5. Icon generation
 
-`scripts/generate-icons.js` makes every PNG from `assets/mpowered-app-icon.icon/Assets/mpoweredicon.svg`. It reuses
-the logo's one path unchanged and only sizes, places and colours it. The renderer is not a project dependency:
-
-```bash
-npm install --no-save @resvg/resvg-js@2.6.2
-node scripts/generate-icons.js
-```
+Every PNG was made once from `assets/mpowered-app-icon.icon/Assets/mpoweredicon.svg` with a one-off script (not kept in
+the repo; `@resvg/resvg-js` 2.6.2, never a project dependency). It reused the logo's one path unchanged and only
+sized, placed and coloured it in a wrapper SVG. To remake one, render that path at the size and colours below.
 
 | File | Size | Logo | Colours |
 | --- | --- | --- | --- |
