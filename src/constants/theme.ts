@@ -159,14 +159,15 @@ export const Gradients = {
 } as const;
 
 /**
- * Headings use Sulphur Point Bold (loaded in app/_layout.tsx); all other text uses the device's own font.
- * A custom font carries its weight in the family name, so heading styles set no `fontWeight`.
+ * Each page's top-level heading uses Sulphur Point Bold (loaded in app/_layout.tsx); all other text,
+ * smaller headings included, uses the device's own font. A custom font carries its weight in the family
+ * name, so the page title style sets no `fontWeight`.
  */
 export const Fonts = {
   heading: 'SulphurPoint_700Bold',
 } as const;
 
-/** Spread into a native Stack's screen options so header titles use the heading font too. */
+/** Spread into a native Stack's screen options: a native header's title is that page's top-level heading. */
 export const HeaderTitleFonts = {
   headerTitleStyle: { fontFamily: Fonts.heading },
   headerLargeTitleStyle: { fontFamily: Fonts.heading },
@@ -207,14 +208,14 @@ export const MinTapTarget = 48;
  * never turn font scaling off. Nothing is smaller than 14.
  */
 export const Typography = {
-  /** 34/41: the one big number or phrase on a screen. */
+  /** 34/41 in Sulphur Point: each page's top-level heading, the same size as the native large titles. */
   display: { fontFamily: Fonts.heading, fontSize: 34, lineHeight: 41 },
-  /** 28/34: screen titles. */
-  headline: { fontFamily: Fonts.heading, fontSize: 28, lineHeight: 34 },
-  /** 24/30: page titles inside a flow, and card titles that lead a screen. */
-  title: { fontFamily: Fonts.heading, fontSize: 24, lineHeight: 30 },
-  /** 20/26: section headings. */
-  titleSmall: { fontFamily: Fonts.heading, fontSize: 20, lineHeight: 26 },
+  /** 28/34 bold: big numbers and question cards. */
+  headline: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
+  /** 24/30 bold: card titles. */
+  title: { fontSize: 24, lineHeight: 30, fontWeight: '700' },
+  /** 20/26 bold: section headings. */
+  titleSmall: { fontSize: 20, lineHeight: 26, fontWeight: '700' },
   /** 18/24: lead-in text under a title. */
   subtitle: { fontSize: 18, lineHeight: 24 },
   /** 17/24: question text, field values and reading text. */

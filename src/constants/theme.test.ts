@@ -89,10 +89,10 @@ describe('type scale', () => {
     expect(style.fontSize).toBeGreaterThanOrEqual(14);
   });
 
-  it('sets headings (20 and up) in the heading font and leaves body text to the device font', () => {
-    for (const style of Object.values(Typography)) {
+  it('sets only the page title in the heading font; everything else uses the device font', () => {
+    for (const [name, style] of Object.entries(Typography)) {
       const family = 'fontFamily' in style ? style.fontFamily : undefined;
-      expect(family).toBe(style.fontSize >= 20 ? Fonts.heading : undefined);
+      expect(family).toBe(name === 'display' ? Fonts.heading : undefined);
     }
   });
 });
