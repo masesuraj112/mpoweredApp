@@ -1,6 +1,6 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Alert, Platform, StyleSheet, Text } from 'react-native';
 
 import { AnswerModal } from '@/components/care-planner/AnswerModal';
 import { AppointmentOverviewCard } from '@/components/care-planner/AppointmentOverviewCard';
@@ -13,12 +13,19 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
+import { carePlannerMessage } from '@/features/care-planner/messages';
 import { displayOrPlaceholder, formatShortAppointmentDate, isPlanEmpty } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
 import { useSupportPerson } from '@/features/support-person/context';
-import { getPlanAccess } from '@/features/support-person/permissions';
+import { canAnswerNow, getPlanAccess, isAccessChanged } from '@/features/support-person/permissions';
 import { useSupportedAppointmentPlan } from '@/features/support-person/useSupportedAppointmentPlan';
 import { saveSupportedAnswers } from '@/services/support-person';
+
+/** Alert.alert does nothing on react-native-web, so fall back to the browser dialog there. */
+function showMessage(title: string, message: string) {
+  if (Platform.OS === 'web') window.alert(`${title}\n${message}`);
+  else Alert.alert(title, message);
+}
 
 /**
  * A supported patient's appointment plan, laid out like the patient's "Review My Appointment Plan"
@@ -28,10 +35,13 @@ export default function SupportedAppointmentPlanScreen() {
   // openAnswer: set by "Add doctor's answer" to open the answer box straight away.
   const params = useLocalSearchParams<{ appointmentId: string; patientId: string; openAnswer?: string }>();
   const appointmentId = Number(params.appointmentId);
-  const patient = useSupportPerson().getPatient(params.patientId);
+  const supportPerson = useSupportPerson();
+  const patient = supportPerson.getPatient(params.patientId);
   const state = useSupportedAppointmentPlan(appointmentId);
   const firstName = patient?.name.split(' ')[0] ?? 'The patient';
   const access = getPlanAccess(patient ?? { canAddQuestions: false, canAddAnswers: false });
+  // Answers wait for the patient to record the doctor's consent (decision S3).
+  const canAnswer = state.status === 'ready' && canAnswerNow(access, state.plan.recordingConsentedAt);
   const { refresh } = state;
 
   // Questions are changed on their own screen, and the patient may change the plan too. Re-read it
@@ -55,15 +65,27 @@ export default function SupportedAppointmentPlanScreen() {
   const openedFromButton = useRef(false);
   const firstToAnswer = (questions.find(q => q.doctorAnswer === null) ?? questions[0])?.questionId ?? null;
   useEffect(() => {
-    if (!params.openAnswer || openedFromButton.current || !access.canEditAnswers || firstToAnswer === null) return;
+    if (!params.openAnswer || openedFromButton.current || !canAnswer || firstToAnswer === null) return;
     openedFromButton.current = true;
     setAnswerQuestionId(firstToAnswer);
-  }, [params.openAnswer, access.canEditAnswers, firstToAnswer]);
+  }, [params.openAnswer, canAnswer, firstToAnswer]);
 
   const saveAnswers = async (answers: AnswerInput[]): Promise<boolean> => {
     const result = await saveSupportedAnswers(appointmentId, answers);
-    if (result.ok) refresh();
-    return result.ok;
+    if (result.ok) {
+      refresh();
+      return true;
+    }
+    // The patient changed something under us (access, the appointment, consent): retrying won't help,
+    // so close the box, say why and show what the database holds now. Anything else (for example no
+    // connection) keeps the box open with its own "Try again".
+    if (isAccessChanged(result.error) || result.error.code === 'CONSENT_REQUIRED') {
+      setAnswerQuestionId(null);
+      showMessage('Answers not saved', carePlannerMessage(result.error));
+      refresh();
+      if (isAccessChanged(result.error)) supportPerson.reload();
+    }
+    return false;
   };
 
   return (
@@ -86,7 +108,7 @@ export default function SupportedAppointmentPlanScreen() {
             </ActionBar>
           ) : null}
 
-          {access.canEditAnswers && answerQuestionId !== null && questions.length > 0 ? (
+          {canAnswer && answerQuestionId !== null && questions.length > 0 ? (
             <AnswerModal
               questions={questions}
               initialQuestionId={answerQuestionId}
@@ -118,11 +140,12 @@ export default function SupportedAppointmentPlanScreen() {
           <Text accessibilityRole="header" style={styles.sectionTitle}>
             Questions to ask
           </Text>
-          {/* Support persons don't collect consent for now, so this is a status line, not the patient's checkbox. */}
+          {/* Support persons don't collect consent, so this is a status line, not the patient's checkbox.
+              Without consent nobody can add the doctor's answers (decision S3). */}
           <Text style={styles.hint}>
             {state.plan.recordingConsentedAt
               ? 'Recording consent obtained.'
-              : `Recording consent not obtained yet. Only ${firstName} can ask the doctor for it.`}
+              : `${firstName} needs to record the doctor’s consent first.`}
           </Text>
 
           {isPlanEmpty(state.plan) ? (
@@ -134,8 +157,8 @@ export default function SupportedAppointmentPlanScreen() {
                 <QuestionGroupList
                   key={group.groupId}
                   group={group}
-                  // Without the answers permission the questions are read-only (no pen).
-                  onEditAnswer={access.canEditAnswers ? setAnswerQuestionId : undefined}
+                  // Without the answers permission, or before consent, the questions are read-only (no pen).
+                  onEditAnswer={canAnswer ? setAnswerQuestionId : undefined}
                 />
               ))
           )}
