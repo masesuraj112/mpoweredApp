@@ -18,6 +18,7 @@ import {
 } from '@/features/auth/otp';
 import { nextStepAfterVerify } from '@/features/auth/afterVerify';
 import { formatForDisplay, toE164 } from '@/features/auth/phone';
+import { seesPatientIntro } from '@/features/auth/patientIntro';
 import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
 import { createProfile } from '@/services/profile';
@@ -111,6 +112,11 @@ export default function VerifyScreen() {
     const created = await createProfile(data);
     if (!created.ok) {
       setErrorMessage(authErrorMessage(created.error.code));
+      return;
+    }
+    // The slides are about the patient questionnaires; a support person goes straight to their app.
+    if (!seesPatientIntro(data.userType)) {
+      refreshProfile();
       return;
     }
     router.replace('/(auth)/verification-confirmation' as any);

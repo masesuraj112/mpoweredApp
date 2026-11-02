@@ -181,6 +181,13 @@ the platform's back arrow only:
 | F5 | Back arrows (4.6): the header in `app/(auth)/_layout.tsx`; `verify` hides it once the code is accepted. Route test | `Add a back arrow to the sign-up and sign-in screens` |
 | F6 | Docs (`login-backend.md`, `docs/testing.md`) and progress; full checks; manual QA (section 6) | `Update the docs for sign up vs sign in` |
 
+### F7: start slides for patients only (found in testing, 3 Nov 2026)
+After a new profile is created, `verification-confirmation` ("You're off to an MPowered start", then the patient
+questionnaires) was shown to everyone. A new support person now goes straight to their app instead
+(`seesPatientIntro()`, `src/features/auth/patientIntro.ts`), from both places a profile is created: `verify.tsx` and
+`login-bridge.tsx` (reached by "Create an account" on `account-check`). Commit:
+`Show the start slides to new patients only`.
+
 ## 6. Testing
 
 ### Automated

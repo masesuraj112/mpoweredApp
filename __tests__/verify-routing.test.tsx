@@ -103,6 +103,14 @@ describe('VerifyScreen after a correct code', () => {
     expect(mockHoldSignIn).toHaveBeenLastCalledWith(false);
   });
 
+  it('sign-up as a support person, new number: skips the patient slides and opens their app', async () => {
+    await enterCode({ ...completeAnswers, userType: 'support-person', intent: 'sign-up' }, false);
+
+    await waitFor(() => expect(mockRefreshProfile).toHaveBeenCalled());
+    expect(mockCreateProfile).toHaveBeenCalledTimes(1);
+    expect(mockReplace).not.toHaveBeenCalledWith('/(auth)/verification-confirmation');
+  });
+
   it('sign-in, number has an account: opens the account', async () => {
     await enterCode({ ...emptyAnswers, intent: 'sign-in' }, true);
 
