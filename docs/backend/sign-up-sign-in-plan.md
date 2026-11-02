@@ -4,7 +4,8 @@
 > has an account, or signs in with a number that has none; and a visible back arrow on the sign-up and sign-in
 > screens (section 4.6, added 3 Nov 2026).
 > **Branch:** `fix/sign-up-sign-in-mismatch`, from `main` (2 Nov 2026). Owner: Ryan Pham.
-> **Status:** plan only. Decisions in section 3 are proposals until approved.
+> **Status:** decisions SU-1 to SU-9 approved by Ryan Pham on 3 Nov 2026. SU-7 (wording) still to be confirmed
+> by the designer; built with the wording in this plan until then.
 > **No database changes.** The check uses the existing `hasProfile()`; no migration, pgTAP test or Edge Function.
 
 ---
@@ -48,7 +49,7 @@ after verification.
 4. Don't log phone numbers or codes.
 5. One commit per step; `npm run typecheck`, `npm run lint`, `npm test` before each.
 
-## 3. Decisions to approve
+## 3. Decisions (approved 3 Nov 2026)
 
 | ID | Question | Recommendation | Why |
 | --- | --- | --- | --- |
