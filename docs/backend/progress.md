@@ -209,6 +209,6 @@ Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status k
 - [x] F2 `nextStepAfterVerify()` (`src/features/auth/afterVerify.ts`, every row of the plan's table tested)
 - [x] F3a Hold the sign-in screens (SU-10, approved 3 Nov 2026): `signInHeld` / `holdSignIn` in `AuthContext`, root guard
 - [x] F3b `account-check` screen (`app/(auth)/account-check.tsx`, 7 screen tests)
-- [ ] F4 `verify.tsx` routes to it
+- [x] F4 `verify.tsx` holds a sign-up, uses `nextStepAfterVerify()` and routes mismatches to `account-check` (5 screen tests)
 - [ ] F5 Back arrows on the sign-up and sign-in screens
 - [ ] F6 Docs, checks and manual QA

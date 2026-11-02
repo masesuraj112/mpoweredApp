@@ -16,6 +16,7 @@ import {
   isCodeComplete as isOtpComplete,
   sanitiseCode,
 } from '@/features/auth/otp';
+import { nextStepAfterVerify } from '@/features/auth/afterVerify';
 import { formatForDisplay, toE164 } from '@/features/auth/phone';
 import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
@@ -28,7 +29,7 @@ const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CE
 
 export default function VerifyScreen() {
   const { data } = useOnboarding();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, holdSignIn } = useAuth();
   const [code, setCode] = useState('');
   // True once the code is accepted: from then on a retry only repeats the profile step
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -80,20 +81,30 @@ export default function VerifyScreen() {
     setHasResent(true);
     setResendSecondsRemaining(RESEND_SECONDS);
   };
-  // After a good code: returning users go home, new users get a profile made, and a user who
-  // has no profile and no onboarding answers (signed in with an unknown number) is sent to
-  // onboarding. The root guard moves anyone with a profile to the tabs.
+  // After a good code, the next step depends on which button the person started from and whether the
+  // number has an account (docs/backend/sign-up-sign-in-plan.md, 4.2). The root guard moves anyone
+  // with a profile to the tabs, except while a sign-up is held to ask about an existing account.
   const finishSignIn = async () => {
     const profile = await hasProfile();
     if (!profile.ok) {
       setErrorMessage(authErrorMessage(profile.error.code));
       return;
     }
-    if (profile.data) {
+    const step = nextStepAfterVerify({
+      intent: data.intent,
+      hasProfile: profile.data,
+      answersComplete: toProfileArgs(data).ok,
+    });
+    if (step !== 'account-exists') holdSignIn(false);
+    if (step === 'home') {
       refreshProfile();
       return;
     }
-    if (!toProfileArgs(data).ok) {
+    if (step === 'account-exists' || step === 'no-account') {
+      router.replace({ pathname: '/(auth)/account-check', params: { reason: step } });
+      return;
+    }
+    if (step === 'sign-up-questions') {
       router.replace('/(auth)/user-type' as any);
       return;
     }
@@ -114,8 +125,12 @@ export default function VerifyScreen() {
       setIsVerifying(false);
       return;
     }
+    // A sign-up holds the app back before the code is accepted, so an existing account can't open before
+    // the person is asked about it (SU-10). finishSignIn releases the hold for every other case.
+    if (data.intent === 'sign-up') holdSignIn(true);
     const result = await verifyCode(data.phoneNumber, code);
     if (!result.ok) {
+      holdSignIn(false);
       setIsVerifying(false);
       setErrorMessage(authErrorMessage(result.error.code));
       // The server reports a wrong code and an expired one the same way, so both start over.
