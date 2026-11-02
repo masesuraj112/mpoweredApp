@@ -149,11 +149,11 @@ const strokeProps = {
 
 const useStyles = makeStyles((colors) => ({
   surface: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control / 2,
-    backgroundColor: colors.backgroundElement,
+    backgroundColor: colors.surfaceContainer,
     overflow: 'hidden',
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   surfaceDisabled: {
     opacity: 0.6,

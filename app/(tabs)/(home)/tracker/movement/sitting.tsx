@@ -90,7 +90,7 @@ const useStyles = makeStyles((colors) => ({
     width: '100%',
     alignSelf: 'center',
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     overflow: 'hidden',
     paddingHorizontal: Spacing.three,
   },

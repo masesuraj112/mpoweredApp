@@ -30,11 +30,12 @@ const useStyles = makeStyles((colors) => ({
   input: {
     height: 30,
     width: '100%',
-    borderWidth: 2,
-    borderColor: colors.outline,
     borderRadius: 4,
     paddingHorizontal: Spacing.two,
     textAlign: 'center',
     ...Typography.bodySmall,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
 }));

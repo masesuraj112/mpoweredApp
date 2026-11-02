@@ -102,7 +102,7 @@ const useStyles = makeStyles((colors) => ({
     width: '96%',
     alignSelf: 'center',
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     paddingHorizontal: Spacing.three,
   },
   optionRow: {

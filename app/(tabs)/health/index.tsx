@@ -158,7 +158,7 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.three,
   },
   profileCard: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.card,
     marginHorizontal: Spacing.four,
     padding: Spacing.three,
@@ -218,7 +218,7 @@ const useStyles = makeStyles((colors) => ({
   },
   shortcutCard: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.card,
     minHeight: 61,
     justifyContent: 'center',
@@ -267,8 +267,6 @@ const useStyles = makeStyles((colors) => ({
   actionButton: {
     flex: 1,
     backgroundColor: colors.primary,
-    borderColor: colors.divider,
-    borderWidth: 0.5,
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.two,
     alignItems: 'center',

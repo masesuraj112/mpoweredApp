@@ -96,14 +96,14 @@ const useStyles = makeStyles((colors) => ({
   },
   reflectionInput: {
     minHeight: 80,
-    borderWidth: 1,
-    borderColor: colors.divider,
     borderRadius: Radius.control,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     color: colors.text,
     ...Typography.caption,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   counter: {
     marginTop: Spacing.one,

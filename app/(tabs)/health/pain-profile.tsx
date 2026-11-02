@@ -115,10 +115,9 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.pill,
     paddingVertical: Spacing.two,
+    backgroundColor: colors.surfaceContainer,
   },
   chipText: {
     ...Typography.caption,

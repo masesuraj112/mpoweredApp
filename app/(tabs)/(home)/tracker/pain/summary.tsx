@@ -154,13 +154,12 @@ const useStyles = makeStyles((colors) => ({
   },
   card: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.four,
     paddingBottom: Spacing.four,
     overflow: 'hidden',
+    backgroundColor: colors.surfaceContainer,
   },
   cardScrollContent: {
     ...ContentColumn,
@@ -242,12 +241,11 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.caption,
   },
   closeButton: {
-    borderWidth: 1,
-    borderColor: colors.text,
     borderRadius: Radius.control,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
+    backgroundColor: colors.surfaceContainer,
   },
   closeButtonText: {
     ...Typography.bodyLarge,

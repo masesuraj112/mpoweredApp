@@ -190,10 +190,8 @@ const useStyles = makeStyles((colors) => ({
   },
   conditionsList: {
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   conditionRow: {
     paddingVertical: Spacing.two,

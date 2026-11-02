@@ -212,12 +212,11 @@ export function ChoiceCard({
 
 const useStyles = makeStyles((colors) => ({
   container: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingTop: Spacing.four,
     paddingHorizontal: Spacing.three,
     paddingBottom: Spacing.four,
+    backgroundColor: colors.surfaceContainer,
   },
   titleText: {
     ...Typography.headline,
@@ -255,22 +254,20 @@ const useStyles = makeStyles((colors) => ({
   },
   painTrackerContainer: {
     height: 572,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingTop: Spacing.three,
     paddingHorizontal: Spacing.three,
     paddingBottom: Spacing.three,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   personalCareContainer: {
     flex: 1,
     minHeight: 0,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingTop: Spacing.three,
     paddingHorizontal: Spacing.three,
     paddingBottom: Spacing.three,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   painTrackerTitle: {
     ...Typography.titleSmall,
@@ -334,8 +331,6 @@ const useFooterStyles = makeStyles((colors) => ({
   },
   navigationButton: {
     width: 105,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
     alignItems: 'center',
     justifyContent: 'center',
@@ -358,14 +353,13 @@ const useFooterStyles = makeStyles((colors) => ({
     fontWeight: '500',
   },
   pill: {
-    borderWidth: 1,
-    borderColor: colors.text,
     borderRadius: Radius.pill,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.surfaceContainer,
   },
   recordButton: {
     gap: Spacing.two,
@@ -375,7 +369,6 @@ const useFooterStyles = makeStyles((colors) => ({
   },
   painTrackerRecordButton: {
     width: 105,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.three,
@@ -385,7 +378,6 @@ const useFooterStyles = makeStyles((colors) => ({
   painTrackerPager: {
     width: 54,
     height: 31,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
     paddingVertical: 0,
     paddingHorizontal: 0,

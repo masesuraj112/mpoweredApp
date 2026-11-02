@@ -41,10 +41,8 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.four,
     paddingBottom: Spacing.three,
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   message: {
     color: colors.onSurface,
@@ -64,9 +62,8 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
+    backgroundColor: colors.surfaceContainer,
   },
   pressed: {
     opacity: 0.8,

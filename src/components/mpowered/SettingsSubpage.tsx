@@ -129,10 +129,9 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     marginBottom: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   optionPressed: {
     opacity: 0.7,

@@ -238,7 +238,7 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.three,
     paddingBottom: Spacing.three,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   panelHeading: {
     marginBottom: Spacing.three,
@@ -279,10 +279,10 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.two,
-    borderWidth: 1,
     borderRadius: Radius.control,
     paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
+    backgroundColor: colors.surfaceContainer,
   },
   recordButton: {
     borderColor: colors.primary,
@@ -316,7 +316,7 @@ const useStyles = makeStyles((colors) => ({
     marginTop: Spacing.two,
     paddingHorizontal: Spacing.four,
     borderRadius: Radius.card,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceContainer,
   },
   plus: {
     color: colors.primaryDeep,

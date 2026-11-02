@@ -92,13 +92,11 @@ const useStyles = makeStyles((colors) => ({
   optionCard: {
     gap: Spacing.two,
     padding: Spacing.three,
-    borderWidth: 2,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   optionCardSelected: {
-    borderColor: colors.primary,
+    backgroundColor: colors.secondaryContainer,
   },
   optionHeader: {
     flexDirection: 'row',

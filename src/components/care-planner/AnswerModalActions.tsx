@@ -107,8 +107,7 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.outline,
+    backgroundColor: colors.surfaceContainer,
   },
   stepEnabled: {
     backgroundColor: colors.primary,

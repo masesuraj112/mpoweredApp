@@ -422,10 +422,9 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '600',
   },
   group: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     overflow: 'hidden',
+    backgroundColor: colors.surfaceContainer,
   },
   divider: {
     height: 1,

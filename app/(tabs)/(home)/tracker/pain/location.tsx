@@ -255,8 +255,6 @@ const useStyles = makeStyles((colors) => ({
     width: 105,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
     backgroundColor: colors.primary,
     paddingVertical: Spacing.three,

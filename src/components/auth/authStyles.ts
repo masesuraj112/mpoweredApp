@@ -20,15 +20,14 @@ export const useAuthStyles = makeStyles((colors) => ({
   input: {
     minHeight: MinTapTarget + Spacing.two,
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     ...Typography.bodyLarge,
     color: colors.text,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   inputValid: {
-    borderColor: colors.primary,
-    borderWidth: 2,
+    borderBottomColor: colors.primary,
   },
 }));

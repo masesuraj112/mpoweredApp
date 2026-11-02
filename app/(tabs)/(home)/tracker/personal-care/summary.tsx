@@ -200,13 +200,11 @@ const useStyles = makeStyles((colors) => ({
   reportCard: {
     flex: 1,
     minHeight: 0,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.two,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   reportHeader: {
     flexDirection: 'row',
@@ -248,7 +246,7 @@ const useStyles = makeStyles((colors) => ({
   guidancePanel: {
     overflow: 'hidden',
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     marginHorizontal: Spacing.one,
   },
   guidanceText: {
@@ -338,12 +336,11 @@ const useStyles = makeStyles((colors) => ({
     minWidth: 105,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     minHeight: MinTapTarget,
+    backgroundColor: colors.surfaceContainer,
   },
   closeButtonPressed: {
     backgroundColor: colors.surfaceContainer,

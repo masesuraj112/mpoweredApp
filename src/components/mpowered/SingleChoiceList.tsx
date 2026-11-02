@@ -141,10 +141,8 @@ const useOptionStyles = makeStyles((colors) => ({
   personalCareList: {
     width: '96%',
     marginLeft: Spacing.one,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     overflow: 'hidden',
   },
   personalCareListFixedHeight: {

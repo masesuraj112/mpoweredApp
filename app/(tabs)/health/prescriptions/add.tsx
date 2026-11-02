@@ -279,14 +279,14 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.two,
   },
   input: {
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.outline,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: 4,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     ...Typography.bodyLarge,
     color: colors.text,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   saveButton: {
     marginHorizontal: Spacing.four,

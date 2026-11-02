@@ -110,13 +110,12 @@ const useStyles = makeStyles((colors) => ({
     color: colors.text,
   },
   printChip: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     minWidth: 76,
     alignItems: 'center',
+    backgroundColor: colors.surfaceContainer,
   },
   printChipDisabled: {
     opacity: 0.5,

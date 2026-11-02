@@ -27,14 +27,13 @@ export const useFieldStyles = makeStyles((colors) => ({
     gap: Spacing.two,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control - 2,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   boxError: {
-    borderColor: colors.error,
-    borderWidth: 2,
+    borderBottomColor: colors.error,
   },
   value: {
     flex: 1,

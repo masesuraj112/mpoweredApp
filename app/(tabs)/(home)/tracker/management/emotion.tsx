@@ -102,13 +102,13 @@ const useStyles = makeStyles((colors) => ({
   },
   input: {
     height: 146,
-    borderWidth: 1,
-    borderColor: colors.divider,
     borderRadius: Radius.control,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
     color: colors.text,
     ...Typography.bodySmall,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
 }));

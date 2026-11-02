@@ -102,12 +102,13 @@ const useStyles = makeStyles((colors) => ({
   },
   input: {
     height: 56,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: 4,
     paddingHorizontal: Spacing.three,
     ...Typography.bodyLarge,
     color: colors.text,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   inputError: {
     borderColor: colors.error,

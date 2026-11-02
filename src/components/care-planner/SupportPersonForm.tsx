@@ -99,10 +99,9 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurface,
   },
   accessList: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control + 2,
     paddingHorizontal: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   accessRow: {
     paddingVertical: Spacing.two,

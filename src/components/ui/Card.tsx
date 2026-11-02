@@ -30,8 +30,6 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.backgroundElement,
   },
   outlined: {
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.outline,
+    backgroundColor: colors.surfaceContainer,
   },
 }));

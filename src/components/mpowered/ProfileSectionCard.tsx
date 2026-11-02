@@ -49,7 +49,7 @@ export function ProfileSectionCard({ section, showPeriod = false }: ProfileSecti
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.card,
     marginHorizontal: Spacing.five,
     marginBottom: Spacing.four,

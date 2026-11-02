@@ -196,13 +196,12 @@ const useStyles = makeStyles((colors) => ({
   listFrame: {
     marginHorizontal: Spacing.four,
     marginTop: Spacing.four,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     padding: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   list: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.card,
     overflow: 'hidden',
   },

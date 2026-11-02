@@ -33,10 +33,8 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: 'center',
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control - 2,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceContainer,
   },
   value: {
     ...Typography.bodyLarge,

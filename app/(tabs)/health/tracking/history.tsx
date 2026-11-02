@@ -140,9 +140,8 @@ const useStyles = makeStyles((colors) => ({
   list: {
     marginHorizontal: Spacing.four,
     marginTop: Spacing.four,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.outline,
     borderRadius: 4,
+    backgroundColor: colors.surfaceContainer,
   },
   listItem: {
     borderBottomWidth: StyleSheet.hairlineWidth,

@@ -75,10 +75,8 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.three,
     paddingBottom: Spacing.three,
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   header: {
     flexDirection: 'row',

@@ -134,12 +134,13 @@ const useStyles = makeStyles((colors) => ({
   input: {
     flex: 1,
     minHeight: 120,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: 4,
     padding: Spacing.three,
     ...Typography.bodySmall,
     color: colors.text,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   accessoryBar: {
     alignItems: 'flex-end',

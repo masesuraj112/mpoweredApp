@@ -263,11 +263,10 @@ const useStyles = makeStyles((colors) => ({
   // Matches the screenshot: the option rows sit in their own bordered box
   // inside the card, distinct from ChoiceCard's own outer border.
   optionsBox: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     width: '100%',
     overflow: 'hidden',
+    backgroundColor: colors.surfaceContainer,
   },
   scrollableOptionsBox: {
     flex: 1,
@@ -284,8 +283,6 @@ const useStyles = makeStyles((colors) => ({
   },
   selectedChip: {
     minHeight: 30,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.pill,
     backgroundColor: colors.secondaryContainer,
     flexDirection: 'row',

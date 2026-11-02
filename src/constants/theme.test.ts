@@ -49,6 +49,12 @@ const pairs: [Role, Role, number][] = [
   ['success', 'successContainer', TEXT],
   ['warning', 'warningContainer', TEXT],
   ['onCalendarSelected', 'calendarSelected', TEXT],
+  // Boxes are solid fills: surfaceContainer, and secondaryContainer when selected.
+  ['primary', 'surfaceContainer', TEXT],
+  ['error', 'surfaceContainer', TEXT],
+  ['text', 'secondaryContainer', TEXT],
+  ['textSecondary', 'secondaryContainer', TEXT],
+  ['primary', 'secondaryContainer', TEXT],
   ['outline', 'background', CONTROL],
   ['outline', 'surface', CONTROL],
   ['controlBorder', 'surface', CONTROL],

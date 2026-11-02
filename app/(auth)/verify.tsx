@@ -241,14 +241,11 @@ const useStyles = makeStyles((colors) => ({
     aspectRatio: 0.8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.control,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceContainer,
   },
   codeCellNext: {
-    borderColor: colors.primary,
-    borderWidth: 2,
+    backgroundColor: colors.secondaryContainer,
   },
   codeDigit: {
     ...Typography.title,

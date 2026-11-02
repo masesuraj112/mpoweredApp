@@ -232,12 +232,10 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
   },
   filterChip: {
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceContainer,
     maxWidth: '55%',
   },
   emptyText: {
@@ -263,10 +261,9 @@ const useStyles = makeStyles((colors) => ({
   metricRow: {
     flexDirection: 'row',
     marginTop: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.divider,
     borderRadius: Radius.card,
     overflow: 'hidden',
+    backgroundColor: colors.surfaceContainer,
   },
   metricButton: {
     flex: 1,
@@ -287,10 +284,9 @@ const useStyles = makeStyles((colors) => ({
   },
   table: {
     marginTop: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.divider,
     borderRadius: Radius.control,
     paddingHorizontal: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   tableRow: {
     flexDirection: 'row',

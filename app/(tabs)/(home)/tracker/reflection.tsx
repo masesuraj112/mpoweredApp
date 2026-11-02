@@ -183,11 +183,12 @@ const useStyles = makeStyles((colors) => ({
   input: {
     minHeight: 220,
     padding: Spacing.three,
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     color: colors.text,
     ...Typography.bodyLarge,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   loader: {
     marginTop: Spacing.five,

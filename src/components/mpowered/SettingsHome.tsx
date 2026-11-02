@@ -109,10 +109,9 @@ const useStyles = makeStyles((colors) => ({
   },
   rowsCard: {
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.outline,
     borderRadius: Radius.card,
     paddingHorizontal: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   row: {
     minHeight: 76,
