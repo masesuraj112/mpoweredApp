@@ -1,7 +1,8 @@
 # Native builds crash on launch: Expo SDK packages out of step
 
-> **Status:** proposed, not implemented. This branch (`fix/align-expo-sdk-packages`) holds only this document so
-> the fix can be agreed first. Owner: Ryan Pham. Raised 2 Nov 2026.
+> **Status:** implemented on this branch (`fix/align-expo-sdk-packages`) with `npx expo install --fix`; typecheck,
+> lint and Jest pass. Native builds (iOS and Android) are not yet tested: see section 7. Raised by Ryan Pham on
+> 2 Nov 2026; branch now owned by Mohammad Rehman.
 
 ## 1. Summary
 
