@@ -222,7 +222,9 @@ planReminders(input: {
   Commit: `Open the right screen from a reminder`
 
 ### Phase N7 — Clean-up
-- **N7** `cancelAllReminders()` on sign-out and after account deletion.
+- **N7** `signOut()` (`src/services/auth.ts`) calls `cancelAllReminders()` first, even if signing out then fails.
+  That covers both Sign out buttons and account deletion (`useAccountDeletion` signs out once the account is
+  gone). `AuthContext` also cancels on Supabase's `SIGNED_OUT` event, for a session that ends without Sign out.
   Commit: `Cancel reminders on sign-out and account deletion`
 
 ### Phase N8 — Docs, checks and manual QA
@@ -252,7 +254,7 @@ planReminders(input: {
 | `useOpenTappedReminder.test.ts` | Opens the plan on top of the Care Planner list; assessment → home; ignores non-taps and unknown notifications; clears each tap |
 | `useReminderPermission.test.ts` | Reads without asking; doesn't ask when allowed; asks when undecided; refusal marks denied; a failed read is unknown, not refused; re-reads on foreground; opens settings |
 | `__tests__/notifications-settings.test.tsx` | Turning on asks then saves; refused saves nothing; turning off never asks; the denied message and Open settings |
-| `auth.test.ts` / `useAccountDeletion.test.ts` (extend) | Reminders cancelled |
+| `auth.test.ts` (extend) | Reminders cancelled before signing out; signing out still happens if cancelling fails. `useAccountDeletion.test.ts` already checks it signs out |
 
 ### 6.3 Rows to add to `docs/testing.md`
 - Reminders only for saved future appointments, at the chosen times.

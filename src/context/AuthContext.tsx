@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { getProfile, type UserProfile } from '../services/auth';
+import { cancelAllReminders } from '../services/notifications';
 import type { AppError } from '../lib/errors';
 
 type AuthContextType = {
@@ -45,7 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        } = supabase.auth.onAuthStateChange((event, session) => {
+            // Also covers a session that ends without Sign out (for example it expired).
+            if (event === 'SIGNED_OUT') void cancelAllReminders();
             if (mounted) {
                 setSession(session);
                 setLoading(false);

@@ -1,6 +1,8 @@
 jest.mock('@/lib/supabase', () => ({ supabase: {} })); // must be above the imports that use it
+jest.mock('@/services/notifications', () => ({ cancelAllReminders: jest.fn() }));
 
 import { getProfile, hasProfile, sendVerificationCode, signOut, verifyCode } from '@/services/auth';
+import { cancelAllReminders } from '@/services/notifications';
 
 const fakeClient = (parts: Record<string, unknown>) => parts as never;
 
@@ -160,6 +162,26 @@ describe('verifyCode', () => {
 });
 
 describe('signOut', () => {
+  const mockCancel = cancelAllReminders as jest.Mock;
+  beforeEach(() => {
+    mockCancel.mockReset().mockResolvedValue({ ok: true, data: undefined });
+  });
+
+  it('cancels this phone’s reminders before signing out', async () => {
+    const signOutCall = jest.fn().mockResolvedValue({ error: null });
+    await signOut(fakeClient({ auth: { signOut: signOutCall } }));
+    expect(mockCancel).toHaveBeenCalledTimes(1);
+    expect(mockCancel.mock.invocationCallOrder[0]).toBeLessThan(signOutCall.mock.invocationCallOrder[0]);
+  });
+
+  it('still signs out when cancelling the reminders fails', async () => {
+    mockCancel.mockResolvedValue({ ok: false, error: { code: 'UNKNOWN', message: 'native module missing' } });
+    const signOutCall = jest.fn().mockResolvedValue({ error: null });
+    const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));
+    expect(signOutCall).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ ok: true, data: undefined });
+  });
+
   it('signs out and returns ok', async () => {
     const signOutCall = jest.fn().mockResolvedValue({ error: null });
     const result = await signOut(fakeClient({ auth: { signOut: signOutCall } }));

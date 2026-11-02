@@ -211,7 +211,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 - [x] N4 Keep reminders up to date (`RemindersProvider`, `syncReminders`; refresh after settings, appointment and assessment saves)
 - [x] N5 Ask for permission from Settings (`useReminderPermission`; denied message with Open settings; toggles labelled)
 - [x] N6 Open the right screen from a reminder (appointment → its Review screen; assessment → Pain Tracker home)
-- [ ] N7 Cancel reminders on sign-out and account deletion
+- [x] N7 Cancel reminders on sign-out and account deletion (in `signOut()`, plus `AuthContext` on `SIGNED_OUT`)
 - [ ] N8a Dev-only test reminder
 - [ ] N8b Docs and green CI
 - [ ] N8c Manual QA on iPhone and Android

@@ -8,6 +8,7 @@ import { toE164 } from '@/features/auth/phone';
 import { mapError } from '@/lib/errors';
 import { fail, ok, type Result } from '@/lib/result';
 import { supabase } from '@/lib/supabase';
+import { cancelAllReminders } from '@/services/notifications';
 import type { Database } from '@/types/database';
 
 type Client = SupabaseClient<Database>;
@@ -79,9 +80,14 @@ export async function verifyCode(
   });
 }
 
-/** Ends the session on this device. */
+/**
+ * Ends the session on this device. Reminders are cancelled first, even if signing out then fails,
+ * so a signed-out phone never reminds anyone (account deletion signs out too). If signing out fails
+ * the person is still signed in, and their reminders come back the next time the app opens.
+ */
 export function signOut(client: Client = supabase): Promise<Result<void>> {
   return run(async () => {
+    await cancelAllReminders();
     const { error } = await client.auth.signOut();
     if (error) return fail(mapError(error));
     return ok(undefined);
