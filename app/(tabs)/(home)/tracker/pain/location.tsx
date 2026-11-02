@@ -1,12 +1,21 @@
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
+
 import { usePainAssessment } from '@/features/assessments/pain/context';
+
 import { router } from 'expo-router';
+
 import { useState } from 'react';
+
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
@@ -129,15 +138,15 @@ export default function PainLocationScreen() {
               ))}
             </View>
             <View style={styles.modalActions}>
-              <Pressable
+              <Button
+                label="Cancel"
+                variant="outlined"
                 onPress={() => setIsOtherModalVisible(false)}
-                accessibilityRole="button"
                 accessibilityLabel="Cancel"
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
-              <Pressable
+              />
+              <Button
+                label="Ok"
+                variant="primary"
                 onPress={() => {
                   const value = draftOtherLocation.trim();
                   if (!value) {
@@ -150,12 +159,8 @@ export default function PainLocationScreen() {
                   );
                   setIsOtherModalVisible(false);
                 }}
-                accessibilityRole="button"
                 accessibilityLabel="Ok"
-                style={styles.okButton}
-              >
-                <Text style={styles.okButtonText}>Ok</Text>
-              </Pressable>
+              />
             </View>
           </View>
         </View>
@@ -240,29 +245,5 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.two,
     marginTop: 'auto',
     paddingHorizontal: Spacing.two,
-  },
-  cancelButton: {
-    height: 48,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
-  },
-  cancelButtonText: {
-    color: colors.primary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
-  },
-  okButton: {
-    width: 105,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-  },
-  okButtonText: {
-    color: colors.onPrimary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
   },
 }));

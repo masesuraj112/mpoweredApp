@@ -1,15 +1,24 @@
 import { TIPS_URL } from '@/constants/socialHealthOptions';
+
 import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
+
 import {
   toSocialHealthSummary,
   type SocialHealthSummaryData,
 } from '@/features/assessments/social-health/summary';
+
 import { getSocialHealthEntryForWeek } from '@/services/social-health';
+
 import { router, useLocalSearchParams } from 'expo-router';
+
 import { useEffect, useState } from 'react';
+
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 function SocialHealthSummaryView({ summary, onClose }: { summary: SocialHealthSummaryData; onClose: () => void }) {
   const styles = useStyles();
   const impact = summary.impactPhrase;
@@ -143,14 +152,12 @@ export default function SummaryScreen() {
 function CloseButton({ onPress }: { onPress: () => void }) {
   const styles = useStyles();
   return (
-    <Pressable
+    <Button
+      label="Close"
+      variant="outlined"
       onPress={onPress}
-      accessibilityRole="button"
       accessibilityLabel="Close summary"
-      style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-    >
-      <Text style={styles.closeButtonText}>Close</Text>
-    </Pressable>
+    />
   );
 }
 
@@ -327,23 +334,5 @@ const useStyles = makeStyles((colors) => ({
   savedText: {
     color: colors.textSecondary,
     ...Typography.caption,
-  },
-  closeButton: {
-    minWidth: 105,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonPressed: {
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonText: {
-    color: colors.textSecondary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
   },
 }));

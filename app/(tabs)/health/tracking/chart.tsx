@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
+
 import { Pressable, ScrollView, Text, View } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Dropdown } from '@/components/mpowered/Dropdown';
+
 import { PainIntensityChart } from '@/components/mpowered/PainIntensityChart';
+
 import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
+
 import { ErrorState } from '@/components/ui/ErrorState';
+
 import { LoadingState } from '@/components/ui/LoadingState';
+
 import { getLocalToday } from '@/features/assessments/week';
+
 import { healthLoadMessage } from '@/features/health-profile/messages';
+
 import { buildTrackingChartHtml } from '@/features/health-profile/pdf-export';
+
 import { formatLongDate } from '@/features/health-profile/profile';
+
 import {
   PAIN_METRICS,
   filterByLocation,
@@ -20,11 +32,16 @@ import {
   type PainMetric,
   type WeeklyPainRecord,
 } from '@/features/health-profile/tracking';
+
 import { usePdfExport } from '@/hooks/usePdfExport';
+
 import type { AppError } from '@/lib/errors';
 import { getPainEntries } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 const PAGE_SIZE = 5;
 const ALL_LOCATIONS = '__all__';
 
@@ -181,17 +198,12 @@ export default function TrackingChartScreen() {
             )}
 
             {hasMore && (
-              <Pressable
-                style={styles.seeMoreButton}
+              <Button
+                label={loadingMore ? 'Loading…' : 'See more records'}
+                variant="outlined"
                 onPress={loadMore}
                 disabled={loadingMore}
-                accessibilityRole="button"
-                accessibilityState={{ busy: loadingMore }}
-              >
-                <Text style={styles.seeMoreButtonText}>
-                  {loadingMore ? 'Loading…' : 'See more records'}
-                </Text>
-              </Pressable>
+              />
             )}
             {loadMoreNotice && (
               <Text
@@ -310,19 +322,5 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
-  },
-  seeMoreButton: {
-    alignSelf: 'center',
-    marginTop: Spacing.three,
-    backgroundColor: colors.background,
-    borderRadius: Radius.control,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-  },
-  seeMoreButtonText: {
-    ...Typography.caption,
-    fontWeight: '500',
-    color: colors.text,
   },
 }));

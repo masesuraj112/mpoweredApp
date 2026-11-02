@@ -1,9 +1,15 @@
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { signOut } from '@/services/auth';
+
 import { Image } from 'expo-image';
+
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Button } from '@/components/ui/Button';
+
 
 export type SettingsRowProps = {
   icon: string;
@@ -49,16 +55,13 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
           ))}
         </View>
 
-        <Pressable
+        <Button
+          label={isSigningOut ? 'Signing out…' : 'Sign out'}
+          accessibilityLabel="Sign out"
+          variant="outlined"
           onPress={handleSignOut}
           disabled={isSigningOut}
-          accessibilityRole="button"
-          accessibilityLabel="Sign out"
-          accessibilityState={{ disabled: isSigningOut }}
-          style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
-        >
-          {isSigningOut ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
-        </Pressable>
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -143,23 +146,6 @@ const useStyles = makeStyles((colors) => ({
   chevron: {
     color: colors.text,
     ...Typography.headline,
-    fontFamily: Fonts.headingRegular,
-  },
-  signOutButton: {
-    marginTop: Spacing.four,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-  },
-  signOutPressed: {
-    opacity: 0.8,
-  },
-  signOutText: {
-    color: colors.onPrimary,
-    ...Typography.titleSmall,
     fontFamily: Fonts.headingRegular,
   },
 }));

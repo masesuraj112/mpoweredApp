@@ -1,20 +1,36 @@
 import { router } from 'expo-router';
+
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+
 import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
+
 import { ErrorState } from '@/components/ui/ErrorState';
+
 import { LoadingState } from '@/components/ui/LoadingState';
+
 import { getLocalToday } from '@/features/assessments/week';
+
 import { healthLoadMessage } from '@/features/health-profile/messages';
+
 import { buildProfileHtml } from '@/features/health-profile/pdf-export';
+
 import { formatLongDate, lastUpdated, toProfileSections } from '@/features/health-profile/profile';
+
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
+
 import { usePdfExport } from '@/hooks/usePdfExport';
+
 import type { PdfAction } from '@/services/pdf';
 import { getHealthProfile } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+
+import { ContentColumn, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 const loadProfile = () => getHealthProfile();
 
 export default function PainProfileScreen() {
@@ -83,13 +99,11 @@ export default function PainProfileScreen() {
         ))}
 
         {profile && (
-          <Pressable
-            style={styles.recordsButton}
+          <Button
+            label="Check my health tracking records"
+            variant="primary"
             onPress={() => router.push('/health/tracking/chart')}
-            accessibilityRole="button"
-          >
-            <Text style={styles.recordsButtonText}>Check my health tracking records</Text>
-          </Pressable>
+          />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -137,18 +151,5 @@ const useStyles = makeStyles((colors) => ({
     marginHorizontal: Spacing.three,
     marginTop: Spacing.two,
     marginBottom: Spacing.four,
-  },
-  recordsButton: {
-    marginHorizontal: Spacing.five,
-    backgroundColor: colors.primary,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-    minHeight: MinTapTarget,
-  },
-  recordsButtonText: {
-    ...Typography.bodySmall,
-    fontWeight: '600',
-    color: colors.onPrimary,
   },
 }));

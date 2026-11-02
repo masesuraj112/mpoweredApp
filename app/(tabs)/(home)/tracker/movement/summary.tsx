@@ -1,8 +1,13 @@
 import { assessmentSaveMessage } from '@/features/assessments/messages';
+
 import { toMovementSummary, type MovementSummaryData } from '@/features/assessments/movement/summary';
+
 import { getMovementEntryForWeek } from '@/services/assessments';
+
 import { router, useLocalSearchParams } from 'expo-router';
+
 import { useEffect, useState } from 'react';
+
 import {
   ActivityIndicator,
   Linking,
@@ -12,7 +17,10 @@ import {
   View,
 } from 'react-native';
 
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
 
 function MovementSummaryView({ summary, onClose }: { summary: MovementSummaryData; onClose: () => void }) {
@@ -81,14 +89,12 @@ function MovementSummaryView({ summary, onClose }: { summary: MovementSummaryDat
           <View style={styles.footerRow}>
             {/* TODO: Persist this report to the My Health before showing its saved status. */}
             <Text style={styles.savedText}>Saved to My Health</Text>
-            <Pressable
+            <Button
+              label="Close"
+              variant="outlined"
               onPress={onClose}
-              accessibilityRole="button"
               accessibilityLabel="Close summary"
-              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
+            />
           </View>
         </View>
       </View>
@@ -141,14 +147,12 @@ export default function SummaryScreen() {
       ) : (
         <>
           <Text style={styles.errorText}>{view.message}</Text>
-          <Pressable
+          <Button
+            label="Close"
+            variant="outlined"
             onPress={close}
-            accessibilityRole="button"
             accessibilityLabel="Close summary"
-            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </Pressable>
+          />
         </>
       )}
     </View>
@@ -193,9 +197,6 @@ const useStyles = makeStyles((colors) => ({
   footerDivider: { height: 1, backgroundColor: colors.divider, marginTop: Spacing.two, marginBottom: Spacing.two },
   footerRow: { minHeight: 34, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
   savedText: { color: colors.textSecondary, ...Typography.caption },
-  closeButton: { minWidth: 105, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.control, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, minHeight: MinTapTarget, backgroundColor: colors.surfaceContainer },
-  closeButtonPressed: { backgroundColor: colors.surfaceContainer },
-  closeButtonText: { color: colors.textSecondary, ...Typography.bodySmall, fontWeight: '500' },
   centered: { justifyContent: 'center', alignItems: 'center', gap: Spacing.three },
   errorText: { color: colors.text, ...Typography.bodySmall, textAlign: 'center' },
 }));

@@ -6,13 +6,20 @@ import {
   SettingsModalSection,
   SettingsModalToggleRow,
 } from '@/components/mpowered/SettingsModal';
+
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+
 import { EmptyState } from '@/components/ui/EmptyState';
+
 import { ErrorState } from '@/components/ui/ErrorState';
+
 import { LoadingState } from '@/components/ui/LoadingState';
+
 import { formatForDisplay } from '@/features/auth/phone';
-import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
+
 import {
   EMPTY_SUPPORT_PERSON_DRAFT,
   invitationStatusLabel,
@@ -20,10 +27,15 @@ import {
   validateSupportPerson,
   type SupportPersonDraft,
 } from '@/features/care-planner/supportPerson';
+
 import type { SupportPerson } from '@/features/care-planner/types';
 import { useMySupportPersons } from '@/features/care-planner/useMySupportPersons';
+
 import { useState } from 'react';
-import { Alert, Pressable, Text } from 'react-native';
+
+import { Alert, Text } from 'react-native';
+import { Button } from '@/components/ui/Button';
+
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const deleteIcon = require('../../../assets/images/settings/delete.svg');
@@ -130,14 +142,12 @@ export default function SupportPersonsScreen() {
         );
       })}
       {state.status === 'ready' && (
-        <Pressable
+        <Button
+          label="Add support person"
+          variant="primary"
           onPress={() => openDraft({ ...EMPTY_SUPPORT_PERSON_DRAFT })}
-          accessibilityRole="button"
           accessibilityLabel="Add support person"
-          style={styles.addButton}
-        >
-          <Text style={styles.addButtonText}>Add support person</Text>
-        </Pressable>
+        />
       )}
 
       {draft && (
@@ -203,18 +213,4 @@ const useStyles = makeStyles((colors) => ({
   },
   sectionTitle: { color: colors.text, ...Typography.titleSmall, marginBottom: Spacing.two },
   // Same as the Sign out button on the Account page.
-  addButton: {
-    marginTop: Spacing.two,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-  },
-  addButtonText: {
-    color: colors.onPrimary,
-    ...Typography.titleSmall,
-    fontFamily: Fonts.headingRegular,
-  },
 }));

@@ -1,11 +1,16 @@
 import { assessmentSaveMessage } from '@/features/assessments/messages';
+
 import {
   toPersonalCareSummary,
   type PersonalCareSummaryData,
 } from '@/features/assessments/personal-care/summary';
+
 import { getPersonalCareEntryForWeek } from '@/services/assessments';
+
 import { router, useLocalSearchParams } from 'expo-router';
+
 import { useEffect, useState } from 'react';
+
 import {
   ActivityIndicator,
   Linking,
@@ -15,7 +20,10 @@ import {
   View,
 } from 'react-native';
 
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
 const closeToHome = () => router.replace('/home');
@@ -83,14 +91,12 @@ function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData
           <View style={styles.footerDivider} />
           <View style={styles.footerRow}>
             <Text style={styles.savedText}>Saved to Care Journal</Text>
-            <Pressable
+            <Button
+              label="Close"
+              variant="outlined"
               onPress={closeToHome}
-              accessibilityRole="button"
               accessibilityLabel="Close summary"
-              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
+            />
           </View>
         </View>
       </View>
@@ -143,14 +149,12 @@ export default function SummaryScreen() {
       ) : (
         <>
           <Text style={styles.errorText}>{view.message}</Text>
-          <Pressable
+          <Button
+            label="Close"
+            variant="outlined"
             onPress={close}
-            accessibilityRole="button"
             accessibilityLabel="Close summary"
-            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </Pressable>
+          />
         </>
       )}
     </View>
@@ -331,23 +335,5 @@ const useStyles = makeStyles((colors) => ({
   savedText: {
     color: colors.textSecondary,
     ...Typography.caption,
-  },
-  closeButton: {
-    minWidth: 105,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonPressed: {
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonText: {
-    color: colors.textSecondary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
   },
 }));

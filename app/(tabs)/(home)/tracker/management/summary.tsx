@@ -1,15 +1,24 @@
 import { MANAGEMENT_TIPS_URL } from '@/constants/managementOptions';
+
 import { managementSaveMessage } from '@/features/assessments/management/messages';
+
 import {
   toManagementSummary,
   type ManagementSummaryData,
 } from '@/features/assessments/management/summary';
+
 import { getManagementEntryForWeek } from '@/services/management';
+
 import { router, useLocalSearchParams } from 'expo-router';
+
 import { useEffect, useState } from 'react';
+
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummaryData; onClose: () => void }) {
   const styles = useStyles();
   return (
@@ -58,14 +67,12 @@ function ManagementSummaryView({ summary, onClose }: { summary: ManagementSummar
           <View style={styles.footerRow}>
             {/* TODO: Persist this report to the My Health before showing its saved status. */}
             <Text style={styles.savedText}>Saved to My Health</Text>
-            <Pressable
+            <Button
+              label="Close"
+              variant="outlined"
               onPress={onClose}
-              accessibilityRole="button"
               accessibilityLabel="Close summary"
-              style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
+            />
           </View>
         </View>
       </View>
@@ -129,14 +136,12 @@ export default function SummaryScreen() {
 function CloseButton({ onPress }: { onPress: () => void }) {
   const styles = useStyles();
   return (
-    <Pressable
+    <Button
+      label="Close"
+      variant="outlined"
       onPress={onPress}
-      accessibilityRole="button"
       accessibilityLabel="Close summary"
-      style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-    >
-      <Text style={styles.closeButtonText}>Close</Text>
-    </Pressable>
+    />
   );
 }
 
@@ -298,23 +303,5 @@ const useStyles = makeStyles((colors) => ({
   savedText: {
     color: colors.textSecondary,
     ...Typography.caption,
-  },
-  closeButton: {
-    minWidth: 105,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    minHeight: MinTapTarget,
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonPressed: {
-    backgroundColor: colors.surfaceContainer,
-  },
-  closeButtonText: {
-    color: colors.textSecondary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
   },
 }));

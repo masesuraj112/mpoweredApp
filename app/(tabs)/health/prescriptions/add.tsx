@@ -1,12 +1,20 @@
 import { router, useLocalSearchParams } from 'expo-router';
+
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+
+import { ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Dropdown } from '@/components/mpowered/Dropdown';
+
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+
 import { ErrorState } from '@/components/ui/ErrorState';
+
 import { LoadingState } from '@/components/ui/LoadingState';
+
 import {
   FORMS,
   STRENGTH_UNITS,
@@ -16,9 +24,13 @@ import {
   validatePrescription,
   type PrescriptionForm,
 } from '@/features/health-profile/prescriptions';
+
 import { getPrescription, savePrescription } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
   return (Object.keys(singulars) as T[]).map((value) => ({
@@ -225,17 +237,12 @@ export default function AddPrescriptionScreen() {
           </Text>
         )}
 
-        <Pressable
-          style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+        <Button
+          label={saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
+          variant="primary"
           onPress={handleSave}
           disabled={saving}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: saving, busy: saving }}
-        >
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
-          </Text>
-        </Pressable>
+        />
       </ScrollView>
       {doneBar.bar}
     </SafeAreaView>
@@ -288,18 +295,6 @@ const useStyles = makeStyles((colors) => ({
     borderBottomWidth: 2,
     borderBottomColor: colors.outline,
   },
-  saveButton: {
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.five,
-    backgroundColor: colors.background,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-    minHeight: MinTapTarget,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
   inputError: {
     borderColor: colors.error,
   },
@@ -311,10 +306,5 @@ const useStyles = makeStyles((colors) => ({
   formError: {
     marginHorizontal: Spacing.four,
     marginTop: Spacing.three,
-  },
-  saveButtonText: {
-    ...Typography.caption,
-    fontWeight: '600',
-    color: colors.text,
   },
 }));
