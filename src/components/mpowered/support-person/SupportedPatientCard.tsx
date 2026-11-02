@@ -33,9 +33,12 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
           <Text style={styles.name} numberOfLines={1}>
             {patient.name}
           </Text>
-          <Text style={styles.condition} numberOfLines={1}>
-            {patient.condition}
-          </Text>
+          {/* Hidden when the patient has no conditions recorded. */}
+          {patient.condition ? (
+            <Text style={styles.condition} numberOfLines={1}>
+              {patient.condition}
+            </Text>
+          ) : null}
         </View>
         <StatusBadge hasUpcoming={!!next} />
       </View>
