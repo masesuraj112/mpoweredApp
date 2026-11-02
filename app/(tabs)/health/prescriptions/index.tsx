@@ -15,9 +15,8 @@ import {
 } from '@/features/health-profile/prescriptions';
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { deletePrescription, getPrescriptions } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -111,7 +110,7 @@ export default function PrescriptionsScreen() {
                     <Pressable
                       style={styles.iconButton}
                       onPress={() => handleEdit(prescription)}
-                      hitSlop={scaleWidth(8)}
+                      hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Edit ${formatPrescriptionName(prescription)}`}
                     >
@@ -121,7 +120,7 @@ export default function PrescriptionsScreen() {
                       style={styles.iconButton}
                       onPress={() => handleDelete(prescription)}
                       disabled={deletingId !== null}
-                      hitSlop={scaleWidth(8)}
+                      hitSlop={8}
                       accessibilityRole="button"
                       accessibilityLabel={`Delete ${formatPrescriptionName(prescription)}`}
                     >
@@ -151,69 +150,69 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   emptyState: {
     alignItems: 'center',
-    marginTop: scaleHeight(106),
-    paddingHorizontal: scaleWidth(24),
+    marginTop: Spacing.six,
+    paddingHorizontal: Spacing.four,
   },
   // Bounding box of the 42x70 pill once rotated 42.22deg, as laid out in Figma.
   pillIconFrame: {
-    width: scaleWidth(78),
-    height: scaleWidth(80),
+    width: 78,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: scaleHeight(25),
+    marginBottom: Spacing.four,
   },
   pillIcon: {
-    width: scaleWidth(42),
-    height: scaleWidth(70),
+    width: 42,
+    height: 70,
     transform: [{ rotate: '42.22deg' }],
   },
   emptyText: {
-    fontSize: scaleFont(16),
-    lineHeight: scaleFont(22),
+    ...Typography.bodyLarge,
     color: colors.textSubtle,
     textAlign: 'center',
-    marginBottom: scaleHeight(23),
+    marginBottom: Spacing.four,
   },
   addButton: {
-    width: scaleWidth(172),
-    height: scaleHeight(35),
+    width: 172,
     backgroundColor: colors.background,
-    borderRadius: scaleWidth(12),
-    paddingHorizontal: scaleWidth(15),
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   addButtonText: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
+    ...Typography.bodySmall,
     fontWeight: '600',
     letterSpacing: 0.1,
     color: colors.text,
   },
   listFrame: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(24),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.four,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(12),
-    padding: scaleWidth(12),
+    borderRadius: Radius.card,
+    padding: Spacing.three,
   },
   list: {
     backgroundColor: colors.surface,
-    borderRadius: scaleWidth(12),
+    borderRadius: Radius.card,
     overflow: 'hidden',
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
-    minHeight: scaleHeight(56),
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(8),
+    gap: Spacing.three,
+    minHeight: 56,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     borderBottomWidth: 1,
     borderBottomColor: colors.outline,
   },
@@ -224,15 +223,13 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
   },
   name: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
+    ...Typography.bodySmall,
     fontWeight: '500',
     letterSpacing: 0.25,
     color: colors.text,
   },
   frequency: {
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(16),
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.text,
   },
@@ -241,19 +238,20 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: 'center',
   },
   icon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
+    width: 24,
+    height: 24,
   },
   addPrescriptionsButton: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(16),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
     backgroundColor: colors.primary,
-    borderRadius: scaleWidth(10),
-    paddingVertical: scaleHeight(14),
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
     alignItems: 'center',
+    minHeight: MinTapTarget,
   },
   addPrescriptionsButtonText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.onPrimary,
   },

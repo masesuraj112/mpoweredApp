@@ -1,9 +1,8 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
   title: string;
   /** Optional label shown on the right of the top bar, e.g. "Homescreen" */
@@ -43,15 +42,15 @@ export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: Pres
 const useStyles = makeStyles((colors) => ({
   topBar: {
     backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: scaleWidth(19),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(14),
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   topBarLabel: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '600',
     color: colors.text,
   },
@@ -61,13 +60,14 @@ const useStyles = makeStyles((colors) => ({
     alignSelf: 'flex-start',
   },
   backChevron: {
-    fontSize: scaleFont(22),
+    ...Typography.title,
+    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
-    marginRight: scaleWidth(2),
-    marginTop: -2,
+    marginRight: Spacing.half,
+    marginTop: -Spacing.half,
   },
   backText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '500',
     color: colors.textSecondary,
   },
@@ -75,13 +75,12 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: scaleHeight(20),
-    marginHorizontal: scaleWidth(24),
+    marginTop: Spacing.three,
+    marginHorizontal: Spacing.four,
   },
   title: {
     flexShrink: 1,
-    fontSize: scaleFont(20),
-    fontWeight: '600',
+    ...Typography.titleSmall,
     color: colors.text,
   },
 }));

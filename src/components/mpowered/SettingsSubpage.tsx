@@ -1,4 +1,3 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Stack } from 'expo-router';
 import { Pressable, ScrollView, Text } from 'react-native';
@@ -6,7 +5,7 @@ import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
   return (
@@ -30,19 +29,17 @@ export function SettingsSubpage({ title, children }: { title: string; children: 
 export const useSettingsSubpageStyles = makeStyles((colors) => ({
   placeholder: {
     color: colors.textSecondary,
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
   },
   link: {
-    minHeight: scaleHeight(48),
+    minHeight: 48,
     justifyContent: 'center',
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
   linkText: {
     color: colors.primary,
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
   },
 }));
 
@@ -120,21 +117,22 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
+    ...ContentColumn,
     flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(24),
-    paddingBottom: scaleHeight(24),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.four,
   },
   option: {
-    minHeight: scaleHeight(56),
-    paddingHorizontal: scaleWidth(20),
+    minHeight: 56,
+    paddingHorizontal: Spacing.four,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(12),
-    marginBottom: scaleHeight(16),
+    borderRadius: Radius.card,
+    marginBottom: Spacing.three,
   },
   optionPressed: {
     opacity: 0.7,
@@ -144,19 +142,19 @@ const useStyles = makeStyles((colors) => ({
     elevation: 10,
   },
   optionIcon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
+    width: 24,
+    height: 24,
   },
   optionLabel: {
     flex: 1,
     color: colors.text,
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
   optionArrow: {
     color: colors.text,
-    fontSize: scaleFont(26),
-    lineHeight: scaleFont(26),
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
   },
   destructiveText: {
     color: colors.error,

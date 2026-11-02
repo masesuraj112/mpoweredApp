@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
-import { MinTapTarget, makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Spacing } from '@/constants/theme';
 import type { DictationStatus } from '@/features/care-planner/voice-recording';
 
 const microphoneIcon = require('../../../assets/images/care-planner/microphone.png');
@@ -98,7 +98,7 @@ const useStyles = makeStyles((colors) => ({
     minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 6,
+    padding: Spacing.two,
   },
   wrapper: {
     width: SIZE,

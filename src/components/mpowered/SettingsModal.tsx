@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
 import { Keyboard, Modal, Pressable, ScrollView, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
 /* -------------------------------------------------------------------------- */
@@ -304,46 +304,44 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 13,
+    padding: Spacing.three,
     backgroundColor: colors.backdrop,
   },
   card: {
     width: '100%',
     maxWidth: 386,
     maxHeight: '90%',
-    paddingHorizontal: 24,
-    paddingTop: 28,
-    paddingBottom: 8,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.five,
+    paddingBottom: Spacing.two,
+    borderRadius: Radius.card,
     backgroundColor: colors.surface,
   },
   scroll: {
     flexGrow: 0,
   },
   title: {
-    marginBottom: 18,
+    marginBottom: Spacing.three,
     color: colors.text,
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   errorText: {
-    marginBottom: 4,
+    marginBottom: Spacing.one,
     color: colors.error,
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
   },
   bodyText: {
-    marginBottom: 16,
+    marginBottom: Spacing.three,
     color: colors.text,
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 24,
-    marginTop: 4,
+    gap: Spacing.four,
+    marginTop: Spacing.one,
   },
   cancelButton: {
     minWidth: 54,
@@ -353,46 +351,46 @@ const useStyles = makeStyles((colors) => ({
   },
   cancelText: {
     color: colors.primary,
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   confirmButton: {
     width: 105,
-    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   confirmButtonDisabled: {
     opacity: 0.5,
   },
   confirmText: {
     color: colors.onPrimary,
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
 
   // Text field
   field: {
     height: 58,
-    marginBottom: 16,
+    marginBottom: Spacing.three,
     justifyContent: 'center',
     borderRadius: 4,
     backgroundColor: colors.surfaceContainer,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.three,
   },
   fieldLabel: {
     color: colors.textSecondary,
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
   },
   fieldInput: {
     height: 26,
     padding: 0,
-    paddingRight: 44,
+    paddingRight: Spacing.five,
     color: colors.text,
-    fontSize: 16,
+    ...Typography.bodyLarge,
   },
   editIcon: {
     position: 'absolute',
@@ -408,39 +406,39 @@ const useStyles = makeStyles((colors) => ({
   },
   revealText: {
     color: colors.primary,
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
 
   // Sections, groups, rows
   section: {
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: Spacing.two,
+    marginBottom: Spacing.three,
   },
   sectionTitle: {
-    marginBottom: 12,
+    marginBottom: Spacing.two,
     color: colors.text,
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   group: {
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: 12,
+    borderRadius: Radius.card,
     overflow: 'hidden',
   },
   divider: {
     height: 1,
-    marginHorizontal: 12,
+    marginHorizontal: Spacing.two,
     backgroundColor: colors.divider,
   },
   row: {
     minHeight: 56,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: Spacing.two,
   },
   rowPressed: {
     opacity: 0.7,
@@ -448,13 +446,11 @@ const useStyles = makeStyles((colors) => ({
   rowLabel: {
     flex: 1,
     color: colors.text,
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
   },
   rowValue: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
   },
   destructiveText: {
     color: colors.error,
@@ -466,13 +462,13 @@ const useStyles = makeStyles((colors) => ({
   inlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 16,
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
     zIndex: 2,
   },
   inlineLabel: {
     color: colors.text,
-    fontSize: 20,
-    lineHeight: 24,
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
 }));

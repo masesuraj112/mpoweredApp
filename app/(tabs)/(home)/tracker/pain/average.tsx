@@ -4,10 +4,10 @@ import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
-import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
+import { Fonts, Spacing, Typography } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
@@ -71,12 +71,12 @@ export default function CurrePainLevel() {
 
 const styles = StyleSheet.create({
   screen: {
-    paddingHorizontal: 16,
-    paddingTop: 20, // extra top space to clear the status bar/notch area
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.four, // extra top space to clear the status bar/notch area
   },
   cardTitle: {
-      fontSize: scaleFont(26),
-      fontWeight: '500',
-      marginBottom: 20
+      ...Typography.headline,
+      fontFamily: Fonts.headingRegular,
+      marginBottom: Spacing.three
   },
 });

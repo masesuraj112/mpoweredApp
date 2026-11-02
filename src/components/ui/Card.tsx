@@ -32,6 +32,6 @@ const useStyles = makeStyles((colors) => ({
   outlined: {
     backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: colors.outlineStrong,
+    borderColor: colors.outline,
   },
 }));

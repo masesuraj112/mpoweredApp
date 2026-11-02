@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { Fonts, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
@@ -76,9 +75,9 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
 const useStyles = makeStyles((colors) => ({
   topBar: {
     backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: scaleWidth(19),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(14),
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.three,
   },
   backRow: {
     flexDirection: 'row',
@@ -86,13 +85,14 @@ const useStyles = makeStyles((colors) => ({
     alignSelf: 'flex-start',
   },
   backChevron: {
-    fontSize: scaleFont(22),
+    ...Typography.title,
+    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
-    marginRight: scaleWidth(2),
-    marginTop: -2,
+    marginRight: Spacing.half,
+    marginTop: -Spacing.half,
   },
   backText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '500',
     color: colors.textSecondary,
   },
@@ -100,30 +100,29 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(12),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   title: {
     flex: 1,
-    fontSize: scaleFont(20),
-    fontWeight: '600',
+    ...Typography.titleSmall,
     color: colors.text,
   },
   printChip: {
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(16),
-    paddingHorizontal: scaleWidth(12),
-    paddingVertical: scaleHeight(6),
-    minWidth: scaleWidth(76),
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    minWidth: 76,
     alignItems: 'center',
   },
   printChipDisabled: {
     opacity: 0.5,
   },
   printChipText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
     color: colors.textSecondary,
   },
@@ -131,15 +130,15 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: colors.outline,
-    marginHorizontal: scaleWidth(24),
+    marginHorizontal: Spacing.four,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: scaleHeight(12),
+    paddingVertical: Spacing.three,
   },
   tabText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.textSecondary,
   },

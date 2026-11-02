@@ -1,4 +1,4 @@
-import { Colors, Gradients } from './theme';
+import { Colors, Fonts, Gradients, Typography } from './theme';
 
 // WCAG 2 contrast: 4.5:1 for text, 3:1 for the edges of controls (inputs, chips, checkboxes).
 const TEXT = 4.5;
@@ -70,5 +70,18 @@ describe.each(['light', 'dark'] as const)('%s theme contrast (WCAG AA)', (scheme
 describe('action gradient', () => {
   it('keeps white text readable across it (light mode buttons)', () => {
     for (const stop of Gradients.action) expect(contrast(Colors.light.onPrimary, stop)).toBeGreaterThanOrEqual(TEXT);
+  });
+});
+
+describe('type scale', () => {
+  it.each(Object.entries(Typography))('%s is at least 14 so it reads comfortably', (_, style) => {
+    expect(style.fontSize).toBeGreaterThanOrEqual(14);
+  });
+
+  it('sets headings (20 and up) in the heading font and leaves body text to the device font', () => {
+    for (const style of Object.values(Typography)) {
+      const family = 'fontFamily' in style ? style.fontFamily : undefined;
+      expect(family).toBe(style.fontSize >= 20 ? Fonts.heading : undefined);
+    }
   });
 });

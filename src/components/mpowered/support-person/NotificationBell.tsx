@@ -1,5 +1,4 @@
-import { Radius, makeStyles } from '@/constants/theme';
-import { scaleFont } from '@/services/scale';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
@@ -75,17 +74,16 @@ const useStyles = makeStyles((colors) => ({
     left: 14,
     top: 0,
     minWidth: 17,
-    height: 17,
-    paddingHorizontal: 3,
+    paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
     backgroundColor: colors.error,
+    paddingVertical: Spacing.two,
   },
   badgeText: {
     color: colors.background,
-    fontSize: scaleFont(9),
+    ...Typography.caption,
     fontWeight: '700',
-    lineHeight: 13.5,
   },
 }));

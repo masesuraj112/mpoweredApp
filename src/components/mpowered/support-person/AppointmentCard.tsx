@@ -1,8 +1,7 @@
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { displayOrPlaceholder } from '@/features/care-planner/planDisplay';
 import { formatAppointmentTime } from '@/features/support-person/appointments';
 import type { Appointment } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Text, View } from 'react-native';
 
@@ -60,31 +59,31 @@ export function AppointmentCard({ appointment, actions = [] }: AppointmentCardPr
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    gap: scaleHeight(4),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(12),
-    paddingLeft: scaleWidth(11),
-    paddingRight: scaleWidth(10),
-    borderRadius: scaleWidth(12),
+    gap: Spacing.one,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.three,
+    paddingLeft: Spacing.two,
+    paddingRight: Spacing.two,
+    borderRadius: Radius.card,
     backgroundColor: colors.surfaceContainer,
   },
   body: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: scaleWidth(8),
+    gap: Spacing.two,
   },
   details: {
     flex: 1,
-    gap: scaleHeight(4),
+    gap: Spacing.one,
   },
   actions: {
     alignItems: 'flex-end',
-    gap: scaleHeight(5),
+    gap: Spacing.one,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(8),
+    gap: Spacing.two,
   },
   // The SVGs are exported at these sizes, so don't stretch them.
   calendarIcon: {
@@ -98,15 +97,13 @@ const useStyles = makeStyles((colors) => ({
   date: {
     flexShrink: 1,
     color: colors.onSurface,
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     fontWeight: '600',
-    lineHeight: 19.5,
   },
   detailText: {
     flexShrink: 1,
     color: colors.textSubtle,
-    fontSize: scaleFont(12),
-    lineHeight: 18,
+    ...Typography.caption,
     letterSpacing: 0.4,
   },
 }));

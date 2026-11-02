@@ -3,11 +3,10 @@ import { NO_MEDICATION_OPTION } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { toggleMedicationOption } from '@/features/assessments/management/medication';
 import { SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 // TODO: List the user's own prescriptions once the prescriptions backend exists (M5).
 const MEDICATION_OPTIONS = [
   ...SAMPLE_PRESCRIPTION_SCRIPTS.map(script => script.name),
@@ -68,9 +67,9 @@ export default function MedicationScreen() {
           variant="management"
           searchEnabled={false}
           scrollable
-          listHeight={scaleHeight(253)}
+          listHeight={253}
           selectedChipsEnabled={false}
-          cardHeight={scaleHeight(516)}
+          cardHeight={516}
         />
       </View>
     </View>
@@ -84,36 +83,32 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   promptContent: {
-    gap: scaleHeight(10),
+    gap: Spacing.two,
   },
   promptText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   helperText: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontStyle: 'italic',
-    lineHeight: scaleHeight(18),
   },
   sourceText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(18),
   },
 }));

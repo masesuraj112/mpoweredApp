@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { useThemeColors } from '@/constants/theme';
+import { Typography, useThemeColors } from '@/constants/theme';
 export interface PainTrendPoint {
   /** Short label shown under the point, e.g. "25/05" */
   label: string;
@@ -18,9 +17,9 @@ interface PainTrendChartProps {
 
 const PAIN_SCALE_MAX = 10;
 // Keeps the edge dots and their centred date labels inside the SVG
-const HORIZONTAL_INSET = scaleWidth(20);
+const HORIZONTAL_INSET = 20;
 
-export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendChartProps) {
+export function PainTrendChart({ data, height = 101 }: PainTrendChartProps) {
   const colors = useThemeColors();
   const [width, setWidth] = useState(0);
 
@@ -28,8 +27,8 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
     return null;
   }
 
-  const topPadding = scaleHeight(20);
-  const bottomPadding = scaleHeight(16);
+  const topPadding = 20;
+  const bottomPadding = 16;
   const plotHeight = height - topPadding - bottomPadding;
 
   const plotWidth = Math.max(width - HORIZONTAL_INSET * 2, 0);
@@ -70,8 +69,8 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
               <G key={point.label}>
                 <SvgText
                   x={point.x}
-                  y={point.y - scaleHeight(8)}
-                  fontSize={scaleFont(11)}
+                  y={point.y - 8}
+                  fontSize={Typography.caption.fontSize}
                   fontWeight="700"
                   fill={colors.text}
                   textAnchor="middle"
@@ -88,8 +87,8 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
                 />
                 <SvgText
                   x={point.x}
-                  y={height - scaleHeight(4)}
-                  fontSize={scaleFont(12)}
+                  y={height - 4}
+                  fontSize={Typography.caption.fontSize}
                   fontWeight="500"
                   letterSpacing={0.5}
                   fill={colors.textSubtle}

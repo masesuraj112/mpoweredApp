@@ -1,7 +1,6 @@
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { toMovementSummary, type MovementSummaryData } from '@/features/assessments/movement/summary';
 import { getMovementEntryForWeek } from '@/services/assessments';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -13,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const EXERCISE_INFO_URL = 'https://muscha.org/exercise';
 
 function MovementSummaryView({ summary, onClose }: { summary: MovementSummaryData; onClose: () => void }) {
@@ -167,36 +166,36 @@ function ResultSection({ heading, value }: { heading: string; value: string }) {
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: { flex: 1, paddingHorizontal: scaleWidth(24), paddingTop: scaleHeight(16), paddingBottom: scaleHeight(16), backgroundColor: colors.surface },
-  heading: { marginLeft: scaleWidth(7), marginBottom: scaleHeight(8), color: colors.text, fontSize: scaleFont(24), fontWeight: '600', lineHeight: scaleHeight(29) },
-  subheading: { marginHorizontal: scaleWidth(7), marginBottom: scaleHeight(20), color: colors.text, fontSize: scaleFont(12), lineHeight: scaleHeight(16), letterSpacing: 0.4 },
-  reportCard: { flex: 1, minHeight: 0, borderWidth: 1, borderColor: colors.outline, borderRadius: scaleWidth(12), paddingHorizontal: scaleWidth(18), paddingTop: scaleHeight(12), paddingBottom: scaleHeight(10), backgroundColor: colors.surface },
-  reportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: scaleWidth(10), minHeight: scaleHeight(28) },
-  reportTitle: { color: colors.text, fontSize: scaleFont(20), fontWeight: '700', lineHeight: scaleHeight(24) },
-  period: { color: colors.text, fontSize: scaleFont(11), fontWeight: '600', lineHeight: scaleHeight(16), textAlign: 'right' },
-  divider: { height: 1, backgroundColor: colors.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(18) },
+  screen: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.three, paddingBottom: Spacing.three, backgroundColor: colors.surface },
+  heading: { marginLeft: Spacing.two, marginBottom: Spacing.two, color: colors.text, ...Typography.title },
+  subheading: { marginHorizontal: Spacing.two, marginBottom: Spacing.three, color: colors.text, ...Typography.caption, letterSpacing: 0.4 },
+  reportCard: { flex: 1, minHeight: 0, borderWidth: 1, borderColor: colors.outline, borderRadius: Radius.card, paddingHorizontal: Spacing.three, paddingTop: Spacing.three, paddingBottom: Spacing.two, backgroundColor: colors.surface },
+  reportHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two, minHeight: 28 },
+  reportTitle: { color: colors.text, ...Typography.titleSmall },
+  period: { color: colors.text, ...Typography.caption, fontWeight: '600', textAlign: 'right' },
+  divider: { height: 1, backgroundColor: colors.divider, marginTop: Spacing.two, marginBottom: Spacing.three },
   reportScroll: { flex: 1, minHeight: 0 },
-  reportContent: { paddingBottom: scaleHeight(12) },
-  sectionHeading: { marginBottom: scaleHeight(14), color: colors.text, fontSize: scaleFont(14), fontWeight: '600', lineHeight: scaleHeight(20) },
-  guidancePanel: { overflow: 'hidden', borderRadius: scaleWidth(12), backgroundColor: colors.background, marginHorizontal: scaleWidth(4) },
-  guidanceText: { paddingHorizontal: scaleWidth(18), paddingVertical: scaleHeight(12), color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
-  tipsButton: { minHeight: scaleHeight(44), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scaleWidth(8), paddingHorizontal: scaleWidth(12), backgroundColor: colors.divider },
+  reportContent: { ...ContentColumn, paddingBottom: Spacing.three },
+  sectionHeading: { marginBottom: Spacing.three, color: colors.text, ...Typography.bodySmall, fontWeight: '600' },
+  guidancePanel: { overflow: 'hidden', borderRadius: Radius.card, backgroundColor: colors.surface, marginHorizontal: Spacing.one },
+  guidanceText: { paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, color: colors.text, ...Typography.bodySmall, textAlign: 'center' },
+  tipsButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.two, paddingHorizontal: Spacing.three, backgroundColor: colors.divider },
   tipsButtonPressed: { opacity: 0.8 },
-  searchIcon: { color: colors.text, fontSize: scaleFont(20), lineHeight: scaleFont(20) },
-  tipsButtonText: { color: colors.text, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
-  resultsHeading: { marginTop: scaleHeight(24), marginBottom: scaleHeight(12), color: colors.text, fontSize: scaleFont(12), fontWeight: '600', lineHeight: scaleHeight(16) },
-  resultsList: { gap: scaleHeight(12), paddingHorizontal: scaleWidth(14) },
-  resultSection: { gap: scaleHeight(2) },
-  resultLabel: { color: colors.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
-  resultText: { color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
-  reflectionText: { marginHorizontal: scaleWidth(14), color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20) },
+  searchIcon: { color: colors.text, ...Typography.titleSmall, fontFamily: Fonts.headingRegular },
+  tipsButtonText: { color: colors.text, ...Typography.bodySmall, fontWeight: '500' },
+  resultsHeading: { marginTop: Spacing.four, marginBottom: Spacing.two, color: colors.text, ...Typography.caption, fontWeight: '600' },
+  resultsList: { gap: Spacing.two, paddingHorizontal: Spacing.three },
+  resultSection: { gap: Spacing.half },
+  resultLabel: { color: colors.textSecondary, ...Typography.caption },
+  resultText: { color: colors.text, ...Typography.bodySmall },
+  reflectionText: { marginHorizontal: Spacing.three, color: colors.text, ...Typography.bodySmall },
   footer: { flexShrink: 0 },
-  footerDivider: { height: 1, backgroundColor: colors.divider, marginTop: scaleHeight(8), marginBottom: scaleHeight(12) },
-  footerRow: { minHeight: scaleHeight(34), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: scaleWidth(12) },
-  savedText: { color: colors.textSecondary, fontSize: scaleFont(12), lineHeight: scaleHeight(16) },
-  closeButton: { minWidth: scaleWidth(105), height: scaleHeight(30), alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.outline, borderRadius: scaleWidth(100), paddingHorizontal: scaleWidth(16) },
+  footerDivider: { height: 1, backgroundColor: colors.divider, marginTop: Spacing.two, marginBottom: Spacing.two },
+  footerRow: { minHeight: 34, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
+  savedText: { color: colors.textSecondary, ...Typography.caption },
+  closeButton: { minWidth: 105, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.outline, borderRadius: Radius.control, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, minHeight: MinTapTarget },
   closeButtonPressed: { backgroundColor: colors.surfaceContainer },
-  closeButtonText: { color: colors.textSecondary, fontSize: scaleFont(14), fontWeight: '500', lineHeight: scaleHeight(20) },
-  centered: { justifyContent: 'center', alignItems: 'center', gap: scaleHeight(16) },
-  errorText: { color: colors.text, fontSize: scaleFont(14), lineHeight: scaleHeight(20), textAlign: 'center' },
+  closeButtonText: { color: colors.textSecondary, ...Typography.bodySmall, fontWeight: '500' },
+  centered: { justifyContent: 'center', alignItems: 'center', gap: Spacing.three },
+  errorText: { color: colors.text, ...Typography.bodySmall, textAlign: 'center' },
 }));

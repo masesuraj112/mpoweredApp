@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { SUPPORT_PEOPLE_LIMIT_MESSAGE } from '@/features/care-planner/supportPerson';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
@@ -137,8 +137,7 @@ const useStyles = makeStyles((colors) => ({
     alignSelf: 'stretch',
   },
   limit: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.onSurface,
   },

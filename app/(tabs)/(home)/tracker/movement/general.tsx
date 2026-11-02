@@ -1,11 +1,10 @@
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function GeneralScreen() {
@@ -64,7 +63,7 @@ return (
                   accessibilityLabel={option}
                   style={[styles.optionRow, !isLast && styles.optionDivider]}
                 >
-                  <Text style={styles.optionText} allowFontScaling={false}>
+                  <Text style={styles.optionText}>
                     {option}
                   </Text>
                   <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
@@ -87,22 +86,20 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   promptText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   promptUnderline: {
@@ -113,18 +110,18 @@ const useStyles = makeStyles((colors) => ({
     minHeight: 0,
     width: '100%',
     alignSelf: 'center',
-    borderRadius: scaleWidth(12),
-    backgroundColor: colors.background,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
-    paddingHorizontal: scaleWidth(8),
+    paddingHorizontal: Spacing.three,
   },
   optionRow: {
     flex: 1,
     minHeight: 0,
     paddingVertical: 0,
     justifyContent: 'center',
-    paddingLeft: scaleWidth(4),
-    paddingRight: scaleWidth(34),  // room for the 18pt checkbox plus a gap
+    paddingLeft: Spacing.one,
+    paddingRight: Spacing.five,  // room for the 18pt checkbox plus a gap
   },
   optionDivider: {
     borderBottomWidth: 1,
@@ -132,20 +129,19 @@ const useStyles = makeStyles((colors) => ({
   },
   optionText: {
     color: colors.text,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: scaleHeight(20),
   },
   checkbox: {
     position: 'absolute',
     right: 0,
     top: '50%',
-    marginTop: -scaleWidth(9),
-    width: scaleWidth(18),
-    height: scaleWidth(18),
+    marginTop: -9,
+    width: 18,
+    height: 18,
     borderWidth: 2,
     borderColor: colors.outlineStrong,
-    borderRadius: scaleWidth(2),
+    borderRadius: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -155,7 +151,7 @@ const useStyles = makeStyles((colors) => ({
   },
   checkmark: {
     color: colors.onPrimary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '700',
   },
 }));

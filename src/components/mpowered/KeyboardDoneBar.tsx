@@ -1,8 +1,7 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useId } from 'react';
 import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 /**
  * A "Done" bar shown above the iOS keyboard, for keyboards with no way to close them: multiline
  * inputs (return adds a new line) and number / phone pads (no return key at all). Ignored on
@@ -41,15 +40,15 @@ const useStyles = makeStyles((colors) => ({
   bar: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.divider,
     backgroundColor: colors.background,
   },
   doneText: {
     color: colors.primary,
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '600',
   },
 }));

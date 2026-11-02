@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 const CONDITIONS = [
   'Arthritis',
   'Ankylosing spondylitis',
@@ -298,7 +298,7 @@ const useStyles = makeStyles((colors) => ({
     elevation: 2,
   },
   conditionsContent: {
-    paddingBottom: 4,
+    paddingBottom: Spacing.one,
   },
   conditionRow: {
     flexDirection: 'row',
@@ -327,14 +327,15 @@ const useStyles = makeStyles((colors) => ({
     borderWidth: 1,
     borderColor: colors.outline,
     borderRadius: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing.two,
     color: colors.text,
   },
   addCustomButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 4,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    minHeight: MinTapTarget,
   },
   addCustomButtonDisabled: {
     backgroundColor: colors.secondaryContainer,

@@ -1,3 +1,4 @@
+import { SulphurPoint_400Regular, SulphurPoint_700Bold, useFonts } from '@expo-google-fonts/sulphur-point';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type Theme } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -18,7 +19,12 @@ SplashScreen.setOptions({ duration: 300, fade: true });
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 
 function RootNavigator() {
-  const { session, loading, hasProfile, profile, profileError, refreshProfile, signInHeld } = useAuth();
+  const [fontsLoaded, fontError] = useFonts({ SulphurPoint_400Regular, SulphurPoint_700Bold });
+  // A font that fails to load falls back to the system font rather than keeping the app closed.
+  const fontsReady = fontsLoaded || !!fontError;
+  const { session, loading: sessionLoading, hasProfile, profile, profileError, refreshProfile, signInHeld } = useAuth();
+
+  const loading = sessionLoading || !fontsReady;
 
   useEffect(() => {
     if (!loading) SplashScreen.hide();
@@ -32,7 +38,7 @@ function RootNavigator() {
   const minimumElapsed = useMinimumDuration(WELCOME_SPLASH_MS, !loading);
   const welcomeBack = showWelcomeBack({ startedSignedIn, hasProfile, profileError, minimumElapsed });
 
-  // The native splash is still showing while the session is read
+  // The native splash is still showing while the session and the heading font load
   if (loading) return null;
 
   // Signed in, but we could not tell whether there is a profile (for example no connection)

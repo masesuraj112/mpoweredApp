@@ -1,5 +1,4 @@
-import { Radius, useThemeColors, type ThemeColors } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { Radius, Spacing, type ThemeColors, Typography, useThemeColors } from '@/constants/theme';
 import { StyleSheet, Text, View } from 'react-native';
 
 const VARIANTS = {
@@ -23,15 +22,14 @@ export function StatusBadge({ hasUpcoming }: { hasUpcoming: boolean }) {
 
 const styles = StyleSheet.create({
   badge: {
-    height: scaleHeight(27),
-    paddingHorizontal: scaleWidth(10),
+    height: 27,
+    paddingHorizontal: Spacing.two,
     justifyContent: 'center',
     borderRadius: Radius.pill,
   },
   label: {
-    fontSize: scaleFont(11),
+    ...Typography.caption,
     fontWeight: '600',
-    lineHeight: 16,
     letterSpacing: 0.5,
   },
 });

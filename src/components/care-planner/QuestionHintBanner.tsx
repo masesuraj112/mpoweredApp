@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { Text, View } from 'react-native';
 
-import { Radius, Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 
 const lightbulbIcon = require('../../../assets/images/care-planner/lightbulb.png');
 
@@ -42,8 +42,7 @@ const useStyles = makeStyles((colors) => ({
   text: {
     flex: 1,
     minWidth: 0,
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.5,
     color: colors.text,

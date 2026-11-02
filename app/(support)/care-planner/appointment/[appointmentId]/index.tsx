@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { displayOrPlaceholder, formatShortAppointmentDate, isPlanEmpty } from '@/features/care-planner/planDisplay';
 import type { AnswerInput } from '@/features/care-planner/planTypes';
@@ -175,15 +175,13 @@ const useStyles = makeStyles((colors) => ({
     padding: Spacing.three,
   },
   hint: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.4,
     color: colors.onSurfaceVariant,
   },
   sectionTitle: {
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.onSurface,

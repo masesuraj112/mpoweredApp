@@ -13,9 +13,8 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { usePdfExport } from '@/hooks/usePdfExport';
 import type { PdfAction } from '@/services/pdf';
 import { getHealthProfile } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const loadProfile = () => getHealthProfile();
 
 export default function PainProfileScreen() {
@@ -104,51 +103,52 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   chipRow: {
     flexDirection: 'row',
-    gap: scaleWidth(3),
+    gap: Spacing.half,
   },
   chip: {
-    height: scaleHeight(32),
-    minWidth: scaleWidth(44),
+    minWidth: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(8),
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.two,
   },
   chipText: {
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(16),
+    ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.5,
     color: colors.text,
   },
   updatedText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.textSubtle,
-    marginTop: scaleHeight(2),
-    marginHorizontal: scaleWidth(38),
+    marginTop: Spacing.half,
+    marginHorizontal: Spacing.five,
   },
   headerDivider: {
     height: 1,
     backgroundColor: colors.outline,
-    marginHorizontal: scaleWidth(16),
-    marginTop: scaleHeight(8),
-    marginBottom: scaleHeight(26),
+    marginHorizontal: Spacing.three,
+    marginTop: Spacing.two,
+    marginBottom: Spacing.four,
   },
   recordsButton: {
-    marginHorizontal: scaleWidth(32),
+    marginHorizontal: Spacing.five,
     backgroundColor: colors.primary,
-    borderRadius: scaleWidth(10),
-    paddingVertical: scaleHeight(14),
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
     alignItems: 'center',
+    minHeight: MinTapTarget,
   },
   recordsButtonText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.onPrimary,
   },

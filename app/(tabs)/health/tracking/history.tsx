@@ -16,9 +16,8 @@ import { usePdfExport } from '@/hooks/usePdfExport';
 import { ok, run } from '@/lib/result';
 import { getUserStartWeek } from '@/services/assessments';
 import { getCompletedWeeks } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 function loadHistory() {
   return run(async () => {
     const startWeek = await getUserStartWeek();
@@ -135,14 +134,15 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   list: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(24),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.four,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(4),
+    borderRadius: 4,
   },
   listItem: {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -155,28 +155,28 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(16),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
   },
   weekLabel: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.primary,
   },
   chevron: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     color: colors.text,
   },
   categoryRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scaleWidth(16),
-    paddingLeft: scaleWidth(32),
-    paddingVertical: scaleHeight(14),
+    paddingHorizontal: Spacing.three,
+    paddingLeft: Spacing.five,
+    paddingVertical: Spacing.three,
   },
   categoryLabel: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '400',
     color: colors.text,
   },
@@ -184,17 +184,17 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSubtle,
   },
   weekCount: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.textSecondary,
-    marginTop: scaleHeight(2),
+    marginTop: Spacing.half,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(8),
+    gap: Spacing.two,
   },
   status: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '600',
   },
   statusDone: {
@@ -204,7 +204,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.error,
   },
   categoryChevron: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     color: colors.textSubtle,
   },
 }));

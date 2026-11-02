@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const SLIDES = [
   {
     heading: 'Track your pain and its impacts weekly',
@@ -137,26 +137,25 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 32,
+        paddingHorizontal: Spacing.five,
     },
 
     heading: {
-        fontSize: 20,
-        fontWeight: '600',
+        ...Typography.titleSmall,
         textAlign: 'center',
     },
 
     dots: {
         flexDirection: 'row',
         justifyContent: 'center',
-        gap: 6,
-        marginVertical: 16,
+        gap: Spacing.one,
+        marginVertical: Spacing.three,
     },
 
     dot: {
         width: 8,
         height: 8,
-        borderRadius: 4,
+        borderRadius: Radius.pill,
         backgroundColor: colors.surfaceContainer,
     },
 
@@ -167,21 +166,22 @@ const useStyles = makeStyles((colors) => ({
 
     primaryButton: {
         backgroundColor: colors.primary,
-        marginHorizontal: 24,
-        paddingVertical: 16,
-        borderRadius: 12,
+        marginHorizontal: Spacing.four,
+        paddingVertical: Spacing.three,
+        borderRadius: Radius.control,
         alignItems: 'center',
+        minHeight: MinTapTarget,
     },
 
     primaryButtonText: {
         color: colors.onPrimary,
         fontWeight: '600',
-        fontSize: 16
+        ...Typography.bodyLarge
     },
 
     signIn: {
         textAlign: 'center',
         fontWeight: '600',
-        marginVertical: 16,
+        marginVertical: Spacing.three,
     }
 }));

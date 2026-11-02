@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 export default function DemographicsScreen() {
   const styles = useStyles();
   const { data, updateData } = useOnboarding();
@@ -57,45 +57,45 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 100,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.six,
     alignItems: 'center'
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 8
+    ...Typography.title,
+    marginBottom: Spacing.two
   },
   optional: {
-    color: colors.textSubtle, marginBottom: 24 
+    color: colors.textSubtle, marginBottom: Spacing.four 
   },
   input: {
     width: '100%',
     backgroundColor: colors.surfaceContainer,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    ...Typography.bodyLarge,
     textAlign: 'center',
-    marginBottom: 40
+    marginBottom: Spacing.five
   },
   continueButton: {
     backgroundColor: colors.primary,
     width: '100%',
-    paddingVertical: 16,
-    borderRadius: 24,
-    alignItems: 'center'
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    minHeight: MinTapTarget
   },
   continueText: {
     color: colors.onPrimary,
     fontWeight: '600',
-    fontSize: 16
+    ...Typography.bodyLarge
   },
   tip: {
     textAlign: 'center',
     color: colors.textSubtle,
-    marginTop: 24,
-    fontSize: 13,
-    paddingHorizontal: 16
+    marginTop: Spacing.four,
+    ...Typography.caption,
+    paddingHorizontal: Spacing.three
 },
 }));

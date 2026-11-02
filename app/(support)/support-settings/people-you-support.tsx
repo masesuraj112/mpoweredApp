@@ -13,6 +13,7 @@ import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportedPatient } from '@/features/support-person/types';
 import { useState } from 'react';
 import { Alert, Platform, StyleSheet, Text } from 'react-native';
+import { Spacing, Typography } from '@/constants/theme';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const unlinkIcon = require('../../../assets/images/support-person/unlink.svg');
@@ -101,5 +102,5 @@ export default function PeopleYouSupportScreen() {
 
 const styles = StyleSheet.create({
   // Same as "Manage support persons" on the patient's Support Persons page.
-  sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
 });

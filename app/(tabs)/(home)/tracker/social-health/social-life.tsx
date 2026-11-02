@@ -1,11 +1,10 @@
 import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
 import { SOCIAL_LIFE_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 // SingleChoiceInput takes a mutable string[]
 const SOCIAL_HEALTH_OPTIONS: string[] = [...SOCIAL_LIFE_OPTIONS];
 
@@ -36,7 +35,7 @@ export default function SocialLifeScreen() {
           onRecord={handleNext}
           variant="personalCare"
           scrollable={false}
-          cardHeight={scaleHeight(558)}
+          cardHeight={558}
         />
       </View>
     </View>
@@ -50,14 +49,13 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
 }));

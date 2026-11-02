@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
   { label: 'Male', value: 'male' as const },
@@ -45,14 +45,14 @@ export default function SexScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 32 },
-  option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
+  container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, alignItems: 'center' },
+  title: { ...Typography.title, marginBottom: Spacing.five },
+  option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: Radius.card, paddingVertical: Spacing.three, alignItems: 'center', marginBottom: Spacing.two },
   optionSelected: { backgroundColor: colors.secondaryContainer },
-  optionText: { color: colors.primary, fontWeight: '600', fontSize: 15 },
-  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
+  optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },
+  continueButton: { backgroundColor: colors.primary, width: '100%', paddingVertical: Spacing.three, borderRadius: Radius.control, alignItems: 'center', marginTop: Spacing.three, minHeight: MinTapTarget },
   continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
-  continueText: { color: colors.onPrimary, fontWeight: '700', fontSize: 16 },
+  continueText: { color: colors.onPrimary, fontWeight: '700', ...Typography.bodyLarge },
   continueTextDisabled: { color: colors.primary },
-  tip: { textAlign: 'center', color: colors.textSubtle, marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
+  tip: { textAlign: 'center', color: colors.textSubtle, marginTop: Spacing.five, ...Typography.caption, paddingHorizontal: Spacing.three },
 }));

@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { SignaturePad } from '@/components/ui/SignaturePad';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import type { SignatureData } from '@/features/care-planner/signature';
 
 type ConsentSignatureSectionProps = {
@@ -51,8 +51,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurface,
   },
   statement: {
-    fontSize: 11,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.onSurface,

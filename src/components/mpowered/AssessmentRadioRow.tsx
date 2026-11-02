@@ -1,7 +1,6 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Pressable, StyleProp, Text, TextStyle, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface AssessmentRadioRowProps {
   label: string;
   selected: boolean;
@@ -34,7 +33,7 @@ export function AssessmentRadioRow({
         {selected && <View style={styles.radioDot} />}
       </View>
       {/* Row heights are fixed by flex weight, so system font scaling would overflow them. */}
-      <Text style={[styles.text, textStyle]} allowFontScaling={false}>
+      <Text style={[styles.text, textStyle]}>
         {label}
       </Text>
     </Pressable>
@@ -45,8 +44,8 @@ const useStyles = makeStyles((colors) => ({
   row: {
     minHeight: 0,
     justifyContent: 'center',
-    paddingLeft: scaleWidth(32), // room for the 20pt radio plus a gap
-    paddingRight: scaleWidth(8),
+    paddingLeft: Spacing.five, // room for the 20pt radio plus a gap
+    paddingRight: Spacing.two,
   },
   divider: {
     borderBottomWidth: 1,
@@ -56,12 +55,12 @@ const useStyles = makeStyles((colors) => ({
     position: 'absolute',
     left: 0,
     top: '50%',
-    marginTop: -scaleWidth(10), // half the radio height, to centre it
-    width: scaleWidth(20),
-    height: scaleWidth(20),
+    marginTop: -10, // half the radio height, to centre it
+    width: 20,
+    height: 20,
     borderWidth: 2,
     borderColor: colors.outlineStrong,
-    borderRadius: scaleWidth(10),
+    borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -69,15 +68,14 @@ const useStyles = makeStyles((colors) => ({
     borderColor: colors.primary,
   },
   radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
+    width: 10,
+    height: 10,
+    borderRadius: Radius.pill,
     backgroundColor: colors.primary,
   },
   text: {
     color: colors.text,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: scaleHeight(20),
   },
 }));

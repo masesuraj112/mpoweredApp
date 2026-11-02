@@ -1,7 +1,6 @@
 import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 
 export default function MoodScreen() {
@@ -28,7 +27,7 @@ export default function MoodScreen() {
         onPrevious={() => router.push('/tracker/social-health/travelling')}
         onRecord={handleNext}
         variant="personalCare"
-        cardHeight={scaleHeight(330)}
+        cardHeight={330}
       />
     </AssessmentScreen>
   );

@@ -5,13 +5,12 @@ import { useSocialHealthAssessment } from '@/features/assessments/social-health/
 import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { saveSocialHealthEntry } from '@/services/social-health';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, TextInput } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function MoodTriggerScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -58,7 +57,7 @@ export default function MoodTriggerScreen() {
         disabled={saving}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={scaleHeight(274)}
+        cardHeight={274}
       >
         <TextInput
           accessibilityLabel="What triggered that mood?"
@@ -80,21 +79,19 @@ export default function MoodTriggerScreen() {
 const useStyles = makeStyles((colors) => ({
   prompt: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   reflectionInput: {
-    minHeight: scaleHeight(80),
+    minHeight: 80,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     backgroundColor: colors.surface,
-    paddingHorizontal: scaleWidth(14),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     color: colors.text,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    ...Typography.caption,
   },
 }));

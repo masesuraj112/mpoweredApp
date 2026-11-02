@@ -2,10 +2,9 @@ import { NotificationBell } from '@/components/mpowered/support-person/Notificat
 import { SupportRequestCard } from '@/components/mpowered/support-person/SupportRequestCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Alert, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -85,30 +84,28 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   content: {
-    gap: scaleHeight(15),
-    paddingTop: scaleHeight(20),
-    paddingBottom: scaleHeight(32),
-    paddingHorizontal: scaleWidth(24),
+    ...ContentColumn,
+    gap: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.four,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingRight: scaleWidth(6),
-    marginBottom: scaleHeight(9),
+    paddingRight: Spacing.two,
+    marginBottom: Spacing.two,
   },
   title: {
     flex: 1,
     color: colors.text,
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleFont(29),
+    ...Typography.title,
     letterSpacing: -0.48,
   },
   empty: {
     color: colors.onSurfaceVariant,
-    fontSize: scaleFont(14),
-    lineHeight: 20,
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
   },
 }));

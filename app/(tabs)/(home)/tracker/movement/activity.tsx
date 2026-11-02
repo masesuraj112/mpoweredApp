@@ -1,6 +1,5 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -14,7 +13,7 @@ import {
   View,
 } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
@@ -89,46 +88,45 @@ export default function ActivityScreen() {
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.surface },
   container: {
+    ...ContentColumn,
     flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   input: {
-    height: scaleHeight(56),
+    height: 56,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(16),
-    fontSize: scaleFont(16),
+    borderRadius: 4,
+    paddingHorizontal: Spacing.three,
+    ...Typography.bodyLarge,
     color: colors.text,
   },
   inputError: {
     borderColor: colors.error,
   },
   helper: {
-    marginTop: scaleHeight(16),
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    marginTop: Spacing.three,
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.textSecondary,
   },
   accessoryBar: {
     alignItems: 'flex-end',
     backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
   },
   accessoryDone: {
     color: colors.primary,
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '600',
   },
 }));

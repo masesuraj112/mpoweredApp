@@ -1,10 +1,9 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { SearchBar } from './SearchBar';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface MultiChoiceListProps {
   /** Screen heading, e.g. "Pain location" */
   title: string;
@@ -250,12 +249,12 @@ const useStyles = makeStyles((colors) => ({
   // The prompt is passed into ChoiceCard's single promptText style, so the
   // bold/sub-line split is handled here with its own text styles instead.
   promptBold: {
-    fontSize: scaleFont(15),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.text,
   },
   promptSub: {
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     fontStyle: 'italic',
     fontWeight: '400',
     color: colors.textSecondary,
@@ -265,8 +264,8 @@ const useStyles = makeStyles((colors) => ({
   // inside the card, distinct from ChoiceCard's own outer border.
   optionsBox: {
     borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: scaleWidth(14),
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
     width: '100%',
     overflow: 'hidden',
   },
@@ -275,34 +274,34 @@ const useStyles = makeStyles((colors) => ({
     minHeight: 0,
   },
   searchInput: {
-    marginBottom: scaleHeight(16),
+    marginBottom: Spacing.three,
   },
   selectedChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: scaleWidth(16),
-    marginBottom: scaleHeight(10),
+    gap: Spacing.three,
+    marginBottom: Spacing.two,
   },
   selectedChip: {
-    minHeight: scaleHeight(30),
+    minHeight: 30,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(16),
+    borderRadius: Radius.pill,
     backgroundColor: colors.secondaryContainer,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
-    paddingHorizontal: scaleWidth(16),
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
   },
   selectedChipText: {
     color: colors.textSecondary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
   },
   selectedChipClose: {
     color: colors.textSecondary,
-    fontSize: scaleFont(24),
-    lineHeight: scaleFont(20),
+    ...Typography.title,
+    fontFamily: Fonts.headingRegular,
   },
   painTrackerOptionsBox: {
     flex: 1,
@@ -310,7 +309,7 @@ const useStyles = makeStyles((colors) => ({
     width: '100%',
     alignSelf: 'flex-start',
     borderColor: colors.divider,
-    borderRadius: scaleWidth(5),
+    borderRadius: 5,
     backgroundColor: colors.background,
   },
   // Fixed-height box. `flex: 0` must override the `flex: 1` from the styles above: on native,
@@ -321,23 +320,24 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     minHeight: 0,
     width: '96%',
-    marginLeft: scaleWidth(4),
-    borderRadius: scaleWidth(12),
+    marginLeft: Spacing.one,
+    borderRadius: Radius.card,
   },
   managementOptionsBox: {
     flex: 0,
-    height: scaleHeight(283),
+    height: 283,
     width: '96%',
-    marginLeft: scaleWidth(4),
-    borderRadius: scaleWidth(12),
+    marginLeft: Spacing.one,
+    borderRadius: Radius.card,
   },
     personalCareMinHeight: {
-    minHeight: scaleHeight(283),
+    minHeight: 283,
   },
   scrollList: {
     flex: 1,
   },
   scrollContent: {
+    ...ContentColumn,
     backgroundColor: colors.background,
   },
   scrollContentGrow: {
@@ -348,8 +348,8 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: scaleHeight(18),
-    paddingHorizontal: scaleWidth(18),
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
     minWidth: 0
   },
   optionTextColumn: {
@@ -358,14 +358,13 @@ const useStyles = makeStyles((colors) => ({
   },
   supportingText: {
     color: colors.text,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    ...Typography.caption,
     letterSpacing: 0.4,
   },
   painTrackerRow: {
-    height: scaleHeight(56),
-    paddingVertical: scaleHeight(8),
-    paddingHorizontal: scaleWidth(16),
+    height: 56,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
   },
   painTrackerRowDivider: {
     borderBottomWidth: 0,
@@ -380,9 +379,9 @@ const useStyles = makeStyles((colors) => ({
   },
 
   box: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
-    borderRadius: scaleWidth(6),
+    width: 24,
+    height: 24,
+    borderRadius: Radius.control,
     borderWidth: 2,
     borderColor: colors.controlBorder,
     alignItems: 'center',
@@ -394,19 +393,19 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primary,
   },
   painTrackerBox: {
-    width: scaleWidth(18),
-    height: scaleWidth(18),
-    borderRadius: scaleWidth(2),
+    width: 18,
+    height: 18,
+    borderRadius: 2,
     borderColor: colors.outlineStrong,
   },
   checkmark: {
     color: colors.onPrimary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '700',
   },
 
   label: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '700',
     color: colors.text,
     flex: 1,
@@ -414,12 +413,12 @@ const useStyles = makeStyles((colors) => ({
     minWidth: 0
   },
   painTrackerLabel: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.text,
   },
   personalCareLabel: {
-    lineHeight: scaleHeight(20),
+    lineHeight: 20,
     letterSpacing: 0.25,
   },
 }));

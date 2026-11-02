@@ -1,6 +1,5 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
@@ -20,7 +19,7 @@ import {
   View,
 } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
@@ -65,7 +64,7 @@ export default function ReflectionScreen() {
       <KeyboardAvoidingView
         style={styles.screen}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={scaleHeight(109)}
+        keyboardVerticalOffset={109}
       >
         {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
         <ScrollView
@@ -120,44 +119,43 @@ export default function ReflectionScreen() {
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.surface },
   container: {
+    ...ContentColumn,
     flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   input: {
     flex: 1,
-    minHeight: scaleHeight(120),
+    minHeight: 120,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(4),
-    padding: scaleWidth(16),
-    fontSize: scaleFont(14),
-    lineHeight: scaleHeight(20),
+    borderRadius: 4,
+    padding: Spacing.three,
+    ...Typography.bodySmall,
     color: colors.text,
   },
   accessoryBar: {
     alignItems: 'flex-end',
     backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
   },
   accessoryDone: {
     color: colors.primary,
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '600',
   },
   counter: { 
     alignSelf: 'flex-end',
-    marginTop: scaleHeight(6),
-    fontSize: scaleFont(12),
+    marginTop: Spacing.one,
+    ...Typography.caption,
     color: colors.textSecondary,
   },
   counterOver: { 

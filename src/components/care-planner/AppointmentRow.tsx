@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type AppointmentRowProps = {
   title: string;
@@ -50,8 +50,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurface,
   },
   date: {
-    fontSize: 11,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.onSurface,

@@ -11,7 +11,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { formatForDisplay } from '@/features/auth/phone';
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import {
   EMPTY_SUPPORT_PERSON_DRAFT,
@@ -199,20 +199,22 @@ export default function SupportPersonsScreen() {
 const useStyles = makeStyles((colors) => ({
   status: {
     color: colors.onSurfaceVariant,
-    fontSize: 14,
+    ...Typography.bodySmall,
   },
-  sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
   // Same as the Sign out button on the Account page.
   addButton: {
-    height: 55,
-    marginTop: 8,
+    marginTop: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   addButtonText: {
     color: colors.onPrimary,
-    fontSize: 20,
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
 }));

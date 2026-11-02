@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { carePlannerMessage } from '@/features/care-planner/messages';
 import { useConfirmDiscard } from '@/features/care-planner/useConfirmDiscard';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -159,8 +159,7 @@ export default function SupportedQuestionsScreen() {
 
 const useStyles = makeStyles((colors) => ({
   subhead: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.onSurface,
   },
@@ -169,8 +168,7 @@ const useStyles = makeStyles((colors) => ({
     padding: Spacing.three,
   },
   generatedOn: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.5,
     color: colors.onSurface,

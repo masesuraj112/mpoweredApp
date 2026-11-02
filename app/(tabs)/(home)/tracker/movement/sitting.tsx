@@ -1,12 +1,11 @@
 import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { SITTING_OPTIONS } from '@/features/assessments/movement/options';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 // Roughly how many lines an option wraps to (about 34 characters per line at this font size).
 const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
@@ -66,22 +65,20 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   promptText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   promptUnderline: {
@@ -92,9 +89,9 @@ const useStyles = makeStyles((colors) => ({
     minHeight: 0,
     width: '100%',
     alignSelf: 'center',
-    borderRadius: scaleWidth(12),
-    backgroundColor: colors.background,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
-    paddingHorizontal: scaleWidth(8),
+    paddingHorizontal: Spacing.three,
   },
 }));

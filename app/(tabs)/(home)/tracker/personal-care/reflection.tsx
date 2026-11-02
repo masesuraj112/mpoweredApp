@@ -11,12 +11,11 @@ import {
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePersonalCareEntry } from '@/services/assessments';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, TextInput } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -66,7 +65,7 @@ export default function ReflectionScreen() {
         disabled={saving || overLimit}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={scaleHeight(554)}
+        cardHeight={554}
       >
         <TextInput
           accessibilityLabel="Reflection on your personal care"
@@ -91,29 +90,26 @@ export default function ReflectionScreen() {
 const useStyles = makeStyles((colors) => ({
   prompt: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   reflectionInput: {
-    minHeight: scaleHeight(80),
+    minHeight: 80,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     backgroundColor: colors.surface,
-    paddingHorizontal: scaleWidth(14),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     color: colors.text,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    ...Typography.caption,
   },
   counter: {
-    marginTop: scaleHeight(6),
+    marginTop: Spacing.one,
     textAlign: 'right',
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    ...Typography.caption,
   },
   counterOver: {
     color: colors.error,

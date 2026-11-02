@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
-import { scaleFont, scaleWidth } from '@/services/scale';
 
-import { useThemeColors } from '@/constants/theme';
+import { Spacing, Typography, useThemeColors } from '@/constants/theme';
 export interface PainIntensityPoint {
   /** Short label shown under the point, e.g. "24/05" */
   label: string;
@@ -17,9 +16,9 @@ interface PainIntensityChartProps {
 }
 
 const PAIN_SCALE_MAX = 10;
-const Y_AXIS_WIDTH = 18;
+const Y_AXIS_WIDTH = 24;
 // Keeps the edge dots and their centred date labels inside the plot area
-const HORIZONTAL_INSET = scaleWidth(16);
+const HORIZONTAL_INSET = 16;
 
 export function PainIntensityChart({ data, height = 270 }: PainIntensityChartProps) {
   const colors = useThemeColors();
@@ -83,7 +82,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
                 key={`ytick-${tick}`}
                 x={Y_AXIS_WIDTH - 6}
                 y={y + 3}
-                fontSize={scaleFont(10)}
+                fontSize={Typography.caption.fontSize}
                 fill={colors.textSecondary}
                 textAnchor="end"
               >
@@ -105,7 +104,7 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
               key={`xlabel-${point.label}`}
               x={point.x}
               y={height - 4}
-              fontSize={scaleFont(10)}
+              fontSize={Typography.caption.fontSize}
               fill={colors.textSecondary}
               textAnchor="middle"
             >
@@ -121,6 +120,6 @@ export function PainIntensityChart({ data, height = 270 }: PainIntensityChartPro
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginTop: scaleWidth(4),
+    marginTop: Spacing.one,
   },
 });

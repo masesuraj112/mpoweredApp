@@ -1,5 +1,4 @@
 import { ScoreThresholds } from '@/constants/scoring-thresholds';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
@@ -7,7 +6,7 @@ import { Text, TextInput, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 import { useKeyboardDoneBar } from './KeyboardDoneBar';
 
-import { Palette, makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Palette, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 interface ScaleSliderProps {
   titleText: string;
   underLinedText?: string;
@@ -38,9 +37,9 @@ function getScoreDescription(assessmentType: string | undefined, value: number):
   return thresholds[value as keyof typeof thresholds] as string | undefined;
 }
 
-const ROW_HEIGHT = scaleHeight(90);
-const TRACK_HEIGHT = scaleHeight(32);
-const THUMB_HEIGHT = scaleHeight(70);
+const ROW_HEIGHT = 90;
+const TRACK_HEIGHT = 32;
+const THUMB_HEIGHT = 70;
 
 // Thumb width is derived as a ratio of the slider's own width (90% of the 412px
 // Figma base), not the full screen — stays proportional to the slider itself
@@ -119,7 +118,7 @@ export function ScaleSliderInput({
     onValueChange?.(val);
   };
 
-  const thumbWidth = sliderWidth ? sliderWidth * THUMB_WIDTH_RATIO : scaleWidth(9.5);
+  const thumbWidth = sliderWidth ? sliderWidth * THUMB_WIDTH_RATIO : 10;
   const thumbGap = thumbWidth / 2;
   const fillWidth = (value / 10) * sliderWidth;
 
@@ -175,7 +174,7 @@ export function ScaleSliderInput({
         <View
           style={[
             sliderSheet.bubble,
-            { left: (value / 10) * sliderWidth - scaleWidth(15) },
+            { left: (value / 10) * sliderWidth - 15 },
           ]}
         >
           <Text style={sliderSheet.bubbleText}>{value}</Text>
@@ -228,23 +227,21 @@ export function ScaleSliderInput({
 
 const useStylesSheet = makeStyles((colors) => ({
   painLevelText: {
-    fontSize: scaleFont(20),
-    fontWeight: '700',
+    ...Typography.titleSmall,
   },
   underlineText: {
-    fontSize: scaleFont(20),
-    fontWeight: '700',
+    ...Typography.titleSmall,
     borderBottomWidth: 2,
-    width: scaleWidth(30),
+    width: 30,
     borderBottomColor: colors.text,
-    minWidth: scaleWidth(10),
+    minWidth: 10,
     textAlign: 'center',
-    paddingBottom: scaleHeight(4),
-    marginLeft: scaleWidth(8),
+    paddingBottom: Spacing.one,
+    marginLeft: Spacing.two,
   },
   descriptionText: {
-    marginTop: scaleHeight(10),
-    fontSize: scaleFont(17),
+    marginTop: Spacing.two,
+    ...Typography.bodyLarge,
     fontWeight: '700',
     fontStyle: 'italic',
   },
@@ -252,43 +249,40 @@ const useStylesSheet = makeStyles((colors) => ({
 
 const usePersonalCareSheet = makeStyles((colors) => ({
   questionText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     color: colors.text,
-    marginBottom: scaleHeight(14),
+    marginBottom: Spacing.three,
   },
   scoreRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: scaleWidth(13),
+    gap: Spacing.three,
   },
   scoreLabel: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
-    lineHeight: scaleHeight(20),
     letterSpacing: 0.1,
     color: colors.text,
   },
   scoreInput: {
-    width: scaleWidth(64),
-    fontSize: scaleFont(14),
+    width: 64,
+    ...Typography.bodySmall,
     fontWeight: '500',
     letterSpacing: 0.1,
     textAlign: 'center',
     color: colors.text,
     borderBottomWidth: 2,
     borderBottomColor: colors.outlineStrong,
-    paddingVertical: scaleHeight(2),
+    paddingVertical: Spacing.half,
   },
   descriptionText: {
-    marginTop: scaleHeight(4),
-    fontSize: scaleFont(13),
+    marginTop: Spacing.one,
+    ...Typography.caption,
     fontWeight: '600',
     fontStyle: 'italic',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
     color: colors.text,
@@ -328,11 +322,11 @@ const useSliderSheet = makeStyles((colors) => ({
   },
   bubble: {
     position: 'absolute',
-    top: scaleHeight(-30),
+    top: -30,
     backgroundColor: colors.primary,
-    borderRadius: scaleWidth(10),
-    paddingHorizontal: scaleWidth(10),
-    paddingVertical: scaleHeight(4),
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
     zIndex: 3,
   },
   bubbleText: {

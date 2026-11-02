@@ -1,12 +1,11 @@
 import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { PERSONAL_CARE_OPTIONS } from '@/features/assessments/personal-care/options';
 
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export default function CareScreen() {
   const styles = useStyles();
   const { answers, updateAnswer } = usePersonalCareAssessment();
@@ -48,14 +47,13 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
 }));

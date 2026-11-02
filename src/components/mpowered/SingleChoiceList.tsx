@@ -1,9 +1,8 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ChoiceCard } from './ChoiceCard';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface SingleChoiceProps {
   titleText: string,
   questionNumber?: number;
@@ -114,16 +113,15 @@ export function SingleChoiceInput({
 
 const useStylesSheet = makeStyles((colors) => ({
   promptText: {
-    fontSize: scaleFont(15),
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   promptUnderline: {
     textDecorationLine: 'underline',
   },
   personalCarePromptText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     color: colors.text,
   },
@@ -133,7 +131,7 @@ const useOptionStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: scaleHeight(16),
+    paddingVertical: Spacing.three,
     minWidth: 0,
   },
   rowDivider: {
@@ -142,11 +140,11 @@ const useOptionStyles = makeStyles((colors) => ({
   },
   personalCareList: {
     width: '96%',
-    marginLeft: scaleWidth(4),
+    marginLeft: Spacing.one,
     borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: scaleWidth(12),
-    backgroundColor: colors.background,
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
   },
   personalCareListFixedHeight: {
@@ -154,30 +152,30 @@ const useOptionStyles = makeStyles((colors) => ({
     minHeight: 0,
   },
   personalCareRow: {
-    minHeight: scaleHeight(56),
-    paddingVertical: scaleHeight(8),
-    paddingHorizontal: scaleWidth(16),
-    gap: scaleWidth(16),
+    minHeight: 56,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    gap: Spacing.three,
   },
   personalCareRowDivider: {
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
   circle: {
-    width: scaleWidth(22),
-    height: scaleWidth(22),
-    borderRadius: scaleWidth(11),
+    width: 22,
+    height: 22,
+    borderRadius: Radius.pill,
     borderWidth: 2,
     borderColor: colors.controlBorder,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: scaleWidth(16),
+    marginRight: Spacing.three,
     flexShrink: 0,
   },
   personalCareCircle: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderRadius: scaleWidth(10),
+    width: 20,
+    height: 20,
+    borderRadius: Radius.pill,
     borderColor: colors.outlineStrong,
     marginRight: 0,
   },
@@ -185,13 +183,13 @@ const useOptionStyles = makeStyles((colors) => ({
     borderColor: colors.primary,
   },
   circleDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
+    width: 10,
+    height: 10,
+    borderRadius: Radius.pill,
     backgroundColor: colors.primary,
   },
   label: {
-    fontSize: scaleFont(15),
+    ...Typography.bodySmall,
     fontWeight: '600',
     color: colors.text,
     flex: 1,
@@ -199,9 +197,8 @@ const useOptionStyles = makeStyles((colors) => ({
     minWidth: 0,
   },
   personalCareLabel: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
     color: colors.text,
   },

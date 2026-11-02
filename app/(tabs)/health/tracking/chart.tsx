@@ -23,9 +23,8 @@ import {
 import { usePdfExport } from '@/hooks/usePdfExport';
 import type { AppError } from '@/lib/errors';
 import { getPainEntries } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const PAGE_SIZE = 5;
 const ALL_LOCATIONS = '__all__';
 
@@ -139,7 +138,7 @@ export default function TrackingChartScreen() {
             </View>
 
             {chartData.length > 0 ? (
-              <PainIntensityChart data={chartData} height={scaleHeight(270)} />
+              <PainIntensityChart data={chartData} height={270} />
             ) : (
               <Text style={styles.emptyText}>No records for this location in the loaded weeks.</Text>
             )}
@@ -216,11 +215,12 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   card: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(20),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -228,59 +228,57 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: 'space-between',
   },
   cardTitle: {
-    fontSize: scaleFont(20),
-    fontWeight: '600',
+    ...Typography.titleSmall,
     color: colors.textSecondary,
   },
   filterChip: {
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(100),
-    paddingHorizontal: scaleWidth(14),
-    paddingVertical: scaleHeight(6),
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     backgroundColor: colors.background,
     maxWidth: '55%',
   },
   emptyText: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
+    ...Typography.bodySmall,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginHorizontal: scaleWidth(24),
-    marginVertical: scaleHeight(32),
+    marginHorizontal: Spacing.four,
+    marginVertical: Spacing.five,
   },
   tableHeader: {
     fontWeight: '600',
     color: colors.textSecondary,
   },
   notice: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.success,
     textAlign: 'center',
-    marginTop: scaleHeight(10),
+    marginTop: Spacing.two,
   },
   noticeError: {
     color: colors.error,
   },
   metricRow: {
     flexDirection: 'row',
-    marginTop: scaleHeight(16),
+    marginTop: Spacing.three,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(20),
+    borderRadius: Radius.card,
     overflow: 'hidden',
   },
   metricButton: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: scaleHeight(8),
+    paddingVertical: Spacing.two,
     backgroundColor: colors.surface,
   },
   metricButtonActive: {
     backgroundColor: colors.secondaryContainer,
   },
   metricButtonText: {
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     fontWeight: '600',
     color: colors.text,
   },
@@ -288,45 +286,46 @@ const useStyles = makeStyles((colors) => ({
     color: colors.primary,
   },
   table: {
-    marginTop: scaleHeight(16),
+    marginTop: Spacing.three,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(10),
-    paddingHorizontal: scaleWidth(12),
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.three,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: scaleHeight(12),
+    paddingVertical: Spacing.three,
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
-    gap: scaleWidth(8),
+    gap: Spacing.two,
   },
   tableRowLast: {
     borderBottomWidth: 0,
   },
   tableDate: {
     flex: 1.6,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.text,
   },
   tableValue: {
     flex: 1,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
   },
   seeMoreButton: {
     alignSelf: 'center',
-    marginTop: scaleHeight(16),
+    marginTop: Spacing.three,
     backgroundColor: colors.background,
-    borderRadius: scaleWidth(12),
-    paddingHorizontal: scaleWidth(20),
-    paddingVertical: scaleHeight(10),
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   seeMoreButtonText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
     color: colors.text,
   },

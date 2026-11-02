@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { appendDictatedText } from '@/features/care-planner/answerDrafts';
 import type { AnswerInput, PlanQuestion } from '@/features/care-planner/planTypes';
 import { useAnswerDrafts } from '@/features/care-planner/useAnswerDrafts';
@@ -221,13 +221,14 @@ const useStyles = makeStyles((colors) => ({
     width: '100%',
     maxWidth: 440,
     borderRadius: Radius.card,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
   },
   scroll: {
     flexShrink: 1,
   },
   content: {
+    ...ContentColumn,
     gap: Spacing.three,
     padding: Spacing.four,
   },
@@ -247,8 +248,7 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'flex-start',
   },
   errorText: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.error,
   },

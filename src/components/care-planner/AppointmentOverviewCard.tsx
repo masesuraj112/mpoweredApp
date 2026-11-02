@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type AppointmentOverviewCardProps = {
   dateText: string;
@@ -50,8 +50,7 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurfaceVariant,
   },
   value: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
     color: colors.onSurface,
   },

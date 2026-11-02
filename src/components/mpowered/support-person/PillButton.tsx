@@ -1,5 +1,4 @@
-import { Radius, makeStyles } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { Pressable, Text } from 'react-native';
 
@@ -38,19 +37,20 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.pill,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    minHeight: MinTapTarget,
   },
   small: {
     alignSelf: 'flex-end',
-    gap: scaleWidth(10),
-    paddingHorizontal: scaleWidth(15),
-    paddingVertical: scaleHeight(3),
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
   },
   large: {
     alignSelf: 'stretch',
-    gap: scaleWidth(21),
-    height: scaleHeight(39),
+    gap: Spacing.four,
+    height: 39,
   },
   pressed: {
     opacity: 0.8,
@@ -60,13 +60,11 @@ const useStyles = makeStyles((colors) => ({
     fontWeight: '500',
   },
   labelSmall: {
-    fontSize: scaleFont(12),
-    lineHeight: 16,
+    ...Typography.caption,
     letterSpacing: 0.5,
   },
   labelLarge: {
-    fontSize: scaleFont(14),
-    lineHeight: 21,
+    ...Typography.bodySmall,
     letterSpacing: 0.1,
   },
   arrow: {

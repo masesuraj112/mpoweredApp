@@ -1,8 +1,7 @@
 import { Text, View } from 'react-native';
 import type { ProfileSection } from '@/features/health-profile/profile';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 interface ProfileSectionCardProps {
   section: ProfileSection;
   /** Shows the week the answers come from under the title */
@@ -50,89 +49,83 @@ export function ProfileSectionCard({ section, showPeriod = false }: ProfileSecti
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    backgroundColor: colors.background,
-    borderRadius: scaleWidth(12),
-    marginHorizontal: scaleWidth(32),
-    marginBottom: scaleHeight(25),
-    paddingTop: scaleHeight(20),
-    paddingBottom: scaleHeight(12),
+    backgroundColor: colors.surface,
+    borderRadius: Radius.card,
+    marginHorizontal: Spacing.five,
+    marginBottom: Spacing.four,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.three,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: scaleWidth(26),
+    marginHorizontal: Spacing.four,
   },
   cardTitle: {
     flexShrink: 1,
-    fontSize: scaleFont(20),
-    lineHeight: scaleFont(24),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
     color: colors.text,
   },
   incompleteBadge: {
     backgroundColor: colors.errorContainer,
-    borderRadius: scaleWidth(8),
-    paddingHorizontal: scaleWidth(8),
-    paddingVertical: scaleHeight(2),
-    marginLeft: scaleWidth(8),
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    marginLeft: Spacing.two,
   },
   incompleteBadgeText: {
-    fontSize: scaleFont(11),
+    ...Typography.caption,
     fontWeight: '600',
     color: colors.onErrorContainer,
   },
   cardSubtitle: {
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(16),
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.text,
-    marginHorizontal: scaleWidth(26),
-    marginTop: scaleHeight(4),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.one,
   },
   cardDivider: {
     height: 1,
     backgroundColor: colors.outline,
-    marginHorizontal: scaleWidth(26),
-    marginTop: scaleHeight(8),
-    marginBottom: scaleHeight(6),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.two,
+    marginBottom: Spacing.one,
   },
   item: {
-    paddingHorizontal: scaleWidth(30),
-    paddingVertical: scaleHeight(8),
+    paddingHorizontal: Spacing.five,
+    paddingVertical: Spacing.two,
   },
   itemDetail: {
-    paddingVertical: scaleHeight(10),
+    paddingVertical: Spacing.two,
   },
   itemLabel: {
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(16),
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.textSecondary,
   },
   itemValue: {
-    fontSize: scaleFont(16),
-    lineHeight: scaleFont(24),
+    ...Typography.bodyLarge,
     letterSpacing: 0.5,
     color: colors.text,
   },
   itemValueCompact: {
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(16),
+    ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.4,
   },
   itemValueDetail: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
   },
   incompleteText: {
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(20),
+    ...Typography.bodySmall,
     fontStyle: 'italic',
     color: colors.textSecondary,
-    paddingHorizontal: scaleWidth(30),
-    paddingVertical: scaleHeight(8),
+    paddingHorizontal: Spacing.five,
+    paddingVertical: Spacing.two,
   },
 }));

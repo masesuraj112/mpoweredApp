@@ -7,7 +7,7 @@ import { MyAppointmentsSection } from '@/components/care-planner/MyAppointmentsS
 import { PlannerIntro } from '@/components/care-planner/PlannerIntro';
 import { ShortcutCarousel, type Shortcut } from '@/components/care-planner/ShortcutCarousel';
 import { SponsorFooter } from '@/components/care-planner/SponsorFooter';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing } from '@/constants/theme';
 import { useAppointments } from '@/features/care-planner/useAppointments';
 
 export default function PlannerScreen() {
@@ -71,6 +71,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   content: {
+    ...ContentColumn,
     gap: Spacing.four,
     paddingTop: Spacing.four,
     paddingBottom: Spacing.four,

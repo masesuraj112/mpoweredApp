@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -147,69 +147,62 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 480,
+    ...ContentColumn,
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.four,
   },
   backButton: {
     alignSelf: 'flex-start',
     minHeight: 40,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: Spacing.four,
   },
   backArrow: {
-    marginRight: 8,
+    marginRight: Spacing.two,
     color: colors.textSecondary,
-    fontSize: 28,
-    lineHeight: 28,
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
   },
   backText: {
     color: colors.textSecondary,
-    fontSize: 16,
+    ...Typography.bodyLarge,
   },
   heading: {
-    marginBottom: 8,
+    marginBottom: Spacing.two,
     color: colors.text,
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 30,
+    ...Typography.title,
   },
   description: {
-    marginBottom: 20,
+    marginBottom: Spacing.three,
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
   },
   input: {
     minHeight: 220,
-    padding: 16,
+    padding: Spacing.three,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: 12,
+    borderRadius: Radius.card,
     color: colors.text,
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
   },
   loader: {
-    marginTop: 40,
+    marginTop: Spacing.five,
   },
   error: {
-    marginTop: 12,
+    marginTop: Spacing.two,
     color: colors.error,
-    fontSize: 13,
-    lineHeight: 18,
+    ...Typography.caption,
   },
   saveButton: {
-    minHeight: 48,
+    minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    borderRadius: 100,
+    marginTop: Spacing.three,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
   },
   saveButtonDisabled: {
@@ -217,7 +210,7 @@ const useStyles = makeStyles((colors) => ({
   },
   saveButtonText: {
     color: colors.onPrimary,
-    fontSize: 15,
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   pressed: {

@@ -1,9 +1,8 @@
-import { makeStyles, useThemeColors } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { signOut } from '@/services/auth';
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export type SettingsRowProps = {
@@ -36,29 +35,31 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-      <Text style={styles.title}>Settings</Text>
-      <View style={styles.titleDivider} />
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.title}>Settings</Text>
+        <View style={styles.titleDivider} />
 
-      <View style={styles.rowsCard}>
-        {rows.map((row, index) => (
-          <SettingsRow
-            key={row.label}
-            {...row}
-            isLast={index === rows.length - 1}
-          />
-        ))}
-      </View>
+        <View style={styles.rowsCard}>
+          {rows.map((row, index) => (
+            <SettingsRow
+              key={row.label}
+              {...row}
+              isLast={index === rows.length - 1}
+            />
+          ))}
+        </View>
 
-      <Pressable
-        onPress={handleSignOut}
-        disabled={isSigningOut}
-        accessibilityRole="button"
-        accessibilityLabel="Sign out"
-        accessibilityState={{ disabled: isSigningOut }}
-        style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
-      >
-        {isSigningOut ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
-      </Pressable>
+        <Pressable
+          onPress={handleSignOut}
+          disabled={isSigningOut}
+          accessibilityRole="button"
+          accessibilityLabel="Sign out"
+          accessibilityState={{ disabled: isSigningOut }}
+          style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
+        >
+          {isSigningOut ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
+        </Pressable>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -88,34 +89,36 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
 const useStyles = makeStyles((colors) => ({
   screen: {
     flex: 1,
-    paddingHorizontal: scaleWidth(29),
-    paddingTop: scaleHeight(36),
     backgroundColor: colors.background,
+  },
+  content: {
+    ...ContentColumn,
+    paddingHorizontal: Spacing.five,
+    paddingTop: Spacing.five,
+    paddingBottom: Spacing.four,
   },
   title: {
     color: colors.text,
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleHeight(29),
+    ...Typography.title,
   },
   titleDivider: {
     height: 1,
-    marginTop: scaleHeight(16),
-    marginBottom: scaleHeight(23),
+    marginTop: Spacing.three,
+    marginBottom: Spacing.four,
     backgroundColor: colors.divider,
   },
   rowsCard: {
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: colors.outlineStrong,
-    borderRadius: scaleWidth(12),
-    paddingHorizontal: scaleWidth(20),
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.three,
   },
   row: {
-    minHeight: scaleHeight(76),
+    minHeight: 76,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -125,37 +128,39 @@ const useStyles = makeStyles((colors) => ({
     opacity: 0.65,
   },
   rowIcon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
+    width: 24,
+    height: 24,
     color: colors.onSurfaceVariant,
-    fontSize: scaleFont(21),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
     textAlign: 'center',
   },
   rowLabel: {
     flex: 1,
     color: colors.onSurface,
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
   chevron: {
     color: colors.text,
-    fontSize: scaleFont(26),
-    lineHeight: scaleFont(26),
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
   },
   signOutButton: {
-    height: scaleHeight(55),
-    marginTop: scaleHeight(23),
+    marginTop: Spacing.four,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   signOutPressed: {
     opacity: 0.8,
   },
   signOutText: {
     color: colors.onPrimary,
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
 }));

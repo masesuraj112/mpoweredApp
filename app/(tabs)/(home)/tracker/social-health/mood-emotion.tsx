@@ -1,13 +1,12 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { MOOD_EMOTION_VALUES, type MoodEmotion } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
 const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
   frustrated: {
@@ -76,7 +75,7 @@ export default function MoodEmotionScreen() {
             attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
           }
           variant="personalCare"
-          cardHeight={scaleHeight(300)}
+          cardHeight={300}
         >
           <View style={styles.emojiRow}>
             {MOOD_EMOTIONS.map(emotion => {
@@ -88,7 +87,7 @@ export default function MoodEmotionScreen() {
                   accessibilityRole="radio"
                   accessibilityState={{ checked: isSelected }}
                   accessibilityLabel={`I was feeling ${emotion.value}`}
-                  hitSlop={scaleWidth(12)}
+                  hitSlop={12}
                   style={styles.emojiSlot}
                 >
                   {isSelected ? (
@@ -97,7 +96,7 @@ export default function MoodEmotionScreen() {
                   ) : (
                     <Image
                       source={emotion.icon}
-                      style={{ width: scaleWidth(24), height: scaleWidth(emotion.iconHeight) }}
+                      style={{ width: 24, height: emotion.iconHeight }}
                       contentFit="contain"
                     />
                   )}
@@ -120,29 +119,26 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   questionText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
     color: colors.text,
   },
   hintText: {
-    marginTop: scaleHeight(1),
-    fontSize: scaleFont(11),
+    marginTop: 1,
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
     color: colors.textSubtle,
@@ -150,29 +146,28 @@ const useStyles = makeStyles((colors) => ({
   emojiRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: scaleWidth(34),
-    marginTop: scaleHeight(4),
+    gap: Spacing.five,
+    marginTop: Spacing.one,
   },
   emojiSlot: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedIcon: {
     position: 'absolute',
-    top: scaleWidth(-6),
-    left: scaleWidth(-8),
-    width: scaleWidth(40),
-    height: scaleWidth(40),
+    top: -6,
+    left: -8,
+    width: 40,
+    height: 40,
   },
   selectionText: {
-    marginTop: scaleHeight(14),
-    minHeight: scaleHeight(16),
-    fontSize: scaleFont(13),
+    marginTop: Spacing.three,
+    minHeight: 16,
+    ...Typography.caption,
     fontWeight: '600',
     fontStyle: 'italic',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     textAlign: 'center',
     color: colors.text,

@@ -18,7 +18,7 @@ import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
 import { Alert, Pressable, Text } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
@@ -128,15 +128,17 @@ export default function ProfileScreen() {
 
 const useStyles = makeStyles((colors) => ({
   signOutButton: {
-    height: 55,
-    marginTop: 8,
+    marginTop: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   signOutText: {
     color: colors.onPrimary,
-    fontSize: 20,
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
 }));

@@ -1,12 +1,11 @@
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Pressable, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export default function PainCharacteristicsScreen() {
   const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
@@ -61,7 +60,7 @@ export default function PainCharacteristicsScreen() {
           onRecord={handleNext}
           onPrevious={handlePrevious}
           disabled={selected.length === 0}
-          cardHeight={scaleHeight(599)}
+          cardHeight={599}
           variant="painTracker"
           searchEnabled
           scrollable
@@ -79,14 +78,13 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(22),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(9),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
 }));

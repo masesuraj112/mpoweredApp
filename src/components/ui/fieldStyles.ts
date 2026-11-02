@@ -1,6 +1,6 @@
 
 
-import { MinTapTarget, Radius, Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 /** Shared look for the labelled form fields (text, select, date and time). */
 export const useFieldStyles = makeStyles((colors) => ({
@@ -8,15 +8,13 @@ export const useFieldStyles = makeStyles((colors) => ({
     gap: Spacing.one,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     fontWeight: '500',
     letterSpacing: 0.1,
     color: colors.onSurface,
   },
   optional: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.textSecondary,
@@ -41,8 +39,7 @@ export const useFieldStyles = makeStyles((colors) => ({
   value: {
     flex: 1,
     minWidth: 0,
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
     letterSpacing: 0.5,
     color: colors.onSurface,
   },
@@ -50,8 +47,7 @@ export const useFieldStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
   },
   error: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     fontWeight: '500',
     letterSpacing: 0.4,
     color: colors.error,

@@ -2,12 +2,11 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
@@ -172,104 +171,100 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(22),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(9),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   modalBackdrop: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.backdrop,
-    padding: scaleWidth(24),
+    padding: Spacing.four,
   },
   modalContent: {
     width: '100%',
-    maxWidth: scaleWidth(386),
-    height: scaleHeight(242),
-    borderRadius: scaleWidth(12),
+    maxWidth: 386,
+    height: 242,
+    borderRadius: Radius.card,
     backgroundColor: colors.surface,
-    paddingTop: scaleHeight(12),
-    paddingHorizontal: scaleWidth(16),
-    paddingBottom: scaleHeight(8),
+    paddingTop: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.two,
   },
   modalLabel: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '400',
-    lineHeight: scaleHeight(16),
-    marginLeft: scaleWidth(16),
+    marginLeft: Spacing.three,
   },
   input: {
-    height: scaleHeight(40),
+    height: 40,
     backgroundColor: colors.surfaceContainer,
-    borderRadius: scaleWidth(2),
-    paddingHorizontal: scaleWidth(4),
+    borderRadius: 2,
+    paddingHorizontal: Spacing.one,
     paddingVertical: 0,
     color: colors.text,
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
   },
   previousLabel: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-    marginTop: scaleHeight(8),
-    marginLeft: scaleWidth(16),
+    ...Typography.caption,
+    marginTop: Spacing.two,
+    marginLeft: Spacing.three,
   },
   previousLocations: {
-    gap: scaleHeight(7),
-    marginTop: scaleHeight(2),
+    gap: Spacing.two,
+    marginTop: Spacing.half,
   },
   previousLocation: {
-    height: scaleHeight(30),
+    height: 30,
     justifyContent: 'center',
     backgroundColor: colors.secondaryContainer,
-    borderRadius: scaleWidth(2),
-    paddingHorizontal: scaleWidth(4),
+    borderRadius: 2,
+    paddingHorizontal: Spacing.one,
   },
   previousLocationText: {
     color: colors.text,
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: scaleWidth(8),
+    gap: Spacing.two,
     marginTop: 'auto',
-    paddingHorizontal: scaleWidth(8),
+    paddingHorizontal: Spacing.two,
   },
   cancelButton: {
-    height: scaleHeight(48),
+    height: 48,
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(16),
+    paddingHorizontal: Spacing.three,
   },
   cancelButtonText: {
     color: colors.primary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
   },
   okButton: {
-    width: scaleWidth(105),
-    height: scaleHeight(30),
+    width: 105,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(16),
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   okButtonText: {
     color: colors.onPrimary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
   },
 }));

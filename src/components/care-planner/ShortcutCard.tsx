@@ -2,7 +2,7 @@ import { Text, type StyleProp, type ViewStyle } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type ShortcutCardProps = {
   title: string;
@@ -29,8 +29,7 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.three,
   },
   title: {
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
     fontWeight: '500',
     letterSpacing: 0.5,
     color: colors.text,

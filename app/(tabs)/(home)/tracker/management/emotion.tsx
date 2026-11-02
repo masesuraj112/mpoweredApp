@@ -6,12 +6,11 @@ import { managementSaveMessage } from '@/features/assessments/management/message
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveManagementEntry } from '@/services/management';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function EmotionScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -67,7 +66,7 @@ export default function EmotionScreen() {
         disabled={saving}
         validationMessage={errorMessage ?? undefined}
         variant="management"
-        cardHeight={scaleHeight(516)}
+        cardHeight={516}
       >
         <TextInput
           accessibilityLabel="Emotion management strategies"
@@ -88,31 +87,28 @@ export default function EmotionScreen() {
 
 const useStyles = makeStyles((colors) => ({
   promptContent: {
-    gap: scaleHeight(12),
+    gap: Spacing.two,
   },
   promptText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   examples: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontStyle: 'italic',
-    lineHeight: scaleHeight(18),
   },
   input: {
-    height: scaleHeight(146),
+    height: 146,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     backgroundColor: colors.surface,
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
     color: colors.text,
-    fontSize: scaleFont(14),
-    lineHeight: scaleHeight(20),
+    ...Typography.bodySmall,
   },
 }));

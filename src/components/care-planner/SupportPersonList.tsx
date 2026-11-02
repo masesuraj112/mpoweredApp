@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { describeAccess, describeContact } from '@/features/care-planner/supportPerson';
 import type { SupportPerson } from '@/features/care-planner/types';
 
@@ -63,14 +63,12 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.half,
   },
   name: {
-    fontSize: 16,
-    lineHeight: 24,
+    ...Typography.bodyLarge,
     fontWeight: '500',
     color: colors.onSurface,
   },
   detail: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.onSurfaceVariant,
   },

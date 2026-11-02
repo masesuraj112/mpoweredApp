@@ -1,5 +1,4 @@
-import { Radius, makeStyles } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { Pressable, Text, View } from 'react-native';
 
 type SupportRequestCardProps = {
@@ -38,37 +37,36 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    gap: scaleHeight(16),
-    paddingTop: scaleHeight(22),
-    paddingBottom: scaleHeight(15),
-    paddingHorizontal: scaleWidth(16),
+    gap: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.three,
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: scaleWidth(20),
-    backgroundColor: colors.background,
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
   },
   message: {
     color: colors.onSurface,
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '500',
-    lineHeight: 24,
     letterSpacing: 0.15,
   },
   buttons: {
     flexDirection: 'row',
-    gap: scaleWidth(24),
-    paddingHorizontal: scaleWidth(3),
+    gap: Spacing.four,
+    paddingHorizontal: Spacing.one,
   },
   button: {
     flex: 1,
-    minHeight: scaleHeight(31),
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    minHeight: MinTapTarget,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: Radius.pill,
+    borderRadius: Radius.control,
   },
   pressed: {
     opacity: 0.8,
@@ -80,9 +78,8 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primary,
   },
   buttonText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: 20,
     letterSpacing: 0.1,
   },
   rejectText: {

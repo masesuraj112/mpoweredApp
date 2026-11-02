@@ -1,11 +1,10 @@
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 export default function ExerciseScreen() {
   const styles = useStyles();
   const { answers, updateAnswer } = useManagementAssessment();
@@ -39,7 +38,7 @@ export default function ExerciseScreen() {
           onRecord={handleNext}
           disabled={!answers.exerciseDays}
           variant="management"
-          cardHeight={scaleHeight(516)}
+          cardHeight={516}
         >
           <View style={styles.optionsList}>
             {EXERCISE_OPTIONS.map((option, index) => {
@@ -76,55 +75,52 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
   promptContent: {
-    gap: scaleHeight(12),
+    gap: Spacing.two,
   },
   promptText: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   examples: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontStyle: 'italic',
-    lineHeight: scaleHeight(18),
   },
   optionsList: {
     width: '96%',
     alignSelf: 'center',
-    borderRadius: scaleWidth(12),
-    backgroundColor: colors.background,
-    paddingHorizontal: scaleWidth(16),
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
+    paddingHorizontal: Spacing.three,
   },
   optionRow: {
-    minHeight: scaleHeight(56),
+    minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
   optionDivider: {
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
   radio: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
+    width: 20,
+    height: 20,
     borderWidth: 2,
     borderColor: colors.outlineStrong,
-    borderRadius: scaleWidth(10),
+    borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -132,16 +128,15 @@ const useStyles = makeStyles((colors) => ({
     borderColor: colors.primary,
   },
   radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
+    width: 10,
+    height: 10,
+    borderRadius: Radius.pill,
     backgroundColor: colors.primary,
   },
   optionText: {
     color: colors.text,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: scaleHeight(20),
     letterSpacing: 0.25,
   },
 }));

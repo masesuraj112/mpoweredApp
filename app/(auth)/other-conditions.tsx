@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function OtherConditionsScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -53,10 +53,10 @@ export default function OtherConditionsScreen() {
 
 const useStyles = makeStyles((colors) => ({
   screen: { flex: 1 },
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, paddingBottom: 64 },
-  title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
-  subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: 24 },
-  input: { backgroundColor: colors.surfaceContainer, borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
-  continueButton: { backgroundColor: colors.primary, width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
-  continueText: { color: colors.onPrimary, fontWeight: '600', fontSize: 14 },
+  container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, paddingBottom: Spacing.six },
+  title: { ...Typography.titleSmall, textAlign: 'center', marginBottom: Spacing.two },
+  subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: Spacing.four },
+  input: { backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall, marginBottom: 'auto' },
+  continueButton: { backgroundColor: colors.primary, width: '100%', maxWidth: 306, borderRadius: Radius.control, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: Spacing.five, paddingVertical: Spacing.three, minHeight: MinTapTarget },
+  continueText: { color: colors.onPrimary, fontWeight: '600', ...Typography.bodySmall },
 }));

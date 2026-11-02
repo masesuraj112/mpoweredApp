@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const isValidName = (value: string) =>
   /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(value.trim());
 
@@ -69,42 +69,42 @@ const useStyles = makeStyles((colors) => ({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 100,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.six,
     alignItems: 'center'
   },
   title: { 
-    fontSize: 22, 
-    fontWeight: '700', 
-    marginBottom: 32 
+    ...Typography.title, 
+    marginBottom: Spacing.five 
   },
   input: {
     width: '100%', 
     backgroundColor: colors.surfaceContainer,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    ...Typography.bodyLarge,
   },
   nameError: {
     color: colors.error,
-    fontSize: 13,
-    marginTop: 8,
+    ...Typography.caption,
+    marginTop: Spacing.two,
     textAlign: 'center',
   },
   subtext: { 
     fontStyle: 'italic',
     textAlign: 'center',
-    marginTop: 24,
-    marginBottom: 24,
+    marginTop: Spacing.four,
+    marginBottom: Spacing.four,
     color: colors.text
   },
   continueButton: {
     backgroundColor: colors.primary,
     width: '100%',
-    paddingVertical: 16,
-    borderRadius: 24,
-    alignItems: 'center'
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.control,
+    alignItems: 'center',
+    minHeight: MinTapTarget
   },
   continueButtonDisabled: {
     backgroundColor: colors.secondaryContainer
@@ -112,12 +112,12 @@ const useStyles = makeStyles((colors) => ({
   continueText: {
     color: colors.onPrimary,
     fontWeight: '600',
-    fontSize: 16 }
+    ...Typography.bodyLarge }
     ,
   footnote: { 
     textAlign: 'center',
     color: colors.textSubtle,
-    marginTop: 24,
-    fontSize: 13
+    marginTop: Spacing.four,
+    ...Typography.caption
   },
 }));

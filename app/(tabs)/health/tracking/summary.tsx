@@ -12,9 +12,8 @@ import { assessmentSection } from '@/features/health-profile/profile';
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
@@ -74,13 +73,14 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   topBar: {
     backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: scaleWidth(19),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(14),
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.three,
   },
   backRow: {
     flexDirection: 'row',
@@ -88,34 +88,34 @@ const useStyles = makeStyles((colors) => ({
     alignSelf: 'flex-start',
   },
   backChevron: {
-    fontSize: scaleFont(22),
+    ...Typography.title,
+    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
-    marginRight: scaleWidth(2),
-    marginTop: -2,
+    marginRight: Spacing.half,
+    marginTop: -Spacing.half,
   },
   backText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '500',
     color: colors.textSecondary,
   },
   title: {
-    fontSize: scaleFont(22),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginTop: scaleHeight(20),
-    marginHorizontal: scaleWidth(24),
+    marginTop: Spacing.three,
+    marginHorizontal: Spacing.four,
   },
   period: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.textSubtle,
-    marginTop: scaleHeight(4),
-    marginHorizontal: scaleWidth(24),
+    marginTop: Spacing.one,
+    marginHorizontal: Spacing.four,
   },
   divider: {
     height: 1,
     backgroundColor: colors.outline,
-    marginHorizontal: scaleWidth(16),
-    marginTop: scaleHeight(8),
-    marginBottom: scaleHeight(26),
+    marginHorizontal: Spacing.three,
+    marginTop: Spacing.two,
+    marginBottom: Spacing.four,
   },
 }));

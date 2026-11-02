@@ -6,7 +6,7 @@
  * against the surface it is used on (checked by theme.test.ts).
  */
 
-import { Platform, StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
+import { StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 
 export const Palette = {
   violet: '#391777',
@@ -158,30 +158,20 @@ export const Gradients = {
   action: [Palette.primary, Palette.primaryDeep],
 } as const;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+/**
+ * Headings use Sulphur Point (loaded in app/_layout.tsx); all other text uses the device's own font. A
+ * custom font carries its weight in the family name, so heading styles set no `fontWeight`.
+ */
+export const Fonts = {
+  heading: 'SulphurPoint_700Bold',
+  headingRegular: 'SulphurPoint_400Regular',
+} as const;
+
+/** Spread into a native Stack's screen options so header titles use the heading font too. */
+export const HeaderTitleFonts = {
+  headerTitleStyle: { fontFamily: Fonts.heading },
+  headerLargeTitleStyle: { fontFamily: Fonts.heading },
+} as const;
 
 /**
  * The welcome splash (Figma 2003:362). The same in light and dark mode, and the native splash uses the top
@@ -213,21 +203,41 @@ export const Radius = {
 export const MinTapTarget = 48;
 
 /**
- * Text styles from the design (the Material 3 type scale). Spread one into a text style and add a
- * colour: `{ ...Typography.labelLarge, color: Colors.light.text }`.
+ * The type scale. Spread one into a text style and add a colour: `{ ...Typography.labelLarge, color: colors.text }`.
+ * Sizes are the size at the device's default text setting; the device's text size setting scales them, so
+ * never turn font scaling off. Nothing is smaller than 14.
  */
 export const Typography = {
-  /** 14/20 medium: labels and field labels. */
-  labelLarge: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.1 },
-  /** 14/20 semibold: section headings and emphasised labels. */
-  labelLargeBold: { fontSize: 14, lineHeight: 20, fontWeight: '600', letterSpacing: 0.1 },
-  /** 16/24 regular: question text and field values. */
-  bodyLarge: { fontSize: 16, lineHeight: 24, letterSpacing: 0.5 },
-  /** 14/20 medium with wider tracking: short messages and hints. */
-  bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
+  /** 34/41: the one big number or phrase on a screen. */
+  display: { fontFamily: Fonts.heading, fontSize: 34, lineHeight: 41 },
+  /** 28/34: screen titles. */
+  headline: { fontFamily: Fonts.heading, fontSize: 28, lineHeight: 34 },
+  /** 24/30: page titles inside a flow, and card titles that lead a screen. */
+  title: { fontFamily: Fonts.heading, fontSize: 24, lineHeight: 30 },
+  /** 20/26: section headings. */
+  titleSmall: { fontFamily: Fonts.heading, fontSize: 20, lineHeight: 26 },
+  /** 18/24: lead-in text under a title. */
+  subtitle: { fontSize: 18, lineHeight: 24 },
+  /** 17/24: question text, field values and reading text. */
+  bodyLarge: { fontSize: 17, lineHeight: 24 },
+  /** 15/22 medium: short messages and hints. */
+  bodyMedium: { fontSize: 15, lineHeight: 22, fontWeight: '500' },
+  /** 15/22: secondary text and descriptions. */
+  bodySmall: { fontSize: 15, lineHeight: 22 },
+  /** 15/20 medium: labels, field labels and buttons. */
+  labelLarge: { fontSize: 15, lineHeight: 20, fontWeight: '500' },
+  /** 15/20 semibold: emphasised labels. */
+  labelLargeBold: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
+  /** 14/20: the smallest text, for captions, dates and chart labels. */
+  caption: { fontSize: 14, lineHeight: 20 },
 } as const;
 
-export const MaxContentWidth = 800;
+/** Content never stretches wider than this on tablets; it is centred instead. */
+export const MaxContentWidth = 640;
+
+/** A centred column no wider than `MaxContentWidth`, for a screen's content on tablets. */
+export const ContentColumn = { width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center' } as const;
+
 
 /** The colours for the phone's current appearance (light or dark). */
 export function useThemeColors(): ThemeColors {

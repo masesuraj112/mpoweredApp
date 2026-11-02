@@ -1,8 +1,7 @@
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { getNextAppointment } from '@/features/support-person/appointments';
 import { APPOINTMENT_ACTION_LABELS } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Text, View } from 'react-native';
 
 import { AppointmentCard } from './AppointmentCard';
@@ -72,40 +71,38 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    gap: scaleHeight(9),
-    paddingTop: scaleHeight(17),
-    paddingBottom: scaleHeight(15),
-    paddingHorizontal: scaleWidth(14),
+    gap: Spacing.two,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: scaleWidth(20),
-    backgroundColor: colors.background,
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(14),
+    gap: Spacing.three,
   },
   headerText: {
     flex: 1,
-    gap: scaleHeight(2),
+    gap: Spacing.half,
   },
   name: {
     color: colors.onSurface,
-    fontSize: scaleFont(15),
+    ...Typography.bodySmall,
     fontWeight: '700',
-    lineHeight: 20,
   },
   condition: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
-    lineHeight: 16,
+    ...Typography.caption,
   },
   divider: {
     height: 1,
     backgroundColor: colors.background,
   },
   section: {
-    gap: scaleHeight(7),
+    gap: Spacing.two,
   },
 }));

@@ -2,11 +2,10 @@ import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Text, TextInput, View } from 'react-native';
 
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function OtcScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -23,7 +22,7 @@ export default function OtcScreen() {
         onPrevious={() => router.push('/tracker/management/medication')}
         onRecord={() => router.push('/tracker/management/exercise')}
         variant="management"
-        cardHeight={scaleHeight(516)}
+        cardHeight={516}
       >
         <View style={styles.inputContent}>
           <Text style={styles.helperText}>
@@ -50,31 +49,28 @@ export default function OtcScreen() {
 const useStyles = makeStyles((colors) => ({
   prompt: {
     color: colors.text,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
   },
   inputContent: {
-    gap: scaleHeight(10),
-    paddingHorizontal: scaleWidth(4),
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.one,
   },
   helperText: {
     color: colors.textSecondary,
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontStyle: 'italic',
-    lineHeight: scaleHeight(18),
   },
   input: {
-    height: scaleHeight(146),
+    height: 146,
     borderWidth: 1,
     borderColor: colors.divider,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     backgroundColor: colors.surface,
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
     color: colors.text,
-    fontSize: scaleFont(14),
-    lineHeight: scaleHeight(20),
+    ...Typography.bodySmall,
   },
 }));

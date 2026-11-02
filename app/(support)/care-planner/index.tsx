@@ -3,13 +3,12 @@ import { PillButton } from '@/components/mpowered/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
 import { getGreeting } from '@/features/support-person/greeting';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -89,38 +88,35 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   content: {
-    gap: scaleHeight(12),
-    paddingTop: scaleHeight(24),
-    paddingBottom: scaleHeight(32),
-    paddingHorizontal: scaleWidth(24),
+    ...ContentColumn,
+    gap: Spacing.two,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.four,
   },
   greetingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: scaleWidth(10),
-    paddingRight: scaleWidth(6),
+    paddingLeft: Spacing.two,
+    paddingRight: Spacing.two,
   },
   greeting: {
     color: colors.text,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
-    lineHeight: 20,
     letterSpacing: 0.25,
   },
   title: {
-    marginTop: scaleHeight(6),
-    paddingHorizontal: scaleWidth(9),
+    marginTop: Spacing.one,
+    paddingHorizontal: Spacing.two,
     color: colors.text,
-    fontSize: scaleFont(20),
-    fontWeight: '700',
-    lineHeight: scaleFont(24),
+    ...Typography.titleSmall,
   },
   body: {
-    paddingHorizontal: scaleWidth(9),
+    paddingHorizontal: Spacing.two,
     color: colors.text,
-    fontSize: scaleFont(14),
-    lineHeight: 20,
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
   },
   bodyEmphasis: {
@@ -128,19 +124,18 @@ const useStyles = makeStyles((colors) => ({
     letterSpacing: 0.1,
   },
   sectionTitle: {
-    marginTop: scaleHeight(18),
-    paddingHorizontal: scaleWidth(11),
+    marginTop: Spacing.three,
+    paddingHorizontal: Spacing.two,
     color: colors.text,
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '700',
-    lineHeight: scaleFont(22),
   },
   cards: {
-    gap: scaleHeight(18),
-    marginTop: scaleHeight(8),
+    gap: Spacing.three,
+    marginTop: Spacing.two,
   },
   emptyButton: {
-    marginTop: scaleHeight(18),
-    paddingHorizontal: scaleWidth(14),
+    marginTop: Spacing.three,
+    paddingHorizontal: Spacing.three,
   },
 }));

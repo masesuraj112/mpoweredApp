@@ -1,8 +1,8 @@
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';
 import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
+import { Fonts, Spacing, Typography } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
@@ -38,12 +38,12 @@ export default function CurrePainLevel() {
 
 const styles = StyleSheet.create({
   screen: {
-    paddingHorizontal: 16,
-    paddingTop: 20, // extra top space to clear the status bar/notch area
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.four, // extra top space to clear the status bar/notch area
   },
   cardTitle: {
-      fontSize: scaleFont(26),
-      fontWeight: '500',
-      marginBottom: 20
+      ...Typography.headline,
+      fontFamily: Fonts.headingRegular,
+      marginBottom: Spacing.three
   },
 });

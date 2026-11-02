@@ -1,9 +1,8 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import { Keyboard, Pressable, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 /**
  * Page shell for assessment questions: white background, page title, then the question card.
  *
@@ -34,15 +33,15 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   container: {
+    ...ContentColumn,
     flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
   },
   pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.text,
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
+    marginLeft: Spacing.two,
+    marginBottom: Spacing.three,
   },
 }));

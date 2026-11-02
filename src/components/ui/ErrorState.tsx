@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 import { Button } from './Button';
 
@@ -29,8 +29,7 @@ const useStyles = makeStyles((colors) => ({
     padding: Spacing.three,
   },
   message: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     fontWeight: '500',
     textAlign: 'center',
     color: colors.onSurface,

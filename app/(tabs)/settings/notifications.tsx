@@ -8,7 +8,7 @@ import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from 
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { makeStyles, Spacing } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { syncReminders, type SyncOutcome } from '@/features/notifications/syncReminders';
 import {
   nextSavedAppointment,
@@ -203,9 +203,9 @@ export default function NotificationsScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  sectionTitle: { fontSize: 20, fontWeight: '600' as const, marginBottom: 12 },
-  group: { marginBottom: 24 },
-  errorText: { color: colors.error, fontSize: 14, marginBottom: 16 },
+  sectionTitle: { ...Typography.titleSmall, marginBottom: Spacing.two },
+  group: { marginBottom: Spacing.four },
+  errorText: { color: colors.error, ...Typography.bodySmall, marginBottom: Spacing.three },
   permission: { gap: Spacing.two, marginBottom: Spacing.four },
-  permissionText: { color: colors.onSurface, fontSize: 14, lineHeight: 20 },
+  permissionText: { color: colors.onSurface, ...Typography.bodySmall },
 }));

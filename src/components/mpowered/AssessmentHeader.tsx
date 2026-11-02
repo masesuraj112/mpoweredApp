@@ -1,8 +1,7 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
 export function AssessmentHeader() {
   const styles = useStyles();
   return (
@@ -23,10 +22,10 @@ export function AssessmentHeader() {
 
 const useStyles = makeStyles((colors) => ({
   topBar: {
-    height: scaleHeight(109),
+    height: 109,
     backgroundColor: colors.secondaryContainer,
-    paddingTop: scaleHeight(52),
-    paddingHorizontal: scaleWidth(24),
+    paddingTop: Spacing.six,
+    paddingHorizontal: Spacing.four,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -34,20 +33,20 @@ const useStyles = makeStyles((colors) => ({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: scaleHeight(40),
+    minHeight: 40,
   },
   backArrow: {
-    fontSize: scaleFont(28),
-    lineHeight: scaleFont(28),
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
     color: colors.textSecondary,
-    marginRight: scaleWidth(8),
+    marginRight: Spacing.two,
   },
   backText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     color: colors.textSecondary,
   },
   topBarTitle: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '600',
     color: colors.text,
   },

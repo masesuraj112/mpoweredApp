@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 import { missingAssessmentsMessage } from '@/features/care-planner/messages';
 import { useGeneratedQuestions } from '@/features/care-planner/useGeneratedQuestions';
 
@@ -58,8 +58,7 @@ export default function ExploreQuestionsScreen() {
 
 const useStyles = makeStyles((colors) => ({
   subhead: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.caption,
     letterSpacing: 0.4,
     color: colors.onSurface,
   },

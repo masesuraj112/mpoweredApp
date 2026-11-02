@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { Spacing, makeStyles, useThemeColors } from '@/constants/theme';
+import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 
 type LoadingStateProps = {
   /** Read by screen readers; optionally displayed under the spinner. */
@@ -32,7 +32,7 @@ const useStyles = makeStyles((colors) => ({
   },
   label: {
     marginTop: Spacing.two,
-    fontSize: 14,
+    ...Typography.bodySmall,
     color: colors.onSurface,
   },
 }));

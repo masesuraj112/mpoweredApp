@@ -4,13 +4,12 @@ import { PermissionChips } from '@/components/mpowered/support-person/Permission
 import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { makeStyles, useThemeColors } from '@/constants/theme';
+import { ContentColumn, HeaderTitleFonts, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -27,6 +26,7 @@ export default function PatientAppointmentsScreen() {
       options={{
         headerShown: true,
         title: patient ? `${patient.name}’s Appointments` : 'Appointments',
+        ...HeaderTitleFonts,
         headerTintColor: colors.primary,
         headerBackTitle: 'Care Planner',
       }}
@@ -139,44 +139,41 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   content: {
-    gap: scaleHeight(20),
-    paddingTop: scaleHeight(32),
-    paddingBottom: scaleHeight(32),
-    paddingHorizontal: scaleWidth(25),
+    ...ContentColumn,
+    gap: Spacing.three,
+    paddingTop: Spacing.five,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.four,
   },
   patientRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(10),
+    gap: Spacing.two,
   },
   patientText: {
     flex: 1,
   },
   name: {
     color: colors.text,
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleFont(29),
+    ...Typography.title,
     letterSpacing: -0.48,
   },
   condition: {
-    marginLeft: scaleWidth(4),
+    marginLeft: Spacing.one,
     color: colors.textSecondary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '600',
-    lineHeight: 20,
     letterSpacing: 0.1,
   },
   section: {
-    gap: scaleHeight(7),
+    gap: Spacing.two,
   },
   empty: {
     color: colors.onSurfaceVariant,
-    fontSize: scaleFont(14),
-    lineHeight: 20,
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
   },
   notFound: {
-    padding: scaleWidth(25),
+    padding: Spacing.four,
   },
 }));

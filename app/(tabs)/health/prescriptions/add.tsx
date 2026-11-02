@@ -17,9 +17,8 @@ import {
   type PrescriptionForm,
 } from '@/features/health-profile/prescriptions';
 import { getPrescription, savePrescription } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
   return (Object.keys(singulars) as T[]).map((value) => ({
@@ -250,21 +249,22 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   content: {
-    paddingBottom: scaleHeight(40),
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
   },
   helperText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     color: colors.text,
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(20),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
   },
   field: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(16),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
   },
   row: {
     flexDirection: 'row',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
   fieldGrow: {
     flex: 1,
@@ -273,28 +273,29 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
   },
   label: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
     color: colors.text,
-    marginBottom: scaleHeight(8),
+    marginBottom: Spacing.two,
   },
   input: {
     backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
-    fontSize: scaleFont(16),
+    borderRadius: 4,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    ...Typography.bodyLarge,
     color: colors.text,
   },
   saveButton: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(32),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.five,
     backgroundColor: colors.background,
-    borderRadius: scaleWidth(12),
-    paddingVertical: scaleHeight(14),
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
     alignItems: 'center',
+    minHeight: MinTapTarget,
   },
   saveButtonDisabled: {
     opacity: 0.6,
@@ -303,16 +304,16 @@ const useStyles = makeStyles((colors) => ({
     borderColor: colors.error,
   },
   fieldError: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     color: colors.error,
-    marginTop: scaleHeight(4),
+    marginTop: Spacing.one,
   },
   formError: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(20),
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.three,
   },
   saveButtonText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '600',
     color: colors.text,
   },

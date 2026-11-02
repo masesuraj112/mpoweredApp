@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain/summary';
 import { getPainEntryForWeek } from '@/services/assessments';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
-import { scaleWidth, scaleHeight, scaleFont } from '@/services/scale';
 
-import { makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 interface PainSummaryProps {
   summary: PainSummaryData;
   onClose?: () => void;
@@ -138,33 +137,33 @@ const useStyles = makeStyles((colors) => ({
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
-    gap: scaleHeight(16),
+    gap: Spacing.three,
   },
   screen: {
     flex: 1,
-    padding: scaleWidth(20),
+    padding: Spacing.four,
   },
   heading: {
-    fontSize: scaleFont(24),
-    fontWeight: 'bold',
-    marginBottom: scaleHeight(6),
+    ...Typography.title,
+    marginBottom: Spacing.one,
   },
   subheading: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     color: colors.text,
-    marginBottom: scaleHeight(18),
+    marginBottom: Spacing.three,
   },
   card: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.text,
-    borderRadius: scaleWidth(20),
-    paddingHorizontal: scaleWidth(22),
-    paddingTop: scaleHeight(20),
-    paddingBottom: scaleHeight(20),
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.four,
     overflow: 'hidden',
   },
   cardScrollContent: {
+    ...ContentColumn,
     flexGrow: 1,
     justifyContent: 'space-between',
   },
@@ -174,38 +173,37 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
   },
   cardTitle: {
-    fontSize: scaleFont(26),
-    fontWeight: '500',
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
   },
   periodText: {
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     fontWeight: '600',
   },
   divider: {
     borderTopWidth: 1,
     borderTopColor: colors.text,
-    marginBottom: scaleHeight(16),
+    marginBottom: Spacing.three,
   },
   sectionTitle: {
-    fontSize: scaleFont(18),
-    marginTop: scaleHeight(16),
-    marginBottom: scaleHeight(8),
+    ...Typography.subtitle,
+    marginTop: Spacing.three,
+    marginBottom: Spacing.two,
   },
   bodyText: {
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     color: colors.text,
-    lineHeight: scaleFont(18),
   },
   bulletRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: scaleWidth(16),
-    marginTop: scaleHeight(6),
+    gap: Spacing.three,
+    marginTop: Spacing.one,
   },
   bulletText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: 'bold',
-    marginTop: scaleHeight(4),
+    marginTop: Spacing.one,
   },
   boldInline: {
     fontWeight: 'bold',
@@ -214,25 +212,25 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: scaleHeight(8),
+    marginTop: Spacing.two,
   },
   intensityRow: {
     width: '48%',
-    marginTop: scaleHeight(14),
+    marginTop: Spacing.three,
   },
   intensityLabel: {
-    fontSize: scaleFont(13),
+    ...Typography.caption,
     fontWeight: '600',
     color: colors.textSecondary,
-    marginBottom: scaleHeight(4),
+    marginBottom: Spacing.one,
   },
   footerContainer: {
-    marginTop: scaleHeight(16),
+    marginTop: Spacing.three,
   },
   footerDivider: {
     borderTopWidth: 1,
     borderTopColor: colors.divider,
-    marginBottom: scaleHeight(16),
+    marginBottom: Spacing.three,
   },
   footerRow: {
     flexDirection: 'row',
@@ -241,17 +239,18 @@ const useStyles = makeStyles((colors) => ({
   },
   savedText: {
     color: colors.textSubtle,
-    fontSize: scaleFont(13),
+    ...Typography.caption,
   },
   closeButton: {
     borderWidth: 1,
     borderColor: colors.text,
-    borderRadius: scaleWidth(24),
-    paddingHorizontal: scaleWidth(20),
-    paddingVertical: scaleHeight(9),
+    borderRadius: Radius.control,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   closeButtonText: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '400',
   },
 }));

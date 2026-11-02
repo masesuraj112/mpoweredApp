@@ -4,7 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { formatForDisplay, toE164 } from '@/features/auth/phone';
@@ -93,15 +93,14 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.background,
   },
   content: {
+    ...ContentColumn,
     flexGrow: 1,
     justifyContent: 'center',
     gap: Spacing.three,
     padding: Spacing.four,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: '600',
+    ...Typography.title,
     color: colors.onSurface,
   },
   body: {

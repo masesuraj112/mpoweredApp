@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { MinTapTarget, Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 type AnswerModalActionsProps = {
   canGoPrevious: boolean;
@@ -104,7 +104,7 @@ const useStyles = makeStyles((colors) => ({
   step: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -117,8 +117,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.primaryContainer,
   },
   glyph: {
-    fontSize: 18,
-    lineHeight: 22,
+    ...Typography.subtitle,
   },
   glyphEnabled: {
     color: colors.onPrimary,

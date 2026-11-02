@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spacing, makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 export function PlannerIntro() {
   const styles = useStyles();
@@ -24,9 +24,7 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.three,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 29,
-    fontWeight: '600',
+    ...Typography.title,
     letterSpacing: -0.48,
     color: colors.text,
   },
@@ -35,8 +33,7 @@ const useStyles = makeStyles((colors) => ({
     backgroundColor: colors.divider,
   },
   subtitle: {
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodySmall,
     letterSpacing: 0.25,
     color: colors.onSurface,
   },

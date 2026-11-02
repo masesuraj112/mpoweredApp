@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { getSuggestionLabel } from '@/features/care-planner/suggestionSelection';
 import type { SuggestedQuestionGroup } from '@/features/care-planner/suggestionTypes';
 
@@ -48,7 +48,7 @@ const useStyles = makeStyles((colors) => ({
   },
   list: {
     gap: Spacing.half,
-    borderRadius: 16,
+    borderRadius: Radius.card,
     overflow: 'hidden',
   },
 }));

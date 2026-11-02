@@ -9,7 +9,7 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fitCanvas } from '@/features/auth/canvas';
 
-import { makeStyles } from '@/constants/theme';
+import { makeStyles, Spacing } from '@/constants/theme';
 export default function LoginBridgeScreen() {
   const styles = useStyles();
   const { data } = useOnboarding();
@@ -133,7 +133,7 @@ const useStyles = makeStyles((colors) => ({
   greeting: {
     color: colors.text,
     fontWeight: '500',
-    marginBottom: 28,
+    marginBottom: Spacing.four,
   },
   message: {
     color: colors.text,

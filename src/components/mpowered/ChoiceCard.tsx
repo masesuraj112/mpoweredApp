@@ -1,4 +1,3 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { ReactNode } from 'react';
 import {
     Keyboard,
@@ -9,7 +8,7 @@ import {
     ViewStyle,
 } from 'react-native';
 
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 interface ChoiceCardProps {
   title: string;
   /** Pass a string or nested `<Text>` elements */
@@ -214,39 +213,38 @@ export function ChoiceCard({
 const useStyles = makeStyles((colors) => ({
   container: {
     borderWidth: 1,
-    borderColor: colors.text,
-    borderRadius: scaleWidth(20),
-    paddingTop: scaleHeight(24),
-    paddingHorizontal: scaleWidth(20),
-    paddingBottom: scaleHeight(20),
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    paddingTop: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.four,
   },
   titleText: {
-    fontSize: scaleFont(28),
-    fontWeight: '500',
-    marginBottom: scaleHeight(15),
+    ...Typography.headline,
+    fontFamily: Fonts.headingRegular,
+    marginBottom: Spacing.three,
   },
   divider: {
     borderTopWidth: 1,
     borderTopColor: colors.text,
     width: '100%',
-    marginBottom: scaleHeight(20),
+    marginBottom: Spacing.three,
   },
   promptContainer: {
-    marginBottom: scaleHeight(10),
+    marginBottom: Spacing.two,
   },
   promptWrapper: {
-    marginBottom: scaleHeight(10),
+    marginBottom: Spacing.two,
   },
   promptText: {
-    fontSize: scaleFont(15),
+    ...Typography.bodySmall,
     fontWeight: '600',
   },
   validationMessage: {
     color: colors.error,
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
+    ...Typography.caption,
     textAlign: 'right',
-    marginTop: scaleHeight(10),
+    marginTop: Spacing.two,
   },
   optionsList: {
     width: '100%',
@@ -256,55 +254,53 @@ const useStyles = makeStyles((colors) => ({
     minHeight: 0,
   },
   painTrackerContainer: {
-    height: scaleHeight(572),
+    height: 572,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(12),
-    paddingTop: scaleHeight(16),
-    paddingHorizontal: scaleWidth(19),
-    paddingBottom: scaleHeight(12),
+    borderRadius: Radius.card,
+    paddingTop: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.three,
     backgroundColor: colors.surface,
   },
   personalCareContainer: {
     flex: 1,
     minHeight: 0,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(12),
-    paddingTop: scaleHeight(16),
-    paddingHorizontal: scaleWidth(19),
-    paddingBottom: scaleHeight(12),
+    borderRadius: Radius.card,
+    paddingTop: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.three,
     backgroundColor: colors.surface,
   },
   painTrackerTitle: {
-    fontSize: scaleFont(20),
-    fontWeight: '400',
-    marginBottom: scaleHeight(10),
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
+    marginBottom: Spacing.two,
   },
   personalCareTitle: {
-    fontSize: scaleFont(16),
+    ...Typography.bodyLarge,
     fontWeight: '500',
-    lineHeight: scaleHeight(24),
     letterSpacing: 0.15,
-    marginBottom: scaleHeight(10),
+    marginBottom: Spacing.two,
     color: colors.text,
   },
   painTrackerDivider: {
     borderTopColor: colors.divider,
-    marginBottom: scaleHeight(14),
+    marginBottom: Spacing.three,
   },
   painTrackerPrompt: {
-    height: scaleHeight(68),
-    marginBottom: scaleHeight(4),
+    height: 68,
+    marginBottom: Spacing.one,
   },
   personalCarePromptContainer: {
-    marginBottom: scaleHeight(14),
+    marginBottom: Spacing.three,
   },
   personalCarePromptWrapper: {
-    marginBottom: scaleHeight(14),
+    marginBottom: Spacing.three,
   },
   personalCarePromptText: {
-    fontSize: scaleFont(12),
+    ...Typography.caption,
     fontWeight: '500',
-    lineHeight: scaleHeight(16),
     letterSpacing: 0.5,
     color: colors.text,
   },
@@ -316,7 +312,7 @@ const useFooterStyles = makeStyles((colors) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: scaleHeight(20),
+    marginTop: Spacing.three,
   },
   rowLeft: {
     justifyContent: 'flex-start',
@@ -326,7 +322,7 @@ const useFooterStyles = makeStyles((colors) => ({
   },
   painTrackerRow: {
     flexShrink: 0,
-    marginTop: scaleHeight(12),
+    marginTop: Spacing.two,
   },
   navigationRow: {
     justifyContent: 'space-between',
@@ -334,22 +330,23 @@ const useFooterStyles = makeStyles((colors) => ({
   navigationGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
   navigationButton: {
-    width: scaleWidth(105),
-    height: scaleHeight(31),
+    width: 105,
     borderWidth: 1,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(16),
+    borderRadius: Radius.control,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(12),
+    paddingHorizontal: Spacing.three,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   navigationButtonText: {
     color: colors.onPrimary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
   },
   nextButton: {
@@ -357,49 +354,49 @@ const useFooterStyles = makeStyles((colors) => ({
   },
   nextButtonText: {
     color: colors.onPrimary,
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
   },
   pill: {
     borderWidth: 1,
     borderColor: colors.text,
-    borderRadius: scaleWidth(24),
-    paddingVertical: scaleHeight(10),
-    paddingHorizontal: scaleWidth(22),
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   recordButton: {
-    gap: scaleWidth(8),
+    gap: Spacing.two,
   },
   recordButtonPressed: {
     backgroundColor: colors.background,
   },
   painTrackerRecordButton: {
-    width: scaleWidth(105),
-    height: scaleHeight(30),
+    width: 105,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(16),
-    paddingVertical: 0,
-    paddingHorizontal: scaleWidth(16),
+    borderRadius: Radius.control,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.three,
     backgroundColor: colors.primary,
+    minHeight: MinTapTarget,
   },
   painTrackerPager: {
-    width: scaleWidth(54),
-    height: scaleHeight(31),
+    width: 54,
+    height: 31,
     borderColor: colors.outline,
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.control,
     paddingVertical: 0,
     paddingHorizontal: 0,
   },
   painTrackerRecordText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.onPrimary,
   },
   personalCarePagerText: {
-    fontSize: scaleFont(14),
+    ...Typography.bodySmall,
     fontWeight: '500',
     color: colors.textSecondary,
   },
@@ -413,12 +410,12 @@ const useFooterStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
   },
   pillText: {
-    fontSize: scaleFont(18),
+    ...Typography.subtitle,
     fontWeight: '400',
     color: colors.text,
   },
   arrow: {
-    fontSize: scaleFont(18),
+    ...Typography.subtitle,
     fontWeight: '400',
     color: colors.text,
   },

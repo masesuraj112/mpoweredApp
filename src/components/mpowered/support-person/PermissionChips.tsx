@@ -1,5 +1,4 @@
-import { Radius, makeStyles } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { Text, View } from 'react-native';
 
 import { SectionLabel } from './SectionLabel';
@@ -38,26 +37,26 @@ export function PermissionChips({ canAddQuestions, canAddAnswers }: { canAddQues
 
 const useStyles = makeStyles((colors) => ({
   section: {
-    gap: scaleHeight(7),
+    gap: Spacing.two,
   },
   row: {
     flexDirection: 'row',
-    gap: scaleWidth(20),
+    gap: Spacing.three,
   },
   chip: {
     flex: 1,
-    height: scaleHeight(23),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
     backgroundColor: colors.surfaceContainer,
+    paddingVertical: Spacing.two,
   },
   chipDisabled: {
     backgroundColor: colors.background,
   },
   chipText: {
     color: colors.primary,
-    fontSize: scaleFont(11),
+    ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.3,
   },

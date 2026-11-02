@@ -6,7 +6,7 @@ import {
   SettingsModalText,
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
-import { makeStyles } from '@/constants/theme';
+import { Fonts, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { formatForDisplay } from '@/features/auth/phone';
 import { signOut } from '@/services/auth';
@@ -101,15 +101,17 @@ export default function SupportAccountScreen() {
 // Same as the Sign out button on the patient's Account page.
 const useStyles = makeStyles((colors) => ({
   signOutButton: {
-    height: 55,
-    marginTop: 8,
+    marginTop: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: Radius.control,
     backgroundColor: colors.primary,
+    paddingVertical: Spacing.three,
+    minHeight: MinTapTarget,
   },
   signOutText: {
     color: colors.onPrimary,
-    fontSize: 20,
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
   },
 }));

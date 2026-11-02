@@ -4,7 +4,7 @@ import { ScrollView, Text, View, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/ui/BackButton';
-import { Spacing, makeStyles } from '@/constants/theme';
+import { ContentColumn, Fonts, makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type PlannerFlowScreenProps = {
   title: string;
@@ -66,14 +66,15 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.two,
   },
   content: {
+    ...ContentColumn,
     gap: Spacing.three,
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.four,
   },
   title: {
-    fontSize: 20,
-    lineHeight: 24,
+    ...Typography.titleSmall,
+    fontFamily: Fonts.headingRegular,
     color: colors.text,
   },
   titleBold: {
