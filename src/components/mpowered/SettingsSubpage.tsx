@@ -1,9 +1,10 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
+import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
 import { Colors } from '@/constants/theme';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
@@ -82,6 +83,7 @@ export function SettingsToggle({
   return <NativeSwitch value={value} onValueChange={onValueChange} accessibilityLabel={accessibilityLabel} />;
 }
 
+/** The platform's own menu picker for a short list of text options. */
 export function SettingsSelect({
   value,
   options,
@@ -93,39 +95,13 @@ export function SettingsSelect({
   onChange: (value: string) => void;
   accessibilityLabel?: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <View style={styles.selectWrapper}>
-      <Pressable
-        onPress={() => setIsOpen(current => !current)}
-        accessibilityRole="button"
-        accessibilityLabel={`${accessibilityLabel}, ${value}`}
-        accessibilityState={{ expanded: isOpen }}
-        style={styles.select}
-      >
-        <Text style={styles.selectText}>{value}</Text>
-        <Text style={styles.selectArrow}>⌄</Text>
-      </Pressable>
-      {isOpen && (
-        <View style={styles.selectMenu}>
-          {options.map(option => (
-            <Pressable
-              key={option}
-              onPress={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-              accessibilityRole="menuitem"
-              accessibilityState={{ selected: option === value }}
-              style={styles.selectOption}
-            >
-              <Text style={styles.selectOptionText}>{option}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-    </View>
+    <NativePicker
+      value={value}
+      options={options.map((option) => ({ value: option, label: option }))}
+      onChange={onChange}
+      accessibilityLabel={accessibilityLabel}
+    />
   );
 }
 
@@ -182,52 +158,5 @@ const styles = StyleSheet.create({
   },
   destructiveText: {
     color: Colors.light.error,
-  },
-  select: {
-    minWidth: scaleWidth(106),
-    height: scaleHeight(38),
-    paddingHorizontal: scaleWidth(8),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: scaleWidth(4),
-  },
-  selectWrapper: {
-    position: 'relative',
-    zIndex: 2,
-  },
-  selectMenu: {
-    position: 'absolute',
-    top: scaleHeight(42),
-    right: 0,
-    minWidth: scaleWidth(106),
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: scaleWidth(4),
-    backgroundColor: Colors.light.surface,
-    elevation: 4,
-    shadowColor: Colors.light.shadow,
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  selectOption: {
-    minHeight: scaleHeight(40),
-    justifyContent: 'center',
-    paddingHorizontal: scaleWidth(12),
-  },
-  selectOptionText: {
-    color: Colors.light.textSecondary,
-    fontSize: scaleFont(16),
-  },
-  selectText: {
-    color: Colors.light.textSecondary,
-    fontSize: scaleFont(16),
-  },
-  selectArrow: {
-    color: Colors.light.textSecondary,
-    fontSize: scaleFont(20),
   },
 });

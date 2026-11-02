@@ -32,5 +32,23 @@ jest.mock('@expo/ui', () => {
         testID,
         onPress: () => onValueChange(!value),
       }),
+    // A menu picker: one pressable per option, so a test can choose one by its label.
+    Picker: Object.assign(
+      ({ selectedValue, onValueChange, children }) =>
+        React.createElement(
+          View,
+          { accessibilityRole: 'combobox', accessibilityValue: { text: String(selectedValue) } },
+          React.Children.toArray(children).map((child) =>
+            React.createElement(Pressable, {
+              key: String(child.props.value),
+              accessibilityRole: 'menuitem',
+              accessibilityLabel: child.props.label,
+              accessibilityState: { selected: child.props.value === selectedValue },
+              onPress: () => onValueChange(child.props.value),
+            }),
+          ),
+        ),
+      { Item: () => null },
+    ),
   };
 });

@@ -26,7 +26,6 @@ type SettingsModalProps = {
   errorMessage?: string;
   /**
    * Wrap the content in a ScrollView so tall popups (e.g. Manage support person) fit small screens.
-   * Leave off for popups containing a SettingsSelect: a ScrollView would clip its dropdown menu.
    */
   scrollable?: boolean;
   children?: ReactNode;
