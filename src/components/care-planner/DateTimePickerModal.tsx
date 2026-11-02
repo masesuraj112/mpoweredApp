@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   divider: {
     height: StyleSheet.hairlineWidth,
     marginVertical: Spacing.two,
-    backgroundColor: Colors.light.outline,
+    backgroundColor: Colors.light.divider,
   },
   timeHeading: {
     fontSize: 14,

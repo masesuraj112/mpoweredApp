@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     height: 1,
     marginTop: scaleHeight(16),
     marginBottom: scaleHeight(23),
-    backgroundColor: Colors.light.outline,
+    backgroundColor: Colors.light.divider,
   },
   rowsCard: {
     overflow: 'hidden',
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   rowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.outline,
+    borderBottomColor: Colors.light.divider,
   },
   rowPressed: {
     opacity: 0.65,

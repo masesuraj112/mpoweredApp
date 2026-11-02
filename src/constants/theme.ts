@@ -1,68 +1,106 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * MPowered's colours. Screens use the semantic `Colors.light` tokens (what a colour is for); `Palette`
+ * holds the raw brand colours they are made from, so the look can be changed here in one place.
+ * Built from the redesigned splash (Figma 2003:362): a deep violet-to-midnight gradient for the brand,
+ * a brighter violet for actions, and light lavender-tinted surfaces. Every text colour meets WCAG AA
+ * against the surface it is used on (checked by theme.test.ts).
  */
 
 import { Platform } from 'react-native';
 
+export const Palette = {
+  violet: '#391777',
+  midnight: '#1C0546',
+  primary: '#5B2FC2',
+  primaryDeep: '#4A22A8',
+  lavender: '#D0BCFE',
+  lavenderSoft: '#A591CF',
+  ink: '#1A1033',
+  inkMuted: '#5C5470',
+  inkSubtle: '#71668A',
+  inkDisabled: '#A79FB8',
+  paper: '#FBF9FF',
+  white: '#FFFFFF',
+  tint: '#F1EBFF',
+  tintStrong: '#E4DAFF',
+  mist: '#F4F1FA',
+  line: '#E4DDF2',
+  border: '#8C7BB8',
+  borderStrong: '#6E5C9E',
+  success: '#1B7A43',
+  successContainer: '#E3F4EA',
+  warning: '#7A4100',
+  warningContainer: '#FFF3D6',
+  error: '#B3261E',
+  errorContainer: '#F9DEDC',
+  onErrorContainer: '#410E0B',
+} as const;
+
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-    primary: '#6750A4',
-    outline: '#CAC4D0',
-    outlineStrong: '#AEAEB2',
-    onSurface: '#1D1B20',
-    onSurfaceVariant: '#49454F',
-    surfaceContainer: '#F3EDF7',
-    secondary: '#625B71',
-    primaryContainer: '#EADDFF',
-    onPrimary: '#FFFFFF',
-    success: '#4DA32D',
-    backdrop: 'rgba(0, 0, 0, 0.5)',
-    listening: '#6750A4',
-    calendarSelected: '#2C2C2C',
-    onCalendarSelected: '#F5F5F5',
-    textDisabled: '#B3B3B3',
-    error: '#B3261E',
-    secondaryContainer: '#E8DEF8',
-    onSecondaryContainer: '#4A4459',
-    controlBorder: '#3A3A3A',
-    controlChecked: '#5B4A9E',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-    primary: '#D0BCFF',
-    outline: '#938F99',
-    outlineStrong: '#79747E',
-    onSurface: '#E6E1E5',
-    onSurfaceVariant: '#CAC4D0',
-    surfaceContainer: '#211F26',
-    secondary: '#CCC2DC',
-    primaryContainer: '#4F378B',
-    onPrimary: '#381E72',
-    success: '#8BD97A',
-    backdrop: 'rgba(0, 0, 0, 0.6)',
-    listening: '#D0BCFF',
-    calendarSelected: '#E6E1E5',
-    onCalendarSelected: '#1D1B20',
-    textDisabled: '#79747E',
-    error: '#F2B8B5',
-    secondaryContainer: '#4A4458',
-    onSecondaryContainer: '#E8DEF8',
-    controlBorder: '#CAC4D0',
-    controlChecked: '#D0BCFF',
+    /** Headings and body text. */
+    text: Palette.ink,
+    /** Secondary text: dates, hints, captions. */
+    textSecondary: Palette.inkMuted,
+    /** Placeholders and the least important text (still AA on the background). */
+    textSubtle: Palette.inkSubtle,
+    textDisabled: Palette.inkDisabled,
+    /** Screens. */
+    background: Palette.paper,
+    /** Cards, rows, inputs and sheets that sit on the background. */
+    surface: Palette.white,
+    /** Quiet grouped areas. */
+    surfaceMuted: Palette.mist,
+    /** Tinted sections and soft buttons. */
+    surfaceContainer: Palette.tint,
+    backgroundElement: Palette.mist,
+    backgroundSelected: Palette.tintStrong,
+    primary: Palette.primary,
+    primaryDeep: Palette.primaryDeep,
+    onPrimary: Palette.white,
+    primaryContainer: Palette.tint,
+    onPrimaryContainer: Palette.primaryDeep,
+    secondary: Palette.inkMuted,
+    secondaryContainer: Palette.tintStrong,
+    onSecondaryContainer: '#3A2470',
+    onSurface: Palette.ink,
+    onSurfaceVariant: Palette.inkMuted,
+    /** Edges of inputs, chips and buttons: 3:1 or more, so controls are visible. */
+    outline: Palette.border,
+    outlineStrong: Palette.borderStrong,
+    /** Decorative lines between rows and sections. */
+    divider: Palette.line,
+    success: Palette.success,
+    successContainer: Palette.successContainer,
+    warning: Palette.warning,
+    warningContainer: Palette.warningContainer,
+    error: Palette.error,
+    errorContainer: Palette.errorContainer,
+    onErrorContainer: Palette.onErrorContainer,
+    backdrop: 'rgba(28, 5, 70, 0.5)',
+    shadow: Palette.midnight,
+    listening: Palette.primary,
+    calendarSelected: Palette.primaryDeep,
+    onCalendarSelected: Palette.white,
+    controlBorder: Palette.inkMuted,
+    controlChecked: Palette.primary,
+    /** The brand gradient's colours, for things drawn on it. */
+    brand: Palette.violet,
+    brandDeep: Palette.midnight,
+    onBrand: Palette.white,
+    onBrandMuted: Palette.lavender,
   },
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ThemeColor = keyof typeof Colors.light;
+
+/** Gradients, top to bottom (or left to right). */
+export const Gradients = {
+  /** The splash gradient: headers, the weekly summary, the tab bar. */
+  brand: [Palette.violet, Palette.midnight],
+  /** Primary buttons. */
+  action: [Palette.primary, Palette.primaryDeep],
+} as const;
 
 export const Fonts = Platform.select({
   ios: {
@@ -94,9 +132,9 @@ export const Fonts = Platform.select({
  * colour (app.json), so the two join up.
  */
 export const SplashColors = {
-  gradientTop: '#391777',
-  gradientBottom: '#1C0546',
-  text: '#A591CF',
+  gradientTop: Palette.violet,
+  gradientBottom: Palette.midnight,
+  text: Palette.lavenderSoft,
 } as const;
 
 export const Spacing = {

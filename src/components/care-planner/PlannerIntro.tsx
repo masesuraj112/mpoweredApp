@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   rule: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.outline,
+    backgroundColor: Colors.light.divider,
   },
   subtitle: {
     fontSize: 14,

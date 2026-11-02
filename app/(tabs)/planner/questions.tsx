@@ -185,6 +185,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.outline,
+    backgroundColor: Colors.light.divider,
   },
 });
