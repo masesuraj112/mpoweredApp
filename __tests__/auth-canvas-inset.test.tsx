@@ -24,7 +24,7 @@ describe('sign-in screens on a fixed-size canvas', () => {
     );
 
     // Walk up from a piece of text to the canvas: the first container with an explicit size and position.
-    let node = screen.getByText('Powered').parent;
+    let node = screen.getByText(/off to an MPowered start/).parent;
     let style = StyleSheet.flatten(node?.props.style);
     while (node && !(typeof style?.height === 'number' && typeof style?.top === 'number')) {
       node = node.parent;
