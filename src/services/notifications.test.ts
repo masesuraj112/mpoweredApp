@@ -1,5 +1,6 @@
 import * as ExpoNotifications from 'expo-notifications';
 import { AndroidImportance, SchedulableTriggerInputTypes } from 'expo-notifications';
+import { Platform } from 'react-native';
 
 import type { Reminder } from '@/features/notifications/schedule';
 
@@ -57,6 +58,12 @@ const reminder = (id: string, target: Reminder['target']): Reminder => ({
   target,
 });
 
+// Channels are Android only; most checks run as Android, and one as iOS.
+const realOS = Platform.OS;
+const setOS = (os: typeof Platform.OS) => Object.defineProperty(Platform, 'OS', { value: os, configurable: true });
+beforeEach(() => setOS('android'));
+afterAll(() => setOS(realOS));
+
 describe('getReminderPermission', () => {
   it('reports the permission without asking', async () => {
     const { fake, calls } = fakeNotifications({ status: 'denied' as never, canAskAgain: false });
@@ -95,6 +102,15 @@ describe('requestReminderPermission', () => {
       name: 'Assessment reminders',
       importance: AndroidImportance.DEFAULT,
     });
+  });
+
+  it('creates no channels on iOS, and just asks', async () => {
+    setOS('ios');
+    const { fake, calls } = fakeNotifications({ status: 'granted' as never, granted: true });
+
+    await requestReminderPermission(fake);
+
+    expect(calls).toEqual(['request']);
   });
 
   it('passes a refusal back', async () => {
@@ -195,17 +211,17 @@ describe('showRemindersWhileOpen', () => {
 describe('development helpers', () => {
   afterEach(() => jest.restoreAllMocks());
 
-  it('schedules one test reminder a minute from now without cancelling the others', async () => {
+  it('schedules one test reminder 10 seconds from now by default, without cancelling the others', async () => {
     jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
     const { fake, calls } = fakeNotifications();
 
-    expect(await scheduleTestReminder(60, fake)).toEqual({ ok: true, data: undefined });
+    expect(await scheduleTestReminder(undefined, fake)).toEqual({ ok: true, data: undefined });
 
     expect(calls).not.toContain('cancel-all');
     expect(fake.scheduleNotificationAsync).toHaveBeenCalledWith(
       expect.objectContaining({
         identifier: 'test-reminder',
-        trigger: expect.objectContaining({ date: 1_060_000, channelId: REMINDER_CHANNELS.assessment.id }),
+        trigger: expect.objectContaining({ date: 1_010_000, channelId: REMINDER_CHANNELS.assessment.id }),
       }),
     );
   });

@@ -6,6 +6,7 @@
 
 import * as ExpoNotifications from 'expo-notifications';
 import { AndroidImportance, SchedulableTriggerInputTypes } from 'expo-notifications';
+import { Platform } from 'react-native';
 
 import type { Reminder } from '@/features/notifications/schedule';
 import { mapError } from '@/lib/errors';
@@ -58,8 +59,9 @@ export function requestReminderPermission(
   });
 }
 
-/** Does nothing on iOS, which has no channels (the call returns null there). */
+/** Android only: iOS has no channels (the call would only log that it isn't supported). */
 async function createChannels(notifications: NotificationsModule): Promise<void> {
+  if (Platform.OS !== 'android') return;
   for (const channel of Object.values(REMINDER_CHANNELS)) {
     await notifications.setNotificationChannelAsync(channel.id, {
       name: channel.name,
@@ -97,7 +99,7 @@ export function applyReminders(
 
 /** Development only: one reminder in `seconds`, to check how reminders arrive and open. */
 export function scheduleTestReminder(
-  seconds = 60,
+  seconds = 10,
   notifications: NotificationsModule = ExpoNotifications,
 ): Promise<Result<void>> {
   return run(async () => {
