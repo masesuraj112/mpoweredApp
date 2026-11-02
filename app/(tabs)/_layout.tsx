@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { RemindersProvider } from '@/features/notifications/RemindersContext';
+import { useOpenTappedReminder } from '@/features/notifications/useOpenTappedReminder';
 
 type TabIconName = 'person' | 'folder' | 'planner' | 'settings';
 
@@ -45,6 +46,7 @@ function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
 
 export default function TabsLayout() {
   // Only patients reach the tabs, so only they get reminders (support persons have none).
+  useOpenTappedReminder();
   return (
     <RemindersProvider>
       <Tabs

@@ -210,7 +210,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 - [x] N3 Reminders service (`src/services/notifications.ts`, 11 tests with a fake module)
 - [x] N4 Keep reminders up to date (`RemindersProvider`, `syncReminders`; refresh after settings, appointment and assessment saves)
 - [x] N5 Ask for permission from Settings (`useReminderPermission`; denied message with Open settings; toggles labelled)
-- [ ] N6 Open the right screen from a reminder
+- [x] N6 Open the right screen from a reminder (appointment → its Review screen; assessment → Pain Tracker home)
 - [ ] N7 Cancel reminders on sign-out and account deletion
 - [ ] N8a Dev-only test reminder
 - [ ] N8b Docs and green CI

@@ -76,7 +76,9 @@
 - **Android:** two channels, "Assessment reminders" and "Appointment reminders", and best-effort timing. No
   `SCHEDULE_EXACT_ALARM` (Google Play restricts it, and a few minutes' drift is fine for reminders).
 - **Tapping a reminder:** an appointment reminder opens that appointment's Review screen
-  (`/planner/review?appointmentId=…`); an assessment reminder opens the Tracker tab. Exact routes are checked in N6.
+  (`/planner/review?appointmentId=…`) on top of the Care Planner list, so Back goes to the list. An assessment
+  reminder opens `/home`, the **Pain Tracker** tab, which lists the five assessments with Record buttons (the
+  `tracker` group has no screen of its own). A tap that starts the app opens once the patient tabs load.
 
 ### Out of scope
 
@@ -213,8 +215,10 @@ planReminders(input: {
   Commit: `Ask for notification permission from Settings`
 
 ### Phase N6 — Tapping a reminder
-- **N6** Pure `routeForReminder()` with a test; root layout uses `useLastNotificationResponse()` to open it
-  once signed in.
+- **N6** Pure `readReminderTarget()` and `routeForReminder()` (`reminderRoute.ts`) with tests;
+  `useOpenTappedReminder()` (uses `useLastNotificationResponse()`, then clears it) called in the patient tabs layout,
+  so it only runs once signed in. `jest.setup.js` makes `useLastNotificationResponse` return null under Jest, where
+  the real hook crashes for lack of a native module.
   Commit: `Open the right screen from a reminder`
 
 ### Phase N7 — Clean-up
@@ -244,7 +248,8 @@ planReminders(input: {
 | `notifications.test.ts` | Permission states; channels created before asking; apply cancels then schedules; errors become `Result` failures |
 | `syncReminders.test.ts` | No permission leaves things alone; both off cancels; reads only what's needed; a failed read keeps what's scheduled |
 | `RemindersContext.test.tsx` | Re-plans on mount, foreground and `refresh()`; one sync at a time with one more for refreshes during it; an error doesn't stop it; no-op outside the provider |
-| `routeForReminder.test.ts` | Appointment → Review with its id; assessment → Tracker |
+| `reminderRoute.test.ts` | Reads only well-formed targets; appointment → Review with its id; assessment → Pain Tracker home |
+| `useOpenTappedReminder.test.ts` | Opens the plan on top of the Care Planner list; assessment → home; ignores non-taps and unknown notifications; clears each tap |
 | `useReminderPermission.test.ts` | Reads without asking; doesn't ask when allowed; asks when undecided; refusal marks denied; a failed read is unknown, not refused; re-reads on foreground; opens settings |
 | `__tests__/notifications-settings.test.tsx` | Turning on asks then saves; refused saves nothing; turning off never asks; the denied message and Open settings |
 | `auth.test.ts` / `useAccountDeletion.test.ts` (extend) | Reminders cancelled |
