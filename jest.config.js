@@ -7,6 +7,7 @@ module.exports = {
   },
   collectCoverageFrom: [
     'src/features/assessments/week.ts',
+    'src/features/assessments/drafts.ts',
     'src/features/assessments/pain/normalise.ts',
     'src/features/assessments/pain/validate.ts',
     'src/features/assessments/pain/messages.ts',
