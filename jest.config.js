@@ -19,6 +19,7 @@ module.exports = {
     'src/features/notifications/useReminderPermission.ts',
     'src/features/notifications/reminderRoute.ts',
     'src/features/notifications/useOpenTappedReminder.ts',
+    'src/features/notifications/testReminders.ts',
     'src/features/care-planner/appointmentDisplay.ts',
     'src/features/care-planner/planDisplay.ts',
     'src/features/care-planner/signature.ts',

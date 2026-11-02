@@ -212,7 +212,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 - [x] N5 Ask for permission from Settings (`useReminderPermission`; denied message with Open settings; toggles labelled)
 - [x] N6 Open the right screen from a reminder (appointment → its Review screen; assessment → Pain Tracker home)
 - [x] N7 Cancel reminders on sign-out and account deletion (in `signOut()`, plus `AuthContext` on `SIGNED_OUT`)
-- [x] N8a Dev-only test reminder and scheduled list (Notifications screen, `__DEV__` only)
+- [x] N8a Dev-only test reminders (one per kind, 10 s), re-plan now and scheduled list (Notifications screen, `__DEV__` only)
 - [x] N8b Docs (`docs/testing.md` rows and manual note, `settings-backend.md`); CI to confirm on the PR
 - [ ] N8c Manual QA on iPhone and Android
 

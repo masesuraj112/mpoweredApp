@@ -9,6 +9,7 @@ import { AndroidImportance, SchedulableTriggerInputTypes } from 'expo-notificati
 import { Platform } from 'react-native';
 
 import type { Reminder } from '@/features/notifications/schedule';
+import type { TestReminder } from '@/features/notifications/testReminders';
 import { mapError } from '@/lib/errors';
 import { fail, ok, run, type Result } from '@/lib/result';
 
@@ -107,24 +108,25 @@ export function applyReminders(
   });
 }
 
-/** Development only: one reminder in `seconds`, to check how reminders arrive and open. */
+/** Development only: `reminder` in `seconds`, to check how each kind arrives and opens. */
 export function scheduleTestReminder(
+  reminder: TestReminder,
   seconds = 10,
   notifications: NotificationsModule = ExpoNotifications,
 ): Promise<Result<void>> {
   return run(async () => {
     await createChannels(notifications);
     await notifications.scheduleNotificationAsync({
-      identifier: 'test-reminder',
+      identifier: reminder.id,
       content: {
-        title: 'Test reminder',
-        body: 'This is how MPowered reminders look.',
-        data: { target: { kind: 'assessment' } },
+        title: reminder.title,
+        body: reminder.body,
+        data: reminder.target ? { target: reminder.target } : {},
       },
       trigger: {
         type: SchedulableTriggerInputTypes.DATE,
         date: Date.now() + seconds * 1000,
-        channelId: REMINDER_CHANNELS.assessment.id,
+        channelId: REMINDER_CHANNELS[reminder.target?.kind ?? 'appointment'].id,
       },
     });
     return ok(undefined);

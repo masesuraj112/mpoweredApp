@@ -225,19 +225,30 @@ describe('showRemindersWhileOpen', () => {
 describe('development helpers', () => {
   afterEach(() => jest.restoreAllMocks());
 
-  it('schedules one test reminder 10 seconds from now by default, without cancelling the others', async () => {
+  it('schedules a test reminder 10 seconds from now by default, without cancelling the others', async () => {
     jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
     const { fake, calls } = fakeNotifications();
+    const test = { id: 'test-reminder:assessment', title: 'T', body: 'B', target: { kind: 'assessment' as const } };
 
-    expect(await scheduleTestReminder(undefined, fake)).toEqual({ ok: true, data: undefined });
+    expect(await scheduleTestReminder(test, undefined, fake)).toEqual({ ok: true, data: undefined });
 
-    expect(calls).not.toContain('cancel-all');
-    expect(fake.scheduleNotificationAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        identifier: 'test-reminder',
-        trigger: expect.objectContaining({ date: 1_010_000, channelId: REMINDER_CHANNELS.assessment.id }),
-      }),
-    );
+    expect(calls.some((c) => c.startsWith('cancel'))).toBe(false);
+    expect(fake.scheduleNotificationAsync).toHaveBeenCalledWith({
+      identifier: 'test-reminder:assessment',
+      content: { title: 'T', body: 'B', data: { target: { kind: 'assessment' } } },
+      trigger: expect.objectContaining({ date: 1_010_000, channelId: REMINDER_CHANNELS.assessment.id }),
+    });
+  });
+
+  it('sends a test reminder with nothing to open, on the appointment channel', async () => {
+    const { fake } = fakeNotifications();
+
+    await scheduleTestReminder({ id: 'test-reminder:appointment-on-the-day', title: 'T', body: 'B', target: null }, 10, fake);
+
+    expect(fake.scheduleNotificationAsync.mock.calls[0][0]).toMatchObject({
+      content: { data: {} },
+      trigger: { channelId: REMINDER_CHANNELS.appointment.id },
+    });
   });
 
   it('lists the scheduled reminders by id and title', async () => {

@@ -145,12 +145,13 @@ planReminders(input: {
 
 - `getReminderPermission()`, `requestReminderPermission()`: `granted` / `denied` / `undetermined`.
 - `ensureChannels()`: the two Android channels (must exist before the Android 13+ prompt appears, SDK 58 docs).
-- `applyReminders(reminders)`: cancel the reminders this app scheduled, then schedule the list with `DATE`
-  triggers. Returns `Result<void>`.
+- `applyReminders(reminders)`: cancel the planned reminders (ids starting `appointment:` or `assessment:`),
+  then schedule the list with `DATE` triggers. Returns `Result<void>`.
 - `cancelAllReminders()`.
 - `showRemindersWhileOpen()`: the notification handler (banner, list and sound while the app is open; no badge). Called once at start-up in N4.
-- Channels use `AndroidImportance.DEFAULT` (sound, no pop-over banner on Android). The app schedules nothing else, so
-  `applyReminders` cancels all scheduled notifications rather than tracking its own.
+- Channels use `AndroidImportance.DEFAULT` (sound, no pop-over banner on Android), and are created on Android only
+  (iOS has none and logs a debug line if asked). `applyReminders` cancels only planned ids, so development test
+  reminders survive a re-plan; `cancelAllReminders` cancels everything.
 - Takes the `expo-notifications` module as the last optional argument, so tests pass a fake (like the Supabase client).
 
 ### 4.3 Keeping reminders up to date: `RemindersProvider`
@@ -228,11 +229,18 @@ planReminders(input: {
   Commit: `Cancel reminders on sign-out and account deletion`
 
 ### Phase N8 — Docs, checks and manual QA
-- **N8a** A **Developer** section on the Notifications screen, in development builds only (`__DEV__`):
-  "Send a test reminder in 10 seconds" (asks permission if needed; opens the Pain Tracker home when tapped) and
-  "Show scheduled reminders" (an alert with each scheduled reminder's id and title). The test reminder is not
-  cancelled by a re-plan until the app next opens, so leave the app or lock the phone while waiting.
-  Commit: `Add a test reminder for development`
+- **N8a** A **Developer** section on the Notifications screen, in development builds only (`__DEV__`). Each
+  test reminder arrives after 10 seconds with the real wording (`testReminders.ts`):
+  - "Test appointment reminder (day before)" and "(on the day)": use the next saved appointment's time and open
+    its plan when tapped; without one they say 10:30 AM and open nothing.
+  - "Test assessment reminder": opens the Pain Tracker home.
+  - "Re-plan reminders now": runs a re-plan and says what happened (scheduled, cancelled, no permission, or a
+    failed read) and how many are scheduled.
+  - "Show scheduled reminders": each scheduled notification's id and title.
+
+  Test reminders' ids start with `test-reminder:`, and a re-plan cancels only planned ids (`appointment:`,
+  `assessment:`), so a re-plan (for example after the iPhone permission prompt) no longer cancels a test reminder.
+  Sign-out still cancels everything.
 - **N8b** Update `docs/testing.md`, `settings-backend.md` (reminders now sent) and `progress.md`. Full checks, green CI.
   Commit: `Update the docs for notifications`
 - **N8c** Manual QA on a real iPhone and Android phone (section 6.4). Results go in the PR.
@@ -271,7 +279,7 @@ On an iPhone (Expo Go) and an Android phone:
 1. Turn on appointment reminders: the permission prompt appears. Deny: the toggle goes back off with Open settings.
 2. Allow; turn on the day before and on the day; add an appointment for tomorrow: both reminders are pending
    (dev row lists them, or wait for the test reminder).
-3. Dev "test reminder in 10 seconds": it arrives with the app closed, and tapping opens the right screen.
+3. Each Developer test reminder: it arrives about 10 seconds later with the app closed, and tapping opens the right screen.
 4. Change the appointment time: the reminders move. Delete it, or make it a past time: they go.
 5. Assessment every 1 day: complete an assessment, the next reminder is tomorrow at 9:00.
 6. Lock screen shows no doctor or service.

@@ -10,8 +10,15 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Colors, Spacing } from '@/constants/theme';
 import { syncReminders, type SyncOutcome } from '@/features/notifications/syncReminders';
+import {
+  nextSavedAppointment,
+  TEST_REMINDER_LABELS,
+  testReminder,
+  type TestReminderKind,
+} from '@/features/notifications/testReminders';
 import { useReminderPermission } from '@/features/notifications/useReminderPermission';
 import { useNotificationSettings } from '@/features/settings/useNotificationSettings';
+import { listAppointments } from '@/services/care-planner';
 import { listScheduledReminders, scheduleTestReminder } from '@/services/notifications';
 import { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
@@ -42,12 +49,18 @@ export default function NotificationsScreen() {
   };
 
   // Development builds only (manual QA, docs/backend/notifications-build-plan.md section 6.4).
-  const sendTestReminder = async () => {
+  const sendTestReminder = async (kind: TestReminderKind) => {
     if (!(await permission.ensure())) return;
-    const result = await scheduleTestReminder();
+    const appointments = kind === 'assessment' ? null : await listAppointments();
+    const next = appointments?.ok ? nextSavedAppointment(appointments.data, new Date()) : null;
+    const reminder = testReminder(kind, next);
+    const result = await scheduleTestReminder(reminder);
+    const opens = reminder.target ? '' : '\nThere is no saved appointment ahead, so tapping it opens nothing.';
     Alert.alert(
       'Test reminder',
-      result.ok ? 'It arrives in about 10 seconds. Leave the app or lock the phone to see it.' : 'It could not be scheduled.',
+      result.ok
+        ? `It arrives in about 10 seconds. Leave the app or lock the phone to see it.${opens}`
+        : 'It could not be scheduled.',
     );
   };
   const replanNow = async () => {
@@ -148,7 +161,9 @@ export default function NotificationsScreen() {
             <>
               <Text style={styles.sectionTitle}>Developer</Text>
               <View style={styles.group}>
-                <SettingsOption label="Send a test reminder in 10 seconds" onPress={sendTestReminder} />
+                {(Object.keys(TEST_REMINDER_LABELS) as TestReminderKind[]).map(kind => (
+                  <SettingsOption key={kind} label={TEST_REMINDER_LABELS[kind]} onPress={() => sendTestReminder(kind)} />
+                ))}
                 <SettingsOption label="Re-plan reminders now" onPress={replanNow} />
                 <SettingsOption label="Show scheduled reminders" onPress={showScheduled} />
               </View>
