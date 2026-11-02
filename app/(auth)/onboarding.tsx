@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useOnboarding } from '@/context/Onboarding-Context';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
 const SLIDES = [
   {
     heading: 'Track your pain and its impacts weekly',
@@ -83,7 +85,7 @@ export default function OnboardingCarousel() {
       </ScrollView>
 
       <View style={styles.copyArea}>
-        <Text style={styles.heading}>{SLIDES[index].heading}</Text>
+        <Text accessibilityRole="header" style={styles.heading}>{SLIDES[index].heading}</Text>
       </View>
 
       <View style={styles.dots}>
@@ -93,23 +95,27 @@ export default function OnboardingCarousel() {
       </View>
 
       {/* Remember which one was tapped: after the code, the app checks it against the account (sign-up-sign-in-plan.md). */}
-      <Pressable
-        style={styles.primaryButton}
-        onPress={() => {
-          updateData({ intent: 'sign-up' });
-          router.push('/(auth)/user-type');
-        }}
-      >
-        <Text style={styles.primaryButtonText}>Get started →</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          updateData({ intent: 'sign-in' });
-          router.push('/(auth)/phone');
-        }}
-      >
-        <Text style={styles.signIn}>Sign in</Text>
-      </Pressable>
+      <View style={styles.actions}>
+        <Button
+          label="Get started"
+          trailingGlyph="→"
+          variant="primary"
+          onPress={() => {
+            updateData({ intent: 'sign-up' });
+            router.push('/(auth)/user-type');
+          }}
+        />
+        <Pressable
+          accessibilityRole="button"
+          style={styles.signInButton}
+          onPress={() => {
+            updateData({ intent: 'sign-in' });
+            router.push('/(auth)/phone');
+          }}
+        >
+          <Text style={styles.signIn}>Sign in</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -119,6 +125,7 @@ export default function OnboardingCarousel() {
 const useStyles = makeStyles((colors) => ({
     container: {
         flex: 1,
+        backgroundColor: colors.background,
     },
 
   imagePager: {
@@ -130,7 +137,7 @@ const useStyles = makeStyles((colors) => ({
   imageSlide: {
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
   },
 
   copyArea: {
@@ -141,7 +148,8 @@ const useStyles = makeStyles((colors) => ({
     },
 
     heading: {
-        ...Typography.titleSmall,
+        ...Typography.title,
+        color: colors.text,
         textAlign: 'center',
     },
 
@@ -164,24 +172,21 @@ const useStyles = makeStyles((colors) => ({
         backgroundColor: colors.primaryDeep,
     },
 
-    primaryButton: {
-        backgroundColor: colors.primary,
-        marginHorizontal: Spacing.four,
-        paddingVertical: Spacing.three,
-        borderRadius: Radius.control,
-        alignItems: 'center',
-        minHeight: MinTapTarget,
+    actions: {
+        ...ContentColumn,
+        paddingHorizontal: Spacing.four,
     },
 
-    primaryButtonText: {
-        color: colors.onPrimary,
-        fontWeight: '600',
-        ...Typography.bodyLarge
+    signInButton: {
+        minHeight: MinTapTarget,
+        justifyContent: 'center',
+        marginBottom: Spacing.two,
     },
 
     signIn: {
-        textAlign: 'center',
+        ...Typography.bodyLarge,
         fontWeight: '600',
-        marginVertical: Spacing.three,
-    }
+        color: colors.primary,
+        textAlign: 'center',
+    },
 }));

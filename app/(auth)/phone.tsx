@@ -4,11 +4,13 @@ import { sendVerificationCode } from '@/services/auth';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fitCanvas } from '@/features/auth/canvas';
+import { Text, TextInput } from 'react-native';
 
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { useAuthStyles } from '@/components/auth/authStyles';
+import { Button } from '@/components/ui/Button';
 import { makeStyles, useThemeColors } from '@/constants/theme';
+
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
   if (localNumber.length <= 4) return localNumber;
@@ -18,6 +20,7 @@ const formatPhoneNumber = (digits: string) => {
 
 export default function PhoneScreen() {
   const styles = useStyles();
+  const auth = useAuthStyles();
   const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumber(data.phoneNumber.replace(/\D/g, '')));
@@ -27,9 +30,6 @@ export default function PhoneScreen() {
   const doneBar = useKeyboardDoneBar();
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   const handleContinue = async () => {
     if (isSending) return;
@@ -57,197 +57,45 @@ export default function PhoneScreen() {
   };
 
   return (
-    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View
-        style={[
-          styles.canvas,
-          {
-            width: canvasWidth,
-            height: canvasHeight,
-            left,
-            top,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.title,
-            {
-              left: 65 * scale,
-              top: 198 * scale,
-              width: 281 * scale,
-              height: 28 * scale,
-              fontSize: 22 * scale,
-              lineHeight: 28 * scale,
-            },
-          ]}
-        >
-          Your phone number
-        </Text>
-
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              left: 72 * scale,
-              top: 245 * scale,
-              width: 268 * scale,
-              height: 56 * scale,
-              borderTopLeftRadius: 4 * scale,
-              borderTopRightRadius: 4 * scale,
-              borderBottomWidth: scale,
-              borderBottomColor: isValidPhoneNumber ? colors.primary : colors.outlineStrong,
-            },
-          ]}
-        >
-          <TextInput
-            accessibilityLabel="Phone number"
-            value={phoneNumber}
-            onChangeText={handlePhoneNumberChange}
-            placeholder="04xx xxx xxx"
-            placeholderTextColor={colors.text}
-            keyboardType="phone-pad"
-            // The iOS phone pad has no return key, so add a Done bar to close it.
-            inputAccessoryViewID={doneBar.id}
-            maxLength={12}
-            style={[
-              styles.input,
-              {
-                paddingHorizontal: 16 * scale,
-                fontSize: 16 * scale,
-                lineHeight: 24 * scale,
-                letterSpacing: 0.5 * scale,
-              },
-            ]}
-          />
-        </View>
-        {doneBar.bar}
-
-        <Text
-          style={[
-            styles.helperText,
-            {
-              left: 65 * scale,
-              top: 333 * scale,
-              width: 281 * scale,
-              height: 71 * scale,
-              fontSize: 16 * scale,
-              lineHeight: 24 * scale,
-              letterSpacing: 0.5 * scale,
-            },
-          ]}
-        >
-          We will send the six digit verification codes to this number
-        </Text>
-
-        {(showPhoneError || sendError !== null) && (
-          <Text
-            accessibilityRole="alert"
-            style={[
-              styles.phoneError,
-              {
-                left: 49 * scale,
-                top: 405 * scale,
-                width: 313 * scale,
-                fontSize: 12 * scale,
-                lineHeight: 16 * scale,
-              },
-            ]}
-          >
-            {showPhoneError
-              ? 'Please enter an Australian phone number in the format 04xx xxx xxx'
-              : sendError}
-          </Text>
-        )}
-
-        <Pressable
-          accessibilityRole="button"
+    <AuthScreen
+      footer={
+        <Button
+          label={isSending ? 'Sending…' : 'Continue'}
           accessibilityLabel="Continue"
-          accessibilityState={{ busy: isSending }}
+          variant="primary"
           disabled={isSending}
           onPress={handleContinue}
-          style={[
-            styles.continueButton,
-            {
-              left: 53 * scale,
-              top: 462 * scale,
-              width: 306 * scale,
-              height: 52 * scale,
-              borderRadius: 16 * scale,
-            },
-            !isValidPhoneNumber && styles.continueButtonDisabled,
-          ]}
-        >
-          <Text
-            style={[
-              styles.continueText,
-              { fontSize: 14 * scale, lineHeight: 20 * scale, letterSpacing: 0.1 * scale },
-              !isValidPhoneNumber && styles.continueTextDisabled,
-            ]}
-          >
-            {isSending ? 'Sending…' : 'Continue'}
-          </Text>
-        </Pressable>
-      </View>
-    </Pressable>
+        />
+      }>
+      <Text accessibilityRole="header" style={auth.title}>
+        Your phone number
+      </Text>
+      <TextInput
+        accessibilityLabel="Phone number"
+        value={phoneNumber}
+        onChangeText={handlePhoneNumberChange}
+        placeholder="04xx xxx xxx"
+        placeholderTextColor={colors.textSubtle}
+        keyboardType="phone-pad"
+        // The iOS phone pad has no return key, so add a Done bar to close it.
+        inputAccessoryViewID={doneBar.id}
+        maxLength={12}
+        style={[auth.input, styles.input, isValidPhoneNumber && auth.inputValid]}
+      />
+      {doneBar.bar}
+      <Text style={auth.lead}>We will send the six digit verification codes to this number</Text>
+      {(showPhoneError || sendError !== null) && (
+        <Text accessibilityRole="alert" style={auth.error}>
+          {showPhoneError ? 'Please enter an Australian phone number in the format 04xx xxx xxx' : sendError}
+        </Text>
+      )}
+    </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  canvas: {
-    position: 'absolute',
-    backgroundColor: colors.surface,
-  },
-  title: {
-    position: 'absolute',
-    color: colors.text,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  inputContainer: {
-    position: 'absolute',
-    backgroundColor: colors.surfaceContainer,
-    borderBottomColor: colors.outlineStrong,
-    overflow: 'hidden',
-  },
+const useStyles = makeStyles(() => ({
   input: {
-    flex: 1,
-    color: colors.text,
     textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: '400',
-  },
-  helperText: {
-    position: 'absolute',
-    color: colors.text,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: '400',
-  },
-  phoneError: {
-    position: 'absolute',
-    color: colors.error,
-    textAlign: 'center',
-  },
-  continueButton: {
-    position: 'absolute',
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  continueButtonDisabled: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  continueText: {
-    color: colors.onPrimary,
-    fontWeight: '600',
-  },
-  continueTextDisabled: {
-    color: colors.primary,
+    letterSpacing: 1,
   },
 }));

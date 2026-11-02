@@ -1,6 +1,15 @@
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Button as NativeButton, Host, type ButtonVariant as NativeVariant } from '@expo/ui';
+import { semantics } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  accessibilityHint as hintModifier,
+  accessibilityLabel as labelModifier,
+  buttonBorderShape,
+  controlSize,
+  tint,
+} from '@expo/ui/swift-ui/modifiers';
+import { Platform, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { MinTapTarget, Radius, makeStyles, useThemeColors } from '@/constants/theme';
 
 type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
 
@@ -8,23 +17,34 @@ type ButtonProps = {
   label: string;
   onPress: () => void;
   /**
-   * `elevated`: white pill with a shadow. `tonal`: purple-tinted pill.
-   * `primary`: filled purple. `outlined`: white with a purple outline and black text.
-   * Only `elevated` and `tonal` are dimmed when disabled; `primary` and `outlined` keep their look.
+   * `primary`: the screen's main action, filled with the brand colour. `outlined`, `tonal` and `elevated`:
+   * other actions, drawn with the platform's secondary button style.
    */
   variant?: ButtonVariant;
   disabled?: boolean;
-  /** Decorative text shown before the label (for example a plus). Hidden from screen readers. */
+  /** Decorative text shown before the label (for example a plus). Not read by screen readers. */
   leadingGlyph?: string;
-  /** Decorative text shown after the label (for example an arrow). Hidden from screen readers. */
+  /** Decorative text shown after the label (for example an arrow). Not read by screen readers. */
   trailingGlyph?: string;
   /** Spoken label. Defaults to `label`; set it when the visible text needs more context. */
   accessibilityLabel?: string;
   /** Spoken after the label, for example why a button is disabled. */
   accessibilityHint?: string;
+  /** Placement only (margins, alignment): the button draws itself. */
   style?: StyleProp<ViewStyle>;
 };
 
+const NATIVE_VARIANT: Record<ButtonVariant, NativeVariant> = {
+  primary: 'filled',
+  outlined: 'outlined',
+  tonal: 'outlined',
+  elevated: 'outlined',
+};
+
+/**
+ * The platform's own button (SwiftUI on iOS, Material on Android) in the brand colour, at the large size
+ * and with the platform's own pressed, disabled and text-size behaviour.
+ */
 export function Button({
   label,
   onPress,
@@ -37,107 +57,44 @@ export function Button({
   style,
 }: ButtonProps) {
   const styles = useStyles();
-  const dimWhenDisabled = variant === 'elevated' || variant === 'tonal';
-  const labelStyle = [
-    styles.label,
-    variant === 'tonal' && styles.tonalLabel,
-    variant === 'primary' && styles.primaryLabel,
-    variant === 'outlined' && styles.outlinedLabel,
-  ];
+  const colors = useThemeColors();
+  const text = [leadingGlyph, label, trailingGlyph].filter(Boolean).join(' ');
+  const spoken = accessibilityLabel ?? label;
+  const modifiers =
+    Platform.OS === 'ios'
+      ? [
+          tint(colors.primary),
+          controlSize('large'),
+          buttonBorderShape('roundedRectangle', Radius.control),
+          labelModifier(spoken),
+          ...(accessibilityHint ? [hintModifier(accessibilityHint)] : []),
+        ]
+      : [
+          semantics({
+            contentDescription: accessibilityHint ? `${spoken}. ${accessibilityHint}` : spoken,
+          }),
+        ];
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.target,
-        pressed && styles.pressed,
-        disabled && dimWhenDisabled && styles.disabled,
-        style,
-      ]}>
-      <View style={[styles.pill, styles[variant]]}>
-        {leadingGlyph ? (
-          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
-            {leadingGlyph}
-          </Text>
-        ) : null}
-        <Text style={labelStyle}>{label}</Text>
-        {trailingGlyph ? (
-          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
-            {trailingGlyph}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
+    <View style={[styles.target, style]}>
+      <Host matchContents seedColor={colors.primary}>
+        <NativeButton
+          label={text}
+          variant={NATIVE_VARIANT[variant]}
+          disabled={disabled}
+          onPress={onPress}
+          modifiers={modifiers}
+        />
+      </Host>
+    </View>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  // The touch target is at least 48dp tall even though the visible shape is shorter.
+const useStyles = makeStyles(() => ({
+  // The touch target is at least 48dp tall even where the platform draws a shorter button.
   target: {
     minHeight: MinTapTarget,
-    minWidth: MinTapTarget,
-    justifyContent: 'center',
-  },
-  pill: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.two,
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Radius.pill,
-  },
-  elevated: {
-    backgroundColor: colors.background,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  tonal: {
-    backgroundColor: colors.primaryContainer,
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-  primary: {
-    backgroundColor: colors.primary,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
-  },
-  outlined: {
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: Radius.control,
-    paddingVertical: Spacing.three,
-  },
-  label: {
-    ...Typography.labelLarge,
-    color: colors.secondary,
-  },
-  tonalLabel: {
-    color: colors.onSurfaceVariant,
-  },
-  primaryLabel: {
-    fontWeight: '600',
-    color: colors.onPrimary,
-  },
-  outlinedLabel: {
-    fontWeight: '600',
-    color: colors.text,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  disabled: {
-    opacity: 0.5,
   },
 }));

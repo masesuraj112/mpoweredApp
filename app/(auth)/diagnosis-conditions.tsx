@@ -1,12 +1,16 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, ScrollView, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { useAuthStyles } from '@/components/auth/authStyles';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
+import { Button } from '@/components/ui/Button';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 
-import { makeStyles, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 const CONDITIONS = [
   'Arthritis',
   'Ankylosing spondylitis',
@@ -42,24 +46,14 @@ const CONDITION_LABELS: Record<string, string> = {
 
 export default function DiagnosisConditionsScreen() {
   const styles = useStyles();
+  const auth = useAuthStyles();
+  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
   const selectedConditions = data.conditions;
   const [searchText, setSearchText] = useState('');
   const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
   const [customCondition, setCustomCondition] = useState('');
   const doneBar = useKeyboardDoneBar();
-  const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
-  const buttonBottom = Math.max(64 * scale, insets.bottom + 12 * scale);
-  const buttonTop = canvasHeight - buttonBottom - 52 * scale;
-  const maxSelectedChipsHeight = Math.max(41 * scale, buttonTop - 286 * scale - 20 * scale - 120 * scale - 20 * scale);
-  const selectedChipsHeight = Math.min(selectedChipsContentHeight, maxSelectedChipsHeight);
-  const conditionsTop = Math.max(330 * scale, 286 * scale + selectedChipsHeight + 20 * scale);
-  const conditionsHeight = Math.max(120 * scale, buttonTop - conditionsTop - 20 * scale);
   const filteredConditions = CONDITIONS.filter((condition) =>
     (CONDITION_LABELS[condition] ?? condition).toLowerCase().includes(searchText.trim().toLowerCase()),
   );
@@ -92,286 +86,139 @@ export default function DiagnosisConditionsScreen() {
   const hasSelection = selectedConditions.length > 0;
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View
-        style={[
-          styles.canvas,
-          {
-            width: canvasWidth,
-            height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
-          },
-        ]}
-      >
-        <Text style={[styles.title, { top: 110 * scale, left: 53 * scale, width: 300 * scale, fontSize: 22 * scale, lineHeight: 28 * scale }]}>
-          Tell us about the musculoskeletal or chronic pain you’re experiencing
-        </Text>
+    <AuthScreen
+      footer={<Button label="Continue" variant="primary" disabled={!hasSelection} onPress={handleContinue} />}>
+      <Text accessibilityRole="header" style={auth.title}>
+        Tell us about the musculoskeletal or chronic pain you’re experiencing
+      </Text>
+      <Text style={auth.lead}>You can select multiple conditions</Text>
 
-        <Text style={[styles.prompt, { top: 209 * scale, left: 53 * scale, width: 300 * scale, fontSize: 14 * scale, lineHeight: 20 * scale }]}>
-          You can select multiple conditions
-        </Text>
+      <SearchBar value={searchText} onChangeText={setSearchText} placeholder="Search diagnoses" style={auth.input} />
 
-        <SearchBar
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Search diagnoses"
-          style={[
-            styles.searchInput,
-            {
-              top: 240 * scale,
-              left: 62 * scale,
-              width: 280 * scale,
-              height: 36 * scale,
-              borderRadius: 4 * scale,
-              paddingHorizontal: 12 * scale,
-              fontSize: 14 * scale,
-            },
-          ]}
-        />
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={selectedChipsContentHeight > maxSelectedChipsHeight}
-          onContentSizeChange={(_, contentHeight) => setSelectedChipsContentHeight(contentHeight)}
-          style={[styles.selectedScroller, { top: 286 * scale, left: 33 * scale, width: 346 * scale, height: selectedChipsHeight }]}
-          contentContainerStyle={[styles.selectedChips, { width: 346 * scale, gap: 12 * scale }]}
-        >
+      {hasSelection && (
+        <View style={styles.selectedChips}>
           {selectedConditions.map((condition) => (
-            <View key={condition} style={[styles.chip, { height: 41 * scale, borderRadius: 21 * scale, paddingLeft: 16 * scale, paddingRight: 10 * scale, gap: 10 * scale }]}>
-              <Text style={[styles.chipLabel, { fontSize: 12 * scale }]} numberOfLines={1}>
+            <View key={condition} style={styles.chip}>
+              <Text style={styles.chipLabel} numberOfLines={1}>
                 {CONDITION_LABELS[condition] ?? condition}
               </Text>
               <Pressable
                 onPress={() => removeCondition(condition)}
                 accessibilityRole="button"
                 accessibilityLabel={`Remove ${condition}`}
-                hitSlop={6}
-              >
-                <Text style={[styles.chipRemove, { fontSize: 19 * scale, lineHeight: 20 * scale }]}>×</Text>
+                style={styles.chipRemove}>
+                <Text style={styles.chipRemoveText}>×</Text>
               </Pressable>
             </View>
           ))}
-        </ScrollView>
+        </View>
+      )}
 
-        <ScrollView
-          style={[styles.conditionsPanel, { top: conditionsTop, left: 62 * scale, width: 280 * scale, height: conditionsHeight, borderRadius: 4 * scale }]}
-          contentContainerStyle={styles.conditionsContent}
-          showsVerticalScrollIndicator
-          indicatorStyle="black"
-        >
-          {filteredConditions.map((condition) => {
-            const selected = selectedConditions.includes(condition);
-            return (
-              <Pressable
-                key={condition}
-                onPress={() => toggleCondition(condition)}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: selected }}
-                accessibilityLabel={CONDITION_LABELS[condition] ?? condition}
-                style={[styles.conditionRow, { height: 56 * scale, paddingHorizontal: 12 * scale, gap: 12 * scale }]}
-              >
-                <Text style={[styles.conditionLabel, { fontSize: 14 * scale, lineHeight: 20 * scale }]} numberOfLines={1}>
-                  {CONDITION_LABELS[condition] ?? condition}
-                </Text>
-                <View style={[styles.checkbox, { width: 18 * scale, height: 18 * scale, borderRadius: 2 * scale, borderWidth: 2 * scale }, selected && styles.checkboxSelected]}>
-                  {selected && <Text style={[styles.checkmark, { fontSize: 13 * scale, lineHeight: 14 * scale }]}>✓</Text>}
-                </View>
-              </Pressable>
-            );
-          })}
-          <View style={[styles.customConditionRow, { minHeight: 56 * scale, paddingHorizontal: 12 * scale, gap: 8 * scale }]}>
-            {isAddingCustomCondition ? (
-              <>
-                <TextInput
-                  accessibilityLabel="Custom diagnosis"
-                  autoFocus
-                  value={customCondition}
-                  onChangeText={setCustomCondition}
-                  onSubmitEditing={addCustomCondition}
-                  placeholder="Enter a diagnosis"
-                  returnKeyType="done"
-                  inputAccessoryViewID={doneBar.id}
-                  style={[styles.customConditionInput, { fontSize: 14 * scale, height: 40 * scale }]}
-                />
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={!customCondition.trim()}
-                  onPress={addCustomCondition}
-                  style={[styles.addCustomButton, !customCondition.trim() && styles.addCustomButtonDisabled]}
-                >
-                  <Text style={[styles.addCustomButtonText, { fontSize: 13 * scale }]}>Add</Text>
-                </Pressable>
-              </>
-            ) : (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  setCustomCondition(searchText.trim());
-                  setIsAddingCustomCondition(true);
-                }}
-                style={styles.addCustomOption}
-              >
-                <Text style={[styles.addCustomOptionText, { fontSize: 14 * scale, lineHeight: 20 * scale }]}>
-                  Other – add custom diagnosis
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        </ScrollView>
-
-        <Pressable
-          disabled={!hasSelection}
-          style={[
-            styles.continueButton,
-            { left: 52 * scale, bottom: buttonBottom, width: 306 * scale, height: 52 * scale, borderRadius: 16 * scale },
-            !hasSelection && styles.continueButtonDisabled,
-          ]}
-          onPress={handleContinue}
-        >
-          <Text style={[styles.continueText, { fontSize: 14 * scale }, !hasSelection && styles.continueTextDisabled]}>Continue</Text>
-        </Pressable>
+      <View style={styles.conditionsList}>
+        {filteredConditions.map((condition, index) => (
+          <Checkbox
+            key={condition}
+            checked={selectedConditions.includes(condition)}
+            onChange={() => toggleCondition(condition)}
+            label={CONDITION_LABELS[condition] ?? condition}
+            style={[styles.conditionRow, index > 0 && styles.rowDivider]}
+          />
+        ))}
+        <View style={[styles.customConditionRow, filteredConditions.length > 0 && styles.rowDivider]}>
+          {isAddingCustomCondition ? (
+            <>
+              <TextInput
+                accessibilityLabel="Custom diagnosis"
+                autoFocus
+                value={customCondition}
+                onChangeText={setCustomCondition}
+                onSubmitEditing={addCustomCondition}
+                placeholder="Enter a diagnosis"
+                placeholderTextColor={colors.textSubtle}
+                returnKeyType="done"
+                inputAccessoryViewID={doneBar.id}
+                style={[auth.input, styles.customConditionInput]}
+              />
+              <Button label="Add" variant="primary" disabled={!customCondition.trim()} onPress={addCustomCondition} />
+            </>
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setCustomCondition(searchText.trim());
+                setIsAddingCustomCondition(true);
+              }}
+              style={styles.addCustomOption}>
+              <Text style={styles.addCustomOptionText}>Other – add custom diagnosis</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
       {doneBar.bar}
-    </Pressable>
+    </AuthScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-  },
-  canvas: {
-    position: 'absolute',
-    backgroundColor: colors.surface,
-  },
-  title: {
-    position: 'absolute',
-    textAlign: 'center',
-    color: colors.text,
-    fontWeight: '500',
-  },
-  prompt: {
-    position: 'absolute',
-    textAlign: 'center',
-    color: colors.text,
-    textDecorationLine: 'underline',
-    fontWeight: '500',
-  },
-  selectedScroller: {
-    position: 'absolute',
-    overflow: 'visible',
-  },
-  searchInput: {
-    position: 'absolute',
-    backgroundColor: colors.surface,
-    borderColor: colors.outline,
-    textAlign: 'left',
-  },
   selectedChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'flex-start',
-    alignContent: 'flex-start',
+    gap: Spacing.two,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surfaceContainer,
-    maxWidth: 220,
+    maxWidth: '100%',
+    paddingLeft: Spacing.three,
+    borderRadius: Radius.pill,
+    backgroundColor: colors.secondaryContainer,
   },
   chipLabel: {
-    color: colors.text,
-    fontWeight: '500',
+    flexShrink: 1,
+    ...Typography.labelLarge,
+    color: colors.onSecondaryContainer,
   },
   chipRemove: {
-    color: colors.text,
+    width: MinTapTarget,
+    height: MinTapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  conditionsPanel: {
-    position: 'absolute',
-    backgroundColor: colors.surfaceContainer,
-    overflow: 'hidden',
-    elevation: 2,
+  chipRemoveText: {
+    ...Typography.subtitle,
+    color: colors.onSecondaryContainer,
   },
-  conditionsContent: {
-    paddingBottom: Spacing.one,
+  conditionsList: {
+    paddingHorizontal: Spacing.three,
+    borderWidth: 1,
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surface,
   },
   conditionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingVertical: Spacing.two,
   },
-  conditionLabel: {
-    flex: 1,
-    color: colors.text,
-    fontWeight: '400',
+  rowDivider: {
+    borderTopWidth: 1,
+    borderTopColor: colors.divider,
   },
   customConditionRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.two,
+    minHeight: MinTapTarget + Spacing.two,
   },
   addCustomOption: {
     flex: 1,
+    minHeight: MinTapTarget,
     justifyContent: 'center',
   },
   addCustomOptionText: {
-    color: colors.primary,
+    ...Typography.bodyLarge,
     fontWeight: '600',
+    color: colors.primary,
   },
   customConditionInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    borderRadius: 4,
-    paddingHorizontal: Spacing.two,
-    color: colors.text,
-  },
-  addCustomButton: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.three,
-    borderRadius: Radius.control,
-    backgroundColor: colors.primary,
-    minHeight: MinTapTarget,
-  },
-  addCustomButtonDisabled: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  addCustomButtonText: {
-    color: colors.onPrimary,
-    fontWeight: '600',
-  },
-  checkbox: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: colors.outlineStrong,
-  },
-  checkboxSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checkmark: {
-    color: colors.onPrimary,
-    fontWeight: '700',
-  },
-  continueButton: {
-    position: 'absolute',
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  continueButtonDisabled: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  continueText: {
-    color: colors.onPrimary,
-    fontWeight: '600',
-  },
-  continueTextDisabled: {
-    color: colors.primary,
   },
 }));

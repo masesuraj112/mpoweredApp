@@ -5,20 +5,20 @@ import { seesPatientIntro } from '@/features/auth/patientIntro';
 import { createProfile } from '@/services/profile';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fitCanvas } from '@/features/auth/canvas';
+import { Text } from 'react-native';
 
-import { makeStyles, Spacing } from '@/constants/theme';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { useAuthStyles } from '@/components/auth/authStyles';
+import { Button } from '@/components/ui/Button';
+import { Typography, makeStyles } from '@/constants/theme';
+
 export default function LoginBridgeScreen() {
   const styles = useStyles();
+  const auth = useAuthStyles();
   const { data } = useOnboarding();
   const { session, refreshProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   // A user who is already signed in (they verified a number that had no profile) has nothing
   // left to verify, so the profile is created here instead of going through phone and verify.
@@ -47,111 +47,36 @@ export default function LoginBridgeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.canvas,
-          {
-            width: canvasWidth,
-            height: canvasHeight,
-            left,
-            top,
-          },
-        ]}
-      >
-        <View
-          style={[
-            styles.copy,
-            {
-              top: 136 * scale,
-              left: 41 * scale,
-              width: 313 * scale,
-              height: 300 * scale,
-            },
-          ]}
-        >
-          <Text style={[styles.greeting, { fontSize: 22 * scale, lineHeight: 28 * scale }]}>
-            Thank you, {data.name || 'there'} 😃
-          </Text>
-          <Text style={[styles.message, { fontSize: 22 * scale, lineHeight: 28 * scale }]}>
-            {"Finally, let’s link this\ninformation to your account so\nthe next time you open this app,\nyou can just log in"}
-          </Text>
-        </View>
-        <Pressable
-          style={[
-            styles.continueButton,
-            {
-              left: 40 * scale,
-              top: 412 * scale,
-              width: 333 * scale,
-              height: 48 * scale,
-              borderRadius: 12 * scale,
-            },
-          ]}
+    <AuthScreen
+      footer={
+        <Button
+          label={isSaving ? 'Saving…' : 'Continue'}
+          accessibilityLabel="Continue"
+          variant="primary"
           disabled={isSaving}
           onPress={handleContinue}
-        >
-          <Text style={[styles.continueText, { fontSize: 14 * scale, lineHeight: 20 * scale }]}>
-            {isSaving ? 'Saving…' : 'Continue'}
-          </Text>
-        </Pressable>
-        {errorMessage !== null && (
-          <Text
-            accessibilityRole="alert"
-            style={[
-              styles.errorText,
-              {
-                left: 40 * scale,
-                top: 476 * scale,
-                width: 333 * scale,
-                fontSize: 12 * scale,
-                lineHeight: 16 * scale,
-              },
-            ]}
-          >
-            {errorMessage}
-          </Text>
-        )}
-      </View>
-    </View>
+        />
+      }>
+      <Text accessibilityRole="header" style={auth.title}>
+        Thank you, {data.name || 'there'} 😃
+      </Text>
+      <Text style={styles.message}>
+        Finally, let’s link this information to your account so the next time you open this app, you can just log
+        in
+      </Text>
+      {errorMessage !== null && (
+        <Text accessibilityRole="alert" style={auth.error}>
+          {errorMessage}
+        </Text>
+      )}
+    </AuthScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  container: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  canvas: {
-    position: 'absolute',
-    backgroundColor: colors.surface,
-  },
-  copy: {
-    position: 'absolute',
-    justifyContent: 'center',
-  },
-  greeting: {
-    color: colors.text,
-    fontWeight: '500',
-    marginBottom: Spacing.four,
-  },
   message: {
+    ...Typography.subtitle,
     color: colors.text,
-    fontWeight: '500',
-  },
-  continueButton: {
-    position: 'absolute',
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    position: 'absolute',
-    color: colors.error,
     textAlign: 'center',
-  },
-  continueText: {
-    color: colors.onPrimary,
-    fontWeight: '600',
   },
 }));
