@@ -212,4 +212,4 @@ Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status k
 - [x] F4 `verify.tsx` holds a sign-up, uses `nextStepAfterVerify()` and routes mismatches to `account-check` (5 screen tests)
 - [x] F5 Back arrows on the sign-up and sign-in screens (`app/(auth)/_layout.tsx`; verify hides it once signed in; 5 route tests)
 - [x] F6 Docs (`login-backend.md` flow and root guard, `docs/testing.md` rows) and full checks
-- [ ] F6b Manual QA on a phone (plan section 6)
+- [x] F6b Manual QA on a phone (plan section 6), passed 3 Nov 2026; wording confirmed (SU-7)

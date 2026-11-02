@@ -4,8 +4,8 @@
 > has an account, or signs in with a number that has none; and a visible back arrow on the sign-up and sign-in
 > screens (section 4.6, added 3 Nov 2026).
 > **Branch:** `fix/sign-up-sign-in-mismatch`, from `main` (2 Nov 2026). Owner: Ryan Pham.
-> **Status:** decisions SU-1 to SU-9 approved by Ryan Pham on 3 Nov 2026. SU-7 (wording) still to be confirmed
-> by the designer; built with the wording in this plan until then.
+> **Status:** built and tested on a phone (3 Nov 2026). Decisions SU-1 to SU-10 approved by Ryan Pham; the
+> wording (SU-7) confirmed after testing.
 > **No database changes.** The check uses the existing `hasProfile()`; no migration, pgTAP test or Edge Function.
 
 ---
