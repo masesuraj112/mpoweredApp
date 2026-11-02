@@ -120,8 +120,11 @@
   - the greeting and the wordmark, centred a little above the middle (as in the design, about 33% down);
   - the waves, anchored to the bottom half, behind the text and decorative (hidden from screen readers);
   - the footer "Powered by / Musculoskeletal Health Australia" near the bottom, inside the safe area.
-- The wordmark is one image with the accessibility label "MPowered". The greeting is real text, so it scales with
-  the phone's font size.
+- The greeting and the wordmark are read as one heading, "Welcome to MPowered" (the wordmark is a picture of the
+  name). The greeting is real text, so it scales with the phone's font size.
+- The waves are a background layer placed as in the design (48% down, 4% left, 142% wide, tilted 1°), hidden from
+  screen readers on both platforms. Their 50% opacity is in the SVG itself.
+- Colours are `SplashColors` in `@/constants/theme` (the same in light and dark mode).
 - The status bar is light on the dark background.
 - Assets: `assets/images/splash/wordmark.svg` (`2003:378`) and `assets/images/splash/waves.svg` (`2003:380`),
   drawn with `expo-image` like the app's other SVGs.
@@ -205,7 +208,7 @@ Checked by eye on 2 Nov 2026, including a circle-masked preview of the adaptive 
 ### 6.1 Automated
 | Test | Covers |
 | --- | --- |
-| `WelcomeSplash.test.tsx` | Shows the greeting; the wordmark has the label "MPowered"; the waves are hidden from screen readers; the footer text |
+| `WelcomeSplash.test.tsx` | Shows each greeting; one heading "<greeting> MPowered"; the footer text; the waves are hidden from screen readers on Android and iOS |
 | `useMinimumDuration.test.ts` | Not done before 1.5 s even if loading ends; done when both have happened; done straight away if loading takes longer |
 | `__tests__/root-routing.test.tsx` (update) | Signed in: the welcome splash, then Home; signed out: unchanged |
 | `__tests__/unit/app-config-assets.test.ts` | Every image and icon path in `app.json` exists |
