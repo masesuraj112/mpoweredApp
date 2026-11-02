@@ -6,7 +6,7 @@
  * against the surface it is used on (checked by theme.test.ts).
  */
 
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 
 export const Palette = {
   violet: '#391777',
@@ -36,8 +36,7 @@ export const Palette = {
   onErrorContainer: '#410E0B',
 } as const;
 
-export const Colors = {
-  light: {
+const lightColors = {
     /** Headings and body text. */
     text: Palette.ink,
     /** Secondary text: dates, hints, captions. */
@@ -91,10 +90,65 @@ export const Colors = {
     onBrandMuted: Palette.lavender,
     /** Unfilled part of a progress bar drawn on the brand gradient. */
     brandTrack: 'rgba(208, 188, 254, 0.25)',
-  },
+  };
+
+/** Every colour role, as a hex or rgba string. */
+export type ThemeColors = { [K in keyof typeof lightColors]: string };
+
+/** The same roles for dark mode: deep violet surfaces, light text, a lighter violet for actions. */
+const darkColors: ThemeColors = {
+    text: '#EEE8FA',
+    textSecondary: '#B7ACCF',
+    textSubtle: '#A397BF',
+    textDisabled: '#6E6585',
+    background: '#120A22',
+    surface: '#1B1230',
+    surfaceMuted: '#170F2A',
+    surfaceContainer: '#241A3D',
+    backgroundElement: '#1F1636',
+    backgroundSelected: '#2E2350',
+    primary: '#C5B0FF',
+    primaryDeep: '#D8C9FF',
+    onPrimary: Palette.midnight,
+    primaryContainer: '#2E2350',
+    onPrimaryContainer: '#E4DAFF',
+    secondary: '#B7ACCF',
+    secondaryContainer: '#3A2D63',
+    onSecondaryContainer: '#E4DAFF',
+    onSurface: '#EEE8FA',
+    onSurfaceVariant: '#B7ACCF',
+    outline: '#8B7FA8',
+    outlineStrong: '#A99DC6',
+    divider: '#2C2147',
+    success: '#7FD49C',
+    successContainer: '#12351F',
+    warning: '#F2C46D',
+    warningContainer: '#3A2A0A',
+    error: '#F2B8B5',
+    errorContainer: '#5C1A16',
+    onErrorContainer: '#F9DEDC',
+    backdrop: 'rgba(0, 0, 0, 0.6)',
+    shadow: '#000000',
+    listening: '#C5B0FF',
+    calendarSelected: '#C5B0FF',
+    onCalendarSelected: Palette.midnight,
+    controlBorder: '#B7ACCF',
+    controlChecked: '#C5B0FF',
+    brand: Palette.violet,
+    brandDeep: Palette.midnight,
+    onBrand: Palette.white,
+    onBrandMuted: Palette.lavender,
+    brandTrack: 'rgba(208, 188, 254, 0.25)',
+};
+
+export const Colors = {
+  light: lightColors as ThemeColors,
+  dark: darkColors,
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light;
+
+
+export type ThemeColor = keyof ThemeColors;
 
 /** Gradients, top to bottom (or left to right). */
 export const Gradients = {
@@ -175,3 +229,21 @@ export const Typography = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+/** The colours for the phone's current appearance (light or dark). */
+export function useThemeColors(): ThemeColors {
+  return useColorScheme() === 'dark' ? Colors.dark : Colors.light;
+}
+
+/**
+ * Style sheets that follow the phone's appearance. The factory runs once per mode; the returned hook
+ * picks the right sheet, so styles stay as cheap as a plain StyleSheet.create.
+ */
+type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
+
+export function makeStyles<T extends NamedStyles<T>>(factory: (colors: ThemeColors) => T): () => T {
+  const sheets = { light: StyleSheet.create(factory(Colors.light)), dark: StyleSheet.create(factory(Colors.dark)) };
+  return function useStyles() {
+    return useColorScheme() === 'dark' ? sheets.dark : sheets.light;
+  };
+}

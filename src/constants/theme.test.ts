@@ -15,10 +15,10 @@ function contrast(a: string, b: string): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const c = Colors.light;
+type Role = keyof typeof Colors.light;
 
 // [foreground, background, minimum]
-const pairs: [keyof typeof c, keyof typeof c, number][] = [
+const pairs: [Role, Role, number][] = [
   ['text', 'background', TEXT],
   ['text', 'surface', TEXT],
   ['text', 'surfaceContainer', TEXT],
@@ -55,7 +55,9 @@ const pairs: [keyof typeof c, keyof typeof c, number][] = [
   ['controlChecked', 'surface', CONTROL],
 ];
 
-describe('theme contrast (WCAG AA)', () => {
+describe.each(['light', 'dark'] as const)('%s theme contrast (WCAG AA)', (scheme) => {
+  const c = Colors[scheme];
+
   it.each(pairs)('%s on %s is at least %d:1', (fg, bg, min) => {
     expect(contrast(c[fg], c[bg])).toBeGreaterThanOrEqual(min);
   });
@@ -63,8 +65,10 @@ describe('theme contrast (WCAG AA)', () => {
   it('keeps white text readable across the whole brand gradient', () => {
     for (const stop of Gradients.brand) expect(contrast(c.onBrand, stop)).toBeGreaterThanOrEqual(TEXT);
   });
+});
 
-  it('keeps white text readable across the whole action gradient', () => {
-    for (const stop of Gradients.action) expect(contrast(c.onPrimary, stop)).toBeGreaterThanOrEqual(TEXT);
+describe('action gradient', () => {
+  it('keeps white text readable across it (light mode buttons)', () => {
+    for (const stop of Gradients.action) expect(contrast(Colors.light.onPrimary, stop)).toBeGreaterThanOrEqual(TEXT);
   });
 });
