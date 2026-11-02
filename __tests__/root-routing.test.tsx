@@ -41,6 +41,11 @@ jest.mock('../src/context/AuthContext', () => {
   };
 });
 
+/** Opening the app signed in shows "Welcome back to" over it for 3 s (WELCOME_SPLASH_MS); skip past it. */
+async function skipWelcomeBack() {
+  await act(async () => jest.advanceTimersByTime(3000));
+}
+
 async function setAuth(next: MockAuth) {
   await act(() => {
     mockAuth = next;
@@ -69,7 +74,9 @@ const screens = {
 describe('root layout routing', () => {
   beforeEach(() => {
     mockAuth = mockSignedOut;
+    jest.useFakeTimers();
   });
+  afterEach(() => jest.useRealTimers());
 
   it('shows the auth screens when signed out', async () => {
     await renderRouter(screens, { initialUrl: '/' });
@@ -97,6 +104,7 @@ describe('root layout routing', () => {
   it('keeps a support person out of the patient tabs', async () => {
     mockAuth = supportPerson;
     await renderRouter(screens, { initialUrl: '/home' });
+    await skipWelcomeBack();
 
     expect(await screen.findByText('support care planner')).toBeTruthy();
     expect(screen.queryByText('patient home')).toBeNull();
@@ -105,6 +113,7 @@ describe('root layout routing', () => {
   it('keeps a patient out of the support app', async () => {
     mockAuth = patient;
     await renderRouter(screens, { initialUrl: '/care-planner' });
+    await skipWelcomeBack();
 
     expect(await screen.findByText('patient home')).toBeTruthy();
     expect(screen.queryByText('support care planner')).toBeNull();
@@ -113,10 +122,48 @@ describe('root layout routing', () => {
   it('returns to the auth screens when a support person signs out', async () => {
     mockAuth = supportPerson;
     await renderRouter(screens, { initialUrl: '/care-planner' });
+    await skipWelcomeBack();
     await screen.findByText('support care planner');
 
     await setAuth(mockSignedOut);
 
     expect(await screen.findByText('auth screen')).toBeTruthy();
+  });
+
+  it('shows "Welcome back to" over the app for 3 s when it opens signed in', async () => {
+    mockAuth = patient;
+    await renderRouter(screens, { initialUrl: '/' });
+
+    expect(await screen.findByRole('header', { name: 'Welcome back to MPowered' })).toBeTruthy();
+    expect(screen.queryByText('patient home')).toBeNull();
+
+    await act(async () => jest.advanceTimersByTime(2999));
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeTruthy();
+
+    await act(async () => jest.advanceTimersByTime(1));
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeNull();
+    expect(await screen.findByText('patient home')).toBeTruthy();
+  });
+
+  it('keeps "Welcome back to" up until the profile check ends, even after 3 s', async () => {
+    mockAuth = { ...patient, hasProfile: null, profile: null };
+    await renderRouter(screens, { initialUrl: '/' });
+
+    await act(async () => jest.advanceTimersByTime(5000));
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeTruthy();
+
+    await setAuth(patient);
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeNull();
+    expect(await screen.findByText('patient home')).toBeTruthy();
+  });
+
+  it('never shows "Welcome back to" to someone signing in now', async () => {
+    await renderRouter(screens, { initialUrl: '/' });
+    await screen.findByText('auth screen');
+
+    await setAuth(patient);
+
+    expect(screen.queryByRole('header', { name: 'Welcome back to MPowered' })).toBeNull();
+    expect(await screen.findByText('patient home')).toBeTruthy();
   });
 });

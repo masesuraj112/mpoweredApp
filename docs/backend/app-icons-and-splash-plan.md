@@ -140,7 +140,14 @@ App start ── native splash (M on #391777) ── held until the session is r
 
 - `app/_layout.tsx` calls `SplashScreen.preventAutoHideAsync()` at module level, and `SplashScreen.hide()` once
   `loading` is false. `SplashScreen.setOptions({ duration: 300, fade: true })` gives a short fade.
-- While a signed-in user's profile loads, the root renders `WelcomeSplash` instead of `null`.
+- "Welcome back to" is an **overlay** on top of the navigator, not a replacement, so the first screen (Home or the
+  support person app) loads underneath and routing is unchanged. The screen underneath is hidden from screen readers
+  while it shows.
+- It shows only when the app **opened** signed in (`startedSignedIn`, fixed once the session is read), never for
+  someone signing in now, which would cover the verify screen. `showWelcomeBack()` (`src/features/splash/startup.ts`):
+  still checking the profile → show; profile found → show until 3 s; profile error → stop (the error screen shows);
+  no profile → stop (onboarding starts with "Welcome to").
+- Both greetings use `WELCOME_SPLASH_MS` (3000).
 - The 3 s minimum is a small pure helper plus a hook (`useMinimumDuration`), so it can be tested without timers
   in the screen.
 - The profile-error screen ("We could not load your account") is unchanged.
@@ -210,7 +217,8 @@ Checked by eye on 2 Nov 2026, including a circle-masked preview of the adaptive 
 | --- | --- |
 | `WelcomeSplash.test.tsx` | Shows each greeting; one heading "<greeting> MPowered"; the footer text; the waves are hidden from screen readers on Android and iOS |
 | `useMinimumDuration.test.ts` | Not done before 3 s even if loading ends; done when both have happened; done straight away if loading takes longer |
-| `__tests__/root-routing.test.tsx` (update) | Signed in: the welcome splash, then Home; signed out: unchanged |
+| `startup.test.ts` | When "Welcome back to" shows: while the profile loads, until 3 s, never for a sign-in now, not for a profile error or a missing profile |
+| `__tests__/root-routing.test.tsx` (update) | Opening signed in: "Welcome back to" over the app for exactly 3 s, then Home; held while the profile check runs past 3 s; never when signing in now; the existing routing tests skip past it |
 | `__tests__/unit/app-config-assets.test.ts` | Every image and icon path in `app.json` exists |
 
 ### 6.2 Not automated
