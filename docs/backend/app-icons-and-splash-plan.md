@@ -56,7 +56,7 @@
 | I-B | **iOS uses the Icon Composer file** (`ios.icon: "./assets/mpowered-app-icon.icon"`, supported since SDK 54). | Keeps the iOS 26 glass layers. | A flat 1024 PNG. |
 | I-C | **Android icons are generated from `mpoweredicon.svg`:** adaptive foreground (the "M" inside the ~66% safe zone, transparent), background colour `#392C5C`, monochrome (the "M" in one flat colour), a white 96×96 notification icon, the 1024 fallback `icon.png` (the "M" on `#392C5C`) and the favicon. | No designer export exists; the logo is one flat-colour vector, so every size is sharp. | Wait for the designer. |
 | I-D | **Native splash: the lavender "M" on `#391777`** (the top of the in-app gradient), the same in dark mode. A short fade hands over to the in-app splash. | Android 12+ splash screens allow only a centred icon on a solid colour, so the full design can't be native. | Plain purple with no logo. |
-| I-E | **When the in-app splash shows:** signed out, "Welcome to" for 3 s, then onboarding (as now). Signed in, "Welcome back to" while the session and profile load, **at least 1.5 s**, then Home. The native splash stays up until the session is known (`preventAutoHideAsync`), so there is no blank gap. | Fills the blank gap with the design meant for it, without slowing returning users down much. | Fixed 3 s for both; signed-out only. |
+| I-E | **When the in-app splash shows:** signed out, "Welcome to" for 3 s, then onboarding (as now). Signed in, "Welcome back to" while the session and profile load, **at least 3 s** (changed from 1.5 s on 2 Nov 2026, so both greetings last the same), then Home. The native splash stays up until the session is known (`preventAutoHideAsync`), so there is no blank gap. | Fills the blank gap with the design meant for it; the same length as the signed-out greeting. | A shorter 1.5 s minimum when signed in; signed-out only. |
 | I-G | **The 8 Oct outlined-M draft (`.assets/expo.icon`) is deleted**; the filled-M `mpowered-app-icon.icon` replaces it. | It was never wired up, and the new file is the current design. Git history keeps it. | Keep it unused; use it instead. |
 | I-F | **System font**, not Inter. | The app doesn't load Inter anywhere; no new dependency. | Load `@expo-google-fonts/inter`. |
 
@@ -135,13 +135,13 @@
 App start ── native splash (M on #391777) ── held until the session is read
    ├─ no session ──► (auth)/index: WelcomeSplash "Welcome to", 3 s ──► onboarding
    └─ session    ──► root layout: WelcomeSplash "Welcome back to"
-                       until the profile check ends AND 1.5 s have passed ──► Home (or the support person app)
+                       until the profile check ends AND 3 s have passed ──► Home (or the support person app)
 ```
 
 - `app/_layout.tsx` calls `SplashScreen.preventAutoHideAsync()` at module level, and `SplashScreen.hide()` once
   `loading` is false. `SplashScreen.setOptions({ duration: 300, fade: true })` gives a short fade.
 - While a signed-in user's profile loads, the root renders `WelcomeSplash` instead of `null`.
-- The 1.5 s minimum is a small pure helper plus a hook (`useMinimumDuration`), so it can be tested without timers
+- The 3 s minimum is a small pure helper plus a hook (`useMinimumDuration`), so it can be tested without timers
   in the screen.
 - The profile-error screen ("We could not load your account") is unchanged.
 
@@ -174,7 +174,7 @@ App start ── native splash (M on #391777) ── held until the session is r
 
 ### Phase I5 — Showing it
 - **I5** `(auth)/index.tsx` uses `WelcomeSplash` "Welcome to" (3 s, then onboarding). The root layout shows
-  "Welcome back to" while a signed-in user's profile loads, for at least 1.5 s (`useMinimumDuration` with a test).
+  "Welcome back to" while a signed-in user's profile loads, for at least 3 s (`useMinimumDuration` with a test).
   Update `__tests__/root-routing.test.tsx` if it relies on the blank screen.
   Commit: `Show the welcome splash while the app starts`
 
@@ -209,7 +209,7 @@ Checked by eye on 2 Nov 2026, including a circle-masked preview of the adaptive 
 | Test | Covers |
 | --- | --- |
 | `WelcomeSplash.test.tsx` | Shows each greeting; one heading "<greeting> MPowered"; the footer text; the waves are hidden from screen readers on Android and iOS |
-| `useMinimumDuration.test.ts` | Not done before 1.5 s even if loading ends; done when both have happened; done straight away if loading takes longer |
+| `useMinimumDuration.test.ts` | Not done before 3 s even if loading ends; done when both have happened; done straight away if loading takes longer |
 | `__tests__/root-routing.test.tsx` (update) | Signed in: the welcome splash, then Home; signed out: unchanged |
 | `__tests__/unit/app-config-assets.test.ts` | Every image and icon path in `app.json` exists |
 
@@ -222,7 +222,7 @@ Icons on the home screen, the native splash and the hand-over to the in-app spla
 2. Android: the adaptive icon is cropped correctly in circle and squircle masks; with themed icons on (Android 13+)
    the monochrome "M" shows.
 3. Cold start signed out: the "M" on purple, then "Welcome to" with no blank gap or flash, then onboarding after 3 s.
-4. Cold start signed in: the "M" on purple, then "Welcome back to" for at least 1.5 s, then Home.
+4. Cold start signed in: the "M" on purple, then "Welcome back to" for at least 3 s, then Home.
 5. Airplane mode, signed in: "We could not load your account" still appears after the splash.
 6. Large text (accessibility font size): the greeting and footer don't overlap the wordmark or the waves.
 7. A support person account goes to the support person app after "Welcome back to".
