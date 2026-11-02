@@ -13,7 +13,13 @@ const settingsIcon = require('../../assets/images/support-person/tab-settings.sv
 function TabIcon({ source, focused, width, height }: { source: number; focused: boolean; width: number; height: number }) {
   return (
     <View style={[styles.iconPill, focused && styles.iconPillActive]}>
-      <Image source={source} style={{ width, height }} contentFit="contain" accessibilityLabel="" />
+      <Image
+        source={source}
+        style={{ width, height }}
+        contentFit="contain"
+        tintColor={focused ? Colors.light.brandDeep : Colors.light.onBrandMuted}
+        accessibilityLabel=""
+      />
     </View>
   );
 }
@@ -30,8 +36,8 @@ export default function SupportLayout() {
           tabBarStyle: [styles.tabBar, { height: TAB_BAR_HEIGHT + insets.bottom }],
           tabBarIconStyle: styles.iconSlot,
           tabBarLabelStyle: styles.tabLabel,
-          tabBarActiveTintColor: Colors.light.onSurface,
-          tabBarInactiveTintColor: Colors.light.onSurfaceVariant,
+          tabBarActiveTintColor: Colors.light.onBrand,
+          tabBarInactiveTintColor: Colors.light.onBrandMuted,
         }}
       >
         <Tabs.Screen
@@ -58,7 +64,7 @@ const TAB_BAR_HEIGHT = 64;
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: Colors.light.brandDeep,
     borderTopWidth: 0,
     paddingTop: 6,
   },
@@ -81,6 +87,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconPillActive: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: Colors.light.onBrandMuted,
   },
 });

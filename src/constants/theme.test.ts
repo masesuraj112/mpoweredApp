@@ -45,6 +45,7 @@ const pairs: [keyof typeof c, keyof typeof c, number][] = [
   ['error', 'surface', TEXT],
   ['onErrorContainer', 'errorContainer', TEXT],
   ['success', 'surface', TEXT],
+  ['success', 'surfaceContainer', TEXT],
   ['success', 'successContainer', TEXT],
   ['warning', 'warningContainer', TEXT],
   ['onCalendarSelected', 'calendarSelected', TEXT],

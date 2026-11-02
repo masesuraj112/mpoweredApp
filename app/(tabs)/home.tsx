@@ -3,6 +3,7 @@ import type { WeeklyAssessmentId } from '@/features/assessments/homeProgress';
 import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgress';
 import { formatDayMonth } from '@/features/assessments/week';
 import { getGreeting } from '@/features/support-person/greeting';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -15,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Gradients } from '@/constants/theme';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -58,42 +59,45 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.intro}>
-          <Text style={styles.greeting}>{getGreeting(name)}</Text>
-          <Text style={styles.heading}>
-            Let&apos;s build your M<Text style={styles.superscript}>Powered</Text>
-            {' plan.'}
-          </Text>
-          <Text style={styles.description}>
-            Assess your pain intensity and its impacts weekly to obtain your M
-            <Text style={styles.descriptionSuperscript}>Powered</Text>
-            {' plan'}
-          </Text>
-        </View>
-
-        <View
-          style={styles.progressSection}
-          accessibilityLabel={`This week's progress: ${progress} of 5 assessments`}
-        >
-          <View
-            style={styles.progressTrack}
-            onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
-          >
-            <View
-              style={[
-                styles.progressFill,
-                { width: trackWidth * (progress / ASSESSMENTS.length) },
-              ]}
-            />
-          </View>
-          <View style={styles.progressLabels}>
-            <Text style={styles.progressLabel}>This week&apos;s progress</Text>
-            <Text style={styles.progressLabel}>
-              {progress}/{ASSESSMENTS.length} assessments
+        {/* The week at a glance, on the brand gradient. */}
+        <LinearGradient colors={Gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+          <View style={styles.intro}>
+            <Text style={styles.greeting}>{getGreeting(name)}</Text>
+            <Text style={styles.heading}>
+              Let&apos;s build your M<Text style={styles.superscript}>Powered</Text>
+              {' plan.'}
+            </Text>
+            <Text style={styles.description}>
+              Assess your pain intensity and its impacts weekly to obtain your M
+              <Text style={styles.descriptionSuperscript}>Powered</Text>
+              {' plan'}
             </Text>
           </View>
-          {progressError && <Text style={styles.progressError}>{progressError}</Text>}
-        </View>
+
+          <View
+            style={styles.progressSection}
+            accessibilityLabel={`This week's progress: ${progress} of 5 assessments`}
+          >
+            <View
+              style={styles.progressTrack}
+              onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+            >
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: trackWidth * (progress / ASSESSMENTS.length) },
+                ]}
+              />
+            </View>
+            <View style={styles.progressLabels}>
+              <Text style={styles.progressLabel}>This week&apos;s progress</Text>
+              <Text style={styles.progressLabel}>
+                {progress}/{ASSESSMENTS.length} assessments
+              </Text>
+            </View>
+            {progressError && <Text style={styles.progressError}>{progressError}</Text>}
+          </View>
+        </LinearGradient>
 
         <View style={styles.assessmentPanel}>
           <Text style={styles.panelHeading}>This week’s assessment</Text>
@@ -170,7 +174,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Colors.light.surface,
+    backgroundColor: Colors.light.background,
+  },
+  hero: {
+    marginBottom: 24,
+    padding: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   scrollContent: {
     alignSelf: 'center',
@@ -185,7 +195,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   greeting: {
-    color: Colors.light.text,
+    color: Colors.light.onBrandMuted,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     marginTop: 16,
-    color: Colors.light.text,
+    color: Colors.light.onBrand,
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 24,
@@ -214,24 +224,22 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: 5,
-    color: Colors.light.text,
+    color: Colors.light.onBrandMuted,
     fontSize: 14,
     lineHeight: 20,
     letterSpacing: 0.25,
   },
-  progressSection: {
-    marginBottom: 24,
-  },
+  progressSection: {},
   progressTrack: {
     height: 10,
     overflow: 'hidden',
     borderRadius: 5,
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: Colors.light.brandTrack,
   },
   progressFill: {
     height: '100%',
     borderRadius: 5,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.onBrandMuted,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -239,7 +247,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   progressLabel: {
-    color: Colors.light.text,
+    color: Colors.light.onBrand,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -247,7 +255,7 @@ const styles = StyleSheet.create({
   },
   progressError: {
     marginTop: 4,
-    color: Colors.light.error,
+    color: Colors.light.onBrand,
     fontSize: 12,
     lineHeight: 16,
   },
@@ -256,7 +264,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 14,
     borderRadius: 12,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.light.surface,
   },
   panelHeading: {
     marginBottom: 16,
@@ -289,7 +297,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   updatedText: {
-    color: Colors.light.textSecondary,
+    color: Colors.light.success,
     fontSize: 11,
     lineHeight: 14,
     letterSpacing: 0.3,
@@ -309,8 +317,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
   },
   editButton: {
-    borderColor: Colors.light.outline,
-    backgroundColor: Colors.light.secondaryContainer,
+    borderColor: Colors.light.primaryContainer,
+    backgroundColor: Colors.light.primaryContainer,
   },
   assessmentButtonText: {
     fontSize: 14,
@@ -321,7 +329,7 @@ const styles = StyleSheet.create({
     color: Colors.light.onPrimary,
   },
   editButtonText: {
-    color: Colors.light.textSecondary,
+    color: Colors.light.onPrimaryContainer,
   },
   arrow: {
     fontSize: 18,

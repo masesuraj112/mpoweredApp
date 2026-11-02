@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     width: 28,
-    backgroundColor: Colors.light.textSecondary,
+    backgroundColor: Colors.light.primary,
   },
   dotInactive: {
     width: 6,

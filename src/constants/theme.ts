@@ -89,6 +89,8 @@ export const Colors = {
     brandDeep: Palette.midnight,
     onBrand: Palette.white,
     onBrandMuted: Palette.lavender,
+    /** Unfilled part of a progress bar drawn on the brand gradient. */
+    brandTrack: 'rgba(208, 188, 254, 0.25)',
   },
 } as const;
 

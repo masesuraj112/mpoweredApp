@@ -14,7 +14,8 @@ const carePlannerIcon = require('../../assets/images/home-page/care-planner.svg'
 const settingsIcon = require('../../assets/images/home-page/settings.svg');
 
 function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
-  const color = Colors.light.textSecondary;
+  // On the deep brand tab bar: the active icon sits dark on a lavender pill, the others are lavender.
+  const color = focused ? Colors.light.brandDeep : Colors.light.onBrandMuted;
 
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerSelected]}>
@@ -31,6 +32,7 @@ function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
                 : styles.settingsGearIcon
           }
           contentFit="contain"
+          tintColor={color}
           accessibilityLabel=""
         />
       ) : (
@@ -53,8 +55,8 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: Colors.light.textSecondary,
-          tabBarInactiveTintColor: Colors.light.textSecondary,
+          tabBarActiveTintColor: Colors.light.onBrand,
+          tabBarInactiveTintColor: Colors.light.onBrandMuted,
           tabBarLabelStyle: styles.tabLabel,
           tabBarStyle: styles.tabBar,
         }}
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 6,
     borderTopWidth: 0,
-    backgroundColor: Colors.light.surfaceContainer,
+    backgroundColor: Colors.light.brandDeep,
   },
   tabLabel: {
     marginTop: 3,
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   iconContainerSelected: {
-    backgroundColor: Colors.light.secondaryContainer,
+    backgroundColor: Colors.light.onBrandMuted,
   },
   painTrackerIcon: {
     width: 18,
