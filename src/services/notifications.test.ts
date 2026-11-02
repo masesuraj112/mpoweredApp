@@ -41,9 +41,13 @@ function fakeNotifications(permission: Partial<ExpoNotifications.NotificationPer
     cancelAllScheduledNotificationsAsync: jest.fn(async () => {
       calls.push('cancel-all');
     }),
+    cancelScheduledNotificationAsync: jest.fn(async (id: string) => {
+      calls.push(`cancel:${id}`);
+    }),
     getAllScheduledNotificationsAsync: jest.fn(async () => [
       { identifier: 'assessment:0', content: { title: 'Time for your health check-in' } },
       { identifier: 'other', content: { title: null } },
+      { identifier: 'test-reminder', content: { title: 'Test reminder' } },
     ]),
     setNotificationHandler: jest.fn(),
   } as unknown as Fake;
@@ -121,7 +125,7 @@ describe('requestReminderPermission', () => {
 });
 
 describe('applyReminders', () => {
-  it('cancels everything, then schedules each reminder for its time on its channel', async () => {
+  it('cancels the planned reminders, then schedules each reminder for its time on its channel', async () => {
     const { fake, calls } = fakeNotifications();
     const appointment = reminder('appointment:42:day-before', { kind: 'appointment', appointmentId: 42 });
     const assessment = reminder('assessment:0', { kind: 'assessment' });
@@ -129,7 +133,8 @@ describe('applyReminders', () => {
     const result = await applyReminders([appointment, assessment], fake);
 
     expect(result).toEqual({ ok: true, data: undefined });
-    expect(calls[0]).toBe('cancel-all');
+    expect(calls[0]).toBe('cancel:assessment:0');
+    expect(calls).not.toContain('cancel-all');
     expect(calls.slice(-2)).toEqual(['schedule:appointment:42:day-before', 'schedule:assessment:0']);
     expect(fake.scheduleNotificationAsync).toHaveBeenCalledWith({
       identifier: 'appointment:42:day-before',
@@ -154,7 +159,16 @@ describe('applyReminders', () => {
 
     await applyReminders([], fake);
 
-    expect(calls).toEqual(['cancel-all']);
+    expect(calls).toEqual(['cancel:assessment:0']);
+  });
+
+  it('leaves the test reminder and notifications it did not plan alone', async () => {
+    const { fake } = fakeNotifications();
+
+    await applyReminders([], fake);
+
+    expect(fake.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('test-reminder');
+    expect(fake.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('other');
   });
 
   it('returns a failure instead of throwing when scheduling fails', async () => {
@@ -234,6 +248,7 @@ describe('development helpers', () => {
       data: [
         { id: 'assessment:0', title: 'Time for your health check-in' },
         { id: 'other', title: '' },
+        { id: 'test-reminder', title: 'Test reminder' },
       ],
     });
   });

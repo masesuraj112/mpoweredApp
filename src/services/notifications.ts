@@ -19,6 +19,7 @@ type NotificationsModule = Pick<
   | 'setNotificationChannelAsync'
   | 'scheduleNotificationAsync'
   | 'cancelAllScheduledNotificationsAsync'
+  | 'cancelScheduledNotificationAsync'
   | 'getAllScheduledNotificationsAsync'
   | 'setNotificationHandler'
 >;
@@ -70,16 +71,25 @@ async function createChannels(notifications: NotificationsModule): Promise<void>
   }
 }
 
+/** Planned reminders' ids start with these (see `planReminders`). */
+const PLANNED_REMINDER_PREFIXES = ['appointment:', 'assessment:'];
+
 /**
- * Replaces every scheduled reminder with `reminders`. The app schedules nothing else, so it cancels
- * them all first. An empty list just cancels.
+ * Replaces the planned reminders with `reminders`. Only planned ones are cancelled first, so a
+ * development test reminder survives a re-plan (one runs whenever the app comes back to the
+ * foreground, which an iPhone permission prompt causes). An empty list just cancels.
  */
 export function applyReminders(
   reminders: Reminder[],
   notifications: NotificationsModule = ExpoNotifications,
 ): Promise<Result<void>> {
   return run(async () => {
-    await notifications.cancelAllScheduledNotificationsAsync();
+    const scheduled = await notifications.getAllScheduledNotificationsAsync();
+    for (const request of scheduled) {
+      if (PLANNED_REMINDER_PREFIXES.some((prefix) => request.identifier.startsWith(prefix))) {
+        await notifications.cancelScheduledNotificationAsync(request.identifier);
+      }
+    }
     if (reminders.length === 0) return ok(undefined);
     await createChannels(notifications);
     for (const reminder of reminders) {
@@ -131,7 +141,7 @@ export function listScheduledReminders(
   });
 }
 
-/** Cancels every scheduled reminder (sign-out, account deletion, both toggles off). */
+/** Cancels every scheduled notification, the test reminder too (sign-out, account deletion, both toggles off). */
 export function cancelAllReminders(notifications: NotificationsModule = ExpoNotifications): Promise<Result<void>> {
   return run(async () => {
     await notifications.cancelAllScheduledNotificationsAsync();
