@@ -2,7 +2,7 @@
 
 What the **production** Supabase project and its connected services must have before real users sign in. Most of these settings live in the Supabase dashboard and the Twilio console, not in `supabase/config.toml` (that file holds local/CI values, including a test OTP). Tick each item and note who did it and when.
 
-**Current state (reviewed 2 November 2026):** no production project exists yet, so every item below is still to do. The only hosted project is the development/test one. It holds test data only and differs from production where noted.
+**Current state (reviewed 2 November 2026):** a production Supabase project (`mpoweredAppProd`) exists but is blank: no migrations, no settings and no data, and the app does not use it. Every item below is still to do. All hosted work so far used the test project (`mpoweredAppTest`), which holds test data only and differs from production where noted.
 
 Items marked **(verify)** are facts that could not be confirmed from the repo; check them in the dashboard.
 
@@ -39,7 +39,7 @@ Setup steps and findings from the development project are in `sms-setup.md`; its
 - [ ] Sender: an Australian number or an alphanumeric sender ID registered with ACMA under the ABN holder (decision D5, open). The dev project sends from a US trial-credit number, which is not a production sender. **(verify)** ACMA requirements and fees.
 - [ ] SMS message template: plain straight characters only so it stays one segment, for example `MPowered: your code is {{ .Code }}. Do not share it.` Curly quotes or emoji can double the cost.
 - [ ] A real-SMS test with a number that is not a developer's, checking Twilio logs for status and price (about US$0.0515 per segment on the dev test).
-- [ ] Dev/production split (decision D1): until a separate production project exists, the single project holds test data only, because real SMS and the test-number logins share it. No real patient data goes in it.
+- [ ] Dev/production split (decision D1, which predates the production project): the test project holds test data only, because real SMS and the test-number logins share it. No real patient data goes in it. Real patient data goes only in the production project, after this checklist is complete.
 
 ## 5. Rate limits and abuse
 

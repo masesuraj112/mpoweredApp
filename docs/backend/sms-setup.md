@@ -56,7 +56,7 @@ The app's verify screen starts a 60 s countdown on arrival, hides Resend until i
 ## Moving to MHA and production
 
 1. MHA creates their own Twilio account (an email they control), a Messaging Service and an Australian sender (a number, or a sender name registered under their ABN).
-2. Create a separate Supabase production project and apply all migrations (see `production-auth-checklist.md`).
+2. Apply all migrations to the existing blank production project, `mpoweredAppProd` (see `production-auth-checklist.md`).
 3. In its Phone provider, enter **MHA's** three values, the same OTP settings, **no test numbers**, and a rate limit chosen for real traffic.
 4. Point only the EAS `production` environment at it. Test with a real number that is not a developer's and check the Twilio logs and cost.
 
