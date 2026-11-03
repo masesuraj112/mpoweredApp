@@ -1,8 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
-import { useCallback, type ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { useCallback, useRef, useState, type ComponentRef, type ReactNode } from 'react';
+import { Platform, ScrollView, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ContentColumn, Gradients, Spacing, makeStyles } from '@/constants/theme';
@@ -22,6 +22,12 @@ type BrandScreenProps = {
 export function BrandScreen({ hero, children }: BrandScreenProps) {
   const styles = useStyles();
   const insets = useSafeAreaInsets();
+  const heroRef = useRef<ComponentRef<typeof View>>(null);
+  // How far down the screen the gradient starts. iOS usually moves a tab's scroll view below the status
+  // bar itself, Android doesn't; measuring means the greeting is padded only for what it still sits under.
+  const [heroTop, setHeroTop] = useState(Platform.OS === 'ios' ? insets.top : 0);
+  const coveredByStatusBar = Math.max(0, insets.top - heroTop);
+  const measureHero = () => heroRef.current?.measureInWindow((_x: number, y: number) => setHeroTop(Math.max(0, y)));
 
   // White status bar text over the gradient while this screen shows; the app's default everywhere else.
   useFocusEffect(
@@ -41,13 +47,15 @@ export function BrandScreen({ hero, children }: BrandScreenProps) {
         {/* Pulling down past the top shows the gradient's own colour, not the page, above it. */}
         <View style={styles.overscroll} />
         {/* Top to bottom, so its whole top edge is the status bar strip's colour and the two join. */}
-        <LinearGradient
-          colors={Gradients.brand}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={[styles.hero, { paddingTop: insets.top + Spacing.four }]}>
-          <View style={styles.column}>{hero}</View>
-        </LinearGradient>
+        <View ref={heroRef} onLayout={measureHero}>
+          <LinearGradient
+            colors={Gradients.brand}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={[styles.hero, { paddingTop: coveredByStatusBar + Spacing.three }]}>
+            <View style={styles.column}>{hero}</View>
+          </LinearGradient>
+        </View>
         <View style={[styles.column, styles.body]}>{children}</View>
       </ScrollView>
       {/* The status bar always sits on the gradient's colour, however iOS insets the scroll view. */}
