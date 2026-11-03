@@ -1,10 +1,15 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
+import { StyleSheet } from 'react-native';
+
+import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { ProfileSectionCard } from '@/components/health/ProfileSectionCard';
+import { AppText } from '@/components/ui/AppText';
+import { Divider } from '@/components/ui/Divider';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Spacing } from '@/constants/theme';
 import { formatWeekRange } from '@/features/assessments/week';
 import { ASSESSMENT_LABELS, isAssessmentType } from '@/features/health-profile/assessment-types';
 import { healthLoadMessage } from '@/features/health-profile/messages';
@@ -12,7 +17,6 @@ import { assessmentSection } from '@/features/health-profile/profile';
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -35,88 +39,35 @@ export default function WeekSummaryScreen() {
   const title = type ? `My ${ASSESSMENT_LABELS[type]} Summary` : 'Summary';
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.topBar}>
-          <Pressable
-            style={styles.backRow}
-            hitSlop={8}
-            onPress={() => router.back()}
-            accessibilityRole="button"
-            accessibilityLabel="Back to history"
-          >
-            <Text style={styles.backChevron}>‹</Text>
-            <Text style={styles.backText}>Back</Text>
-          </Pressable>
-        </View>
+    <HealthSubpage
+      header={<ScreenHeader padForStatusBar={false} backLabel="Back to history" onBack={() => router.back()} />}
+    >
+      <AppText accessibilityRole="header" variant="titleLarge">
+        {title}
+      </AppText>
+      {weekStart && (
+        <AppText variant="bodySmall" color="textSecondary" style={styles.period}>
+          Period: {formatWeekRange(weekStart)}
+        </AppText>
+      )}
+      <Divider style={styles.divider} />
 
-        <Text style={styles.title}>{title}</Text>
-        {weekStart && <Text style={styles.period}>Period: {formatWeekRange(weekStart)}</Text>}
-        <View style={styles.divider} />
-
-        {(!type || !weekStart) && <ErrorState message="We could not find the week to show." />}
-        {type && weekStart && state.status === 'loading' && <LoadingState label="Loading your summary" />}
-        {type && weekStart && state.status === 'error' && (
-          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
-        )}
-        {section && <ProfileSectionCard section={section} />}
-      </ScrollView>
-    </SafeAreaView>
+      {(!type || !weekStart) && <ErrorState message="We could not find the week to show." />}
+      {type && weekStart && state.status === 'loading' && <LoadingState label="Loading your summary" />}
+      {type && weekStart && state.status === 'error' && (
+        <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+      )}
+      {section && <ProfileSectionCard section={section} />}
+    </HealthSubpage>
   );
 }
 
-const SECONDARY_CONTAINER = '#E8DEF8';
-const ON_SURFACE_VARIANT = '#49454F';
-const OUTLINE_VARIANT = '#CAC4D0';
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  content: {
-    paddingBottom: scaleHeight(40),
-  },
-  topBar: {
-    backgroundColor: SECONDARY_CONTAINER,
-    paddingHorizontal: scaleWidth(19),
-    paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(14),
-  },
-  backRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-  },
-  backChevron: {
-    fontSize: scaleFont(22),
-    color: ON_SURFACE_VARIANT,
-    marginRight: scaleWidth(2),
-    marginTop: -2,
-  },
-  backText: {
-    fontSize: scaleFont(16),
-    fontWeight: '500',
-    color: ON_SURFACE_VARIANT,
-  },
-  title: {
-    fontSize: scaleFont(22),
-    fontWeight: '600',
-    color: 'black',
-    marginTop: scaleHeight(20),
-    marginHorizontal: scaleWidth(24),
-  },
   period: {
-    fontSize: scaleFont(12),
-    color: '#79747E',
-    marginTop: scaleHeight(4),
-    marginHorizontal: scaleWidth(24),
+    marginTop: Spacing.one,
   },
   divider: {
-    height: 1,
-    backgroundColor: OUTLINE_VARIANT,
-    marginHorizontal: scaleWidth(16),
-    marginTop: scaleHeight(8),
-    marginBottom: scaleHeight(26),
+    marginTop: Spacing.two,
+    marginBottom: Spacing.four,
   },
 });

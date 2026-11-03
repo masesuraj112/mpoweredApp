@@ -1,12 +1,17 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Dropdown } from '@/components/mpowered/Dropdown';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useEffect, useState, type ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { Dropdown } from '@/components/health/Dropdown';
+import { HealthSubpage } from '@/components/health/HealthSubpage';
 import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { AppText } from '@/components/ui/AppText';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { TextField } from '@/components/ui/TextField';
+import { Spacing } from '@/constants/theme';
 import {
   FORMS,
   STRENGTH_UNITS,
@@ -17,7 +22,6 @@ import {
   type PrescriptionForm,
 } from '@/features/health-profile/prescriptions';
 import { getPrescription, savePrescription } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
@@ -38,6 +42,18 @@ const EMPTY_FORM: PrescriptionForm = {
 };
 
 type LoadState = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready' };
+
+/** A label above a control that has no label of its own (the dropdowns). */
+function LabeledField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View style={styles.dropdownField}>
+      <AppText variant="labelLarge" color="onSurface">
+        {label}
+      </AppText>
+      {children}
+    </View>
+  );
+}
 
 export default function AddPrescriptionScreen() {
   // Present when opened from the edit button on the prescriptions list
@@ -98,224 +114,145 @@ export default function AddPrescriptionScreen() {
     router.back();
   };
 
-  const errorFor = (field: keyof PrescriptionForm) =>
-    error?.field === field ? <Text style={styles.fieldError}>{error.message}</Text> : null;
-  const inputStyle = (field: keyof PrescriptionForm) => [
-    styles.input,
-    error?.field === field && styles.inputError,
-  ];
+  const errorFor = (field: keyof PrescriptionForm) => (error?.field === field ? error.message : null);
 
   if (!isValidId) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <PrescriptionsHeader title="Edit prescription" />
+      <HealthSubpage header={<PrescriptionsHeader title="Edit prescription" />}>
         <ErrorState message="We could not find this prescription." />
-      </SafeAreaView>
+      </HealthSubpage>
     );
   }
 
   if (loadState.status !== 'ready') {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <PrescriptionsHeader title="Edit prescription" />
+      <HealthSubpage header={<PrescriptionsHeader title="Edit prescription" />}>
         {loadState.status === 'loading' ? (
           <LoadingState label="Loading prescription" />
         ) : (
           <ErrorState message={loadState.message} />
         )}
-      </SafeAreaView>
+      </HealthSubpage>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
+    <HealthSubpage
+      header={<PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />}
+    >
+      <View style={styles.form}>
+        <AppText variant="bodyLarge">Type the name of your medication</AppText>
 
-        <Text style={styles.helperText}>Type the name of your medication</Text>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Medication name</Text>
-          <TextInput
-            style={inputStyle('name')}
-            value={values.name}
-            onChangeText={setField('name')}
-            placeholder="e.g. Perindopril arginine"
-            maxLength={100}
-          />
-          {errorFor('name')}
-        </View>
+        <TextField
+          label="Medication name"
+          value={values.name}
+          onChangeText={setField('name')}
+          placeholder="e.g. Perindopril arginine"
+          maxLength={100}
+          error={errorFor('name')}
+        />
 
         <View style={styles.row}>
-          <View style={[styles.field, styles.fieldGrow]}>
-            <Text style={styles.label}>Strength</Text>
-            <TextInput
-              style={inputStyle('strength')}
+          <View style={styles.rowItem}>
+            <TextField
+              label="Strength"
               value={values.strength}
               onChangeText={setField('strength')}
               keyboardType="decimal-pad"
+              autoCapitalize="none"
               inputAccessoryViewID={doneBar.id}
               placeholder="0"
+              error={errorFor('strength')}
             />
-            {errorFor('strength')}
           </View>
-          <View style={[styles.field, styles.fieldFixed]}>
-            <Text style={styles.label}>Strength unit</Text>
-            <Dropdown
-              value={values.strengthUnit}
-              options={strengthUnitOptions}
-              onChange={setField('strengthUnit')}
-              accessibilityLabel="Strength unit"
-            />
+          <View style={styles.rowItem}>
+            <LabeledField label="Strength unit">
+              <Dropdown
+                value={values.strengthUnit}
+                options={strengthUnitOptions}
+                onChange={setField('strengthUnit')}
+                accessibilityLabel="Strength unit"
+              />
+            </LabeledField>
           </View>
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Form</Text>
+        <LabeledField label="Form">
           <Dropdown
             value={values.form}
             options={formOptions}
             onChange={setField('form')}
             accessibilityLabel="Form"
           />
-        </View>
+        </LabeledField>
 
-        <Text style={styles.helperText}>Dosage</Text>
+        <AppText variant="bodyLarge">Dosage</AppText>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>How many per application</Text>
-          <TextInput
-            style={inputStyle('amount')}
-            value={values.amount}
-            onChangeText={setField('amount')}
-            keyboardType="decimal-pad"
-            inputAccessoryViewID={doneBar.id}
-            placeholder="0"
-          />
-          {errorFor('amount')}
-        </View>
+        <TextField
+          label="How many per application"
+          value={values.amount}
+          onChangeText={setField('amount')}
+          keyboardType="decimal-pad"
+          autoCapitalize="none"
+          inputAccessoryViewID={doneBar.id}
+          placeholder="0"
+          error={errorFor('amount')}
+        />
 
         <View style={styles.row}>
-          <View style={[styles.field, styles.fieldGrow]}>
-            <Text style={styles.label}>Repeat every</Text>
-            <TextInput
-              style={inputStyle('repeatsEvery')}
+          <View style={styles.rowItem}>
+            <TextField
+              label="Repeat every"
               value={values.repeatsEvery}
               onChangeText={setField('repeatsEvery')}
               keyboardType="number-pad"
+              autoCapitalize="none"
               inputAccessoryViewID={doneBar.id}
+              error={errorFor('repeatsEvery')}
             />
-            {errorFor('repeatsEvery')}
           </View>
-          <View style={[styles.field, styles.fieldFixed]}>
-            <Text style={styles.label}>Unit of time</Text>
-            <Dropdown
-              value={values.unitOfTime}
-              options={unitOfTimeOptions}
-              onChange={setField('unitOfTime')}
-              accessibilityLabel="Unit of time"
-            />
+          <View style={styles.rowItem}>
+            <LabeledField label="Unit of time">
+              <Dropdown
+                value={values.unitOfTime}
+                options={unitOfTimeOptions}
+                onChange={setField('unitOfTime')}
+                accessibilityLabel="Unit of time"
+              />
+            </LabeledField>
           </View>
         </View>
 
         {error && !error.field && (
-          <Text style={[styles.fieldError, styles.formError]} accessibilityRole="alert">
+          <AppText accessibilityRole="alert" variant="bodySmall" color="error">
             {error.message}
-          </Text>
+          </AppText>
         )}
 
-        <Pressable
-          style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-          onPress={handleSave}
+        <Button
+          label={saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
+          variant="primary"
           disabled={saving}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: saving, busy: saving }}
-        >
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
-          </Text>
-        </Pressable>
-      </ScrollView>
+          onPress={handleSave}
+        />
+      </View>
       {doneBar.bar}
-    </SafeAreaView>
+    </HealthSubpage>
   );
 }
 
-const GROUPED_BACKGROUND = '#F2F2F7';
-const SURFACE = '#FEF7FF';
-const OUTLINE = '#79747E';
-const ERROR = '#B3261E';
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  content: {
-    paddingBottom: scaleHeight(40),
-  },
-  helperText: {
-    fontSize: scaleFont(16),
-    color: 'black',
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(20),
-  },
-  field: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(16),
+  form: {
+    gap: Spacing.three,
   },
   row: {
     flexDirection: 'row',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
-  fieldGrow: {
+  rowItem: {
     flex: 1,
   },
-  fieldFixed: {
-    flex: 1,
-  },
-  label: {
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    color: 'black',
-    marginBottom: scaleHeight(8),
-  },
-  input: {
-    backgroundColor: SURFACE,
-    borderWidth: 1,
-    borderColor: OUTLINE,
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(12),
-    fontSize: scaleFont(16),
-    color: 'black',
-  },
-  saveButton: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(32),
-    backgroundColor: GROUPED_BACKGROUND,
-    borderRadius: scaleWidth(12),
-    paddingVertical: scaleHeight(14),
-    alignItems: 'center',
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  inputError: {
-    borderColor: ERROR,
-  },
-  fieldError: {
-    fontSize: scaleFont(12),
-    color: ERROR,
-    marginTop: scaleHeight(4),
-  },
-  formError: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(20),
-  },
-  saveButtonText: {
-    fontSize: scaleFont(12),
-    fontWeight: '600',
-    color: 'black',
+  dropdownField: {
+    gap: Spacing.one,
   },
 });
