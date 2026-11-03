@@ -171,12 +171,6 @@ export const Fonts = {
   heading: 'SulphurPoint_700Bold',
 } as const;
 
-/** Spread into a native Stack's screen options: a native header's title is that page's top-level heading. */
-export const HeaderTitleFonts = {
-  headerTitleStyle: { fontFamily: Fonts.heading },
-  headerLargeTitleStyle: { fontFamily: Fonts.heading },
-} as const;
-
 /**
  * The welcome splash (Figma 2003:362). The same in light and dark mode, and the native splash uses the top
  * colour (app.json), so the two join up.
@@ -234,6 +228,16 @@ export const Typography = {
   labelLargeBold: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
   /** 14/20: the smallest text, for captions, dates and chart labels. */
   caption: { fontSize: 14, lineHeight: 20 },
+} as const;
+
+/**
+ * Spread into a native Stack's screen options: a native header's title is that page's top-level heading.
+ * The standard bar title is 20 rather than the platform's 17, so it reads as a heading; large titles keep
+ * the platform's size.
+ */
+export const HeaderTitleFonts = {
+  headerTitleStyle: { fontFamily: Fonts.heading, fontSize: Typography.titleSmall.fontSize },
+  headerLargeTitleStyle: { fontFamily: Fonts.heading },
 } as const;
 
 /** Content never stretches wider than this on tablets; it is centred instead. */
