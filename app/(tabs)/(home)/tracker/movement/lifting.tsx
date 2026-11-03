@@ -30,7 +30,7 @@ export default function LiftingScreen() {
         }
         questionNumber={4}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/walking')}
+        onPrevious={() => router.dismissTo('/tracker/movement/walking')}
         onRecord={handleNext}
         disabled={!answers.liftingImpact}
         variant="management"

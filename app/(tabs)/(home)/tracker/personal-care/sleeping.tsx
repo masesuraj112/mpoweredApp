@@ -26,7 +26,7 @@ export default function SleepingScreen() {
         options={SLEEPING_OPTIONS}
         selectedIndex={selectedIndex}
         onSelectionChange={index => updateAnswer('sleepingLevel', SLEEPING_OPTIONS[index])}
-        onPrevious={() => router.push('/tracker/personal-care/care')}
+        onPrevious={() => router.dismissTo('/tracker/personal-care/care')}
         onRecord={handleNext}
         variant="personalCare"
       />

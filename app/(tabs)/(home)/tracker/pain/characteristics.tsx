@@ -38,7 +38,7 @@ export default function PainCharacteristicsScreen() {
 
   const handlePrevious = () => {
     saveSelection();
-    router.push('/tracker/pain/location');
+    router.dismissTo('/tracker/pain/location');
   };
 
   return (

@@ -68,7 +68,7 @@ export default function MoodEmotionScreen() {
         prompt={prompt}
         questionNumber={6}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/social-health/enjoyment')}
+        onPrevious={() => router.dismissTo('/tracker/social-health/enjoyment')}
         onRecord={handleNext}
         validationMessage={
           attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined

@@ -63,7 +63,7 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/home');
+  const close = () => router.dismissTo('/home');
 
   useEffect(() => {
     if (!weekStart) return;

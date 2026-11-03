@@ -30,7 +30,7 @@ export default function SittingScreen() {
         }
         questionNumber={5}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/lifting')}
+        onPrevious={() => router.dismissTo('/tracker/movement/lifting')}
         onRecord={handleNext}
         disabled={!answers.sittingImpact}
         variant="management"

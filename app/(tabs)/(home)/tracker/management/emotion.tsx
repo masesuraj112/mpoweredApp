@@ -62,7 +62,7 @@ export default function EmotionScreen() {
         }
         questionNumber={4}
         totalQuestions={4}
-        onPrevious={() => router.push('/tracker/management/exercise')}
+        onPrevious={() => router.dismissTo('/tracker/management/exercise')}
         onRecord={handleRecord}
         disabled={saving}
         validationMessage={errorMessage ?? undefined}

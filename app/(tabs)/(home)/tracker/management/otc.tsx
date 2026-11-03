@@ -21,7 +21,7 @@ export default function OtcScreen() {
         prompt={<QuestionPrompt>Over the past week, did you consume any over the counter (OTC) medication.</QuestionPrompt>}
         questionNumber={2}
         totalQuestions={4}
-        onPrevious={() => router.push('/tracker/management/medication')}
+        onPrevious={() => router.dismissTo('/tracker/management/medication')}
         onRecord={() => router.push('/tracker/management/exercise')}
         variant="management"
       >

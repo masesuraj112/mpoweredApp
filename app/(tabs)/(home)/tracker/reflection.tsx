@@ -57,7 +57,7 @@ export default function ReflectionScreen() {
     setError(null);
     const result = await saveWeeklyReflection(reflection, { isComplete: complete });
     if (result.ok) {
-      router.replace('/home');
+      router.dismissTo('/home');
       return;
     }
     setError(
@@ -76,7 +76,7 @@ export default function ReflectionScreen() {
   const goBack = () => {
     // Nothing new to keep (or the saved text never loaded, so it must not be overwritten).
     if (isLoading || loadFailed || !reflection.trim() || reflection.trim() === savedText.trim()) {
-      router.replace('/home');
+      router.dismissTo('/home');
       return;
     }
     void saveAndLeave(false);

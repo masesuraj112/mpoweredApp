@@ -28,7 +28,7 @@ export default function TravellingScreen() {
         options={SOCIAL_HEALTH_OPTIONS}
         selectedIndex={selectedIndex}
         onSelectionChange={index => updateAnswer('travel', SOCIAL_HEALTH_OPTIONS[index])}
-        onPrevious={() => router.push('/tracker/social-health/social-life')}
+        onPrevious={() => router.dismissTo('/tracker/social-health/social-life')}
         onRecord={handleNext}
         variant="personalCare"
       />

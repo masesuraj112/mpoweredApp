@@ -24,7 +24,7 @@ export default function MoodScreen() {
         totalQuestions={7}
         initialValue={answers.moodNumber ?? 0}
         onValueChange={value => updateAnswer('moodNumber', value)}
-        onPrevious={() => router.push('/tracker/social-health/travelling')}
+        onPrevious={() => router.dismissTo('/tracker/social-health/travelling')}
         onRecord={handleNext}
         variant="personalCare"
       />

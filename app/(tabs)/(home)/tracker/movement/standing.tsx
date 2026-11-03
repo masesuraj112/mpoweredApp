@@ -31,7 +31,7 @@ export default function StandingScreen() {
         }
         questionNumber={6}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/sitting')}
+        onPrevious={() => router.dismissTo('/tracker/movement/sitting')}
         onRecord={handleNext}
         disabled={!answers.standingImpact}
         variant="management"

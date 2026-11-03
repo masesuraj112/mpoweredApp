@@ -24,7 +24,7 @@ export default function RelationshipsScreen() {
         totalQuestions={7}
         initialValue={answers.relationWithOthers ?? 0}
         onValueChange={value => updateAnswer('relationWithOthers', value)}
-        onPrevious={() => router.push('/tracker/social-health/mood')}
+        onPrevious={() => router.dismissTo('/tracker/social-health/mood')}
         onRecord={handleNext}
         variant="personalCare"
       />

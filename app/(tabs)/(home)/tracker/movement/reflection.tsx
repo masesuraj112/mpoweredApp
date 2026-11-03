@@ -59,7 +59,7 @@ export default function ReflectionScreen() {
         prompt="Write any reflections of pain impacts on your mobility."
         questionNumber={7}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/standing')}
+        onPrevious={() => router.dismissTo('/tracker/movement/standing')}
         onRecord={handleRecord}
         disabled={saving || overLimit}
         validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}

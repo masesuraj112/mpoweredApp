@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 
 const DAILY_LIVING_TIPS_URL = 'https://muscha.org/living-well-with-a-musculoskeletal-condition';
 
-const closeToHome = () => router.replace('/home');
+const closeToHome = () => router.dismissTo('/home');
 
 function PersonalCareSummaryView({ summary }: { summary: PersonalCareSummaryData }) {
   return (
@@ -55,7 +55,7 @@ export default function SummaryScreen() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
   const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.replace('/home');
+  const close = () => router.dismissTo('/home');
 
   useEffect(() => {
     if (!weekStart) return;

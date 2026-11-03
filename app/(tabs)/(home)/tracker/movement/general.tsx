@@ -40,7 +40,7 @@ return (
         }
         questionNumber={2}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/activity')}
+        onPrevious={() => router.dismissTo('/tracker/movement/activity')}
         onRecord={handleNext}
         disabled={selected.length === 0}
         variant="management"
