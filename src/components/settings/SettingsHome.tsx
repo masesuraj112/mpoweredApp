@@ -1,10 +1,12 @@
-import { Colors } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { signOut } from '@/services/auth';
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Divider } from '@/components/ui/Divider';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { signOut } from '@/services/auth';
 
 export type SettingsRowProps = {
   icon: string;
@@ -12,6 +14,8 @@ export type SettingsRowProps = {
   label: string;
   onPress?: () => void;
 };
+
+const ICON_SIZE = 24;
 
 /**
  * Settings home: title, a card of rows that open subpages, and Sign out (Figma 3896-21559).
@@ -33,17 +37,15 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <Text style={styles.title}>Settings</Text>
-      <View style={styles.titleDivider} />
+    <Screen>
+      <AppText accessibilityRole="header" variant="headlineSmall">
+        Settings
+      </AppText>
+      <Divider style={styles.divider} />
 
       <View style={styles.rowsCard}>
         {rows.map((row, index) => (
-          <SettingsRow
-            key={row.label}
-            {...row}
-            isLast={index === rows.length - 1}
-          />
+          <SettingsRow key={row.label} {...row} isLast={index === rows.length - 1} />
         ))}
       </View>
 
@@ -52,12 +54,18 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
         disabled={isSigningOut}
         accessibilityRole="button"
         accessibilityLabel="Sign out"
-        accessibilityState={{ disabled: isSigningOut }}
-        style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
+        accessibilityState={{ disabled: isSigningOut, busy: isSigningOut }}
+        style={({ pressed }) => [styles.signOutButton, pressed && styles.pressed]}
       >
-        {isSigningOut ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.signOutText}>Sign out</Text>}
+        {isSigningOut ? (
+          <ActivityIndicator color={Colors.light.onPrimary} />
+        ) : (
+          <AppText variant="titleMedium" color="onPrimary">
+            Sign out
+          </AppText>
+        )}
       </Pressable>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -74,45 +82,45 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
       {asset ? (
         <Image source={asset} style={styles.rowIcon} contentFit="contain" accessibilityLabel="" />
       ) : (
-        <Text style={styles.rowIcon} accessibilityElementsHidden>{icon}</Text>
+        <AppText
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+          variant="titleMedium"
+          color="onSurfaceVariant"
+          style={styles.rowIcon}
+        >
+          {icon}
+        </AppText>
       )}
-      <Text style={styles.rowLabel}>{label}</Text>
-      {onPress && <Text style={styles.chevron} accessibilityElementsHidden>→</Text>}
+      <AppText variant="bodyLarge" color="onSurface" style={styles.rowLabel}>
+        {label}
+      </AppText>
+      {onPress && (
+        <AppText accessibilityElementsHidden importantForAccessibility="no" variant="headlineSmall">
+          →
+        </AppText>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(29),
-    paddingTop: scaleHeight(36),
-    backgroundColor: Colors.light.background,
-  },
-  title: {
-    color: '#000000',
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleHeight(29),
-  },
-  titleDivider: {
-    height: 1,
-    marginTop: scaleHeight(16),
-    marginBottom: scaleHeight(23),
-    backgroundColor: Colors.light.outline,
+  divider: {
+    marginTop: Spacing.three,
+    marginBottom: Spacing.four,
   },
   rowsCard: {
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.light.outlineStrong,
-    borderRadius: scaleWidth(12),
-    paddingHorizontal: scaleWidth(20),
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.three,
   },
   row: {
-    minHeight: scaleHeight(76),
+    minHeight: MinTapTarget + Spacing.four,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
   },
   rowDivider: {
     borderBottomWidth: 1,
@@ -122,37 +130,22 @@ const styles = StyleSheet.create({
     opacity: 0.65,
   },
   rowIcon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
-    color: Colors.light.onSurfaceVariant,
-    fontSize: scaleFont(21),
+    width: ICON_SIZE,
+    height: ICON_SIZE,
     textAlign: 'center',
   },
   rowLabel: {
     flex: 1,
-    color: Colors.light.onSurface,
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
-  },
-  chevron: {
-    color: '#000000',
-    fontSize: scaleFont(26),
-    lineHeight: scaleFont(26),
   },
   signOutButton: {
-    height: scaleHeight(55),
-    marginTop: scaleHeight(23),
+    minHeight: MinTapTarget + Spacing.two,
+    marginTop: Spacing.four,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: scaleWidth(8),
+    borderRadius: Radius.medium,
     backgroundColor: Colors.light.primary,
   },
-  signOutPressed: {
+  pressed: {
     opacity: 0.8,
-  },
-  signOutText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
   },
 });

@@ -1,10 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { HealthSubpage } from '@/components/health/HealthSubpage';
 import { TrackingScreenHeader } from '@/components/health/TrackingScreenHeader';
+import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { ChevronDownIcon, ChevronRightIcon } from '@/components/ui/icons';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { ASSESSMENT_TYPES } from '@/features/health-profile/assessment-types';
 import { healthLoadMessage } from '@/features/health-profile/messages';
@@ -16,7 +20,6 @@ import { usePdfExport } from '@/hooks/usePdfExport';
 import { ok, run } from '@/lib/result';
 import { getUserStartWeek } from '@/services/assessments';
 import { getCompletedWeeks } from '@/services/health';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 
 function loadHistory() {
   return run(async () => {
@@ -49,162 +52,124 @@ export default function TrackingHistoryScreen() {
     pdf.run('print', () => buildHistoryHtml(weeks, formatLongDate(getLocalToday())));
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <HealthSubpage
+      header={
         <TrackingScreenHeader
           activeTab="history"
           onPrintPdf={weeks.length > 0 ? printPdf : undefined}
           printing={pdf.busy !== null}
         />
+      }
+    >
+      {state.status === 'loading' && <LoadingState label="Loading your history" />}
+      {state.status === 'error' && (
+        <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+      )}
 
-        {state.status === 'loading' && <LoadingState label="Loading your history" />}
-        {state.status === 'error' && (
-          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
-        )}
-
-        {weeks.length > 0 && (
-          <View style={styles.list}>
-            {weeks.map((week, index) => {
-              const isExpanded = openWeek === week.weekStart;
-              return (
-                <View
-                  key={week.weekStart}
-                  style={[styles.listItem, index === weeks.length - 1 && styles.listItemLast]}
+      {weeks.length > 0 && (
+        <View style={styles.list}>
+          {weeks.map((week, index) => {
+            const isExpanded = openWeek === week.weekStart;
+            return (
+              <View
+                key={week.weekStart}
+                style={[styles.listItem, index === weeks.length - 1 && styles.listItemLast]}
+              >
+                <Pressable
+                  style={styles.weekRow}
+                  onPress={() => setExpandedWeek(isExpanded ? null : week.weekStart)}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: isExpanded }}
+                  accessibilityLabel={`${week.rangeLabel}, ${week.completedCount} of ${ASSESSMENT_TYPES.length} completed`}
                 >
-                  <Pressable
-                    style={styles.weekRow}
-                    onPress={() => setExpandedWeek(isExpanded ? null : week.weekStart)}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: isExpanded }}
-                    accessibilityLabel={`${week.rangeLabel}, ${week.completedCount} of ${ASSESSMENT_TYPES.length} completed`}
-                  >
-                    <View>
-                      <Text style={styles.weekLabel}>{week.rangeLabel}</Text>
-                      <Text style={styles.weekCount}>
-                        {week.completedCount} of {ASSESSMENT_TYPES.length} completed
-                      </Text>
-                    </View>
-                    <Text style={styles.chevron}>{isExpanded ? '⌃' : '⌄'}</Text>
-                  </Pressable>
+                  <View>
+                    <AppText variant="labelLargeBold" color="primary">
+                      {week.rangeLabel}
+                    </AppText>
+                    <AppText variant="bodySmall" color="onSurfaceVariant">
+                      {week.completedCount} of {ASSESSMENT_TYPES.length} completed
+                    </AppText>
+                  </View>
+                  <View style={isExpanded ? styles.flipped : undefined}>
+                    <ChevronDownIcon />
+                  </View>
+                </Pressable>
 
-                  {isExpanded &&
-                    week.assessments.map((assessment) => (
-                      <Pressable
-                        key={assessment.type}
-                        style={styles.categoryRow}
-                        onPress={() => openSummary(week.weekStart, assessment)}
-                        disabled={!assessment.completed}
-                        accessibilityRole="button"
-                        accessibilityState={{ disabled: !assessment.completed }}
-                        accessibilityLabel={`${assessment.label}, ${assessment.completed ? 'completed' : 'not completed'}`}
+                {isExpanded &&
+                  week.assessments.map((assessment) => (
+                    <Pressable
+                      key={assessment.type}
+                      style={styles.categoryRow}
+                      onPress={() => openSummary(week.weekStart, assessment)}
+                      disabled={!assessment.completed}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: !assessment.completed }}
+                      accessibilityLabel={`${assessment.label}, ${assessment.completed ? 'completed' : 'not completed'}`}
+                    >
+                      <AppText
+                        variant="bodyMediumRegular"
+                        color={assessment.completed ? 'text' : 'textSecondary'}
                       >
-                        <Text
-                          style={[styles.categoryLabel, !assessment.completed && styles.categoryLabelMissing]}
+                        {assessment.label}
+                      </AppText>
+                      <View style={styles.statusRow}>
+                        <AppText
+                          variant="labelMedium"
+                          color={assessment.completed ? 'successStrong' : 'error'}
                         >
-                          {assessment.label}
-                        </Text>
-                        <View style={styles.statusRow}>
-                          <Text
-                            style={[
-                              styles.status,
-                              assessment.completed ? styles.statusDone : styles.statusMissing,
-                            ]}
-                          >
-                            {assessment.completed ? 'Completed' : 'Not completed'}
-                          </Text>
-                          {assessment.completed && <Text style={styles.categoryChevron}>›</Text>}
-                        </View>
-                      </Pressable>
-                    ))}
-                </View>
-              );
-            })}
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+                          {assessment.completed ? 'Completed' : 'Not completed'}
+                        </AppText>
+                        {assessment.completed && <ChevronRightIcon color={Colors.light.textSecondary} />}
+                      </View>
+                    </Pressable>
+                  ))}
+              </View>
+            );
+          })}
+        </View>
+      )}
+    </HealthSubpage>
   );
 }
 
-const PRIMARY_PURPLE = '#6750A4';
-const OUTLINE = '#898A8D';
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  content: {
-    paddingBottom: scaleHeight(40),
-  },
   list: {
-    marginHorizontal: scaleWidth(24),
-    marginTop: scaleHeight(24),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: OUTLINE,
-    borderRadius: scaleWidth(4),
+    borderWidth: 1,
+    borderColor: Colors.light.outlineMedium,
+    borderRadius: Radius.small,
   },
   listItem: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: OUTLINE,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.outlineMedium,
   },
   listItemLast: {
     borderBottomWidth: 0,
   },
   weekRow: {
+    minHeight: MinTapTarget + Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(16),
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.mid,
   },
-  weekLabel: {
-    fontSize: scaleFont(14),
-    fontWeight: '600',
-    color: PRIMARY_PURPLE,
-  },
-  chevron: {
-    fontSize: scaleFont(16),
-    color: '#1D1B20',
+  flipped: {
+    transform: [{ rotate: '180deg' }],
   },
   categoryRow: {
+    minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: scaleWidth(16),
-    paddingLeft: scaleWidth(32),
-    paddingVertical: scaleHeight(14),
-  },
-  categoryLabel: {
-    fontSize: scaleFont(14),
-    fontWeight: '400',
-    color: 'black',
-  },
-  categoryLabelMissing: {
-    color: '#79747E',
-  },
-  weekCount: {
-    fontSize: scaleFont(12),
-    color: '#49454F',
-    marginTop: scaleHeight(2),
+    gap: Spacing.two,
+    paddingLeft: Spacing.five,
+    paddingRight: Spacing.three,
+    paddingVertical: Spacing.mid,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(8),
-  },
-  status: {
-    fontSize: scaleFont(12),
-    fontWeight: '600',
-  },
-  statusDone: {
-    color: '#2E7D32',
-  },
-  statusMissing: {
-    color: '#B3261E',
-  },
-  categoryChevron: {
-    fontSize: scaleFont(16),
-    color: '#79747E',
+    gap: Spacing.two,
   },
 });

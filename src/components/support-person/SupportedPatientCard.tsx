@@ -1,9 +1,11 @@
-import { Colors } from '@/constants/theme';
+import { StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Divider } from '@/components/ui/Divider';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { getNextAppointment } from '@/features/support-person/appointments';
 import { APPOINTMENT_ACTION_LABELS } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, Text, View } from 'react-native';
 
 import { AppointmentCard } from './AppointmentCard';
 import { InitialsAvatar } from './InitialsAvatar';
@@ -30,25 +32,25 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
       <View style={styles.header}>
         <InitialsAvatar name={patient.name} />
         <View style={styles.headerText}>
-          <Text style={styles.name} numberOfLines={1}>
+          <AppText variant="titleMedium" color="onSurface" numberOfLines={1}>
             {patient.name}
-          </Text>
+          </AppText>
           {/* Hidden when the patient has no conditions recorded. */}
           {patient.condition ? (
-            <Text style={styles.condition} numberOfLines={1}>
+            <AppText variant="bodySmall" color="textTertiary" numberOfLines={1}>
               {patient.condition}
-            </Text>
+            </AppText>
           ) : null}
         </View>
         <StatusBadge hasUpcoming={!!next} />
       </View>
 
-      <View style={styles.divider} />
+      <Divider />
       <PermissionChips canAddQuestions={patient.canAddQuestions} canAddAnswers={patient.canAddAnswers} />
 
       {next && (
         <>
-          <View style={styles.divider} />
+          <Divider />
           <View style={styles.section}>
             <SectionLabel>Upcoming appointment</SectionLabel>
             <AppointmentCard
@@ -63,7 +65,7 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
         </>
       )}
 
-      <View style={styles.divider} />
+      <Divider />
       <PillButton size="large" label="View more appointments" onPress={onViewAppointments} />
     </View>
   );
@@ -71,40 +73,25 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
 
 const styles = StyleSheet.create({
   card: {
-    gap: scaleHeight(9),
-    paddingTop: scaleHeight(17),
-    paddingBottom: scaleHeight(15),
-    paddingHorizontal: scaleWidth(14),
+    gap: Spacing.mid,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
+    paddingHorizontal: Spacing.mid,
     borderWidth: 1,
     borderColor: Colors.light.primary,
-    borderRadius: scaleWidth(20),
+    borderRadius: Radius.extraLarge,
     backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(14),
+    gap: Spacing.mid,
   },
   headerText: {
     flex: 1,
-    gap: scaleHeight(2),
-  },
-  name: {
-    color: Colors.light.onSurface,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    lineHeight: 20,
-  },
-  condition: {
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: scaleFont(12),
-    lineHeight: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#F2F2F7',
+    gap: Spacing.half,
   },
   section: {
-    gap: scaleHeight(7),
+    gap: Spacing.two,
   },
 });

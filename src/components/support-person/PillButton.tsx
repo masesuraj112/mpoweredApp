@@ -1,9 +1,10 @@
-import { Colors, Radius } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
-const arrowIcon = require('../../../../assets/images/support-person/arrow-right.svg');
+import { AppText } from '@/components/ui/AppText';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+
+const arrowIcon = require('../../../assets/images/support-person/arrow-right.svg');
 
 type PillButtonProps = {
   label: string;
@@ -21,12 +22,11 @@ export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) 
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      hitSlop={large ? 0 : 6}
       style={({ pressed }) => [styles.button, large ? styles.large : styles.small, pressed && styles.pressed]}
     >
-      <Text style={[styles.label, large ? styles.labelLarge : styles.labelSmall]} numberOfLines={1}>
+      <AppText variant={large ? 'labelLarge' : 'labelMedium'} color="onPrimary" numberOfLines={1}>
         {label}
-      </Text>
+      </AppText>
       <Image source={arrowIcon} style={styles.arrow} contentFit="contain" accessibilityLabel="" />
     </Pressable>
   );
@@ -34,6 +34,7 @@ export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) 
 
 const styles = StyleSheet.create({
   button: {
+    minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -42,31 +43,15 @@ const styles = StyleSheet.create({
   },
   small: {
     alignSelf: 'flex-end',
-    gap: scaleWidth(10),
-    paddingHorizontal: scaleWidth(15),
-    paddingVertical: scaleHeight(3),
+    gap: Spacing.mid,
+    paddingHorizontal: Spacing.three,
   },
   large: {
     alignSelf: 'stretch',
-    gap: scaleWidth(21),
-    height: scaleHeight(39),
+    gap: Spacing.three,
   },
   pressed: {
     opacity: 0.8,
-  },
-  label: {
-    color: '#FEF7FF',
-    fontWeight: '500',
-  },
-  labelSmall: {
-    fontSize: scaleFont(12),
-    lineHeight: 16,
-    letterSpacing: 0.5,
-  },
-  labelLarge: {
-    fontSize: scaleFont(14),
-    lineHeight: 21,
-    letterSpacing: 0.1,
   },
   arrow: {
     width: 15,

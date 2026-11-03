@@ -18,6 +18,10 @@ Audience: developers working on the UI. This page is the reference for the UI re
 | `Colors.textTertiary` | `rgba(60, 60, 67, 0.6)` | "saved" captions and helper text |
 | `Colors.outlineMedium` | `#79747E` | mid-grey borders |
 | `Colors.divider` | `#E7E0EC` | hairline rules and light borders |
+| `Colors.sliderTrack`, `sliderFillStart`, `sliderFillEnd` | `#E4DFF5`, `#8B7BC7`, `#1A1330` | the 0 to 10 slider track and its fill gradient |
+| `Colors.errorContainer`, `onErrorContainer` | `#F9DEDC`, `#410E0B` | the "Incomplete" badge |
+| `Colors.successStrong` | `#2E7D32` | green text on white (`success` is too pale for small text) |
+| `Colors.successContainer`, `onSuccessContainer`, `warningContainer`, `onWarningContainer` | `#C5E9C5`, `#1B5E20`, `#FFF3CD`, `#92400E` | the "No scheduled appointments" and "Appointment upcoming" badges |
 | `Spacing.mid` | 12 | the 12dp gap used between `two` (8) and `three` (16) |
 | `Radius.small / medium / large / extraLarge` | 4 / 8 / 16 / 24 | literal radii |
 | `Elevation.level1` | shadow + elevation 2 | the raised-button shadow |
@@ -42,7 +46,12 @@ Use these instead of writing the same styles again.
 | `TabIcon` | `components/navigation` | The pill behind a tab bar icon. |
 | `TrackerQuestionScreen`, `TrackerHeader` | `components/tracker` | The shell and header of the tracker question screens. |
 | `SummaryReport`, `SummaryStatus`, `ReportSection`, `ResultSection` | `components/tracker` | The tracker summary screens. They only load their entry with `useWeekSummary` and pass props. |
-| `PrescriptionsHeader`, `TrackingScreenHeader` | `components/health` | The My Health sub-page headers. |
+| `ChipButton` | `components/ui` | A small outlined action next to a title (Print PDF, Share), 48dp to tap. |
+| `PrescriptionsHeader`, `TrackingScreenHeader`, `HealthSubpage` | `components/health` | The My Health sub-page headers, and the layout that pins one above the scrolling content. |
+| `Dropdown`, `PainTrendChart`, `PainIntensityChart`, `ProfileSectionCard` | `components/health` | A compact picker (`field` or `chip` look), the two pain charts, and a pain profile section. |
+| `ChoiceCard`, `SingleChoiceInput`, `MultiChoiceList`, `ScaleSliderInput` | `components/tracker` | A tracker question: the card fills the page, and its options scroll when they do not fit. Built from `RadioOptionRow`, `CheckboxOptionRow`, `ChoiceOptionList`, `ChoicePrompt`, `ChoiceTextInput` and `ReflectionWordCounter`. |
+| `SettingsHome`, `SettingsSubpage` (with `SettingsOption`, `SettingsToggle`, `SettingsSelect`), `SettingsModal` (with its rows and fields) | `components/settings` | The settings pages and popups. `SettingsSelect` is an inline menu, not a modal, because it is used inside a modal. |
+| `SupportedPatientCard`, `SupportRequestCard`, `AppointmentCard`, `PillButton`, `NotificationBell`, `StatusBadge`, `PermissionChips`, `InitialsAvatar`, `SectionLabel` | `components/support-person` | The support person app. |
 
 ## Colour mapping for the migration
 
@@ -71,7 +80,7 @@ Exact matches map to the token that already holds the value. Near-duplicates (vi
 | `#F2F2F7` | `surfaceGrouped` | |
 | `rgba(60, 60, 67, 0.6)` | `textTertiary` | |
 | `#B3261E`, `#D32F2F` | `error` | the second is drift |
-| `#2E7D32` | `success` | check text contrast at migration: `#4DA32D` is below 4.5:1 on white |
+| `#2E7D32` | `successStrong` | `success` (`#4DA32D`) is below 4.5:1 on white, so text uses this |
 | `rgba(0, 0, 0, 0.x)` | `backdrop` for modal scrims, `Elevation.level1` for shadows | |
 
 Values not listed (for example `#FF3B30`, `#FFF3CD`, `#F9DEDC`) are single uses. Decide at migration: snap to the closest token, and add a token only if the value is used more than once.

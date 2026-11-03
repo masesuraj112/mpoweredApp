@@ -1,6 +1,7 @@
-import { Colors, Radius } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 
 import { SectionLabel } from './SectionLabel';
 
@@ -11,9 +12,9 @@ function Chip({ label, allowed }: { label: string; allowed: boolean }) {
       accessible
       accessibilityLabel={`${label}: ${allowed ? 'allowed' : 'not allowed'}`}
     >
-      <Text style={[styles.chipText, !allowed && styles.chipTextDisabled]} numberOfLines={1}>
+      <AppText variant="labelSmall" color={allowed ? 'primary' : 'textDisabled'} numberOfLines={1}>
         {label}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -36,30 +37,22 @@ export function PermissionChips({ canAddQuestions, canAddAnswers }: { canAddQues
 
 const styles = StyleSheet.create({
   section: {
-    gap: scaleHeight(7),
+    gap: Spacing.two,
   },
   row: {
     flexDirection: 'row',
-    gap: scaleWidth(20),
+    gap: Spacing.three,
   },
   chip: {
     flex: 1,
-    height: scaleHeight(23),
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
     backgroundColor: Colors.light.surfaceContainer,
   },
   chipDisabled: {
-    backgroundColor: '#F2F2F7',
-  },
-  chipText: {
-    color: Colors.light.primary,
-    fontSize: scaleFont(11),
-    fontWeight: '600',
-    letterSpacing: 0.3,
-  },
-  chipTextDisabled: {
-    color: Colors.light.outline,
+    backgroundColor: Colors.light.surfaceGrouped,
   },
 });

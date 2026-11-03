@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+
+import { Colors, Typography } from '@/constants/theme';
 
 export interface PainTrendPoint {
   /** Short label shown under the point, e.g. "25/05" */
@@ -10,35 +11,35 @@ export interface PainTrendPoint {
   value: number;
 }
 
-interface PainTrendChartProps {
+type PainTrendChartProps = {
   data: PainTrendPoint[];
   height?: number;
-}
+};
 
 const PAIN_SCALE_MAX = 10;
-const LINE_COLOR = '#6750A4';
-const LINE_COLOR_LIGHT = '#B9AAE0';
-const DATE_LABEL_COLOR = '#79747E';
-// Keeps the edge dots and their centred date labels inside the SVG
-const HORIZONTAL_INSET = scaleWidth(20);
+// Keeps the edge dots and their centred date labels inside the SVG.
+const HORIZONTAL_INSET = 20;
+const TOP_PADDING = 20;
+const BOTTOM_PADDING = 16;
+const VALUE_LABEL_OFFSET = 8;
+const DATE_LABEL_OFFSET = 4;
 
-export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendChartProps) {
+/** A small line chart of recent pain scores, oldest on the left. The first and last scores are labelled. */
+export function PainTrendChart({ data, height = 100 }: PainTrendChartProps) {
   const [width, setWidth] = useState(0);
 
   if (data.length === 0) {
     return null;
   }
 
-  const topPadding = scaleHeight(20);
-  const bottomPadding = scaleHeight(16);
-  const plotHeight = height - topPadding - bottomPadding;
+  const plotHeight = height - TOP_PADDING - BOTTOM_PADDING;
 
   const plotWidth = Math.max(width - HORIZONTAL_INSET * 2, 0);
   const stepX = data.length > 1 ? plotWidth / (data.length - 1) : 0;
   const points = data.map((point, index) => ({
     ...point,
     x: HORIZONTAL_INSET + (data.length > 1 ? index * stepX : plotWidth / 2),
-    y: topPadding + plotHeight - (point.value / PAIN_SCALE_MAX) * plotHeight,
+    y: TOP_PADDING + plotHeight - (point.value / PAIN_SCALE_MAX) * plotHeight,
   }));
 
   const linePath = points
@@ -50,50 +51,54 @@ export function PainTrendChart({ data, height = scaleHeight(101) }: PainTrendCha
       ? `${linePath} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`
       : '';
 
+  const lineColor = Colors.light.primary;
+
   return (
     <View style={styles.container} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       {width > 0 && (
         <Svg width={width} height={height}>
           <Defs>
             <LinearGradient id="painTrendFill" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={LINE_COLOR} stopOpacity={0.25} />
-              <Stop offset="1" stopColor={LINE_COLOR} stopOpacity={0} />
+              <Stop offset="0" stopColor={lineColor} stopOpacity={0.25} />
+              <Stop offset="1" stopColor={lineColor} stopOpacity={0} />
             </LinearGradient>
           </Defs>
 
           {areaPath.length > 0 && <Path d={areaPath} fill="url(#painTrendFill)" />}
 
-          <Path d={linePath} stroke={LINE_COLOR} strokeWidth={2} fill="none" />
+          <Path d={linePath} stroke={lineColor} strokeWidth={2} fill="none" />
 
           {points.map((point, index) => {
-            const isEndpoint = index === 0 || index === points.length - 1;
+            const isFirst = index === 0;
+            const isLast = index === points.length - 1;
             return (
               <G key={point.label}>
                 <SvgText
                   x={point.x}
-                  y={point.y - scaleHeight(8)}
-                  fontSize={scaleFont(11)}
+                  y={point.y - VALUE_LABEL_OFFSET}
+                  fontSize={Typography.labelSmall.fontSize}
                   fontWeight="700"
-                  fill="#1A1A1A"
+                  fill={Colors.light.onSurface}
                   textAnchor="middle"
                 >
-                  {isEndpoint ? point.value : ''}
+                  {isFirst || isLast ? point.value : ''}
                 </SvgText>
                 <Circle
                   cx={point.x}
                   cy={point.y}
-                  r={index === points.length - 1 ? 6 : 4}
-                  fill={index === 0 ? LINE_COLOR_LIGHT : LINE_COLOR}
-                  stroke={index === points.length - 1 ? 'white' : 'none'}
+                  r={isLast ? 6 : 4}
+                  fill={lineColor}
+                  fillOpacity={isFirst ? 0.5 : 1}
+                  stroke={isLast ? Colors.light.background : 'none'}
                   strokeWidth={2}
                 />
                 <SvgText
                   x={point.x}
-                  y={height - scaleHeight(4)}
-                  fontSize={scaleFont(12)}
+                  y={height - DATE_LABEL_OFFSET}
+                  fontSize={Typography.labelMedium.fontSize}
                   fontWeight="500"
-                  letterSpacing={0.5}
-                  fill={DATE_LABEL_COLOR}
+                  letterSpacing={Typography.labelMedium.letterSpacing}
+                  fill={Colors.light.textSecondary}
                   textAnchor="middle"
                 >
                   {point.label}

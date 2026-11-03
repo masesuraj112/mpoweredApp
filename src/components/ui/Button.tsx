@@ -13,6 +13,8 @@ type ButtonProps = {
    * Only `elevated` and `tonal` are dimmed when disabled; `primary` and `outlined` keep their look.
    */
   variant?: ButtonVariant;
+  /** Fully rounded and compact, for any variant. `primary` and `outlined` are rounded rectangles unless this is set. */
+  pill?: boolean;
   disabled?: boolean;
   /** Decorative text shown before the label (for example a plus). Hidden from screen readers. */
   leadingGlyph?: string;
@@ -29,6 +31,7 @@ export function Button({
   label,
   onPress,
   variant = 'elevated',
+  pill = false,
   disabled = false,
   leadingGlyph,
   trailingGlyph,
@@ -58,7 +61,7 @@ export function Button({
         disabled && dimWhenDisabled && styles.disabled,
         style,
       ]}>
-      <View style={[styles.pill, styles[variant]]}>
+      <View style={[styles.pill, styles[variant], pill && styles.pillShape]}>
         {leadingGlyph ? (
           <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
             {leadingGlyph}
@@ -90,6 +93,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     borderRadius: Radius.pill,
+  },
+  // Comes after the variant, so it wins over the rounded rectangle that primary and outlined use.
+  pillShape: {
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.two,
   },
   elevated: {
     backgroundColor: Colors.light.background,

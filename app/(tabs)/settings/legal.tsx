@@ -4,8 +4,8 @@ import {
   SettingsModalField,
   SettingsModalGroup,
   SettingsModalText,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { useAuth } from '@/context/AuthContext';
 import { OTP_LENGTH } from '@/features/auth/otp';
 import { formatForDisplay } from '@/features/auth/phone';

@@ -1,6 +1,7 @@
-import { Colors, Radius } from '@/constants/theme';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 
 type SupportRequestCardProps = {
   patientName: string;
@@ -12,7 +13,9 @@ type SupportRequestCardProps = {
 export function SupportRequestCard({ patientName, onAccept, onReject }: SupportRequestCardProps) {
   return (
     <View style={styles.card}>
-      <Text style={styles.message}>{patientName} has added you as a support person</Text>
+      <AppText variant="titleMedium" color="onSurface">
+        {patientName} has added you as a support person
+      </AppText>
       <View style={styles.buttons}>
         <Pressable
           onPress={onReject}
@@ -20,7 +23,9 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
           accessibilityLabel={`Reject request from ${patientName}`}
           style={({ pressed }) => [styles.button, styles.reject, pressed && styles.pressed]}
         >
-          <Text style={[styles.buttonText, styles.rejectText]}>Reject</Text>
+          <AppText variant="labelLarge" color="text">
+            Reject
+          </AppText>
         </Pressable>
         <Pressable
           onPress={onAccept}
@@ -28,7 +33,9 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
           accessibilityLabel={`Accept request from ${patientName}`}
           style={({ pressed }) => [styles.button, styles.accept, pressed && styles.pressed]}
         >
-          <Text style={[styles.buttonText, styles.acceptText]}>Accept</Text>
+          <AppText variant="labelLarge" color="onPrimary">
+            Accept
+          </AppText>
         </Pressable>
       </View>
     </View>
@@ -37,32 +44,23 @@ export function SupportRequestCard({ patientName, onAccept, onReject }: SupportR
 
 const styles = StyleSheet.create({
   card: {
-    gap: scaleHeight(16),
-    paddingTop: scaleHeight(22),
-    paddingBottom: scaleHeight(15),
-    paddingHorizontal: scaleWidth(16),
+    gap: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.mid,
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
     borderColor: Colors.light.primary,
-    borderRadius: scaleWidth(20),
-    backgroundColor: '#F5EFF7',
-  },
-  message: {
-    color: Colors.light.onSurface,
-    fontSize: scaleFont(16),
-    fontWeight: '500',
-    lineHeight: 24,
-    letterSpacing: 0.15,
+    borderRadius: Radius.extraLarge,
+    backgroundColor: Colors.light.surfaceContainer,
   },
   buttons: {
     flexDirection: 'row',
-    gap: scaleWidth(24),
-    paddingHorizontal: scaleWidth(3),
+    gap: Spacing.four,
   },
   button: {
     flex: 1,
-    minHeight: scaleHeight(31),
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    minHeight: MinTapTarget,
+    paddingHorizontal: Spacing.three,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -77,17 +75,5 @@ const styles = StyleSheet.create({
   },
   accept: {
     backgroundColor: Colors.light.primary,
-  },
-  buttonText: {
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-    lineHeight: 20,
-    letterSpacing: 0.1,
-  },
-  rejectText: {
-    color: Colors.light.text,
-  },
-  acceptText: {
-    color: '#FEF7FF',
   },
 });

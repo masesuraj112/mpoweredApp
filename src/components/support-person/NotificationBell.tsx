@@ -1,9 +1,10 @@
-import { Colors, Radius } from '@/constants/theme';
-import { scaleFont } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-const bellIcon = require('../../../../assets/images/support-person/bell.svg');
+import { AppText } from '@/components/ui/AppText';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+
+const bellIcon = require('../../../assets/images/support-person/bell.svg');
 
 type NotificationBellProps = {
   count: number;
@@ -16,12 +17,12 @@ export function NotificationBell({ count, onPress }: NotificationBellProps) {
   const label = count > 0 ? `Support person requests, ${count} new` : 'Support person requests';
   const content = (
     <>
-      <View style={styles.iconBox}>
-        <Image source={bellIcon} style={styles.bell} contentFit="contain" accessibilityLabel="" />
-      </View>
+      <Image source={bellIcon} style={styles.bell} contentFit="contain" accessibilityLabel="" />
       {count > 0 && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{count > 9 ? '9+' : count}</Text>
+          <AppText variant="labelSmall" color="onPrimary">
+            {count > 9 ? '9+' : count}
+          </AppText>
         </View>
       )}
     </>
@@ -40,7 +41,6 @@ export function NotificationBell({ count, onPress }: NotificationBellProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      hitSlop={10}
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
     >
       {content}
@@ -50,41 +50,28 @@ export function NotificationBell({ count, onPress }: NotificationBellProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: 31,
-    height: 30,
+    width: MinTapTarget,
+    height: MinTapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pressed: {
     opacity: 0.6,
   },
-  iconBox: {
-    position: 'absolute',
-    left: 0,
-    top: 4,
-    width: 26,
-    height: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   bell: {
-    width: 17.3333,
-    height: 21.125,
+    width: 17,
+    height: 21,
   },
+  // The count sits on the bell's top-right corner.
   badge: {
     position: 'absolute',
-    left: 14,
-    top: 0,
-    minWidth: 17,
-    height: 17,
-    paddingHorizontal: 3,
+    top: Spacing.one,
+    right: Spacing.one,
+    minWidth: Spacing.three + Spacing.half,
+    paddingHorizontal: Spacing.one,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: '#FF3B30',
-  },
-  badgeText: {
-    color: Colors.light.background,
-    fontSize: scaleFont(9),
-    fontWeight: '700',
-    lineHeight: 13.5,
+    backgroundColor: Colors.light.error,
   },
 });

@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { TabIcon } from '@/components/navigation/TabIcon';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography } from '@/constants/theme';
 import { RemindersProvider } from '@/features/notifications/RemindersContext';
 import { useOpenTappedReminder } from '@/features/notifications/useOpenTappedReminder';
 
@@ -54,8 +54,8 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#49454F',
-          tabBarInactiveTintColor: '#49454F',
+          tabBarActiveTintColor: Colors.light.onSurfaceVariant,
+          tabBarInactiveTintColor: Colors.light.onSurfaceVariant,
           tabBarLabelStyle: styles.tabLabel,
           tabBarStyle: styles.tabBar,
         }}
@@ -101,12 +101,11 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 6,
     borderTopWidth: 0,
-    backgroundColor: '#F2EAF8',
+    backgroundColor: Colors.light.surfaceContainer,
   },
   tabLabel: {
+    ...Typography.labelMedium,
     marginTop: 3,
-    fontSize: 12,
-    lineHeight: 16,
   },
   painTrackerIcon: {
     width: 18,

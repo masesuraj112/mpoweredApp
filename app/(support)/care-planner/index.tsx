@@ -1,18 +1,19 @@
-import { NotificationBell } from '@/components/mpowered/support-person/NotificationBell';
-import { PillButton } from '@/components/mpowered/support-person/PillButton';
-import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
+import { router } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+
+import { NotificationBell } from '@/components/support-person/NotificationBell';
+import { PillButton } from '@/components/support-person/PillButton';
+import { SupportedPatientCard } from '@/components/support-person/SupportedPatientCard';
+import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors } from '@/constants/theme';
+import { Screen } from '@/components/ui/Screen';
+import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
 import { getGreeting } from '@/features/support-person/greeting';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 /** Care Planner home for support persons (Figma 3911-24607, empty state 3896-21458). */
 export default function CarePlannerHomeScreen() {
@@ -27,17 +28,19 @@ export default function CarePlannerHomeScreen() {
     openAppointmentAction('add-questions', patient.id, appointment.appointmentId);
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <Screen>
+      <View style={styles.content}>
         <View style={styles.greetingRow}>
-          <Text style={styles.greeting}>{getGreeting(name)}</Text>
+          <AppText variant="bodyMedium">{getGreeting(name)}</AppText>
           <NotificationBell count={requests.length} onPress={openRequests} />
         </View>
 
-        <Text style={styles.title} accessibilityRole="header">
+        <AppText accessibilityRole="header" variant="titleLarge">
           Your support makes a difference
-        </Text>
-        <Text style={styles.body}>Help prepare for upcoming appointments by reviewing and adding questions for the doctor</Text>
+        </AppText>
+        <AppText variant="bodyMediumRegular">
+          Help prepare for upcoming appointments by reviewing and adding questions for the doctor
+        </AppText>
 
         {status === 'loading' ? (
           <LoadingState label="Loading the people you support" />
@@ -45,15 +48,15 @@ export default function CarePlannerHomeScreen() {
           <ErrorState message="We could not load the people you support." onRetry={reload} />
         ) : patients.length > 0 ? (
           <>
-            <Text style={styles.sectionTitle} accessibilityRole="header">
+            <AppText accessibilityRole="header" variant="titleMedium" style={styles.sectionTitle}>
               People you support
-            </Text>
+            </AppText>
             <View style={styles.cards}>
-              {patients.map(patient => (
+              {patients.map((patient) => (
                 <SupportedPatientCard
                   key={patient.id}
                   patient={patient}
-                  onAddQuestions={appointment => openAddQuestions(patient, appointment)}
+                  onAddQuestions={(appointment) => openAddQuestions(patient, appointment)}
                   onViewAppointments={() => openAppointments(patient)}
                 />
               ))}
@@ -61,85 +64,45 @@ export default function CarePlannerHomeScreen() {
           </>
         ) : (
           <>
-            <Text style={styles.sectionTitle} accessibilityRole="header">
+            <AppText accessibilityRole="header" variant="titleMedium" style={styles.sectionTitle}>
               People you support (0 people)
-            </Text>
-            <Text style={styles.body}>
+            </AppText>
+            <AppText variant="bodyMediumRegular">
               You haven’t accepted any support person requests yet. Requests can be sent by a patient through your phone
               number.
-            </Text>
+            </AppText>
             <View>
-              <Text style={[styles.body, styles.bodyEmphasis]}>Haven’t received a request?</Text>
-              <Text style={styles.body}>Check to make sure your phone number was entered correctly by the patient.</Text>
+              <AppText variant="labelLargeBold">Haven’t received a request?</AppText>
+              <AppText variant="bodyMediumRegular">
+                Check to make sure your phone number was entered correctly by the patient.
+              </AppText>
             </View>
             <View style={styles.emptyButton}>
               <PillButton size="large" label="Check support person requests" onPress={openRequests} />
             </View>
           </>
         )}
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
   content: {
-    gap: scaleHeight(12),
-    paddingTop: scaleHeight(24),
-    paddingBottom: scaleHeight(32),
-    paddingHorizontal: scaleWidth(24),
+    gap: Spacing.mid,
   },
   greetingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: scaleWidth(10),
-    paddingRight: scaleWidth(6),
-  },
-  greeting: {
-    color: Colors.light.text,
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-    lineHeight: 20,
-    letterSpacing: 0.25,
-  },
-  title: {
-    marginTop: scaleHeight(6),
-    paddingHorizontal: scaleWidth(9),
-    color: Colors.light.text,
-    fontSize: scaleFont(20),
-    fontWeight: '700',
-    lineHeight: scaleFont(24),
-  },
-  body: {
-    paddingHorizontal: scaleWidth(9),
-    color: Colors.light.text,
-    fontSize: scaleFont(14),
-    lineHeight: 20,
-    letterSpacing: 0.25,
-  },
-  bodyEmphasis: {
-    fontWeight: '600',
-    letterSpacing: 0.1,
   },
   sectionTitle: {
-    marginTop: scaleHeight(18),
-    paddingHorizontal: scaleWidth(11),
-    color: Colors.light.text,
-    fontSize: scaleFont(16),
-    fontWeight: '700',
-    lineHeight: scaleFont(22),
+    marginTop: Spacing.three,
   },
   cards: {
-    gap: scaleHeight(18),
-    marginTop: scaleHeight(8),
+    gap: Spacing.three,
   },
   emptyButton: {
-    marginTop: scaleHeight(18),
-    paddingHorizontal: scaleWidth(14),
+    marginTop: Spacing.three,
   },
 });

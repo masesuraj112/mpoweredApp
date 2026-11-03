@@ -5,8 +5,8 @@ import {
   SettingsModalGroup,
   SettingsModalInfoRow,
   SettingsModalSection,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSubpage, settingsSubpageStyles } from '@/components/settings/SettingsSubpage';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useSupportPerson } from '@/features/support-person/context';

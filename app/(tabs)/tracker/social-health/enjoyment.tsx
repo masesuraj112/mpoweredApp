@@ -1,7 +1,6 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
+import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 
 export default function EnjoymentScreen() {
@@ -28,7 +27,6 @@ export default function EnjoymentScreen() {
         onPrevious={() => router.push('/tracker/social-health/relationships')}
         onRecord={handleNext}
         variant="personalCare"
-        cardHeight={scaleHeight(330)}
       />
     </TrackerQuestionScreen>
   );

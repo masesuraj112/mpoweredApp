@@ -1,15 +1,11 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
+import { RadioOptionRow } from '@/components/tracker/RadioOptionRow';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
 import { STANDING_OPTIONS } from '@/features/assessments/movement/options';
-
-
-// Roughly how many lines an option wraps to (about 34 characters per line at this font size).
-const rowWeight = (text: string) => Math.max(1, Math.ceil(text.length / 34));
 
 export default function StandingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -27,9 +23,9 @@ export default function StandingScreen() {
       <ChoiceCard
         title="Standing Impacts"
         prompt={
-          <Text style={styles.promptText}>
-            Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
-          </Text>
+          <ChoicePrompt>
+            Select the <PromptEmphasis>MOST</PromptEmphasis> relevant statement:
+          </ChoicePrompt>
         }
         questionNumber={6}
         totalQuestions={7}
@@ -37,44 +33,20 @@ export default function StandingScreen() {
         onRecord={handleNext}
         disabled={!answers.standingImpact}
         variant="management"
-        style={{ flex: 1, height: undefined }}
       >
-        <View style={styles.optionsList}>
+        <ChoiceOptionList>
           {STANDING_OPTIONS.map((option, index) => (
-            <AssessmentRadioRow
+            <RadioOptionRow
               key={option}
               label={option}
               selected={answers.standingImpact === option}
               onPress={() => updateAnswer('standingImpact', option)}
-              weight={rowWeight(option)}
               isLast={index === STANDING_OPTIONS.length - 1}
             />
           ))}
-        </View>
+        </ChoiceOptionList>
       </ChoiceCard>
     </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  promptText: {
-    color: '#1D1B20',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.5,
-  },
-  promptUnderline: {
-    textDecorationLine: 'underline',
-  },
-  optionsList: {
-    flex: 1,
-    minHeight: 0,
-    width: '100%',
-    alignSelf: 'center',
-    borderRadius: scaleWidth(12),
-    backgroundColor: '#FEF7FF',
-    overflow: 'hidden',
-    paddingHorizontal: scaleWidth(8),
-  },
-});

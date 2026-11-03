@@ -1,19 +1,15 @@
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import type { WeeklyAssessmentId } from '@/features/assessments/homeProgress';
 import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgress';
 import { formatDayMonth } from '@/features/assessments/week';
 import { getGreeting } from '@/features/support-person/greeting';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import {
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Assessment = {
   id: WeeklyAssessmentId;
@@ -42,7 +38,6 @@ export default function HomeScreen() {
     isLoaded: isProgressLoaded,
     error: progressError,
   } = useWeeklyHomeProgress();
-  const [trackWidth, setTrackWidth] = useState(0);
   const progress = recordedAssessments.size;
   const hasReflection = reflection === 'complete';
 
@@ -52,330 +47,212 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.intro}>
-          <Text style={styles.greeting}>{getGreeting(name)}</Text>
-          <Text style={styles.heading}>
-            Let&apos;s build your M<Text style={styles.superscript}>Powered</Text>
-            {' plan.'}
-          </Text>
-          <Text style={styles.description}>
-            Assess your pain intensity and its impacts weekly to obtain your M
-            <Text style={styles.descriptionSuperscript}>Powered</Text>
-            {' plan'}
-          </Text>
-        </View>
+    <Screen>
+      <View style={styles.intro}>
+        <AppText variant="bodyMedium">{getGreeting(name)}</AppText>
+        <AppText accessibilityRole="header" variant="titleLarge" style={styles.heading}>
+          Let&apos;s build your M
+          <AppText variant="labelSmall" style={styles.superscript}>
+            Powered
+          </AppText>
+          {' plan.'}
+        </AppText>
+        <AppText variant="bodyMediumRegular" style={styles.description}>
+          Assess your pain intensity and its impacts weekly to obtain your M
+          <AppText variant="labelSmall" style={styles.descriptionSuperscript}>
+            Powered
+          </AppText>
+          {' plan'}
+        </AppText>
+      </View>
 
+      <View style={styles.progressSection}>
+        {/* The error sits outside this group so a screen reader reads it as well as the count. */}
         <View
-          style={styles.progressSection}
-          accessibilityLabel={`This week's progress: ${progress} of 5 assessments`}
+          accessible
+          accessibilityLabel={`This week's progress: ${progress} of ${ASSESSMENTS.length} assessments`}
         >
-          <View
-            style={styles.progressTrack}
-            onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
-          >
-            <View
-              style={[
-                styles.progressFill,
-                { width: trackWidth * (progress / ASSESSMENTS.length) },
-              ]}
-            />
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${(progress / ASSESSMENTS.length) * 100}%` }]} />
           </View>
           <View style={styles.progressLabels}>
-            <Text style={styles.progressLabel}>This week&apos;s progress</Text>
-            <Text style={styles.progressLabel}>
+            <AppText variant="labelMedium">This week&apos;s progress</AppText>
+            <AppText variant="labelMedium">
               {progress}/{ASSESSMENTS.length} assessments
-            </Text>
+            </AppText>
           </View>
-          {progressError && <Text style={styles.progressError}>{progressError}</Text>}
         </View>
+        {progressError && (
+          <AppText variant="bodySmall" color="error" style={styles.progressError}>
+            {progressError}
+          </AppText>
+        )}
+      </View>
 
-        <View style={styles.assessmentPanel}>
-          <Text style={styles.panelHeading}>This week’s assessment</Text>
-          <View style={styles.assessmentList}>
-            {ASSESSMENTS.map((assessment) => {
-              const recordedDate = recordedAssessments.get(assessment.id);
-              const isRecorded = recordedDate !== undefined;
-              return (
-                <View key={assessment.id} style={styles.assessmentRow}>
-                  <View style={styles.assessmentCopy}>
-                    <Text style={styles.assessmentTitle}>{assessment.title}</Text>
-                    {isRecorded && (
-                      <Text style={styles.updatedText}>Recorded {formatDayMonth(recordedDate)}</Text>
-                    )}
-                  </View>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
-                    disabled={!isProgressLoaded}
-                    onPress={() => openAssessment(assessment)}
-                    style={({ pressed }) => [
-                      styles.assessmentButton,
-                      isRecorded ? styles.editButton : styles.recordButton,
-                      pressed && styles.buttonPressed,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.assessmentButtonText,
-                        isRecorded ? styles.editButtonText : styles.recordButtonText,
-                      ]}
-                    >
-                      {isRecorded ? 'Edit' : 'Record'}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.arrow,
-                        isRecorded ? styles.editButtonText : styles.recordButtonText,
-                      ]}
-                    >
-                      →
-                    </Text>
-                  </Pressable>
+      <View style={styles.assessmentPanel}>
+        <AppText accessibilityRole="header" variant="titleMedium" color="onSurface" style={styles.panelHeading}>
+          This week’s assessment
+        </AppText>
+        <View style={styles.assessmentList}>
+          {ASSESSMENTS.map((assessment) => {
+            const recordedDate = recordedAssessments.get(assessment.id);
+            const isRecorded = recordedDate !== undefined;
+            return (
+              <View key={assessment.id} style={styles.assessmentRow}>
+                <View style={styles.assessmentCopy}>
+                  <AppText variant="bodyMedium" color="onSurface">
+                    {assessment.title}
+                  </AppText>
+                  {isRecorded && (
+                    <AppText variant="labelSmall" color="textTertiary">
+                      Recorded {formatDayMonth(recordedDate)}
+                    </AppText>
+                  )}
                 </View>
-              );
-            })}
-          </View>
+                <Button
+                  label={isRecorded ? 'Edit' : 'Record'}
+                  accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
+                  variant={isRecorded ? 'tonal' : 'primary'}
+                  pill
+                  style={styles.assessmentButton}
+                  trailingGlyph="→"
+                  disabled={!isProgressLoaded}
+                  onPress={() => openAssessment(assessment)}
+                />
+              </View>
+            );
+          })}
         </View>
+      </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
-          onPress={() => router.push('/tracker/reflection')}
-          style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
+        onPress={() => router.push('/tracker/reflection')}
+        style={({ pressed }) => [styles.reflection, pressed && styles.pressed]}
+      >
+        <AppText
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+          variant="headlineSmall"
+          color="primary"
         >
-          <Text style={[styles.plus, hasReflection && styles.reflectionCompleteIcon]}>
-            {hasReflection ? '✓' : '+'}
-          </Text>
-          <View style={styles.reflectionCopy}>
-            <Text style={styles.reflectionText}>
-              {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
-            </Text>
-            {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
-          </View>
-          {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
-        </Pressable>
+          {hasReflection ? '✓' : '+'}
+        </AppText>
+        <View style={styles.reflectionCopy}>
+          <AppText variant="labelLargeBold" color="onSurface">
+            {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
+          </AppText>
+          {reflection === 'draft' && (
+            <AppText variant="labelSmall" color="onSurfaceVariant">
+              Draft saved
+            </AppText>
+          )}
+        </View>
+        {hasReflection && (
+          <AppText variant="labelMedium" color="onSurfaceVariant">
+            Edit →
+          </AppText>
+        )}
+      </Pressable>
 
-        <Text style={styles.supported}>Supported by ABBVIE</Text>
-      </ScrollView>
-    </SafeAreaView>
+      <AppText variant="labelSmall" style={styles.supported}>
+        Supported by ABBVIE
+      </AppText>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollContent: {
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 412,
-    flexGrow: 1,
-    paddingHorizontal: 32,
-    paddingTop: Platform.OS === 'web' ? 90 : 39,
-    paddingBottom: 12,
-  },
   intro: {
-    marginBottom: 16,
-  },
-  greeting: {
-    color: '#000000',
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
-    letterSpacing: 0.25,
+    marginBottom: Spacing.three,
   },
   heading: {
-    marginTop: 16,
-    color: '#000000',
-    fontSize: 20,
-    fontWeight: '700',
-    lineHeight: 24,
+    marginTop: Spacing.three,
   },
+  // The "Powered" half of the brand name sits raised and small.
   superscript: {
     position: 'relative',
     top: -5,
-    fontSize: 11,
-    lineHeight: 14,
-    fontWeight: '700',
   },
   descriptionSuperscript: {
     position: 'relative',
     top: -4,
-    fontSize: 8,
-    lineHeight: 10,
-    fontWeight: '400',
   },
   description: {
-    marginTop: 5,
-    color: '#000000',
-    fontSize: 14,
-    lineHeight: 20,
-    letterSpacing: 0.25,
+    marginTop: Spacing.one,
   },
   progressSection: {
-    marginBottom: 24,
+    marginBottom: Spacing.four,
   },
   progressTrack: {
     height: 10,
     overflow: 'hidden',
-    borderRadius: 5,
-    backgroundColor: '#EADDFF',
+    borderRadius: Radius.small,
+    backgroundColor: Colors.light.primaryContainer,
   },
   progressFill: {
     height: '100%',
-    borderRadius: 5,
-    backgroundColor: '#6750A4',
+    borderRadius: Radius.small,
+    backgroundColor: Colors.light.primary,
   },
   progressLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 6,
-  },
-  progressLabel: {
-    color: '#000000',
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-    letterSpacing: 0.4,
+    marginTop: Spacing.two,
   },
   progressError: {
-    marginTop: 4,
-    color: '#B3261E',
-    fontSize: 12,
-    lineHeight: 16,
+    marginTop: Spacing.one,
   },
   assessmentPanel: {
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    paddingBottom: 14,
-    borderRadius: 12,
-    backgroundColor: '#F2F2F7',
+    padding: Spacing.three,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.light.surfaceGrouped,
   },
   panelHeading: {
-    marginBottom: 16,
-    color: '#1D1B20',
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
+    marginBottom: Spacing.three,
   },
   assessmentList: {
-    gap: 14,
+    gap: Spacing.mid,
   },
   assessmentRow: {
-    minHeight: 50,
+    minHeight: MinTapTarget + Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 8,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    gap: Spacing.two,
+    paddingLeft: Spacing.three,
+    paddingRight: Spacing.two,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.light.background,
   },
   assessmentCopy: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.half,
   },
-  assessmentTitle: {
-    color: '#1D1B20',
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
-  },
-  updatedText: {
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: 11,
-    lineHeight: 14,
-    letterSpacing: 0.3,
-  },
+  // Record and Edit are the same width, so the two columns line up.
   assessmentButton: {
-    width: 105,
-    height: 31,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 100,
+    minWidth: 105,
   },
-  recordButton: {
-    borderColor: '#6750A4',
-    backgroundColor: '#6750A4',
-  },
-  editButton: {
-    borderColor: '#CAC4D0',
-    backgroundColor: '#EADDFF',
-  },
-  assessmentButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
-  },
-  recordButtonText: {
-    color: '#FFFFFF',
-  },
-  editButtonText: {
-    color: '#49454F',
-  },
-  arrow: {
-    fontSize: 18,
-    lineHeight: 20,
-  },
-  buttonPressed: {
+  pressed: {
     opacity: 0.8,
   },
   reflection: {
-    minHeight: 50,
+    minHeight: MinTapTarget + Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 10,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    backgroundColor: '#F2F2F7',
-  },
-  plus: {
-    color: '#381E72',
-    fontSize: 28,
-    fontWeight: '400',
-    lineHeight: 30,
-  },
-  reflectionText: {
-    color: '#1D1B20',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
+    gap: Spacing.two,
+    marginTop: Spacing.mid,
+    paddingHorizontal: Spacing.four,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.light.surfaceGrouped,
   },
   reflectionCopy: {
     flex: 1,
   },
-  reflectionStatus: {
-    color: '#49454F',
-    fontSize: 11,
-    lineHeight: 16,
-  },
-  reflectionCompleteIcon: {
-    fontSize: 22,
-    fontWeight: '600',
-  },
-  reflectionEdit: {
-    color: '#49454F',
-    fontSize: 13,
-    fontWeight: '600',
-  },
   supported: {
     marginTop: 'auto',
-    paddingTop: 22,
-    color: '#000000',
-    fontSize: 11,
-    fontWeight: '600',
-    lineHeight: 16,
-    letterSpacing: 0.5,
+    paddingTop: Spacing.four,
     textAlign: 'center',
   },
 });
