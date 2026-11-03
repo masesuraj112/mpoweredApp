@@ -4,14 +4,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { ManagementAssessmentAnswers } from '@/features/assessments/management/types';
-import {
-  validateManagementAnswers,
-  type ValidManagementEntry,
-} from '@/features/assessments/management/validate';
+import { validateManagementAnswers } from '@/features/assessments/management/validate';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { mapError } from '@/lib/errors';
 import { fail, ok, type Result } from '@/lib/result';
 import { supabase } from '@/lib/supabase';
+import { saveOrUpdate } from '@/services/saveOrUpdate';
 import type { Database } from '@/types/database';
 
 type Client = SupabaseClient<Database>;
@@ -58,26 +56,12 @@ function toManagementEntry(row: ManagementRow): ManagementEntry {
   };
 }
 
-/** True when a stored entry holds exactly what we were trying to save. */
-function matchesSaved(existing: ManagementEntry, saved: ValidManagementEntry): boolean {
-  const savedNames = [...saved.medications].sort();
-  return (
-    existing.date === saved.date &&
-    existing.exercise === saved.exercise &&
-    existing.emotion === saved.emotion &&
-    existing.otcMedication === saved.otcMedication &&
-    existing.noMedication === saved.noMedication &&
-    existing.medications.length === savedNames.length &&
-    existing.medications.every((name, index) => name === savedNames[index])
-  );
-}
-
 /**
  * Validates and saves one management submission (and its medication names) in a single
- * database call. Returns the new submission_id.
+ * database call. Returns the submission_id.
  *
- * Retry safety: if the week already has an entry that is identical to this one, an earlier
- * attempt committed but its response was lost, so that counts as success.
+ * When the week already has an entry, the user is editing it: its answers are replaced and its
+ * id is returned (see saveOrUpdate). That also makes a retry after a lost response safe.
  */
 export async function saveManagementEntry(
   answers: ManagementAssessmentAnswers,
@@ -93,32 +77,22 @@ export async function saveManagementEntry(
   if (!validated.ok) return validated;
   const entry = validated.data;
 
-  return run(async () => {
-    const { data, error } = await client.rpc('save_management_assessment', {
-      p_date: entry.date,
-      p_exercise: entry.exercise,
-      // the function stores blank text as NULL; the generated type does not allow null
-      p_emotion: entry.emotion ?? '',
-      p_otc_medication: entry.otcMedication ?? '',
-      p_no_medication: entry.noMedication,
-      p_medications: entry.medications,
-    });
-
-    if (error) {
-      const mapped = mapError(error);
-      if (mapped.code === 'DUPLICATE_WEEK') {
-        const existing = await getManagementEntryForWeek(getWeekStart(entry.date), client);
-        if (existing.ok && existing.data && matchesSaved(existing.data, entry)) {
-          return ok(existing.data.submissionId);
-        }
-      }
-      return fail(mapped);
-    }
-    if (typeof data !== 'number') {
-      return fail({ code: 'UNKNOWN', message: 'The save did not return a submission id.' });
-    }
-    return ok(data);
-  });
+  const values = {
+    p_exercise: entry.exercise,
+    // the function stores blank text as NULL; the generated type does not allow null
+    p_emotion: entry.emotion ?? '',
+    p_otc_medication: entry.otcMedication ?? '',
+    p_no_medication: entry.noMedication,
+    p_medications: entry.medications,
+  };
+  return saveOrUpdate(
+    () => client.rpc('save_management_assessment', { p_date: entry.date, ...values }),
+    () =>
+      client.rpc('update_management_assessment', {
+        p_week_start: getWeekStart(entry.date),
+        ...values,
+      }),
+  );
 }
 
 /** The user's management entry for the week starting on `weekStart`, or null when there is none. */

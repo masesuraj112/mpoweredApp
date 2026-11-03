@@ -1266,9 +1266,68 @@ export type Database = {
         Args: { p_patient_id: number }
         Returns: undefined
       }
+      update_management_assessment: {
+        Args: {
+          p_emotion: string
+          p_exercise: string
+          p_medications: string[]
+          p_no_medication: boolean
+          p_otc_medication: string
+          p_week_start: string
+        }
+        Returns: number
+      }
+      update_movement_assessment: {
+        Args: {
+          p_active_hours: number
+          p_general_impacts: string[]
+          p_lifting: string
+          p_reflection: string
+          p_sitting: string
+          p_standing: string
+          p_walking: string
+          p_week_start: string
+        }
+        Returns: number
+      }
+      update_pain_assessment: {
+        Args: {
+          p_average: number
+          p_characteristics: string[]
+          p_current: number
+          p_locations: string[]
+          p_mildest: number
+          p_week_start: string
+          p_worst: number
+        }
+        Returns: number
+      }
+      update_personal_care_assessment: {
+        Args: {
+          p_general_activities: string[]
+          p_reflection: string
+          p_sleeping: string
+          p_washing_dressing: string
+          p_week_start: string
+        }
+        Returns: number
+      }
       update_profile: {
         Args: { p_name: string; p_year_of_birth: number }
         Returns: undefined
+      }
+      update_social_health_assessment: {
+        Args: {
+          p_enjoyment_of_life: number
+          p_mood: number
+          p_mood_overall: string
+          p_reflection: string
+          p_relation_with_others: number
+          p_social_life: string
+          p_travelling: string
+          p_week_start: string
+        }
+        Returns: number
       }
     }
     Enums: {

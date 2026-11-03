@@ -6,6 +6,7 @@ import { AppText } from '@/components/ui/AppText';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { toPainSummary } from '@/features/assessments/pain/summary';
 import { useWeekSummary } from '@/features/assessments/useWeekSummary';
+import { isThisWeek } from '@/features/assessments/week';
 import { getPainEntryForWeek } from '@/services/assessments';
 import { Spacing } from '@/constants/theme';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -22,6 +23,8 @@ export default function PainSummary() {
     errorMessage: painSaveMessage,
   });
   const close = () => router.replace('/(tabs)/home');
+  // Only this week's entry can be changed: the questions save to the current week.
+  const edit = weekStart && isThisWeek(weekStart) ? () => router.replace('/tracker/pain/edit') : undefined;
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
@@ -33,7 +36,8 @@ export default function PainSummary() {
       period={summary.period}
       intro="This helps guide your treatment and support your recovery."
       savedText="Saved to My Health"
-      onClose={close}>
+      onClose={close}
+      onEdit={edit}>
       <ReportSection heading="Pain location">
         <AppText variant="bodyMediumRegular" color="onSurface">
           I have pain in the following areas:

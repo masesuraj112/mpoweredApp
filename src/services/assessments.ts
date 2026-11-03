@@ -2,20 +2,18 @@
 // The Supabase client is the last optional argument so tests can pass a fake one.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { validateMovementAnswers, type ValidMovementEntry } from '@/features/assessments/movement/validate';
+import { validateMovementAnswers } from '@/features/assessments/movement/validate';
 import type { MovementAssessmentAnswers } from '@/features/assessments/movement/types';
 import type { PersonalCareAssessmentAnswers } from '@/features/assessments/personal-care/types';
-import {
-  validatePersonalCareAnswers,
-  type ValidPersonalCareEntry,
-} from '@/features/assessments/personal-care/validate';
+import { validatePersonalCareAnswers } from '@/features/assessments/personal-care/validate';
 import { dedupe } from '@/features/assessments/pain/normalise';
 import type { PainAssessmentAnswers } from '@/features/assessments/pain/types';
-import { validatePainAnswers, type ValidPainEntry } from '@/features/assessments/pain/validate';
+import { validatePainAnswers } from '@/features/assessments/pain/validate';
 import { addWeeks, getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { mapError } from '@/lib/errors';
 import { fail, ok, run, type Result } from '@/lib/result';
 import { supabase } from '@/lib/supabase';
+import { saveOrUpdate } from '@/services/saveOrUpdate';
 import type { Database } from '@/types/database';
 
 export type Client = SupabaseClient<Database>;
@@ -55,28 +53,12 @@ export function toPainEntry(row: PainRow): PainEntry {
   };
 }
 
-const sameValues = (a: string[], b: string[]) =>
-  a.length === b.length && [...a].sort().every((value, i) => value === [...b].sort()[i]);
-
-/** True when a stored entry holds exactly what we were trying to save. */
-function matchesSaved(existing: PainEntry, saved: ValidPainEntry): boolean {
-  return (
-    existing.date === saved.date &&
-    existing.current === saved.current &&
-    existing.mildest === saved.mildest &&
-    existing.worst === saved.worst &&
-    existing.average === saved.average &&
-    sameValues(existing.locations, saved.locations) &&
-    sameValues(existing.characteristics, saved.characteristics)
-  );
-}
-
 /**
  * Validates, normalises and saves one pain submission in a single database call.
- * Returns the new submission_id.
+ * Returns the submission_id.
  *
- * Retry safety: if the week already has an entry that is identical to this one, an earlier
- * attempt committed but its response was lost, so that counts as success.
+ * When the week already has an entry, the user is editing it: its answers are replaced and its
+ * id is returned (see saveOrUpdate). That also makes a retry after a lost response safe.
  */
 export async function savePainEntry(
   answers: PainAssessmentAnswers,
@@ -92,32 +74,19 @@ export async function savePainEntry(
   if (!validated.ok) return validated;
   const entry = validated.data;
 
-  return run(async () => {
-    const { data, error } = await client.rpc('save_pain_assessment', {
-      p_date: entry.date,
-      p_current: entry.current,
-      p_mildest: entry.mildest,
-      p_worst: entry.worst,
-      p_average: entry.average,
-      p_locations: entry.locations,
-      p_characteristics: entry.characteristics,
-    });
-
-    if (error) {
-      const mapped = mapError(error);
-      if (mapped.code === 'DUPLICATE_WEEK') {
-        const existing = await getPainEntryForWeek(getWeekStart(entry.date), client);
-        if (existing.ok && existing.data && matchesSaved(existing.data, entry)) {
-          return ok(existing.data.submissionId);
-        }
-      }
-      return fail(mapped);
-    }
-    if (typeof data !== 'number') {
-      return fail({ code: 'UNKNOWN', message: 'The save did not return a submission id.' });
-    }
-    return ok(data);
-  });
+  const levels = {
+    p_current: entry.current,
+    p_mildest: entry.mildest,
+    p_worst: entry.worst,
+    p_average: entry.average,
+    p_locations: entry.locations,
+    p_characteristics: entry.characteristics,
+  };
+  return saveOrUpdate(
+    () => client.rpc('save_pain_assessment', { p_date: entry.date, ...levels }),
+    () =>
+      client.rpc('update_pain_assessment', { p_week_start: getWeekStart(entry.date), ...levels }),
+  );
 }
 
 /** The user's pain entry for the week starting on `weekStart`, or null when there is none. */
@@ -194,28 +163,6 @@ export function getRecentPainLocations(
   });
 }
 
-/** Runs a save call and maps its failures. `findIdenticalEntry` is only asked on DUPLICATE_WEEK. */
-function saveEntry(
-  call: () => PromiseLike<{ data: number | null; error: unknown }>,
-  findIdenticalEntry: () => Promise<number | null>,
-): Promise<Result<number>> {
-  return run(async () => {
-    const { data, error } = await call();
-    if (error) {
-      const mapped = mapError(error);
-      if (mapped.code === 'DUPLICATE_WEEK') {
-        const identicalId = await findIdenticalEntry();
-        if (identicalId !== null) return ok(identicalId);
-      }
-      return fail(mapped);
-    }
-    if (typeof data !== 'number') {
-      return fail({ code: 'UNKNOWN', message: 'The save did not return a submission id.' });
-    }
-    return ok(data);
-  });
-}
-
 /** A saved personal care submission with its general activities. */
 export type PersonalCareEntry = {
   submissionId: number;
@@ -245,19 +192,9 @@ function toPersonalCareEntry(row: PersonalCareRow): PersonalCareEntry {
   };
 }
 
-function matchesSavedPersonalCare(existing: PersonalCareEntry, saved: ValidPersonalCareEntry): boolean {
-  return (
-    existing.date === saved.date &&
-    existing.washingDressing === saved.washingDressing &&
-    existing.sleeping === saved.sleeping &&
-    existing.reflection === saved.reflection &&
-    sameValues(existing.generalActivities, saved.generalActivities)
-  );
-}
-
 /**
  * Validates and saves one personal care submission in a single database call.
- * Returns the new submission_id.
+ * Returns the submission_id. A week that already has an entry has its answers replaced.
  */
 export async function savePersonalCareEntry(
   answers: PersonalCareAssessmentAnswers,
@@ -273,22 +210,20 @@ export async function savePersonalCareEntry(
   if (!validated.ok) return validated;
   const entry = validated.data;
 
-  return saveEntry(
+  const values = {
+    p_general_activities: entry.generalActivities,
+    p_washing_dressing: entry.washingDressing,
+    p_sleeping: entry.sleeping,
+    // the database turns a blank reflection into null
+    p_reflection: entry.reflection ?? '',
+  };
+  return saveOrUpdate(
+    () => client.rpc('save_personal_care_assessment', { p_date: entry.date, ...values }),
     () =>
-      client.rpc('save_personal_care_assessment', {
-        p_date: entry.date,
-        p_general_activities: entry.generalActivities,
-        p_washing_dressing: entry.washingDressing,
-        p_sleeping: entry.sleeping,
-        // the database turns a blank reflection into null
-        p_reflection: entry.reflection ?? '',
+      client.rpc('update_personal_care_assessment', {
+        p_week_start: getWeekStart(entry.date),
+        ...values,
       }),
-    async () => {
-      const existing = await getPersonalCareEntryForWeek(getWeekStart(entry.date), client);
-      return existing.ok && existing.data && matchesSavedPersonalCare(existing.data, entry)
-        ? existing.data.submissionId
-        : null;
-    },
   );
 }
 
@@ -344,22 +279,9 @@ function toMovementEntry(row: MovementRow): MovementEntry {
   };
 }
 
-function matchesSavedMovement(existing: MovementEntry, saved: ValidMovementEntry): boolean {
-  return (
-    existing.date === saved.date &&
-    existing.activeHours === saved.activeHours &&
-    existing.walking === saved.walking &&
-    existing.lifting === saved.lifting &&
-    existing.sitting === saved.sitting &&
-    existing.standing === saved.standing &&
-    existing.reflection === saved.reflection &&
-    sameValues(existing.generalImpacts, saved.generalImpacts)
-  );
-}
-
 /**
  * Validates and saves one movement submission in a single database call.
- * Returns the new submission_id.
+ * Returns the submission_id. A week that already has an entry has its answers replaced.
  */
 export async function saveMovementEntry(
   answers: MovementAssessmentAnswers,
@@ -375,25 +297,20 @@ export async function saveMovementEntry(
   if (!validated.ok) return validated;
   const entry = validated.data;
 
-  return saveEntry(
+  const values = {
+    p_active_hours: entry.activeHours,
+    p_general_impacts: entry.generalImpacts,
+    p_walking: entry.walking,
+    p_lifting: entry.lifting,
+    p_sitting: entry.sitting,
+    p_standing: entry.standing,
+    // the database turns a blank reflection into null
+    p_reflection: entry.reflection ?? '',
+  };
+  return saveOrUpdate(
+    () => client.rpc('save_movement_assessment', { p_date: entry.date, ...values }),
     () =>
-      client.rpc('save_movement_assessment', {
-        p_date: entry.date,
-        p_active_hours: entry.activeHours,
-        p_general_impacts: entry.generalImpacts,
-        p_walking: entry.walking,
-        p_lifting: entry.lifting,
-        p_sitting: entry.sitting,
-        p_standing: entry.standing,
-        // the database turns a blank reflection into null
-        p_reflection: entry.reflection ?? '',
-      }),
-    async () => {
-      const existing = await getMovementEntryForWeek(getWeekStart(entry.date), client);
-      return existing.ok && existing.data && matchesSavedMovement(existing.data, entry)
-        ? existing.data.submissionId
-        : null;
-    },
+      client.rpc('update_movement_assessment', { p_week_start: getWeekStart(entry.date), ...values }),
   );
 }
 
