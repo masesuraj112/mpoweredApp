@@ -169,17 +169,17 @@ const styles = StyleSheet.create({
     minHeight: 0,
     paddingTop: Spacing.three,
     paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.mid,
+    paddingBottom: Spacing.two,
     borderWidth: 1,
     borderColor: Colors.light.outlineStrong,
     borderRadius: Radius.card,
     backgroundColor: Colors.light.background,
   },
   rule: {
-    marginVertical: Spacing.mid,
+    marginVertical: Spacing.two,
   },
   prompt: {
-    marginBottom: Spacing.mid,
+    marginBottom: Spacing.two,
   },
   options: {
     flex: 1,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.three,
-    marginTop: Spacing.mid,
+    marginTop: Spacing.two,
   },
   pager: {
     minHeight: MinTapTarget,

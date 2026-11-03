@@ -47,6 +47,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
+    marginBottom: Spacing.mid,
   },
 });

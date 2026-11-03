@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     ...Typography.bodyMediumRegular,
     // Fills the room the card has. The small minimum lets it shrink when the keyboard is open.
     flex: 1,
-    minHeight: 80,
+    minHeight: 56,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.mid,
     borderWidth: 1,
