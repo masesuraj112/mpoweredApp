@@ -115,7 +115,7 @@ The number and code are configured in two places, both **development only**: the
 
 Each test number gets a profile the first time. To sign in again as a "new" user, either use another test number or delete the user in the dashboard (Authentication, then Users) on the dev project.
 
-The old email and password harness (`dev-login`) only exists in development builds, and a user created there has no `users` row, so the guard keeps it out of the tabs.
+The old email and password harness (`dev-login`) was removed on 2 Nov 2026 (`chore/remove-dev-login`). Developers sign in with the test phone numbers instead (`docs/backend/twilio-otp-integration-guide.md`, section 3).
 
 ## Not built yet
 

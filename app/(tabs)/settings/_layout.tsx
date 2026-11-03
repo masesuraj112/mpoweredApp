@@ -1,4 +1,4 @@
-import { BackHeader } from '@/components/mpowered/BackHeader';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Stack } from 'expo-router';
 
 export default function SettingsLayout() {
@@ -6,7 +6,7 @@ export default function SettingsLayout() {
 		<Stack
 			screenOptions={{
 				headerShown: true,
-				header: ({ navigation }) => <BackHeader title="Settings" onBack={() => navigation.goBack()} />,
+				header: ({ navigation }) => <ScreenHeader title="Settings" onBack={() => navigation.goBack()} />,
 			}}
 		>
 			<Stack.Screen name="index" options={{ headerShown: false }} />

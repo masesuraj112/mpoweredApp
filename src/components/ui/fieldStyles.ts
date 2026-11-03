@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 /** Shared look for the labelled form fields (text, select, date and time). */
 export const fieldStyles = StyleSheet.create({
@@ -8,17 +8,11 @@ export const fieldStyles = StyleSheet.create({
     gap: Spacing.one,
   },
   label: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    ...Typography.labelLarge,
     color: Colors.light.onSurface,
   },
   optional: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '500',
-    letterSpacing: 0.5,
+    ...Typography.labelMedium,
     color: Colors.light.textSecondary,
   },
   box: {
@@ -41,19 +35,15 @@ export const fieldStyles = StyleSheet.create({
   value: {
     flex: 1,
     minWidth: 0,
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
+    ...Typography.bodyLarge,
     color: Colors.light.onSurface,
   },
   placeholder: {
     color: Colors.light.textSecondary,
   },
   error: {
-    fontSize: 12,
-    lineHeight: 16,
+    ...Typography.bodySmall,
     fontWeight: '500',
-    letterSpacing: 0.4,
     color: Colors.light.error,
   },
 });

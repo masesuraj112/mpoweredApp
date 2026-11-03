@@ -1,10 +1,10 @@
-import { BackHeader } from '@/components/mpowered/BackHeader';
 import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
 import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
 import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
 import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Colors } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -26,7 +26,7 @@ export default function PatientAppointmentsScreen() {
       options={{
         headerShown: true,
         header: () => (
-          <BackHeader title={patient ? `${patient.name}’s Appointments` : 'Appointments'} onBack={() => router.back()} />
+          <ScreenHeader title={patient ? `${patient.name}’s Appointments` : 'Appointments'} onBack={() => router.back()} />
         ),
       }}
     />

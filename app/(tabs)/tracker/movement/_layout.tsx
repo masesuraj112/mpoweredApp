@@ -1,5 +1,5 @@
 import { MovementAssessmentProvider } from '@/features/assessments/movement/context';
-import { AssessmentHeader } from '@/components/mpowered/AssessmentHeader';
+import { TrackerHeader } from '@/components/tracker/TrackerHeader';
 import { Stack } from 'expo-router';
 
 export default function MovementLayout() {
@@ -9,7 +9,7 @@ export default function MovementLayout() {
       <Stack
         screenOptions={{
           headerShown: true,
-          header: () => <AssessmentHeader />,
+          header: () => <TrackerHeader />,
         }}
       />
     </MovementAssessmentProvider>
