@@ -46,7 +46,12 @@ Use these instead of writing the same styles again.
 | `TabIcon` | `components/navigation` | The pill behind a tab bar icon. |
 | `TrackerQuestionScreen`, `TrackerHeader` | `components/tracker` | The shell and header of the tracker question screens. |
 | `SummaryReport`, `SummaryStatus`, `ReportSection`, `ResultSection` | `components/tracker` | The tracker summary screens. They only load their entry with `useWeekSummary` and pass props. |
-| `PrescriptionsHeader`, `TrackingScreenHeader` | `components/health` | The My Health sub-page headers. |
+| `ChipButton` | `components/ui` | A small outlined action next to a title (Print PDF, Share), 48dp to tap. |
+| `PrescriptionsHeader`, `TrackingScreenHeader`, `HealthSubpage` | `components/health` | The My Health sub-page headers, and the layout that pins one above the scrolling content. |
+| `Dropdown`, `PainTrendChart`, `PainIntensityChart`, `ProfileSectionCard` | `components/health` | A compact picker (`field` or `chip` look), the two pain charts, and a pain profile section. |
+| `ChoiceCard`, `SingleChoiceInput`, `MultiChoiceList`, `ScaleSliderInput` | `components/tracker` | A tracker question: the card fills the page, and its options scroll when they do not fit. Built from `RadioOptionRow`, `CheckboxOptionRow`, `ChoiceOptionList`, `ChoicePrompt`, `ChoiceTextInput` and `ReflectionWordCounter`. |
+| `SettingsHome`, `SettingsSubpage` (with `SettingsOption`, `SettingsToggle`, `SettingsSelect`), `SettingsModal` (with its rows and fields) | `components/settings` | The settings pages and popups. `SettingsSelect` is an inline menu, not a modal, because it is used inside a modal. |
+| `SupportedPatientCard`, `SupportRequestCard`, `AppointmentCard`, `PillButton`, `NotificationBell`, `StatusBadge`, `PermissionChips`, `InitialsAvatar`, `SectionLabel` | `components/support-person` | The support person app. |
 
 ## Colour mapping for the migration
 

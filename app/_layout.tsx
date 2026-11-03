@@ -1,8 +1,10 @@
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { WelcomeSplash } from '../src/components/splash/WelcomeSplash';
+import { ErrorState } from '../src/components/ui/ErrorState';
+import { Colors, Spacing } from '../src/constants/theme';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/startup';
 import { useMinimumDuration } from '../src/features/splash/useMinimumDuration';
@@ -36,11 +38,11 @@ function RootNavigator() {
   // Signed in, but we could not tell whether there is a profile (for example no connection)
   if (session && profileError) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-        <Text style={{ textAlign: 'center', marginBottom: 16 }}>
-          We could not load your account. Check your connection and try again.
-        </Text>
-        <Button title="Try again" onPress={refreshProfile} />
+      <View style={styles.errorScreen}>
+        <ErrorState
+          message="We could not load your account. Check your connection and try again."
+          onRetry={refreshProfile}
+        />
       </View>
     );
   }
@@ -99,6 +101,13 @@ function RootNavigator() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  errorScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.four,
+    backgroundColor: Colors.light.background,
+  },
 });
 
 export default function RootLayout() {
