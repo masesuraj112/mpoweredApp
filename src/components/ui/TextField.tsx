@@ -24,6 +24,8 @@ type TextFieldProps = {
   onBlur?: () => void;
   /** Decorative icon at the end of the field (for example a phone). */
   trailingIcon?: ReactNode;
+  /** Links the field to a keyboard Done bar (see `useKeyboardDoneBar`), for keyboards with no return key. */
+  inputAccessoryViewID?: string;
 };
 
 export function TextField({
@@ -42,6 +44,7 @@ export function TextField({
   onFocus,
   onBlur,
   trailingIcon,
+  inputAccessoryViewID,
 }: TextFieldProps) {
   return (
     <View style={fieldStyles.container}>
@@ -62,6 +65,7 @@ export function TextField({
           keyboardType={keyboardType}
           textContentType={textContentType}
           autoComplete={autoComplete}
+          inputAccessoryViewID={inputAccessoryViewID}
           style={[fieldStyles.value, styles.input]}
         />
         {trailingIcon}

@@ -41,6 +41,9 @@ export const Colors = {
     sliderTrack: '#E4DFF5',
     sliderFillStart: '#8B7BC7',
     sliderFillEnd: '#1A1330',
+    errorContainer: '#F9DEDC',
+    onErrorContainer: '#410E0B',
+    successStrong: '#2E7D32',
   },
   dark: {
     text: '#ffffff',
@@ -76,6 +79,9 @@ export const Colors = {
     sliderTrack: '#4A4458',
     sliderFillStart: '#D0BCFF',
     sliderFillEnd: '#EADDFF',
+    errorContainer: '#8C1D18',
+    onErrorContainer: '#F9DEDC',
+    successStrong: '#8BD97A',
   },
 } as const;
 
