@@ -24,6 +24,7 @@ Audience: developers working on the UI. This page is the reference for the UI re
 | `Typography.headlineSmall` | 24/32 semibold | screen titles |
 | `Typography.titleLarge` | 22/28 semibold | page and section headings |
 | `Typography.titleMedium` | 16/24 semibold | card titles |
+| `Typography.bodyMediumRegular` | 14/20 regular | paragraph text |
 | `Typography.bodySmall` | 12/16 regular | captions |
 | `Typography.labelMedium` | 12/16 medium | small labels |
 | `Typography.labelSmall` | 11/16 medium | smallest labels |
