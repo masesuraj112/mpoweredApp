@@ -26,6 +26,9 @@ const mockSignedOut: MockAuth = {
 let mockAuth: MockAuth = mockSignedOut;
 const mockListeners = new Set<() => void>();
 
+// The app lock's Sign out button would load the real Supabase client; routing never presses it.
+jest.mock('../src/services/auth', () => ({ signOut: jest.fn() }));
+
 jest.mock('../src/context/AuthContext', () => {
   const { useEffect, useState } = jest.requireActual('react');
   return {

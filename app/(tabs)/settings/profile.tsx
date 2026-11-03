@@ -5,8 +5,7 @@ import {
   SettingsModalInfoRow,
   SettingsModalText,
 } from '@/components/settings/SettingsModal';
-// Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
-// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
+import { AppLockOption } from '@/components/settings/AppLockOption';
 import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -20,14 +19,12 @@ import { Alert, Pressable, Text } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const accountIcon = require('../../../assets/images/settings/account.svg');
-// const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
 
 export default function ProfileScreen() {
   const styles = useStyles();
   const { refreshProfile } = useAuth();
   const { state, reload, saving, save } = usePersonalDetails();
   const details = state.status === 'ready' ? state.data : null;
-  // const [faceIdEnabled, setFaceIdEnabled] = useState(false);
 
   // --- Personal details popup -----------------------------------------------
   // The popup edits drafts, so Cancel discards changes and Ok saves them.
@@ -81,11 +78,8 @@ export default function ProfileScreen() {
       {state.status === 'ready' && (
         <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
       )}
-      {/* <SettingsOption
-        icon={faceIdIcon}
-        label="Enable FaceID"
-        trailing={<SettingsToggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />}
-      /> */}
+      {/* Face ID came back as an app lock on top of the SMS sign-in (docs/settings-backend.md, Q1). */}
+      <AppLockOption />
       <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>

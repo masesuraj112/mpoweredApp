@@ -59,6 +59,12 @@
           "microphonePermission": "MPowered uses the microphone so you can speak your doctor's answer instead of typing it. Audio is not stored.",
           "speechRecognitionPermission": "MPowered uses speech recognition to turn your spoken words into text on this device."
         }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "MPowered uses Face ID to unlock the app, if you turn this on in Account settings."
+        }
       ]
     ],
     "experiments": {

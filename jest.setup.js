@@ -14,6 +14,17 @@ jest.mock('expo-notifications', () => ({
   useLastNotificationResponse: () => null,
 }));
 
+// No biometrics under Jest: a phone with Face ID set up that always lets its owner in. Tests change
+// authenticateAsync / getEnrolledLevelAsync to try the other cases.
+jest.mock('expo-local-authentication', () => ({
+  SecurityLevel: { NONE: 0, SECRET: 1, BIOMETRIC_WEAK: 2, BIOMETRIC_STRONG: 3 },
+  AuthenticationType: { FINGERPRINT: 1, FACIAL_RECOGNITION: 2, IRIS: 3 },
+  getEnrolledLevelAsync: jest.fn(async () => 3),
+  isEnrolledAsync: jest.fn(async () => true),
+  supportedAuthenticationTypesAsync: jest.fn(async () => [2]),
+  authenticateAsync: jest.fn(async () => ({ success: true })),
+}));
+
 // @expo/ui draws real SwiftUI / Compose views, which Jest can't render or tap. Stand in plain React Native
 // views that behave the same: a Host that passes its props through, and a Switch that toggles when
 // pressed and carries its name and state for screen readers (as the native one does).

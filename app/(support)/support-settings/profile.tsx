@@ -5,6 +5,7 @@ import {
   SettingsModalInfoRow,
   SettingsModalText,
 } from '@/components/settings/SettingsModal';
+import { AppLockOption } from '@/components/settings/AppLockOption';
 import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
@@ -19,8 +20,8 @@ const accountIcon = require('../../../assets/images/settings/account.svg');
 
 /**
  * The support person's Account page. Support persons sign up with only a name and a phone number and
- * sign in with an SMS code, so the patient page's year of birth, Change password and FaceID don't
- * apply (docs/support-person.md, section 4.2a). They can change their name (docs/settings-backend.md, Q3).
+ * sign in with an SMS code, so the patient page's year of birth and Change password don't apply
+ * (docs/support-person.md, section 4.2a). They get the same optional app lock as patients. They can change their name (docs/settings-backend.md, Q3).
  */
 export default function SupportAccountScreen() {
   const styles = useStyles();
@@ -62,6 +63,7 @@ export default function SupportAccountScreen() {
   return (
     <SettingsSubpage title="Account">
       <SettingsOption icon={accountIcon} label="Personal details" onPress={openPersonalDetails} />
+      <AppLockOption />
       <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>

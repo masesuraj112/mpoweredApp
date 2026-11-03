@@ -3,6 +3,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { getProfile, type UserProfile } from '../services/auth';
 import { clearAssessmentDrafts } from '../features/assessments/drafts';
+import { saveAppLock } from '../features/app-lock/storage';
 import { cancelAllReminders } from '../services/notifications';
 import type { AppError } from '../lib/errors';
 
@@ -65,6 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     console.error('[Assessment] Failed to clear local drafts:', error);
                 });
                 void cancelAllReminders();
+                // The app lock goes too, so someone who cannot unlock can sign back in with their SMS code.
+                void saveAppLock(false).catch(() => undefined);
             }
             if (mounted) {
                 setSession(session);

@@ -9,6 +9,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/features/auth/afterVerify.ts',
     'src/features/auth/patientIntro.ts',
+    'src/features/app-lock/policy.ts',
+    'src/features/app-lock/AppLockContext.tsx',
     'src/features/settings/appearance.ts',
     'src/features/splash/startup.ts',
     'src/features/splash/useMinimumDuration.ts',

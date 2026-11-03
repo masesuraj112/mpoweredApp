@@ -4,12 +4,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, useColorScheme, View } from 'react-native';
+import { AppLockGate } from '../src/components/auth/AppLockGate';
 import { WelcomeSplash } from '../src/components/splash/WelcomeSplash';
 import { ErrorState } from '../src/components/ui/ErrorState';
 import { Colors, Spacing, useThemeColors, type ThemeColors } from '../src/constants/theme';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/startup';
 import { useMinimumDuration } from '../src/features/splash/useMinimumDuration';
+import { AppLockProvider } from '../src/features/app-lock/AppLockContext';
 import { restoreAppearance } from '../src/features/settings/appearance';
 
 // Keep the native splash (the M on purple) up until the session has been read, so the app never shows a
@@ -73,41 +75,46 @@ function RootNavigator() {
   const homePath = isSupportPerson ? '/care-planner' : '/home';
 
   // "Welcome back to" covers the app rather than replacing it, so the first screen loads underneath.
+  // The optional app lock (Account settings) goes over both, once the splash has finished.
   return (
-    <View style={styles.root}>
-      <View
-        style={styles.root}
-        accessibilityElementsHidden={welcomeBack}
-        importantForAccessibility={welcomeBack ? 'no-hide-descendants' : 'auto'}
-      >
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo={homePath}>
-            <Stack.Screen name="(auth)" />
-          </Stack.Protected>
-
-          {/* Without a session and a profile, the tabs group becomes unreachable */}
-          <Stack.Protected
-            guard={(canUseApp && !isSupportPerson) || bypassAuth}
-            redirectTo={canUseApp ? homePath : '/'}
+    <AppLockProvider active={canUseApp}>
+      <AppLockGate waiting={welcomeBack}>
+        <View style={styles.root}>
+          <View
+            style={styles.root}
+            accessibilityElementsHidden={welcomeBack}
+            importantForAccessibility={welcomeBack ? 'no-hide-descendants' : 'auto'}
           >
-            <Stack.Screen name="(tabs)" />
-          </Stack.Protected>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Protected guard={!canUseApp || bypassAuth} redirectTo={homePath}>
+                <Stack.Screen name="(auth)" />
+              </Stack.Protected>
 
-          {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
-          <Stack.Protected
-            guard={(canUseApp && isSupportPerson) || bypassAuth}
-            redirectTo={canUseApp ? homePath : '/'}
-          >
-            <Stack.Screen name="(support)" />
-          </Stack.Protected>
-        </Stack>
-      </View>
-      {welcomeBack && (
-        <View style={StyleSheet.absoluteFill}>
-          <WelcomeSplash greeting="Welcome back to" />
+              {/* Without a session and a profile, the tabs group becomes unreachable */}
+              <Stack.Protected
+                guard={(canUseApp && !isSupportPerson) || bypassAuth}
+                redirectTo={canUseApp ? homePath : '/'}
+              >
+                <Stack.Screen name="(tabs)" />
+              </Stack.Protected>
+
+              {/* Support persons get their own app (Care Planner and Settings) instead of the patient tabs */}
+              <Stack.Protected
+                guard={(canUseApp && isSupportPerson) || bypassAuth}
+                redirectTo={canUseApp ? homePath : '/'}
+              >
+                <Stack.Screen name="(support)" />
+              </Stack.Protected>
+            </Stack>
+          </View>
+          {welcomeBack && (
+            <View style={StyleSheet.absoluteFill}>
+              <WelcomeSplash greeting="Welcome back to" />
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </AppLockGate>
+    </AppLockProvider>
   );
 }
 
