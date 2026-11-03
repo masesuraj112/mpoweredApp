@@ -97,7 +97,7 @@ Status: ✅ settled · 🟡 recommended, needs your yes · ⏳ deferred · ❓ o
 | L13 | Session length | Parked: you decide when relevant | ⏳ |
 | L14 | Retire dev harness | Gate `dev-login` behind `__DEV__`; remove `AuthDebug`; disable email provider / `signUp` in production | ✅ (section 6) |
 | L15 | Production config record | Record production Auth settings in a doc (not `config.toml`): `production-auth-checklist.md` | ✅ |
-| L16 | Password / Face ID login | Settings assets exist (`password.svg`, `faceid.svg`) and Account settings already has change-password and Face ID UI that assume email/password. Decide whether these survive | ❓ |
+| L16 | Password / Face ID login | No passwords. Face ID / fingerprint is an optional app lock on top of the SMS sign-in, for patients and support persons: off by default, asks as the app opens and after 5 minutes away, turned off by signing out (settled 3 Nov 2026) | ✅ |
 | L17 | Phone change | Re-verification flow needed if users may change number | ⏳ |
 
 > **Heads-up on L16:** `settings/account` already calls `signInWithPassword` to verify an "existing password" and `updateUser({ password })`. Phone-OTP users have no password, so that screen will not work for them. Not in this plan; flag to the team.
