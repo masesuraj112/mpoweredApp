@@ -82,6 +82,11 @@ export function formatDayMonth(isoDate: string): string {
   return `${Number(day)} ${month}`;
 }
 
+/** The Monday and Sunday of the week as day and short month with a plain hyphen, e.g. '3 Nov - 9 Nov'. */
+export function formatWeekDays(isoDate: string): string {
+  return `${formatDayMonth(getWeekStart(isoDate))} - ${formatDayMonth(getWeekEnd(isoDate))}`;
+}
+
 /** The Monday of every week from the week containing `from` to the week containing `to`. */
 export function listWeeks(from: string, to: string): string[] {
   const last = getWeekStart(to);

@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import type { WeeklyAssessmentId } from '@/features/assessments/homeProgress';
 import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgress';
-import { formatDayMonth } from '@/features/assessments/week';
+import { formatDayMonth, formatWeekDays, getLocalToday } from '@/features/assessments/week';
 import { getGreeting } from '@/features/support-person/greeting';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
@@ -118,6 +118,8 @@ export default function HomeScreen() {
           <Text accessibilityRole="header" style={styles.sectionHeading}>
             This week’s assessments
           </Text>
+          {/* The Monday to Sunday being tracked. */}
+          <Text style={styles.weekDates}>{formatWeekDays(getLocalToday())}</Text>
           <View style={styles.assessmentList}>
             {ASSESSMENTS.map((assessment) => {
               const recordedDate = recordedAssessments.get(assessment.id);
@@ -271,9 +273,14 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.caption,
   },
   sectionHeading: {
-    marginBottom: Spacing.three,
     color: colors.text,
     ...Typography.titleSmall,
+  },
+  weekDates: {
+    marginTop: Spacing.half,
+    marginBottom: Spacing.three,
+    color: colors.textSecondary,
+    ...Typography.bodySmall,
   },
   assessmentList: {
     gap: Spacing.three,

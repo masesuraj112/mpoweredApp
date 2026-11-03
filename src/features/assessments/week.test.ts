@@ -2,6 +2,7 @@ import {
   addDays,
   addWeeks,
   formatDayMonth,
+  formatWeekDays,
   formatWeekEndLabel,
   formatWeekRange,
   getLocalToday,
@@ -96,6 +97,17 @@ describe('formatDayMonth', () => {
   it('shows the day without a leading zero and the short month', () => {
     expect(formatDayMonth('2026-10-27')).toBe('27 Oct');
     expect(formatDayMonth('2026-01-05')).toBe('5 Jan');
+  });
+});
+
+describe('formatWeekDays', () => {
+  it('shows Monday to Sunday of the week with a plain hyphen, from any day in it', () => {
+    expect(formatWeekDays('2026-11-03')).toBe('2 Nov - 8 Nov');
+    expect(formatWeekDays('2026-11-08')).toBe('2 Nov - 8 Nov');
+  });
+
+  it('names both months when the week crosses one', () => {
+    expect(formatWeekDays('2026-10-28')).toBe('26 Oct - 1 Nov');
   });
 });
 
