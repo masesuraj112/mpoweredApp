@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { useAsyncResult } from '@/features/care-planner/useAsyncResult';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import type { AppError } from '@/lib/errors';
 import {
   getNotificationSettings,
@@ -20,6 +21,7 @@ export function useNotificationSettings() {
   const [changed, setChanged] = useState<NotificationSettings | null>(null);
   const [saveError, setSaveError] = useState<AppError | null>(null);
   const latestChange = useRef(0);
+  const reminders = useReminders();
   const settings = changed ?? (state.status === 'ready' ? state.data : null);
 
   const update = useCallback(
@@ -37,9 +39,10 @@ export function useNotificationSettings() {
         setSaveError(result.error);
         return false;
       }
+      reminders.refresh();
       return true;
     },
-    [settings],
+    [settings, reminders],
   );
 
   const clearSaveError = useCallback(() => setSaveError(null), []);

@@ -4,6 +4,7 @@ import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { saveSocialHealthEntry } from '@/services/social-health';
 import { router } from 'expo-router';
@@ -12,6 +13,7 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 
 export default function MoodTriggerScreen() {
   const { answers, updateAnswer } = useSocialHealthAssessment();
+  const reminders = useReminders();
   const doneBar = useKeyboardDoneBar();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -26,6 +28,8 @@ export default function MoodTriggerScreen() {
 
     const entryDate = answers.entryDate ?? getLocalToday();
     const result = await saveSocialHealthEntry(answers, entryDate);
+    // The next assessment reminder counts from this one.
+    if (result.ok) reminders.refresh();
 
     inFlight.current = false;
     setSaving(false);
