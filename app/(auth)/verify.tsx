@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useEffect, useState } from 'react';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { router, Stack } from 'expo-router';
-import { Pressable, Text, TextInput, View, type TextInputInstance } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { AuthButton } from '@/components/auth/AuthButton';
+import { CodeInput } from '@/components/auth/CodeInput';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { useAuthStyles } from '@/components/auth/authStyles';
-import { Button } from '@/components/ui/Button';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { MinTapTarget, Spacing } from '@/constants/theme';
 
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
-import { focusCodeInput } from '@/features/auth/focusCodeInput';
 import { authErrorMessage } from '@/features/auth/messages';
 import {
   OTP_LENGTH,
@@ -25,11 +27,7 @@ import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
 import { createProfile } from '@/services/profile';
 
-import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
-
 export default function VerifyScreen() {
-  const styles = useStyles();
-  const auth = useAuthStyles();
   const { data } = useOnboarding();
   const { refreshProfile, holdSignIn } = useAuth();
   const [code, setCode] = useState('');
@@ -41,7 +39,6 @@ export default function VerifyScreen() {
   // The code was sent on the phone screen just before this one, so the wait starts now.
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(RESEND_SECONDS);
   const [hasResent, setHasResent] = useState(false);
-  const codeInputRef = useRef<TextInputInstance>(null);
   const doneBar = useKeyboardDoneBar();
   const isCodeComplete = isOtpComplete(code);
   const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
@@ -147,118 +144,76 @@ export default function VerifyScreen() {
   };
 
   return (
-    <AuthScreen
-      footer={
-        <Button
-          label={isSignedIn ? 'Try again' : 'Verify'}
-          variant="primary"
-          disabled={!canVerify}
-          onPress={handleVerify}
-        />
-      }>
+    <AuthScreen>
       {/* Once the code is accepted the person is signed in, so going back to the phone screen would mislead. */}
       <Stack.Screen options={{ headerBackVisible: !isSignedIn, gestureEnabled: !isSignedIn }} />
-      <Text accessibilityRole="header" style={auth.title}>
-        We’re sending the verification code to this number
-      </Text>
+
+      <AuthTitle>We’re sending the verification code to this number</AuthTitle>
+
       {displayPhone !== '' && (
-        <Text accessibilityLabel={`Phone number ${displayPhone}`} style={styles.phoneNumber}>
+        <AppText
+          accessibilityLabel={`Phone number ${displayPhone}`}
+          variant="titleMedium"
+          style={styles.centered}
+        >
           {displayPhone}
-        </Text>
+        </AppText>
       )}
 
-      {/* The boxes only show the code; one hidden input takes it, so the keyboard's code suggestion fills all six. */}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Enter verification code"
-        onPress={() => focusCodeInput(codeInputRef.current)}
-        style={styles.codeRow}>
-        {Array.from({ length: OTP_LENGTH }, (_, index) => (
-          <View key={index} style={[styles.codeCell, index === code.length && styles.codeCellNext]}>
-            <Text style={styles.codeDigit}>{code[index] ?? ''}</Text>
-          </View>
-        ))}
-        <TextInput
-          ref={codeInputRef}
-          // Open the keyboard (and the iOS code suggestion) as soon as the screen shows.
-          autoFocus
-          accessibilityLabel="Verification code"
-          autoComplete="one-time-code"
-          keyboardType="number-pad"
-          // The iOS number pad has no return key, so add a Done bar to close it.
-          inputAccessoryViewID={doneBar.id}
-          maxLength={OTP_LENGTH}
-          onChangeText={handleCodeChange}
-          value={code}
-          style={styles.hiddenInput}
-        />
-      </Pressable>
+      <CodeInput
+        value={code}
+        onChangeText={handleCodeChange}
+        length={OTP_LENGTH}
+        inputAccessoryViewID={doneBar.id}
+      />
       {doneBar.bar}
 
       {resendSecondsRemaining !== null ? (
-        <View style={styles.resend}>
-          <Text style={styles.resendStatus}>{hasResent ? 'Sent!' : 'Code sent. This may take a moment.'}</Text>
-          <Text style={styles.resendCountdown}>You can resend in {formatResendWait(resendSecondsRemaining)}</Text>
+        <View style={styles.resendStatus}>
+          <AppText variant="bodyLarge" style={styles.centered}>
+            {hasResent ? 'Sent!' : 'Code sent. This may take a moment.'}
+          </AppText>
+          <AppText variant="labelMedium" color="textSecondary" style={styles.centered}>
+            You can resend in {formatResendWait(resendSecondsRemaining)}
+          </AppText>
         </View>
       ) : (
         <View style={styles.resendRow}>
-          <Text style={styles.resendStatus}>Didn’t receive a code?</Text>
+          <AppText variant="bodyLarge">Didn’t receive a code?</AppText>
           <Pressable
             accessibilityRole="button"
             disabled={isResending}
             onPress={handleResend}
-            style={styles.resendButton}>
-            <Text style={styles.resendText}>Resend</Text>
+            style={styles.resendButton}
+          >
+            <AppText variant="bodyLarge" color="primary" style={styles.underlined}>
+              Resend
+            </AppText>
           </Pressable>
         </View>
       )}
 
       {errorMessage !== null && (
-        <Text accessibilityRole="alert" style={auth.error}>
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.centered}>
           {errorMessage}
-        </Text>
+        </AppText>
       )}
+
+      <AuthButton
+        label={isSignedIn ? 'Try again' : 'Verify'}
+        disabled={!canVerify}
+        busy={isVerifying}
+        onPress={handleVerify}
+      />
     </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  phoneNumber: {
-    ...Typography.subtitle,
-    fontWeight: '600',
-    color: colors.text,
+const styles = StyleSheet.create({
+  centered: {
     textAlign: 'center',
   },
-  codeRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: Spacing.two,
-    minHeight: MinTapTarget,
-  },
-  codeCell: {
-    flex: 1,
-    maxWidth: 52,
-    aspectRatio: 0.8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Radius.control,
-    backgroundColor: colors.surfaceContainer,
-  },
-  codeCellNext: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  codeDigit: {
-    ...Typography.title,
-    color: colors.text,
-  },
-  hiddenInput: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    opacity: 0,
-  },
-  resend: {
-    alignItems: 'center',
+  resendStatus: {
     gap: Spacing.one,
   },
   resendRow: {
@@ -266,26 +221,13 @@ const useStyles = makeStyles((colors) => ({
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.two,
-  },
-  resendStatus: {
-    ...Typography.bodyLarge,
-    color: colors.text,
-    textAlign: 'center',
-  },
-  resendCountdown: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    columnGap: Spacing.two,
   },
   resendButton: {
     minHeight: MinTapTarget,
     justifyContent: 'center',
   },
-  resendText: {
-    ...Typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.primary,
+  underlined: {
     textDecorationLine: 'underline',
   },
-}));
+});

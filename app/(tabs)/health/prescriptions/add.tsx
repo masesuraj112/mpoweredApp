@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/health/Dropdown';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';

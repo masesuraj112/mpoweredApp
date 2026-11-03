@@ -1,4 +1,4 @@
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { useInputStyles } from '@/components/tracker/inputStyles';
 import { QuestionHint } from '@/components/tracker/ChoicePrompt';

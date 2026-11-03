@@ -8,16 +8,22 @@ import { TrackerQuestionScreen } from './TrackerQuestionScreen';
 type SummaryStatusProps = {
   state: { status: 'loading' } | { status: 'error'; message: string };
   onClose: () => void;
+  /** Spoken while loading. Defaults to "Loading your summary". */
+  loadingLabel?: string;
 };
 
 /** What a tracker summary screen shows while its entry loads, or when it could not be shown. */
-export function SummaryStatus({ state, onClose }: SummaryStatusProps) {
+export function SummaryStatus({
+  state,
+  onClose,
+  loadingLabel = 'Loading your summary',
+}: SummaryStatusProps) {
   const styles = useStyles();
   return (
     <TrackerQuestionScreen title="My Pain Summary">
       <View style={styles.centered}>
         {state.status === 'loading' ? (
-          <ActivityIndicator accessibilityLabel="Loading your summary" />
+          <ActivityIndicator accessibilityLabel={loadingLabel} />
         ) : (
           <>
             <Text accessibilityRole="alert" style={styles.message}>

@@ -6,9 +6,8 @@ React Native 0.88 + Expo SDK 58 + Expo Router + TypeScript (strict) + Supabase. 
 
 ## Layout
 - Routes: `app/(auth)`, `app/(tabs)/{home,health,planner,tracker,settings}`. Keep screens thin: compose components and hooks, no business logic.
-- `src/components/ui`: generic primitives with no app logic (Card, Button, etc.).
-- `src/components/mpowered`: older app-specific components. Do not reuse them for the Care Planner (they are being refactored later).
-- `src/components/care-planner`: Care Planner components.
+- `src/components/ui`: generic primitives with no app logic (Screen, AppText, Button, TextField, etc.). Look here before writing a new component.
+- `src/components/<area>`: components for one area, built from the `ui` primitives: `auth`, `care-planner`, `health`, `navigation`, `settings`, `support-person`, `tracker`. There is no shared "misc" folder.
 - `src/features/<area>`: types, hooks, pure logic. `src/services`: data access. `src/lib`: supabase client, `result.ts`, `errors.ts`. `src/constants/theme.ts`: design tokens.
 - `src/types/database.ts` is GENERATED. Never edit it by hand.
 
@@ -19,11 +18,11 @@ React Native 0.88 + Expo SDK 58 + Expo Router + TypeScript (strict) + Supabase. 
 - Components: PascalCase, file name = component name, named by role not appearance (`QuestionRow`, not `GreyCard`). Split out a piece if it repeats, has its own state, or exceeds about 150 lines.
 - Appointment dates are LOCAL wall-clock time (the DB column is `timestamp without time zone`). Never convert to UTC or use `toISOString()` for them.
 
-## Styling and accessibility (new work)
-- Flex layouts only: no absolute-pixel "canvas" layouts, no fixed heights. Whole screens scroll inside the safe area.
-- Colours and spacing from `@/constants/theme`, not hard-coded hex. Add missing tokens there, minimally. Leave system font scaling ON; do not use the `scale*` helpers for font sizes.
+## Styling and accessibility
+- Flex layouts only: no absolute-pixel "canvas" layouts, no fixed heights. Whole screens scroll inside the safe area (`Screen`).
+- Colours, spacing, radii, shadows and text styles come from `@/constants/theme`, never hard-coded. Set text with `AppText`. Add a missing token there, minimally, to both `light` and `dark`. Leave system font scaling ON.
 - Tap targets at least 48dp. Every interactive element has an accessibilityRole and label. Nothing may depend on swipe alone.
-- Older screens do not follow these rules. Do not copy their patterns.
+- `__tests__/unit/styling-guard.test.ts` fails on a hard-coded colour, a removed helper, `components/mpowered` or an absolute-positioned screen layout. `docs/ui/styling.md` has the tokens, the shared components and a checklist for building a screen; `docs/ui/structure.md` maps how the UI is put together and where to look for a bug; `docs/ui/refactor-history.md` records what the UI refactor changed.
 
 ## Figma
 - Use `get_metadata` first for large frames, then `get_design_context` on sub-nodes. Output is React + Tailwind: translate to React Native StyleSheet, and do not copy absolute positioning.

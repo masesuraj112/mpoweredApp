@@ -41,6 +41,11 @@ export function getLocalToday(now: Date = new Date()): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
+/** True when weekStart is the Monday of the week containing today. */
+export function isThisWeek(weekStart: string, today: string = getLocalToday()): boolean {
+  return weekStart === getWeekStart(today);
+}
+
 export function isFutureDate(date: string, today: string): boolean {
   return parse(date).getTime() > parse(today).getTime();
 }

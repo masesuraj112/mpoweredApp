@@ -5,6 +5,7 @@ import { AppText } from '@/components/ui/AppText';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { toPersonalCareSummary } from '@/features/assessments/personal-care/summary';
 import { useWeekSummary } from '@/features/assessments/useWeekSummary';
+import { isThisWeek } from '@/features/assessments/week';
 import { getPersonalCareEntryForWeek } from '@/services/assessments';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -21,6 +22,8 @@ export default function SummaryScreen() {
     errorMessage: (error) => assessmentSaveMessage(error, 'personal care'),
   });
   const close = () => router.dismissTo('/home');
+  // Only this week's entry can be changed: the questions save to the current week.
+  const edit = weekStart && isThisWeek(weekStart) ? () => router.replace('/tracker/personal-care/edit') : undefined;
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
@@ -44,7 +47,8 @@ export default function SummaryScreen() {
         { heading: 'Sleeping:', value: summary.sleepingLevel || 'No response recorded.' },
       ]}
       savedText="Saved to Care Journal"
-      onClose={close}>
+      onClose={close}
+      onEdit={edit}>
       <ReportSection heading="My reflections:">
         <AppText variant="bodyMediumRegular" color="onSurface">
           {summary.reflection || 'No reflections added.'}

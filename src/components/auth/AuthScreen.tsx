@@ -1,59 +1,65 @@
 import type { ReactNode } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
 
-import { ContentColumn, Spacing, makeStyles } from '@/constants/theme';
+import { Screen } from '@/components/ui/Screen';
+import { makeStyles, Spacing } from '@/constants/theme';
+
+/** Room for the transparent header that shows the back arrow, so the content starts below it. */
+export const AUTH_HEADER_CLEARANCE = 56;
 
 type AuthScreenProps = {
-  /** The step's content, centred in a column that scrolls when it is taller than the screen. */
   children: ReactNode;
-  /** The step's main action, kept below the content and above the keyboard and system buttons. */
+  /** The screen has the back arrow over it (most do). Leaves room for it at the top. */
+  backArrow?: boolean;
+  /** Centre the content vertically when it is shorter than the screen. */
+  center?: boolean;
+  /** Scroll the content (default). Pass `false` when the content manages its own scrolling. */
+  scroll?: boolean;
+  /** Pinned under the content, above the system navigation buttons. */
   footer?: ReactNode;
 };
 
 /**
- * The layout shared by the sign-in and sign-up steps. It leaves room for the transparent header's back
- * arrow, keeps clear of the status bar, the system navigation buttons and the keyboard, and closes the
- * keyboard when the person taps outside a text box.
+ * The page layout of the sign-up and sign-in screens: safe area, padding, scrolling, room for the back
+ * arrow, and the keyboard. Tapping outside a text box closes the keyboard (the iOS keyboard has no key
+ * for it on number and phone pads).
  */
-export function AuthScreen({ children, footer }: AuthScreenProps) {
+export function AuthScreen({ children, backArrow = true, center = false, scroll = true, footer }: AuthScreenProps) {
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
-
   return (
-    // Not exposed to screen readers: closing the keyboard is a convenience, not a control.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      {/* The keyboard view sets its own bottom padding, so the system edges go on a view inside it. */}
-      <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={[styles.screen, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            {children}
-          </ScrollView>
-          {footer ? <View style={styles.footer}>{footer}</View> : null}
-        </View>
+    // Not exposed to screen readers: it's a convenience, not a control.
+    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.fill}>
+      <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <Screen
+          edges={['top', 'bottom']}
+          scroll={scroll}
+          keyboardShouldPersistTaps="handled"
+          footer={footer ? <View style={styles.footer}>{footer}</View> : undefined}
+        >
+          {backArrow ? <View style={styles.headerClearance} /> : null}
+          <View style={[styles.body, center && styles.center]}>{children}</View>
+        </Screen>
       </KeyboardAvoidingView>
     </Pressable>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
+const useStyles = makeStyles(() => ({
+  fill: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  content: {
-    ...ContentColumn,
+  headerClearance: {
+    height: AUTH_HEADER_CLEARANCE,
+  },
+  body: {
     flexGrow: 1,
-    justifyContent: 'center',
     gap: Spacing.three,
-    paddingHorizontal: Spacing.four,
-    // Room for the header's back arrow, which floats over the top of the screen.
-    paddingTop: Spacing.six,
-    paddingBottom: Spacing.four,
+  },
+  center: {
+    justifyContent: 'center',
   },
   footer: {
-    ...ContentColumn,
-    gap: Spacing.two,
+    gap: Spacing.three,
     paddingHorizontal: Spacing.four,
     paddingBottom: Spacing.three,
   },

@@ -7,6 +7,7 @@ import { TIPS_URL } from '@/constants/socialHealthOptions';
 import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
 import { toSocialHealthSummary } from '@/features/assessments/social-health/summary';
 import { useWeekSummary } from '@/features/assessments/useWeekSummary';
+import { isThisWeek } from '@/features/assessments/week';
 import { getSocialHealthEntryForWeek } from '@/services/social-health';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -21,6 +22,8 @@ export default function SummaryScreen() {
     errorMessage: socialHealthSaveMessage,
   });
   const close = () => router.dismissTo('/home');
+  // Only this week's entry can be changed: the questions save to the current week.
+  const edit = weekStart && isThisWeek(weekStart) ? () => router.replace('/tracker/social-health/edit') : undefined;
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
@@ -54,7 +57,8 @@ export default function SummaryScreen() {
         { heading: 'Enjoyment of life:', value: summary.results.enjoymentOfLife },
       ]}
       savedText="Saved to Care Journal"
-      onClose={close}>
+      onClose={close}
+      onEdit={edit}>
       <ReportSection heading="My reflections on mood:">
         <ResultSection heading="General Mood:" value={summary.generalMood} />
         <ResultSection heading="Triggers:" value={summary.triggers} />

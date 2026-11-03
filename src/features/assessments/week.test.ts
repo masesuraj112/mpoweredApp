@@ -9,6 +9,7 @@ import {
   getWeekEnd,
   getWeekStart,
   isFutureDate,
+  isThisWeek,
   listWeeks,
 } from '@/features/assessments/week';
 
@@ -66,6 +67,15 @@ describe('getLocalToday', () => {
   it('uses the device-local calendar date, zero padded', () => {
     expect(getLocalToday(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
     expect(getLocalToday(new Date(2026, 9, 3, 0, 1))).toBe('2026-10-03');
+  });
+});
+
+describe('isThisWeek', () => {
+  it('is true only for the Monday of the week containing today', () => {
+    expect(isThisWeek('2026-09-28', '2026-10-04')).toBe(true);
+    expect(isThisWeek('2026-09-28', '2026-09-28')).toBe(true);
+    expect(isThisWeek('2026-09-28', '2026-10-05')).toBe(false);
+    expect(isThisWeek('2026-09-21', '2026-10-01')).toBe(false);
   });
 });
 

@@ -271,6 +271,8 @@ export const Typography = {
   // The names main's components use (the Material 3 scale), mapped onto the sizes above.
   /** 24/30 bold: screen titles (as `title`). */
   headlineSmall: { fontSize: 24, lineHeight: 30, fontWeight: '700' },
+  /** 28/36 regular: the big message on a full-screen slide. */
+  headlineMedium: { fontSize: 28, lineHeight: 36 },
   /** 22/28 bold: section and page headings. */
   titleLarge: { fontSize: 22, lineHeight: 28, fontWeight: '700' },
   /** 17/24 semibold: card titles and list headings. */

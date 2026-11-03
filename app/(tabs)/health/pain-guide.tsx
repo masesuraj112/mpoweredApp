@@ -1,5 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import EmbeddedSite from '@/components/mpowered/EmbeddedSite';
+import EmbeddedSite from '@/components/ui/EmbeddedSite';
 
 import { makeStyles } from '@/constants/theme';
 

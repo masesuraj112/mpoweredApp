@@ -6,7 +6,7 @@ import { MyAppointmentsSection } from '@/components/care-planner/MyAppointmentsS
 import { PlannerIntro } from '@/components/care-planner/PlannerIntro';
 import { ShortcutCarousel, type Shortcut } from '@/components/care-planner/ShortcutCarousel';
 import { SponsorFooter } from '@/components/care-planner/SponsorFooter';
-import { BrandScreen } from '@/components/mpowered/BrandScreen';
+import { BrandScreen } from '@/components/ui/BrandScreen';
 import { makeStyles, Spacing } from '@/constants/theme';
 import { useAppointments } from '@/features/care-planner/useAppointments';
 

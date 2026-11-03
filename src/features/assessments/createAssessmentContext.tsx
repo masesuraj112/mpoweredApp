@@ -5,6 +5,10 @@ export function createAssessmentContext<TAnswers extends object>(storageKey: str
   type ContextType = {
     answers: TAnswers;
     updateAnswer: <K extends keyof TAnswers>(key: K, value: TAnswers[K]) => void;
+    /** Sets every answer at once, for example to the saved entry when the user edits it. */
+    replaceAnswers: (next: TAnswers) => void;
+    /** False until the saved draft has been read from the device. */
+    isHydrated: boolean;
   };
 
   const Context = createContext<ContextType | undefined>(undefined);
@@ -54,7 +58,11 @@ export function createAssessmentContext<TAnswers extends object>(storageKey: str
     const updateAnswer: ContextType['updateAnswer'] = (key, value) =>
       setAnswers(prev => ({ ...prev, [key]: value }));
 
-    return <Context.Provider value={{ answers, updateAnswer }}>{children}</Context.Provider>;
+    return (
+      <Context.Provider value={{ answers, updateAnswer, replaceAnswers: setAnswers, isHydrated }}>
+        {children}
+      </Context.Provider>
+    );
   }
 
   function useAssessment() {

@@ -1,17 +1,16 @@
 import { Image } from 'expo-image';
-import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { AuthButton } from '@/components/auth/AuthButton';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { BrandText } from '@/components/brand/BrandText';
-import { Button } from '@/components/ui/Button';
-import { Typography, makeStyles } from '@/constants/theme';
+import { AppText } from '@/components/ui/AppText';
+import { useAuth } from '@/context/AuthContext';
 
 const SLIDE_DURATIONS = [5000, 6500] as const;
+const ILLUSTRATION_SIZE = 154;
 
 export default function VerificationConfirmationScreen() {
-  const styles = useStyles();
   const { refreshProfile } = useAuth();
   const [slide, setSlide] = useState(0);
 
@@ -26,18 +25,20 @@ export default function VerificationConfirmationScreen() {
   const handleContinue = () => refreshProfile();
 
   return (
-    <AuthScreen
-      footer={slide === 2 ? <Button label="Continue" variant="primary" onPress={handleContinue} /> : undefined}>
+    // No back arrow on these slides: the account is made, so there is nothing to go back to.
+    <AuthScreen backArrow={false} center>
       {slide === 0 && (
         <>
           <Image
             source={require('../../assets/onboarding/verification-compass.png')}
             contentFit="contain"
+            accessibilityLabel=""
             style={styles.illustration}
           />
-          <BrandText accessibilityRole="header" style={styles.startMessage}>
-            {'You’re off to an MPowered start!'}
-          </BrandText>
+          <AppText variant="headlineMedium" color="text" style={styles.message}>
+            You&apos;re off to an M<AppText variant="titleLarge">Powered</AppText>
+            {' start!'}
+          </AppText>
         </>
       )}
 
@@ -46,11 +47,12 @@ export default function VerificationConfirmationScreen() {
           <Image
             source={require('../../assets/onboarding/verification-checklist.png')}
             contentFit="contain"
+            accessibilityLabel=""
             style={styles.illustration}
           />
-          <Text style={styles.message}>
+          <AppText variant="headlineMedium" color="text" style={styles.message}>
             Next, you’ll complete short questionnaires about how your pain is impacting you.
-          </Text>
+          </AppText>
         </>
       )}
 
@@ -59,29 +61,26 @@ export default function VerificationConfirmationScreen() {
           <Image
             source={require('../../assets/onboarding/verification-lightbulb.png')}
             contentFit="contain"
+            accessibilityLabel=""
             style={styles.illustration}
           />
-          <Text style={styles.message}>Based on your answers, this app suggests questions you can ask your doctor.</Text>
+          <AppText variant="headlineMedium" color="text" style={styles.message}>
+            Based on your answers, this app suggests questions you can ask your doctor.
+          </AppText>
+          <AuthButton label="Continue" onPress={handleContinue} />
         </>
       )}
     </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
+const styles = StyleSheet.create({
   illustration: {
     alignSelf: 'center',
-    width: 154,
-    height: 154,
-  },
-  startMessage: {
-    ...Typography.display,
-    color: colors.text,
-    textAlign: 'center',
+    width: ILLUSTRATION_SIZE,
+    height: ILLUSTRATION_SIZE,
   },
   message: {
-    ...Typography.headline,
-    color: colors.text,
     textAlign: 'center',
   },
-}));
+});

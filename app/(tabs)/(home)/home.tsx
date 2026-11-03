@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
-import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/ui/BrandScreen';
 import { ArrowGlyph } from '@/components/ui/icons';
 type Assessment = {
   id: WeeklyAssessmentId;

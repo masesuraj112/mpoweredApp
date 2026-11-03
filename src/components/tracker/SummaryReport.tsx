@@ -3,6 +3,7 @@ import { Linking, Pressable, Text, View } from 'react-native';
 
 import { ReportSection } from '@/components/tracker/ReportSection';
 import { ResultSection } from '@/components/tracker/ResultSection';
+import { Button } from '@/components/ui/Button';
 import { ArrowGlyph } from '@/components/ui/icons';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
@@ -25,6 +26,8 @@ type SummaryReportProps = {
   /** The note beside the Close button, for example "Saved to My Health". */
   savedText: string;
   onClose: () => void;
+  /** Shows an "Edit answers" button that reopens the questions. Leave out when the entry cannot be edited. */
+  onEdit?: () => void;
 };
 
 /**
@@ -42,6 +45,7 @@ export function SummaryReport({
   children,
   savedText,
   onClose,
+  onEdit,
 }: SummaryReportProps) {
   const styles = useStyles();
   return (
@@ -78,7 +82,17 @@ export function SummaryReport({
 
         <View style={styles.footer}>
           <Text style={styles.saved}>{savedText}</Text>
-          <SummaryCloseButton onPress={onClose} />
+          <View style={styles.actions}>
+            {onEdit ? (
+              <Button
+                label="Edit answers"
+                variant="tonal"
+                accessibilityHint="Opens the questions again with your answers filled in"
+                onPress={onEdit}
+              />
+            ) : null}
+            <SummaryCloseButton onPress={onClose} />
+          </View>
         </View>
       </View>
     </TrackerQuestionScreen>
@@ -165,12 +179,19 @@ const useStyles = makeStyles((colors) => ({
   },
   footer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.two,
     paddingTop: Spacing.three,
     borderTopWidth: 1,
     borderTopColor: colors.divider,
+  },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: Spacing.two,
   },
   saved: {
     flex: 1,

@@ -4,11 +4,11 @@ import { Pressable, View } from 'react-native';
 import { AppText } from '@/components/ui/AppText';
 import { makeStyles, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 
-import { CheckboxOptionRow } from './CheckboxOptionRow';
+import { CheckboxOptionRow } from '@/components/ui/CheckboxOptionRow';
 import { ChoiceCard, type ChoiceCardVariant } from './ChoiceCard';
 import { ChoiceOptionList } from './ChoiceOptionList';
 import { QuestionHint, QuestionPrompt } from './ChoicePrompt';
-import { SearchBar } from './SearchBar';
+import { SearchBar } from '@/components/ui/SearchBar';
 
 type MultiChoiceListProps = {
   /** Screen heading, e.g. "Pain location" */

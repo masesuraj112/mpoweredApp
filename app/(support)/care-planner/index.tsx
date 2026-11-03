@@ -3,7 +3,7 @@ import { PillButton } from '@/components/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/support-person/SupportedPatientCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/ui/BrandScreen';
 import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';

@@ -1,15 +1,16 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthInput } from '@/components/auth/AuthInput';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { makeStyles } from '@/constants/theme';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
 import { sendVerificationCode } from '@/services/auth';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Text, TextInput } from 'react-native';
-
-import { AuthScreen } from '@/components/auth/AuthScreen';
-import { useAuthStyles } from '@/components/auth/authStyles';
-import { Button } from '@/components/ui/Button';
-import { makeStyles, useThemeColors } from '@/constants/theme';
 
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
@@ -20,8 +21,6 @@ const formatPhoneNumber = (digits: string) => {
 
 export default function PhoneScreen() {
   const styles = useStyles();
-  const auth = useAuthStyles();
-  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumber(data.phoneNumber.replace(/\D/g, '')));
   const [showPhoneError, setShowPhoneError] = useState(false);
@@ -57,45 +56,55 @@ export default function PhoneScreen() {
   };
 
   return (
-    <AuthScreen
-      footer={
-        <Button
-          label={isSending ? 'Sending…' : 'Continue'}
-          accessibilityLabel="Continue"
-          variant="primary"
-          disabled={isSending}
-          onPress={handleContinue}
-        />
-      }>
-      <Text accessibilityRole="header" style={auth.title}>
-        Your phone number
-      </Text>
-      <TextInput
+    <AuthScreen>
+      <AuthTitle>Your phone number</AuthTitle>
+
+      <AuthInput
         accessibilityLabel="Phone number"
         value={phoneNumber}
         onChangeText={handlePhoneNumberChange}
         placeholder="04xx xxx xxx"
-        placeholderTextColor={colors.textSubtle}
         keyboardType="phone-pad"
         // The iOS phone pad has no return key, so add a Done bar to close it.
         inputAccessoryViewID={doneBar.id}
         maxLength={12}
-        style={[auth.input, styles.input, isValidPhoneNumber && auth.inputValid]}
+        // The underline turns purple once the number is complete.
+        style={[styles.phoneInput, isValidPhoneNumber && styles.phoneInputValid]}
       />
       {doneBar.bar}
-      <Text style={auth.lead}>We will send the six digit verification codes to this number</Text>
+
+      <AppText variant="bodyLarge" style={styles.centered}>
+        We will send the six digit verification codes to this number
+      </AppText>
+
       {(showPhoneError || sendError !== null) && (
-        <Text accessibilityRole="alert" style={auth.error}>
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.centered}>
           {showPhoneError ? 'Please enter an Australian phone number in the format 04xx xxx xxx' : sendError}
-        </Text>
+        </AppText>
       )}
+
+      <AuthButton
+        label={isSending ? 'Sending…' : 'Continue'}
+        accessibilityLabel="Continue"
+        pale={!isValidPhoneNumber}
+        disabled={isSending}
+        busy={isSending}
+        onPress={handleContinue}
+      />
     </AuthScreen>
   );
 }
 
-const useStyles = makeStyles(() => ({
-  input: {
+const useStyles = makeStyles((colors) => ({
+  centered: {
     textAlign: 'center',
-    letterSpacing: 1,
+  },
+  phoneInput: {
+    textAlign: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: colors.onSurfaceVariant,
+  },
+  phoneInputValid: {
+    borderBottomColor: colors.primary,
   },
 }));

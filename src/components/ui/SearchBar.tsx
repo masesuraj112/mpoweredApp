@@ -1,9 +1,9 @@
 import { TextInput, type TextInputProps } from 'react-native';
 
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { useThemeColors } from '@/constants/theme';
 
-import { useInputStyles } from './inputStyles';
+import { useInputStyles } from '@/components/tracker/inputStyles';
 
 type SearchBarProps = TextInputProps & {
   placeholder?: string;

@@ -1,9 +1,14 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthOption } from '@/components/auth/AuthOption';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useOnboarding } from '@/context/Onboarding-Context';
+
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
   { label: 'Male', value: 'male' as const },
@@ -11,7 +16,6 @@ const OPTIONS = [
 ];
 
 export default function SexScreen() {
-  const styles = useStyles();
   const { data, updateData } = useOnboarding();
   const [selected, setSelected] = useState(data.sex);
 
@@ -21,48 +25,26 @@ export default function SexScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Your sex</Text>
-      {OPTIONS.map((opt) => (
-        <Pressable
-          key={opt.value}
-          style={[styles.option, selected === opt.value && styles.optionSelected]}
-          onPress={() => setSelected(opt.value)}
-        >
-          <Text style={styles.optionText}>{opt.label}</Text>
-        </Pressable>
+    <AuthScreen>
+      <AuthTitle>Your sex</AuthTitle>
+      {OPTIONS.map((option) => (
+        <AuthOption
+          key={option.value}
+          label={option.label}
+          selected={selected === option.value}
+          onPress={() => setSelected(option.value)}
+        />
       ))}
-    <Pressable
-        disabled={!selected}
-        style={[styles.continueButton, !selected && styles.continueButtonDisabled]}
-        onPress={handleContinue}
-    >
-  <Text style={[styles.continueText, !selected && styles.continueTextDisabled]}>Continue</Text>
-    </Pressable>
-      <Text style={styles.tip}>Research shows that people may experience pain differently depending on their sex</Text>
-    </View>
+      <AuthButton label="Continue" disabled={!selected} onPress={handleContinue} />
+      <AppText variant="bodySmall" color="textSecondary" style={styles.centered}>
+        💡 Research shows that people may experience pain differently depending on their sex
+      </AppText>
+    </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, alignItems: 'center' },
-  title: { color: colors.text, ...Typography.display, marginBottom: Spacing.five },
-  option: { width: '100%', backgroundColor: colors.surfaceContainer, borderRadius: Radius.card, paddingVertical: Spacing.three, alignItems: 'center', marginBottom: Spacing.two },
-  optionSelected: { backgroundColor: colors.secondaryContainer },
-  optionText: { color: colors.primary, fontWeight: '600', ...Typography.bodySmall },
-  continueButton: {
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    marginTop: Spacing.three,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    justifyContent: 'center',
-    alignSelf: 'center',
+const styles = StyleSheet.create({
+  centered: {
+    textAlign: 'center',
   },
-  continueButtonDisabled: { backgroundColor: colors.secondaryContainer },
-  continueText: { color: colors.onPrimary, fontWeight: '700', ...Typography.bodyLarge },
-  continueTextDisabled: { color: colors.primary },
-  tip: { textAlign: 'center', color: colors.textSubtle, marginTop: Spacing.five, ...Typography.caption, paddingHorizontal: Spacing.three },
-}));
+});

@@ -1,6 +1,6 @@
 import { TextInput } from 'react-native';
 
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { useThemeColors } from '@/constants/theme';
 
 import { useInputStyles } from './inputStyles';

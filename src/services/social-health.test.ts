@@ -110,32 +110,30 @@ describe('saveSocialHealthEntry', () => {
     ['23514', 'violates check constraint', 'VALIDATION'],
   ])('maps database error %s (%s) to %s', async (code, message, expected) => {
     const rpc = jest.fn().mockResolvedValue({ data: null, error: { code, message } });
-    // a duplicate triggers the retry check, which finds nothing to match
+    // a duplicate triggers the update, which fails the same way here
     const from = jest.fn(() => query({ data: null, error: null }));
     const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc, from }), options);
     expect(result).toMatchObject({ ok: false, error: { code: expected } });
   });
 
-  it('treats a duplicate week as success when the stored entry is identical (lost response)', async () => {
-    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'dup' } });
-    const from = jest.fn(() => query({ data: storedRow, error: null }));
-    const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc, from }), options);
+  it('replaces the answers when the week already has an entry (editing, or a lost-response retry)', async () => {
+    const rpc = jest
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { code: '23505', message: 'dup' } })
+      .mockResolvedValueOnce({ data: 7, error: null });
+    const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc }), options);
     expect(result).toEqual({ ok: true, data: 7 });
-    expect(from).toHaveBeenCalledWith('social_health_assessment');
+    expect(rpc).toHaveBeenLastCalledWith('update_social_health_assessment', expect.objectContaining({ p_week_start: '2026-09-28' }));
+    expect(rpc.mock.calls[1][1]).not.toHaveProperty('p_date');
   });
 
-  it('keeps DUPLICATE_WEEK when the stored entry is different', async () => {
-    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'dup' } });
-    const from = jest.fn(() => query({ data: { ...storedRow, mood: 9 }, error: null }));
-    const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc, from }), options);
-    expect(result).toMatchObject({ ok: false, error: { code: 'DUPLICATE_WEEK' } });
-  });
-
-  it('keeps DUPLICATE_WEEK when the stored entry cannot be read', async () => {
-    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '23505', message: 'dup' } });
-    const from = jest.fn(() => query({ data: null, error: { code: '42501', message: 'denied' } }));
-    const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc, from }), options);
-    expect(result).toMatchObject({ ok: false, error: { code: 'DUPLICATE_WEEK' } });
+  it('reports a failed update, for example when the entry is no longer there', async () => {
+    const rpc = jest
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { code: '23505', message: 'dup' } })
+      .mockResolvedValueOnce({ data: null, error: { code: 'P0001', message: 'NOT_FOUND' } });
+    const result = await saveSocialHealthEntry(answers, '2026-10-01', fakeClient({ rpc }), options);
+    expect(result).toMatchObject({ ok: false, error: { code: 'NOT_FOUND' } });
   });
 
   it('gives NETWORK when the request itself fails', async () => {

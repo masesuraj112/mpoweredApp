@@ -30,7 +30,7 @@ Pain, social health and management tests share some file names (`validate.test.t
 | A characteristic must be one of the seven options | `normalise.test.ts` (`isValidCharacteristic`); `validate.test.ts` | Unit | `unit-tests` |
 | Database errors map to app error codes (including 23502 to `VALIDATION`) | `errors.test.ts` | Unit | `unit-tests` |
 | Saving sends normalised values, and a bad answer never reaches the database | `assessments.test.ts` (`savePainEntry`) | Service | `unit-tests` |
-| A retry after a lost response is treated as success; a different stored entry stays `DUPLICATE_WEEK` | `assessments.test.ts` | Service | `unit-tests` |
+| Saving a week that already has an entry replaces its answers through the matching `update_*` function (editing, and a retry after a lost response); a failed update is reported | `saveOrUpdate.test.ts`; `assessments.test.ts`, `social-health.test.ts`, `management.test.ts` | Service | `unit-tests` |
 | Read functions filter by `week_start` and by the signed-in `auth_id`, and report `NO_SESSION` / `NO_PROFILE` | `assessments.test.ts` (`getPainEntryForWeek`, `getCompletedPainWeeks`, `getUserStartWeek`, `getRecentPainLocations`) | Service | `unit-tests` |
 | Each save failure shows a friendly message, and raw database text is never shown to the user | `messages.test.ts` | Unit | `unit-tests` |
 | The Summary screen shows the Monday to Sunday week, the saved values and the score wording (including 0 and 10) | `summary.test.ts` | Unit | `unit-tests` |
@@ -69,6 +69,9 @@ Pain, social health and management tests share some file names (`validate.test.t
 | The management save function rejects a future date, a date before the start week and a missing profile | `070_save_management_assessment` | Database | `database-tests` |
 | The management Summary uses the agreed wording for every exercise/medication combination | management `summary.test.ts` | Unit | `unit-tests` |
 | Saving management sends validated values; a lost-response retry succeeds | `management.test.ts` | Service | `unit-tests` |
+| A saved assessment (all five) can be edited only through its `update_*_assessment` function: answers change in place, child lists are replaced, the submission id and date are kept, the save validation still applies, another user or an empty week gets `NOT_FOUND`, anon cannot call it | `099_update_assessments` | Database | `database-tests` |
+| Editing an assessment loads this week's saved entry back into the question screens (after the local draft has loaded, so it cannot overwrite them); every saved entry maps back to answers that pass validation; a failed or missing load shows a message | `savedAnswers.test.ts`, `useEditSavedAnswers.test.ts` | Unit | `unit-tests` |
+| A tracker summary shows Edit answers only for this week's entry, and the button reopens the questions | `SummaryReport.test.tsx`, `week.test.ts` (`isThisWeek`) | Component, Unit | `unit-tests` |
 | Database errors map to app codes (including `MEDICATION_CONFLICT`) and show friendly management messages | `errors.test.ts`; management `messages.test.ts` | Unit | `unit-tests` |
 | Local numbers become `+614...` and anything that is not an Australian mobile is rejected | `phone.test.ts` (accepted shapes, rejected input, idempotence, display format) | Unit | `unit-tests` |
 | The sign-in code is exactly six digits | `otp.test.ts` | Unit | `unit-tests` |

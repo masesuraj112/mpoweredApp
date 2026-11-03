@@ -6,7 +6,7 @@ import { NativeSlider } from '@/components/ui/NativeSlider';
 import { ChoiceCard, type ChoiceCardVariant } from './ChoiceCard';
 import { QuestionPrompt } from './ChoicePrompt';
 import { useInputStyles } from './inputStyles';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 
 import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 interface ScaleSliderProps {

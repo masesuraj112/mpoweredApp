@@ -1,13 +1,16 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthInput } from '@/components/auth/AuthInput';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { useOnboarding } from '@/context/Onboarding-Context';
+
 export default function OtherConditionsScreen() {
-  const styles = useStyles();
-  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const [text, setText] = useState(data.otherConditions);
   const { noDiagnosis } = useLocalSearchParams<{ noDiagnosis?: string }>();
@@ -20,54 +23,35 @@ export default function OtherConditionsScreen() {
   };
 
   return (
-    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Text style={styles.title}>
-          {isNoDiagnosisPath ? "Tell us what you're experiencing" : 'Do you have any other conditions?'}
-        </Text>
-        <Text style={styles.subtitle}>
-          {isNoDiagnosisPath
-            ? // DRAFT COPY — please review/replace before shipping
-              "No diagnosis yet? That's okay — describe what you're feeling in your own words, and MPowered will still work for you."
-            : "If none, press 'Continue'"}
-        </Text>
-        <TextInput
-          value={text}
-          onChangeText={setText}
-          placeholder={isNoDiagnosisPath ? 'Describe your symptoms or how you\'re feeling' : 'Type conditions or symptoms that you know'}
-          placeholderTextColor={colors.textSubtle}
-          multiline
-          // Return adds a new line, so add a Done bar to close the keyboard.
-          inputAccessoryViewID={doneBar.id}
-          style={styles.input}
-        />
-        {doneBar.bar}
-        <Pressable style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueText}>Continue</Text>
-        </Pressable>
-      </KeyboardAvoidingView>
-    </Pressable>
+    <AuthScreen>
+      <AuthTitle>
+        {isNoDiagnosisPath ? "Tell us what you're experiencing" : 'Do you have any other conditions?'}
+      </AuthTitle>
+      <AppText variant="bodyMediumRegular" color="textSecondary" style={styles.centered}>
+        {isNoDiagnosisPath
+          ? // DRAFT COPY — please review/replace before shipping
+            "No diagnosis yet? That's okay — describe what you're feeling in your own words, and MPowered will still work for you."
+          : "If none, press 'Continue'"}
+      </AppText>
+      <AuthInput
+        accessibilityLabel={isNoDiagnosisPath ? 'Your symptoms' : 'Other conditions'}
+        value={text}
+        onChangeText={setText}
+        placeholder={
+          isNoDiagnosisPath ? "Describe your symptoms or how you're feeling" : 'Type conditions or symptoms that you know'
+        }
+        multiline
+        // Return adds a new line, so add a Done bar to close the keyboard.
+        inputAccessoryViewID={doneBar.id}
+      />
+      {doneBar.bar}
+      <AuthButton label="Continue" onPress={handleContinue} />
+    </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: { flex: 1 },
-  container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, paddingBottom: Spacing.six },
-  title: { color: colors.text, ...Typography.display, textAlign: 'center', marginBottom: Spacing.two },
-  subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: Spacing.four },
-  input: { color: colors.text, backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall },
-  continueButton: {
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    // Straight under the text box, so it stays in reach with the keyboard open.
-    marginTop: Spacing.four,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    alignSelf: 'center',
+const styles = StyleSheet.create({
+  centered: {
+    textAlign: 'center',
   },
-  continueText: { color: colors.onPrimary, fontWeight: '600', ...Typography.bodySmall },
-}));
+});

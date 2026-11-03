@@ -1,4 +1,4 @@
-import { OptionRow } from './OptionRow';
+import { OptionRow } from '@/components/ui/OptionRow';
 
 type CheckboxOptionRowProps = {
   label: string;

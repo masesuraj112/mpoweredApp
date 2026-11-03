@@ -1,4 +1,4 @@
-import { HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { HeroLead, HeroTitle } from '@/components/ui/BrandScreen';
 
 /** The Care Planner's title and lead, shown on the brand gradient at the top of its home. */
 export function PlannerIntro() {

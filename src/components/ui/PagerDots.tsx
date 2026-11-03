@@ -6,10 +6,12 @@ type PagerDotsProps = {
   count: number;
   activeIndex: number;
   onSelect: (index: number) => void;
+  /** What each dot stands for in the spoken label ("card 2 of 3"). */
+  itemLabel?: string;
 };
 
 /** A row of tappable dots. Each dot announces "card N of COUNT" so paging never relies on swiping. */
-export function PagerDots({ count, activeIndex, onSelect }: PagerDotsProps) {
+export function PagerDots({ count, activeIndex, onSelect, itemLabel = 'card' }: PagerDotsProps) {
   const styles = useStyles();
   return (
     <View style={styles.row}>
@@ -19,7 +21,7 @@ export function PagerDots({ count, activeIndex, onSelect }: PagerDotsProps) {
           <Pressable
             key={index}
             accessibilityRole="button"
-            accessibilityLabel={`card ${index + 1} of ${count}`}
+            accessibilityLabel={`${itemLabel} ${index + 1} of ${count}`}
             accessibilityState={{ selected: active }}
             onPress={() => onSelect(index)}
             style={styles.target}>

@@ -10,7 +10,7 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { ok, run } from '@/lib/result';
 import { getAssessments, getPainEntries } from '@/services/health';
 
-import { BrandScreen, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { BrandScreen, HeroTitle } from '@/components/ui/BrandScreen';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');

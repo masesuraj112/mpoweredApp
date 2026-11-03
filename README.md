@@ -28,13 +28,12 @@ This README explains how the repository is organised, how to run the app, and wh
 | ---- | ------------- |
 | `app/` | Screens and routes (Expo Router). `(auth)` is sign-in and onboarding, `(tabs)` is the patient app (home, health, planner, tracker, settings), `(support)` is the support person's view. Screens stay thin: they compose components and hooks. |
 | `src/components/ui/` | Generic building blocks with no app logic |
-| `src/components/care-planner/` | Care Planner components |
-| `src/components/mpowered/` | Older app-specific components, being refactored |
+| `src/components/<area>/` | Components for one area of the app: `auth`, `care-planner`, `health`, `navigation`, `settings`, `support-person`, `tracker` |
 | `src/features/<area>/` | Types, hooks and pure logic for each area: assessments, auth, care-planner, health-profile, onboarding, settings, support-person |
 | `src/services/` | Data access. Each function returns a `Result<T>` and takes the Supabase client as its last optional argument |
 | `src/lib/` | The Supabase client, `Result` type and error mapping |
 | `src/context/` | Shared client state (authentication, onboarding) |
-| `src/constants/theme.ts` | Design tokens (colours, spacing) |
+| `src/constants/theme.ts` | Design tokens (colours, spacing, radii, shadows, text styles) |
 | `src/types/database.ts` | Generated from the database. Never edit it by hand |
 | `supabase/migrations/` | The database schema, one file per change. Never edit an existing migration; add a new one |
 | `supabase/tests/database/` | pgTAP database tests |
@@ -45,7 +44,7 @@ This README explains how the repository is organised, how to run the app, and wh
 | `.github/workflows/` | `ci.yml` (checks), `eas-update.yml` (publishes app updates), `deploy-db.yml` (manual database deploy) |
 | `app.json`, `eas.json` | Expo and EAS build configuration |
 
-Coding conventions (layout, styling, accessibility, database rules) are in [CLAUDE.md](CLAUDE.md), which applies to people as much as to AI assistants.
+Coding conventions (layout, styling, accessibility, database rules) are in [CLAUDE.md](CLAUDE.md), which applies to people as much as to AI assistants. The styling guide (tokens, shared components, how to build a screen) is [docs/ui/styling.md](docs/ui/styling.md); the map of the UI is [docs/ui/structure.md](docs/ui/structure.md), and what the refactor changed is [docs/ui/refactor-history.md](docs/ui/refactor-history.md).
 
 ## Getting started
 

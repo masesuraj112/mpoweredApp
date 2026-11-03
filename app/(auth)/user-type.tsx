@@ -1,15 +1,21 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { AuthButton } from '@/components/auth/AuthButton';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { useAuthStyles } from '@/components/auth/authStyles';
-import { Button } from '@/components/ui/Button';
-import { Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { UserTypeCard } from '@/components/auth/UserTypeCard';
+import { AppText } from '@/components/ui/AppText';
+import { useOnboarding } from '@/context/Onboarding-Context';
 
 type UserType = 'patient' | 'support-person';
 
-const OPTIONS: { id: UserType; title: string; description: string; benefits: string[] }[] = [
+const OPTIONS: {
+  id: UserType;
+  title: string;
+  description: string;
+  benefits: string[];
+}[] = [
   {
     id: 'patient',
     title: 'I am a Patient',
@@ -33,128 +39,35 @@ const OPTIONS: { id: UserType; title: string; description: string; benefits: str
 ];
 
 export default function UserTypeScreen() {
-  const styles = useStyles();
-  const auth = useAuthStyles();
   const { data, updateData } = useOnboarding();
 
   const handleContinue = () => router.push('/(auth)/name');
 
   return (
-    <AuthScreen
-      footer={
-        <Button label="Continue" variant="primary" disabled={data.userType === null} onPress={handleContinue} />
-      }>
-      <Text accessibilityRole="header" style={auth.title}>
-        Which describes you best?
-      </Text>
-      <Text style={auth.lead}>Tell us a little about yourself so we can personalise your experience.</Text>
+    <AuthScreen>
+      <AuthTitle>Which describes you best?</AuthTitle>
+      <AppText variant="bodyLarge" color="onSurfaceVariant" style={styles.centered}>
+        Tell us a little about yourself so we can personalise your experience.
+      </AppText>
 
-      <View accessibilityRole="radiogroup" style={styles.options}>
-        {OPTIONS.map((option) => {
-          const selected = data.userType === option.id;
-          return (
-            <Pressable
-              key={option.id}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
-              accessibilityLabel={option.title}
-              accessibilityHint={option.description}
-              onPress={() => updateData({ userType: option.id })}
-              style={[styles.optionCard, selected && styles.optionCardSelected]}>
-              <View style={styles.optionHeader}>
-                <View style={styles.optionHeading}>
-                  <Text style={styles.optionTitle}>{option.title}</Text>
-                  <Text style={styles.optionDescription}>{option.description}</Text>
-                </View>
-                <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
-                  {selected && <View style={styles.radioInner} />}
-                </View>
-              </View>
-              <View style={styles.divider} />
-              {option.benefits.map((benefit) => (
-                <View key={benefit} style={styles.benefitRow}>
-                  <View style={[styles.benefitBullet, selected && styles.benefitBulletSelected]} />
-                  <Text style={styles.benefitText}>{benefit}</Text>
-                </View>
-              ))}
-            </Pressable>
-          );
-        })}
-      </View>
+      {OPTIONS.map((option) => (
+        <UserTypeCard
+          key={option.id}
+          title={option.title}
+          description={option.description}
+          benefits={option.benefits}
+          selected={data.userType === option.id}
+          onPress={() => updateData({ userType: option.id })}
+        />
+      ))}
+
+      <AuthButton label="Continue" disabled={data.userType === null} onPress={handleContinue} />
     </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  options: {
-    gap: Spacing.three,
+const styles = StyleSheet.create({
+  centered: {
+    textAlign: 'center',
   },
-  optionCard: {
-    gap: Spacing.two,
-    padding: Spacing.three,
-    borderRadius: Radius.card,
-    backgroundColor: colors.surfaceContainer,
-  },
-  optionCardSelected: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  optionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
-  optionHeading: {
-    flex: 1,
-    gap: Spacing.half,
-  },
-  optionTitle: {
-    ...Typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  optionDescription: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  radioOuter: {
-    width: 24,
-    height: 24,
-    borderRadius: Radius.pill,
-    borderWidth: 2,
-    borderColor: colors.controlBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioOuterSelected: {
-    borderColor: colors.controlChecked,
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: Radius.pill,
-    backgroundColor: colors.controlChecked,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.divider,
-  },
-  benefitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
-  benefitBullet: {
-    width: 6,
-    height: 6,
-    borderRadius: Radius.pill,
-    backgroundColor: colors.outline,
-  },
-  benefitBulletSelected: {
-    backgroundColor: colors.primary,
-  },
-  benefitText: {
-    flex: 1,
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-  },
-}));
+});

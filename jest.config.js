@@ -63,6 +63,7 @@ module.exports = {
     'src/lib/result.ts',
     'src/lib/errors.ts',
     'src/services/assessments.ts',
+    'src/services/saveOrUpdate.ts',
     'src/features/health-profile/prescriptions.ts',
     'src/features/health-profile/profile.ts',
     'src/features/health-profile/tracking.ts',
@@ -90,5 +91,7 @@ module.exports = {
     'src/features/support-person/useSupportedAppointmentQuestions.ts',
     'src/constants/theme.ts',
     'src/features/assessments/useWeekSummary.ts',
+    'src/features/assessments/savedAnswers.ts',
+    'src/features/assessments/useEditSavedAnswers.ts',
   ],
 };

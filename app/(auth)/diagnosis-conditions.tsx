@@ -1,15 +1,18 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Pressable, ScrollView, View, type ScrollViewInstance } from 'react-native';
 
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthInput } from '@/components/auth/AuthInput';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { useAuthStyles } from '@/components/auth/authStyles';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { SearchBar } from '@/components/tracker/SearchBar';
-import { Button } from '@/components/ui/Button';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { CheckboxOptionRow } from '@/components/ui/CheckboxOptionRow';
+import { ChipButton } from '@/components/ui/ChipButton';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { SearchBar } from '@/components/ui/SearchBar';
+import { makeStyles, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { useOnboarding } from '@/context/Onboarding-Context';
 
 const CONDITIONS = [
   'Arthritis',
@@ -44,19 +47,33 @@ const CONDITION_LABELS: Record<string, string> = {
   'Sjogren’s syndrome': 'Sjogren’s disease',
 };
 
+// The selected conditions grow in rows of chips; past this height they scroll, so the list below keeps its room.
+const CHIPS_MAX_HEIGHT = 150;
+
+const labelOf = (condition: string) => CONDITION_LABELS[condition] ?? condition;
+
 export default function DiagnosisConditionsScreen() {
   const styles = useStyles();
-  const auth = useAuthStyles();
-  const colors = useThemeColors();
   const { data, updateData } = useOnboarding();
   const selectedConditions = data.conditions;
   const [searchText, setSearchText] = useState('');
   const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
   const [customCondition, setCustomCondition] = useState('');
   const doneBar = useKeyboardDoneBar();
+  const selectedChipsRef = useRef<ScrollViewInstance>(null);
+  const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
   const filteredConditions = CONDITIONS.filter((condition) =>
-    (CONDITION_LABELS[condition] ?? condition).toLowerCase().includes(searchText.trim().toLowerCase()),
+    labelOf(condition).toLowerCase().includes(searchText.trim().toLowerCase()),
   );
+
+  // Once the chips outgrow their space they scroll, so bring the newest one into view.
+  useEffect(() => {
+    if (selectedChipsContentHeight > CHIPS_MAX_HEIGHT) {
+      selectedChipsRef.current?.scrollToEnd({ animated: true });
+    } else {
+      selectedChipsRef.current?.scrollTo({ y: 0, animated: false });
+    }
+  }, [selectedConditions.length, selectedChipsContentHeight]);
 
   const handleContinue = () => router.push('/(auth)/other-conditions');
 
@@ -87,72 +104,90 @@ export default function DiagnosisConditionsScreen() {
 
   return (
     <AuthScreen
-      footer={<Button label="Continue" variant="primary" disabled={!hasSelection} onPress={handleContinue} />}>
-      <Text accessibilityRole="header" style={auth.title}>
-        Tell us about the musculoskeletal or chronic pain you’re experiencing
-      </Text>
-      <Text style={auth.lead}>You can select multiple conditions</Text>
+      scroll={false}
+      footer={<AuthButton label="Continue" disabled={!hasSelection} onPress={handleContinue} />}
+    >
+      <AuthTitle>Tell us about the musculoskeletal or chronic pain you’re experiencing</AuthTitle>
 
-      <SearchBar value={searchText} onChangeText={setSearchText} placeholder="Search diagnoses" style={auth.input} />
+      <AppText variant="labelLarge" style={styles.prompt}>
+        You can select multiple conditions
+      </AppText>
+
+      <SearchBar value={searchText} onChangeText={setSearchText} placeholder="Search diagnoses" />
 
       {hasSelection && (
-        <View style={styles.selectedChips}>
+        <ScrollView
+          ref={selectedChipsRef}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={selectedChipsContentHeight > CHIPS_MAX_HEIGHT}
+          onContentSizeChange={(_, contentHeight) => setSelectedChipsContentHeight(contentHeight)}
+          // Keep ScrollView's default overflow: any other value limits the chips to this view's height, which starts
+          // at 0, so their height measures 0 and the view never grows.
+          style={styles.selectedScroller}
+          contentContainerStyle={styles.selectedChips}
+        >
           {selectedConditions.map((condition) => (
             <View key={condition} style={styles.chip}>
-              <Text style={styles.chipLabel} numberOfLines={1}>
-                {CONDITION_LABELS[condition] ?? condition}
-              </Text>
+              <AppText variant="labelLarge" color="onSurface" numberOfLines={1} style={styles.chipLabel}>
+                {labelOf(condition)}
+              </AppText>
               <Pressable
-                onPress={() => removeCondition(condition)}
                 accessibilityRole="button"
                 accessibilityLabel={`Remove ${condition}`}
-                style={styles.chipRemove}>
-                <Text style={styles.chipRemoveText}>×</Text>
+                onPress={() => removeCondition(condition)}
+                style={styles.chipRemove}
+              >
+                <AppText accessibilityElementsHidden importantForAccessibility="no" variant="titleLarge" color="onSurface">
+                  ×
+                </AppText>
               </Pressable>
             </View>
           ))}
-        </View>
+        </ScrollView>
       )}
 
-      <View style={styles.conditionsList}>
-        {filteredConditions.map((condition, index) => (
-          <Checkbox
-            key={condition}
-            checked={selectedConditions.includes(condition)}
-            onChange={() => toggleCondition(condition)}
-            label={CONDITION_LABELS[condition] ?? condition}
-            style={[styles.conditionRow, index > 0 && styles.rowDivider]}
-          />
-        ))}
-        <View style={[styles.customConditionRow, filteredConditions.length > 0 && styles.rowDivider]}>
-          {isAddingCustomCondition ? (
-            <>
-              <TextInput
-                accessibilityLabel="Custom diagnosis"
-                autoFocus
-                value={customCondition}
-                onChangeText={setCustomCondition}
-                onSubmitEditing={addCustomCondition}
-                placeholder="Enter a diagnosis"
-                placeholderTextColor={colors.textSubtle}
-                returnKeyType="done"
-                inputAccessoryViewID={doneBar.id}
-                style={[auth.input, styles.customConditionInput]}
-              />
-              <Button label="Add" variant="primary" disabled={!customCondition.trim()} onPress={addCustomCondition} />
-            </>
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => {
-                setCustomCondition(searchText.trim());
-                setIsAddingCustomCondition(true);
-              }}
-              style={styles.addCustomOption}>
-              <Text style={styles.addCustomOptionText}>Other – add custom diagnosis</Text>
-            </Pressable>
-          )}
-        </View>
+      <View style={styles.panel}>
+        <ScrollView showsVerticalScrollIndicator keyboardShouldPersistTaps="handled" indicatorStyle="black">
+          {filteredConditions.map((condition) => (
+            <CheckboxOptionRow
+              key={condition}
+              label={labelOf(condition)}
+              selected={selectedConditions.includes(condition)}
+              onPress={() => toggleCondition(condition)}
+            />
+          ))}
+          <View style={styles.customRow}>
+            {isAddingCustomCondition ? (
+              <>
+                <AuthInput
+                  accessibilityLabel="Custom diagnosis"
+                  autoFocus
+                  value={customCondition}
+                  onChangeText={setCustomCondition}
+                  onSubmitEditing={addCustomCondition}
+                  placeholder="Enter a diagnosis"
+                  returnKeyType="done"
+                  inputAccessoryViewID={doneBar.id}
+                  style={styles.customInput}
+                />
+                <ChipButton label="Add" disabled={!customCondition.trim()} onPress={addCustomCondition} />
+              </>
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setCustomCondition(searchText.trim());
+                  setIsAddingCustomCondition(true);
+                }}
+                style={styles.addCustomOption}
+              >
+                <AppText variant="labelLargeBold" color="primary">
+                  Other – add custom diagnosis
+                </AppText>
+              </Pressable>
+            )}
+          </View>
+        </ScrollView>
       </View>
       {doneBar.bar}
     </AuthScreen>
@@ -160,63 +195,63 @@ export default function DiagnosisConditionsScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
+  prompt: {
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+  },
+  selectedScroller: {
+    flexGrow: 0,
+    flexShrink: 0,
+    maxHeight: CHIPS_MAX_HEIGHT,
+  },
   selectedChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.two,
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    gap: Spacing.mid,
   },
   chip: {
+    maxWidth: '100%',
+    minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
-    maxWidth: '100%',
+    gap: Spacing.one,
     paddingLeft: Spacing.three,
     borderRadius: Radius.pill,
-    backgroundColor: colors.secondaryContainer,
+    backgroundColor: colors.surfaceContainer,
   },
   chipLabel: {
     flexShrink: 1,
-    ...Typography.labelLarge,
-    color: colors.onSecondaryContainer,
   },
   chipRemove: {
-    width: MinTapTarget,
-    height: MinTapTarget,
+    minWidth: MinTapTarget,
+    minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipRemoveText: {
-    ...Typography.subtitle,
-    color: colors.onSecondaryContainer,
-  },
-  conditionsList: {
-    paddingHorizontal: Spacing.three,
-    borderRadius: Radius.card,
+  // The list takes the room that is left and scrolls inside it.
+  panel: {
+    flex: 1,
+    minHeight: 160,
+    overflow: 'hidden',
+    borderRadius: Radius.small,
     backgroundColor: colors.surfaceContainer,
   },
-  conditionRow: {
-    paddingVertical: Spacing.two,
-  },
-  rowDivider: {
-    borderTopWidth: 1,
-    borderTopColor: colors.divider,
-  },
-  customConditionRow: {
+  customRow: {
+    minHeight: MinTapTarget + Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
   },
   addCustomOption: {
     flex: 1,
     minHeight: MinTapTarget,
     justifyContent: 'center',
   },
-  addCustomOptionText: {
-    ...Typography.bodyLarge,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  customConditionInput: {
+  customInput: {
     flex: 1,
+    backgroundColor: colors.background,
   },
 }));

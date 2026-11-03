@@ -1,20 +1,18 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AppText } from '@/components/ui/AppText';
+import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
 import { seesPatientIntro } from '@/features/auth/patientIntro';
 import { createProfile } from '@/services/profile';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Text } from 'react-native';
-
-import { AuthScreen } from '@/components/auth/AuthScreen';
-import { useAuthStyles } from '@/components/auth/authStyles';
-import { Button } from '@/components/ui/Button';
-import { Typography, makeStyles } from '@/constants/theme';
 
 export default function LoginBridgeScreen() {
-  const styles = useStyles();
-  const auth = useAuthStyles();
   const { data } = useOnboarding();
   const { session, refreshProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
@@ -47,36 +45,35 @@ export default function LoginBridgeScreen() {
   };
 
   return (
-    <AuthScreen
-      footer={
-        <Button
-          label={isSaving ? 'Saving…' : 'Continue'}
-          accessibilityLabel="Continue"
-          variant="primary"
-          disabled={isSaving}
-          onPress={handleContinue}
-        />
-      }>
-      <Text accessibilityRole="header" style={auth.title}>
-        Thank you, {data.name || 'there'}
-      </Text>
-      <Text style={styles.message}>
-        Finally, let’s link this information to your account so the next time you open this app, you can just log
-        in
-      </Text>
+    <AuthScreen center>
+      <AppText accessibilityRole="header" variant="titleLarge" color="onSurface" style={styles.greeting}>
+        Thank you, {data.name || 'there'} 😃
+      </AppText>
+      <AppText variant="titleLarge" color="onSurface" style={styles.message}>
+        Finally, let’s link this information to your account so the next time you open this app, you can just log in
+      </AppText>
+      <AuthButton
+        label={isSaving ? 'Saving…' : 'Continue'}
+        accessibilityLabel="Continue"
+        disabled={isSaving}
+        busy={isSaving}
+        onPress={handleContinue}
+      />
       {errorMessage !== null && (
-        <Text accessibilityRole="alert" style={auth.error}>
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.message}>
           {errorMessage}
-        </Text>
+        </AppText>
       )}
     </AuthScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
+const styles = StyleSheet.create({
+  greeting: {
+    textAlign: 'center',
+    marginBottom: Spacing.three,
+  },
   message: {
-    ...Typography.subtitle,
-    color: colors.text,
     textAlign: 'center',
   },
-}));
+});
