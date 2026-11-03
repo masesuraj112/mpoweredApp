@@ -24,7 +24,7 @@ export const Palette = {
   tint: '#ECE3FF',
   tintSoft: '#F7F3FF',
   tintStrong: '#D9C8FF',
-  mist: '#F3F2F6',
+  mist: '#F3EEFF',
   line: '#E5E3EA',
   border: '#7A7684',
   borderStrong: '#5C5867',
