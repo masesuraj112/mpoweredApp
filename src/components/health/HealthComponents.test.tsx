@@ -44,7 +44,8 @@ describe('Dropdown', () => {
     await render(<Dropdown value="mg" options={options} onChange={onChange} accessibilityLabel="Strength unit" />);
 
     await fireEvent.press(screen.getByRole('button', { name: 'Strength unit, mg' }));
-    await fireEvent.press(screen.getByRole('button', { name: 'Close list' }));
+    // The list is a modal view, so the backdrop is hidden from screen readers (they close it with the system gesture).
+    await fireEvent.press(screen.getByRole('button', { name: 'Close list', includeHiddenElements: true }));
 
     expect(onChange).not.toHaveBeenCalled();
     expect(screen.queryByRole('radio')).toBeNull();

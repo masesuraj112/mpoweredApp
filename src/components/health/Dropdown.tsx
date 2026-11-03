@@ -59,11 +59,14 @@ export function Dropdown<T extends string>({
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close list"
-          style={styles.backdrop}
-          onPress={() => setOpen(false)}>
+        <View style={styles.overlay}>
+          {/* A sibling of the list, not its parent, so a screen reader can reach each option on its own. */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close list"
+            style={StyleSheet.absoluteFill}
+            onPress={() => setOpen(false)}
+          />
           <View accessibilityViewIsModal style={styles.sheet}>
             <ScrollView>
               {options.map((option, index) => {
@@ -88,7 +91,7 @@ export function Dropdown<T extends string>({
               })}
             </ScrollView>
           </View>
-        </Pressable>
+        </View>
       </Modal>
     </>
   );
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
   triggerText: {
     flexShrink: 1,
   },
-  backdrop: {
+  overlay: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: Spacing.five,

@@ -75,7 +75,7 @@ patient added them to (decision S2).
 | Plan and questions hooks | `useSupportedAppointmentPlan.ts`, `useSupportedAppointmentQuestions.ts` (+ test) |
 | Pure helpers (upcoming/past, dates, initials, greeting, permissions) | `appointments.ts`, `greeting.ts`, `permissions.ts` (all tested) |
 | Button navigation | `src/features/support-person/navigation.ts` |
-| Support person components | `src/components/mpowered/support-person/` |
+| Support person components | `src/components/support-person/` |
 | Reused from the Planner, unchanged | `AppointmentOverviewCard`, `QuestionGroupList`, `AnswerModal`, `QuestionSuggestionGroup`, `QuestionHintBanner`, `PlannerFlowScreen`, `useAsyncResult`, `useConfirmDiscard`, selection and display helpers |
 
 **Shared or patient files this branch changed.** The patient app should look and work the same:

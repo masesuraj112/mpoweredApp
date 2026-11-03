@@ -66,19 +66,21 @@ export default function HomeScreen() {
         </AppText>
       </View>
 
-      <View
-        accessible
-        style={styles.progressSection}
-        accessibilityLabel={`This week's progress: ${progress} of ${ASSESSMENTS.length} assessments`}
-      >
-        <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${(progress / ASSESSMENTS.length) * 100}%` }]} />
-        </View>
-        <View style={styles.progressLabels}>
-          <AppText variant="labelMedium">This week&apos;s progress</AppText>
-          <AppText variant="labelMedium">
-            {progress}/{ASSESSMENTS.length} assessments
-          </AppText>
+      <View style={styles.progressSection}>
+        {/* The error sits outside this group so a screen reader reads it as well as the count. */}
+        <View
+          accessible
+          accessibilityLabel={`This week's progress: ${progress} of ${ASSESSMENTS.length} assessments`}
+        >
+          <View style={styles.progressTrack}>
+            <View style={[styles.progressFill, { width: `${(progress / ASSESSMENTS.length) * 100}%` }]} />
+          </View>
+          <View style={styles.progressLabels}>
+            <AppText variant="labelMedium">This week&apos;s progress</AppText>
+            <AppText variant="labelMedium">
+              {progress}/{ASSESSMENTS.length} assessments
+            </AppText>
+          </View>
         </View>
         {progressError && (
           <AppText variant="bodySmall" color="error" style={styles.progressError}>
