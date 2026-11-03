@@ -5,7 +5,6 @@ import type { Appointment, SupportedPatient } from '@/features/support-person/ty
 import { Text, View } from 'react-native';
 
 import { AppointmentCard } from './AppointmentCard';
-import { InitialsAvatar } from './InitialsAvatar';
 import { PermissionChips } from './PermissionChips';
 import { PillButton } from './PillButton';
 import { SectionLabel } from './SectionLabel';
@@ -28,7 +27,6 @@ export function SupportedPatientCard({ patient, onAddQuestions, onViewAppointmen
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <InitialsAvatar name={patient.name} />
         <View style={styles.headerText}>
           <Text style={styles.name} numberOfLines={1}>
             {patient.name}

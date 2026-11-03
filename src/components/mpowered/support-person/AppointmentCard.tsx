@@ -15,7 +15,7 @@ export type AppointmentAction = { label: string; onPress: () => void };
 
 type AppointmentCardProps = {
   appointment: Appointment;
-  /** Buttons shown bottom-right, top to bottom, e.g. "Add questions" then "Add doctor's answer". */
+  /** Buttons in a row under the details, e.g. "Add questions" then "Add doctor's answer". */
   actions?: AppointmentAction[];
 };
 
@@ -29,30 +29,29 @@ export function AppointmentCard({ appointment, actions = [] }: AppointmentCardPr
         <Text style={styles.date}>{formatAppointmentTime(appointment.dateTime)}</Text>
       </View>
 
-      <View style={styles.body}>
-        <View style={styles.details}>
-          <View style={styles.row}>
-            <Image source={personIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
-            <Text style={styles.detailText} numberOfLines={1}>
-              {displayOrPlaceholder(appointment.practitionerName)}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Image source={stethoscopeIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
-            <Text style={styles.detailText} numberOfLines={1}>
-              {displayOrPlaceholder(appointment.healthService)}
-            </Text>
-          </View>
+      <View style={styles.details}>
+        <View style={styles.row}>
+          <Image source={personIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
+          <Text style={styles.detailText} numberOfLines={1}>
+            {displayOrPlaceholder(appointment.practitionerName)}
+          </Text>
         </View>
-
-        {actions.length > 0 && (
-          <View style={styles.actions}>
-            {actions.map(action => (
-              <PillButton key={action.label} label={action.label} onPress={action.onPress} />
-            ))}
-          </View>
-        )}
+        <View style={styles.row}>
+          <Image source={stethoscopeIcon} style={styles.icon} contentFit="contain" accessibilityLabel="" />
+          <Text style={styles.detailText} numberOfLines={1}>
+            {displayOrPlaceholder(appointment.healthService)}
+          </Text>
+        </View>
       </View>
+
+      {/* Their own row under the details, sharing its width; they wrap if a large text size needs it. */}
+      {actions.length > 0 && (
+        <View style={styles.actions}>
+          {actions.map(action => (
+            <PillButton key={action.label} label={action.label} onPress={action.onPress} style={styles.action} />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -67,18 +66,19 @@ const useStyles = makeStyles((colors) => ({
     borderRadius: Radius.card,
     backgroundColor: colors.surfaceContainer,
   },
-  body: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: Spacing.two,
-  },
   details: {
-    flex: 1,
     gap: Spacing.one,
   },
   actions: {
-    alignItems: 'flex-end',
-    gap: Spacing.one,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: Spacing.two,
+    marginTop: Spacing.two,
+  },
+  action: {
+    flexGrow: 1,
+    flexBasis: 'auto',
   },
   row: {
     flexDirection: 'row',

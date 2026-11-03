@@ -1,10 +1,9 @@
 import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
-import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
 import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
 import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { ContentColumn, HeaderTitleFonts, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
@@ -16,18 +15,15 @@ import { ScrollView, Text, View } from 'react-native';
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
   const styles = useStyles();
-  const colors = useThemeColors();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const { status, reload, getPatient } = useSupportPerson();
   const patient = getPatient(patientId);
 
+  // The header itself comes from the layout; only the patient's name is known here.
   const header = (
     <Stack.Screen
       options={{
-        headerShown: true,
         title: patient ? `${patient.name}’s Appointments` : 'Appointments',
-        ...HeaderTitleFonts,
-        headerTintColor: colors.primary,
         headerBackTitle: 'Care Planner',
       }}
     />
@@ -62,21 +58,22 @@ export default function PatientAppointmentsScreen() {
   const firstName = patient.name.split(' ')[0];
 
   return (
-    <View style={styles.screen}>
+    <>
       {header}
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.patientRow}>
-          <InitialsAvatar name={patient.name} size={49} />
-          <View style={styles.patientText}>
-            <Text style={styles.name} numberOfLines={1}>
-              {patient.name}
+      {/* The scroll view is the screen's root so iOS starts it below the header and ends it above the tabs. */}
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.patientText}>
+          <Text style={styles.name} numberOfLines={1}>
+            {patient.name}
+          </Text>
+          {patient.condition ? (
+            <Text style={styles.condition} numberOfLines={1}>
+              {patient.condition}
             </Text>
-            {patient.condition ? (
-              <Text style={styles.condition} numberOfLines={1}>
-                {patient.condition}
-              </Text>
-            ) : null}
-          </View>
+          ) : null}
         </View>
 
         <PermissionChips canAddQuestions={patient.canAddQuestions} canAddAnswers={patient.canAddAnswers} />
@@ -96,7 +93,7 @@ export default function PatientAppointmentsScreen() {
           isUpcoming={false}
         />
       </ScrollView>
-    </View>
+    </>
   );
 }
 
@@ -141,17 +138,12 @@ const useStyles = makeStyles((colors) => ({
   content: {
     ...ContentColumn,
     gap: Spacing.three,
-    paddingTop: Spacing.five,
+    paddingTop: Spacing.four,
     paddingBottom: Spacing.five,
     paddingHorizontal: Spacing.four,
   },
-  patientRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-  },
   patientText: {
-    flex: 1,
+    gap: Spacing.half,
   },
   name: {
     color: colors.text,
@@ -159,7 +151,6 @@ const useStyles = makeStyles((colors) => ({
     letterSpacing: -0.48,
   },
   condition: {
-    marginLeft: Spacing.one,
     color: colors.textSecondary,
     ...Typography.bodySmall,
     fontWeight: '600',

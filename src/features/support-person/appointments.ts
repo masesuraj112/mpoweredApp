@@ -32,12 +32,3 @@ export function formatAppointmentTime(dateTime: string): string {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${day} at ${hours % 12 || 12}:${minutes}${hours < 12 ? 'am' : 'pm'}`;
 }
-
-/** Up to two initials for the avatar, e.g. "Jane Cooper" → "JC", "Cher" → "C". */
-export function getInitials(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return '';
-  const first = words[0][0];
-  const last = words.length > 1 ? words[words.length - 1][0] : '';
-  return (first + last).toUpperCase();
-}

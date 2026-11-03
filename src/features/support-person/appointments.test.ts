@@ -1,4 +1,4 @@
-import { formatAppointmentTime, getInitials, getNextAppointment, splitAppointments } from './appointments';
+import { formatAppointmentTime, getNextAppointment, splitAppointments } from './appointments';
 import type { Appointment } from './types';
 
 // Readable names for the test appointments, which have number ids like the real ones.
@@ -81,24 +81,5 @@ describe('formatAppointmentTime', () => {
 
   it('uses 12-hour time in the afternoon', () => {
     expect(formatAppointmentTime('2026-06-10T15:00:00')).toMatch(/at 3:00pm$/);
-  });
-});
-
-describe('getInitials', () => {
-  it('uses the first and last name', () => {
-    expect(getInitials('Jane Cooper')).toBe('JC');
-    expect(getInitials('Mary Anne Smith')).toBe('MS');
-  });
-
-  it('uses one letter for a single name', () => {
-    expect(getInitials('Cher')).toBe('C');
-  });
-
-  it('ignores extra spaces and lowercase', () => {
-    expect(getInitials('  steven   harper ')).toBe('SH');
-  });
-
-  it('returns an empty string for a blank name', () => {
-    expect(getInitials('   ')).toBe('');
   });
 });
