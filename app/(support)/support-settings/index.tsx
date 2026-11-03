@@ -3,8 +3,9 @@ import { router } from 'expo-router';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const privacyIcon = require('../../../assets/images/settings/privacy-data-legal.svg');
+const displayIcon = require('../../../assets/images/settings/display.svg');
 
-// Support persons have no Notifications, Support Persons or Display rows (Figma 3896-21559).
+// Support persons have no Notifications or Support Persons rows (Figma 3896-21559).
 const SETTINGS_ROWS: SettingsRowProps[] = [
   { icon: '', asset: accountIcon, label: 'Account', onPress: () => router.push('/support-settings/profile') },
   {
@@ -13,6 +14,7 @@ const SETTINGS_ROWS: SettingsRowProps[] = [
     label: 'People you support',
     onPress: () => router.push('/support-settings/people-you-support'),
   },
+  { icon: '', asset: displayIcon, label: 'Display', onPress: () => router.push('/support-settings/display') },
   { icon: '', asset: privacyIcon, label: 'Privacy/Data and Legal', onPress: () => router.push('/support-settings/legal') },
 ];
 
