@@ -1,14 +1,12 @@
 import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
-import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text } from 'react-native';
-
 
 export default function CurrePainLevel() {
   const { answers, updateAnswer } = usePainAssessment();
@@ -46,12 +44,8 @@ export default function CurrePainLevel() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      {/* input component goes here */}
-      <Text style={styles.cardTitle}>My Pain</Text>
-
-      <ScaleSliderInput
+    <TrackerQuestionScreen title="My Pain">
+<ScaleSliderInput
         underLinedText="average pain"
         titleText="Pain Intensity"
         assessmentType="pain"
@@ -65,18 +59,7 @@ export default function CurrePainLevel() {
         validationMessage={errorMessage ?? undefined}
         variant="painTracker"
       />
-    </Pressable>
+    </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    paddingHorizontal: 16,
-    paddingTop: 20, // extra top space to clear the status bar/notch area
-  },
-  cardTitle: {
-      fontSize: scaleFont(26),
-      fontWeight: '500',
-      marginBottom: 20
-  },
-});

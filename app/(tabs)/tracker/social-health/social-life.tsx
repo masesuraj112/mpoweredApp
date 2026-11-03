@@ -2,7 +2,6 @@ import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScree
 import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { SOCIAL_LIFE_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 
 // SingleChoiceInput takes a mutable string[]

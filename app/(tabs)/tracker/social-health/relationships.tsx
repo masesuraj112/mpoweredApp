@@ -1,7 +1,6 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
-import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 
 export default function RelationshipsScreen() {

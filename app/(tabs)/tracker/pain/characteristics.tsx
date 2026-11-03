@@ -2,7 +2,6 @@ import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScree
 import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
 

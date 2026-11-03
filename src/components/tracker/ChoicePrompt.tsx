@@ -6,22 +6,24 @@ import { Spacing } from '@/constants/theme';
 
 type ChoicePromptProps = {
   children: ReactNode;
-  /** A grey italic line under the question, for example "Examples: walking, stretching". */
-  note?: string;
+  /** Grey italic line(s) under the question, for example "Examples: walking, stretching". */
+  note?: string | readonly string[];
 };
 
 /** The question under a `ChoiceCard` title, with an optional italic note. */
 export function ChoicePrompt({ children, note }: ChoicePromptProps) {
+  const notes = note === undefined ? [] : typeof note === 'string' ? [note] : note;
+
   return (
     <View style={styles.prompt}>
       <AppText variant="labelMedium" color="onSurface">
         {children}
       </AppText>
-      {note ? (
-        <AppText variant="bodySmall" color="textSecondary" style={styles.note}>
-          {note}
+      {notes.map((line) => (
+        <AppText key={line} variant="bodySmall" color="textSecondary" style={styles.note}>
+          {line}
         </AppText>
-      ) : null}
+      ))}
     </View>
   );
 }
