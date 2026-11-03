@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
@@ -44,7 +44,7 @@ export default function MoodTriggerScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <ChoiceCard
         title="Mood"
         prompt={<Text style={styles.prompt}>What triggered that mood?</Text>}
@@ -70,7 +70,7 @@ export default function MoodTriggerScreen() {
         />
       </ChoiceCard>
       {doneBar.bar}
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

@@ -62,7 +62,7 @@ describe('SummaryReport', () => {
   });
 
   it('opens the tips link as a link', async () => {
-    const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+    const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
     await render(
       inProvider(
         <SummaryReport
