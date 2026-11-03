@@ -15,7 +15,7 @@ import {
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { deletePrescription, getPrescriptions } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -30,6 +30,7 @@ const loadPrescriptions = () => getPrescriptions();
 
 export default function PrescriptionsScreen() {
   const styles = useStyles();
+  const colors = useThemeColors();
   const { state, setState, reload } = useFocusedQuery(loadPrescriptions);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const prescriptions = state.status === 'ready' ? state.data : [];
@@ -86,7 +87,7 @@ export default function PrescriptionsScreen() {
         {state.status !== 'ready' ? null : isEmpty ? (
           <View style={styles.emptyState}>
             <View style={styles.pillIconFrame}>
-              <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" />
+              <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" tintColor={colors.textSubtle} />
             </View>
             <Text style={styles.emptyText}>Prescriptions list is empty</Text>
             <Pressable
@@ -116,7 +117,8 @@ export default function PrescriptionsScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={`Edit ${formatPrescriptionName(prescription)}`}
                     >
-                      <Image source={editIcon} style={styles.icon} contentFit="contain" />
+                      {/* One-colour icons, tinted to the theme so they show in dark mode. */}
+                      <Image source={editIcon} style={styles.icon} contentFit="contain" tintColor={colors.onSurfaceVariant} />
                     </Pressable>
                     <Pressable
                       style={styles.iconButton}
@@ -126,7 +128,7 @@ export default function PrescriptionsScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={`Delete ${formatPrescriptionName(prescription)}`}
                     >
-                      <Image source={deleteIcon} style={styles.icon} contentFit="contain" />
+                      <Image source={deleteIcon} style={styles.icon} contentFit="contain" tintColor={colors.onSurfaceVariant} />
                     </Pressable>
                   </View>
                 ))}
