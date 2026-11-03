@@ -38,7 +38,7 @@ describe('SummaryReport', () => {
   it('closes from the Close button', async () => {
     await render(inProvider(<SummaryReport {...baseProps} />));
 
-    fireEvent.press(screen.getByRole('button', { name: 'Close summary' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Close summary' }));
 
     expect(baseProps.onClose).toHaveBeenCalledTimes(1);
   });
@@ -73,7 +73,7 @@ describe('SummaryReport', () => {
       ),
     );
 
-    fireEvent.press(screen.getByRole('link', { name: 'Explore tips on managing movement' }));
+    await fireEvent.press(screen.getByRole('link', { name: 'Explore tips on managing movement' }));
 
     expect(screen.getByText('Keep moving.')).toBeTruthy();
     expect(openURL).toHaveBeenCalledWith('https://example.org/tips');
@@ -117,7 +117,7 @@ describe('SummaryStatus', () => {
     );
 
     expect(screen.getByRole('alert', { name: 'We could not find your saved entry.' })).toBeTruthy();
-    fireEvent.press(screen.getByRole('button', { name: 'Close summary' }));
+    await fireEvent.press(screen.getByRole('button', { name: 'Close summary' }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

@@ -31,7 +31,7 @@ describe('TrackerQuestionScreen', () => {
     const dismiss = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
     await setup();
 
-    fireEvent.press(screen.getByText('Question card'));
+    await fireEvent.press(screen.getByText('Question card'));
 
     expect(dismiss).toHaveBeenCalled();
   });

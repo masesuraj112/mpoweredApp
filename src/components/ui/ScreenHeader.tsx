@@ -11,6 +11,11 @@ type ScreenHeaderProps = {
   backLabel?: string;
   /** Shown on the right, as the page title. */
   title?: string;
+  /**
+   * Pad the top by the status bar height (the default), for a header that sits in a navigation header
+   * slot. Pass `false` when the screen already pads that edge, for example inside a `SafeAreaView`.
+   */
+  padForStatusBar?: boolean;
   /** Extra content under the bar, such as a title row. */
   children?: ReactNode;
 };
@@ -19,12 +24,19 @@ type ScreenHeaderProps = {
  * The lilac top bar: a back control on the left and the page title on the right. It pads for the status
  * bar from the safe-area inset, so it needs no fixed height. What Back does is up to the caller.
  */
-export function ScreenHeader({ onBack, backLabel = 'Back', title, children }: ScreenHeaderProps) {
+export function ScreenHeader({
+  onBack,
+  backLabel = 'Back',
+  title,
+  padForStatusBar = true,
+  children,
+}: ScreenHeaderProps) {
   const insets = useSafeAreaInsets();
+  const topInset = padForStatusBar ? insets.top : 0;
 
   return (
     <View>
-      <View style={[styles.bar, { paddingTop: insets.top + Spacing.two }]}>
+      <View style={[styles.bar, { paddingTop: topInset + Spacing.two }]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={backLabel}
