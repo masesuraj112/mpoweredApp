@@ -16,6 +16,8 @@ type ButtonProps = {
   /** Fully rounded and compact, for any variant. `primary` and `outlined` are rounded rectangles unless this is set. */
   pill?: boolean;
   disabled?: boolean;
+  /** True while the action runs (for example while a code is being sent). Announced to screen readers. */
+  busy?: boolean;
   /** Decorative text shown before the label (for example a plus). Hidden from screen readers. */
   leadingGlyph?: string;
   /** Decorative text shown after the label (for example an arrow). Hidden from screen readers. */
@@ -33,6 +35,7 @@ export function Button({
   variant = 'elevated',
   pill = false,
   disabled = false,
+  busy = false,
   leadingGlyph,
   trailingGlyph,
   accessibilityLabel,
@@ -52,7 +55,7 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled, busy }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [

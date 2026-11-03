@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import EmbeddedSite from '@/components/mpowered/EmbeddedSite';
+import EmbeddedSite from '@/components/ui/EmbeddedSite';
 import { BackButton } from '@/components/ui/BackButton';
 import { Spacing } from '@/constants/theme';
 

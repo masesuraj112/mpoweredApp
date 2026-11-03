@@ -1,8 +1,14 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthInput } from '@/components/auth/AuthInput';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { useOnboarding } from '@/context/Onboarding-Context';
 
 export default function OtherConditionsScreen() {
   const { data, updateData } = useOnboarding();
@@ -17,43 +23,35 @@ export default function OtherConditionsScreen() {
   };
 
   return (
-    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Text style={styles.title}>
-          {isNoDiagnosisPath ? "Tell us what you're experiencing" : 'Do you have any other conditions?'}
-        </Text>
-        <Text style={styles.subtitle}>
-          {isNoDiagnosisPath
-            ? // DRAFT COPY — please review/replace before shipping
-              "No diagnosis yet? That's okay — describe what you're feeling in your own words, and MPowered will still work for you."
-            : "If none, press 'Continue'"}
-        </Text>
-        <TextInput
-          value={text}
-          onChangeText={setText}
-          placeholder={isNoDiagnosisPath ? 'Describe your symptoms or how you\'re feeling' : 'Type conditions or symptoms that you know'}
-          placeholderTextColor="#8A8590"
-          multiline
-          // Return adds a new line, so add a Done bar to close the keyboard.
-          inputAccessoryViewID={doneBar.id}
-          style={styles.input}
-        />
-        {doneBar.bar}
-        <Pressable style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueText}>Continue</Text>
-        </Pressable>
-      </KeyboardAvoidingView>
-    </Pressable>
+    <AuthScreen>
+      <AuthTitle>
+        {isNoDiagnosisPath ? "Tell us what you're experiencing" : 'Do you have any other conditions?'}
+      </AuthTitle>
+      <AppText variant="bodyMediumRegular" color="textSecondary" style={styles.centered}>
+        {isNoDiagnosisPath
+          ? // DRAFT COPY — please review/replace before shipping
+            "No diagnosis yet? That's okay — describe what you're feeling in your own words, and MPowered will still work for you."
+          : "If none, press 'Continue'"}
+      </AppText>
+      <AuthInput
+        accessibilityLabel={isNoDiagnosisPath ? 'Your symptoms' : 'Other conditions'}
+        value={text}
+        onChangeText={setText}
+        placeholder={
+          isNoDiagnosisPath ? "Describe your symptoms or how you're feeling" : 'Type conditions or symptoms that you know'
+        }
+        multiline
+        // Return adds a new line, so add a Done bar to close the keyboard.
+        inputAccessoryViewID={doneBar.id}
+      />
+      {doneBar.bar}
+      <AuthButton label="Continue" onPress={handleContinue} />
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, paddingBottom: 64 },
-  title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
-  subtitle: { textAlign: 'center', color: '#8A8590', marginBottom: 24 },
-  input: { backgroundColor: '#EDE9F5', borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15 },
-  continueButton: { backgroundColor: '#6750A4', width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 24 },
-  continueText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  centered: {
+    textAlign: 'center',
+  },
 });

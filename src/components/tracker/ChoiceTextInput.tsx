@@ -1,6 +1,6 @@
 import { StyleSheet, TextInput } from 'react-native';
 
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 
 type ChoiceTextInputProps = {

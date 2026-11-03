@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
