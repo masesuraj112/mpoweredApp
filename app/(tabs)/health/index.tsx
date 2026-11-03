@@ -136,6 +136,7 @@ export default function HealthScreen() {
 
 
 const ACTION_INNER_RADIUS = 6;
+const ACTION_OUTER_RADIUS = 16;
 
 const useStyles = makeStyles((colors) => ({
   profileTitle: {
@@ -231,13 +232,18 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Only the outer ends are rounder; the inner corners match the middle button's.
   actionButtonLeft: {
-    borderTopLeftRadius: Radius.pill,
-    borderBottomLeftRadius: Radius.pill,
+    borderTopLeftRadius: ACTION_OUTER_RADIUS,
+    borderBottomLeftRadius: ACTION_OUTER_RADIUS,
+    borderTopRightRadius: ACTION_INNER_RADIUS,
+    borderBottomRightRadius: ACTION_INNER_RADIUS,
   },
   actionButtonRight: {
-    borderTopRightRadius: Radius.pill,
-    borderBottomRightRadius: Radius.pill,
+    borderTopLeftRadius: ACTION_INNER_RADIUS,
+    borderBottomLeftRadius: ACTION_INNER_RADIUS,
+    borderTopRightRadius: ACTION_OUTER_RADIUS,
+    borderBottomRightRadius: ACTION_OUTER_RADIUS,
   },
   actionButtonText: {
     ...Typography.bodySmall,
