@@ -2,16 +2,19 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { useCallback, useRef, useState, type ComponentRef, type ReactNode } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ContentColumn, Gradients, Spacing, makeStyles } from '@/constants/theme';
+import { BrandText } from '@/components/brand/BrandText';
+import { ContentColumn, Gradients, Spacing, Typography, makeStyles } from '@/constants/theme';
 
 type BrandScreenProps = {
   /** What sits on the brand gradient at the top: a greeting, the page title and a line or two. */
   hero: ReactNode;
   /** The rest of the page, under the gradient. */
   children: ReactNode;
+  /** Set false when the sections below pad themselves (they use the same gutter). */
+  padBody?: boolean;
 };
 
 /**
@@ -19,7 +22,7 @@ type BrandScreenProps = {
  * in a centred column. Used by the Pain Tracker home and the support person's Care Planner home, so the
  * two look the same.
  */
-export function BrandScreen({ hero, children }: BrandScreenProps) {
+export function BrandScreen({ hero, children, padBody = true }: BrandScreenProps) {
   const styles = useStyles();
   const insets = useSafeAreaInsets();
   const heroRef = useRef<ComponentRef<typeof View>>(null);
@@ -53,15 +56,37 @@ export function BrandScreen({ hero, children }: BrandScreenProps) {
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={[styles.hero, { paddingTop: coveredByStatusBar + Spacing.three }]}>
-            <View style={styles.column}>{hero}</View>
+            <View style={[styles.column, styles.heroColumn]}>{hero}</View>
           </LinearGradient>
         </View>
-        <View style={[styles.column, styles.body]}>{children}</View>
+        <View style={[styles.column, styles.body, padBody && styles.bodyGutter]}>{children}</View>
       </ScrollView>
       {/* The status bar always sits on the gradient's colour, however iOS insets the scroll view. */}
       <View style={[styles.statusBarFill, { height: insets.top }]} />
     </SafeAreaView>
   );
+}
+
+/** The small line above the title, for example "Good morning, Alex". */
+export function HeroGreeting({ children }: { children: ReactNode }) {
+  const styles = useStyles();
+  return <Text style={styles.greeting}>{children}</Text>;
+}
+
+/** The page's title on the gradient. "MPowered" in it is drawn as the wordmark. */
+export function HeroTitle({ children }: { children: string }) {
+  const styles = useStyles();
+  return (
+    <BrandText accessibilityRole="header" style={styles.title}>
+      {children}
+    </BrandText>
+  );
+}
+
+/** A line or two under the title. "MPowered" in it is drawn as the wordmark. */
+export function HeroLead({ children }: { children: string }) {
+  const styles = useStyles();
+  return <BrandText style={styles.lead}>{children}</BrandText>;
 }
 
 const useStyles = makeStyles((colors) => ({
@@ -88,9 +113,26 @@ const useStyles = makeStyles((colors) => ({
   column: {
     ...ContentColumn,
   },
+  heroColumn: {
+    gap: Spacing.two,
+  },
   body: {
-    paddingHorizontal: Spacing.five,
     paddingTop: Spacing.four,
+  },
+  bodyGutter: {
+    paddingHorizontal: Spacing.five,
+  },
+  greeting: {
+    color: colors.onBrandMuted,
+    ...Typography.titleSmall,
+  },
+  title: {
+    color: colors.onBrand,
+    ...Typography.display,
+  },
+  lead: {
+    color: colors.onBrandMuted,
+    ...Typography.bodyLarge,
   },
   statusBarFill: {
     position: 'absolute',

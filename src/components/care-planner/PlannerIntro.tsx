@@ -1,40 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
-
+/** The Care Planner's title and lead, shown on the brand gradient at the top of its home. */
 export function PlannerIntro() {
-  const styles = useStyles();
   return (
-    <View style={styles.container}>
-      <Text accessibilityRole="header" style={styles.title}>
-        Plan your visit with confidence
-      </Text>
-      <View style={styles.rule} />
-      <Text style={styles.subtitle}>
-        Get ready for your visit. Prepare questions, add support people, and keep notes during your
-        appointments.
-      </Text>
-    </View>
+    <>
+      <HeroTitle>Plan your visit with confidence</HeroTitle>
+      <HeroLead>
+        Get ready for your visit. Prepare questions, add support people, and keep notes during your appointments.
+      </HeroLead>
+    </>
   );
 }
-
-const useStyles = makeStyles((colors) => ({
-  container: {
-    paddingHorizontal: Spacing.five,
-    gap: Spacing.three,
-  },
-  title: {
-    ...Typography.display,
-    letterSpacing: -0.48,
-    color: colors.text,
-  },
-  rule: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.divider,
-  },
-  subtitle: {
-    ...Typography.bodySmall,
-    letterSpacing: 0.25,
-    color: colors.onSurface,
-  },
-}));

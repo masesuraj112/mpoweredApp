@@ -1,7 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, Text, View } from 'react-native';
 import { PainTrendChart } from '@/components/mpowered/PainTrendChart';
 import { ASSESSMENT_TYPES } from '@/features/health-profile/assessment-types';
 import { healthLoadMessage } from '@/features/health-profile/messages';
@@ -11,7 +10,8 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { ok, run } from '@/lib/result';
 import { getAssessments, getPainEntries } from '@/services/health';
 
-import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { BrandScreen, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
 const painProfileIcon = require('../../../assets/images/health/pain-profile-icon.png');
 
@@ -31,6 +31,7 @@ function loadOverview() {
 
 export default function HealthScreen() {
   const styles = useStyles();
+  const colors = useThemeColors();
   const { state } = useFocusedQuery(loadOverview);
   const overview = state.status === 'ready' ? state.data : null;
 
@@ -51,134 +52,104 @@ export default function HealthScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.pageTitle}>My Health</Text>
-        <View style={styles.divider} />
-
-        <Pressable
-          style={styles.profileCard}
-          onPress={() => router.push('/health/pain-profile')}
-        >
+    <BrandScreen
+      hero={
+        <>
+          <HeroTitle>My Health</HeroTitle>
+          {/* The pain profile at a glance, on the gradient. */}
           <BrandText style={styles.profileTitle}>{profileTitle}</BrandText>
           {profileUpdated !== '' && <Text style={styles.profileUpdated}>{profileUpdated}</Text>}
-
           <View style={styles.profileRow}>
-            <Image source={painProfileIcon} style={styles.profileIcon} contentFit="contain" />
+            <Image
+              source={painProfileIcon}
+              style={styles.profileIcon}
+              contentFit="contain"
+              tintColor={colors.onBrand}
+              accessible={false}
+            />
             <Text style={styles.profileDescription}>
               This pain profile will be generated each time you complete the impact questions.
             </Text>
           </View>
-
-          <View style={styles.openProfileButtonRow}>
-            <View style={styles.openProfileButton}>
-              <Text style={styles.openProfileButtonText}>Open my pain profile</Text>
-            </View>
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push('/health/pain-profile')}
+            style={({ pressed }) => [styles.openProfileButton, pressed && styles.pressed]}>
+            <Text style={styles.openProfileButtonText}>Open my pain profile</Text>
+          </Pressable>
+        </>
+      }>
+      <View style={styles.shortcutRow}>
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.shortcutCard, pressed && styles.pressed]}
+          onPress={() => router.push('/health/tracking/chart')}>
+          <Text style={styles.shortcutText}>Check my health tracking records</Text>
         </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.shortcutCard, pressed && styles.pressed]}
+          onPress={() => router.push('/health/prescriptions')}>
+          <Text style={styles.shortcutText}>Check my prescriptions</Text>
+        </Pressable>
+      </View>
 
-        <View style={styles.shortcutRow}>
+      <View style={styles.trendSection}>
+        <BrandText style={styles.trendInsight}>{'New insights for your MPowered plan.'}</BrandText>
+        <Text style={styles.trendSubtitle}>
+          {painTrendMessage(trend) ??
+            (trend.length === 1
+              ? 'Record your pain again next week to see your trend.'
+              : 'Record your pain in the Tracker to see your trend.')}
+        </Text>
+
+        {trend.length > 0 && (
+          <View style={styles.trendChart}>
+            <PainTrendChart data={trend} height={styles.trendChart.height} />
+          </View>
+        )}
+
+        <View style={styles.actionRow}>
           <Pressable
-            style={styles.shortcutCard}
-            onPress={() => router.push('/health/tracking/chart')}
-          >
-            <Text style={styles.shortcutText}>Check my health tracking records</Text>
+            accessibilityRole="button"
+            style={[styles.actionButton, styles.actionButtonLeft]}
+            onPress={() => router.push('/health/tracking/history')}>
+            <Text style={styles.actionButtonText}>Pain History</Text>
           </Pressable>
           <Pressable
-            style={styles.shortcutCard}
-            onPress={() => router.push('/health/prescriptions')}
-          >
-            <Text style={styles.shortcutText}>Check my prescriptions</Text>
+            accessibilityRole="button"
+            style={styles.actionButton}
+            onPress={() => router.push('/planner')}>
+            <Text style={styles.actionButtonText}>Plan Appointment</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            style={[styles.actionButton, styles.actionButtonRight]}
+            onPress={() => router.push('/health/pain-guide')}>
+            <Text style={styles.actionButtonText}>Pain Guide</Text>
           </Pressable>
         </View>
-
-        <View style={styles.trendSection}>
-          <View style={styles.trendInsightRow}>
-            <BrandText style={styles.trendInsight}>{'New insights for your MPowered plan.'}</BrandText>
-          </View>
-          <Text style={styles.trendSubtitle}>
-            {painTrendMessage(trend) ??
-              (trend.length === 1
-                ? 'Record your pain again next week to see your trend.'
-                : 'Record your pain in the Tracker to see your trend.')}
-          </Text>
-
-          {trend.length > 0 && (
-            <View style={styles.trendChart}>
-              <PainTrendChart data={trend} height={styles.trendChart.height} />
-            </View>
-          )}
-
-          <View style={styles.actionRow}>
-            <Pressable
-              style={[styles.actionButton, styles.actionButtonLeft]}
-              onPress={() => router.push('/health/tracking/history')}
-            >
-              <Text style={styles.actionButtonText}>Pain History</Text>
-            </Pressable>
-            <Pressable
-              style={styles.actionButton}
-              onPress={() => router.push('/planner')}
-            >
-              <Text style={styles.actionButtonText}>Plan Appointment</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.actionButton, styles.actionButtonRight]}
-              onPress={() => router.push('/health/pain-guide')}
-            >
-              <Text style={styles.actionButtonText}>Pain Guide</Text>
-            </Pressable>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </BrandScreen>
   );
 }
 
 
 const useStyles = makeStyles((colors) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  content: {
-    ...ContentColumn,
-    paddingBottom: Spacing.five,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginTop: Spacing.four,
-    marginHorizontal: Spacing.four,
-  },
-  divider: {
-    borderTopWidth: 1,
-    borderTopColor: colors.divider,
-    marginTop: Spacing.three,
-    marginBottom: Spacing.three,
-  },
-  profileCard: {
-    backgroundColor: colors.surfaceContainer,
-    borderRadius: Radius.card,
-    marginHorizontal: Spacing.four,
-    padding: Spacing.three,
-  },
   profileTitle: {
+    marginTop: Spacing.two,
     ...Typography.bodyLarge,
-    fontWeight: '500',
-    color: colors.text,
+    fontWeight: '600',
+    color: colors.onBrand,
   },
   profileUpdated: {
-    ...Typography.caption,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginTop: Spacing.one,
+    ...Typography.bodySmall,
+    color: colors.onBrandMuted,
   },
   profileRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Spacing.three,
-    gap: Spacing.two,
+    gap: Spacing.three,
   },
   profileIcon: {
     width: 37,
@@ -186,44 +157,39 @@ const useStyles = makeStyles((colors) => ({
   },
   profileDescription: {
     flex: 1,
-    ...Typography.caption,
-    color: colors.text,
+    ...Typography.bodySmall,
+    color: colors.onBrandMuted,
   },
-  openProfileButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: Spacing.three,
-  },
+  // A white pill on the gradient, like the Pain Tracker's buttons but light so it reads on purple.
   openProfileButton: {
+    alignSelf: 'flex-start',
+    minHeight: MinTapTarget,
+    justifyContent: 'center',
+    marginTop: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Radius.pill,
     backgroundColor: colors.surface,
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
   },
   openProfileButtonText: {
-    ...Typography.bodySmall,
-    fontWeight: '500',
-    color: colors.text,
+    ...Typography.labelLargeBold,
+    color: colors.primary,
+  },
+  pressed: {
+    opacity: 0.8,
   },
   shortcutRow: {
     flexDirection: 'row',
-    gap: Spacing.two,
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.three,
+    gap: Spacing.three,
   },
   shortcutCard: {
     flex: 1,
-    backgroundColor: colors.surfaceContainer,
-    borderRadius: Radius.card,
-    minHeight: 61,
+    minHeight: MinTapTarget + Spacing.three,
     justifyContent: 'center',
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surfaceContainer,
   },
   shortcutText: {
     ...Typography.bodySmall,
@@ -232,57 +198,45 @@ const useStyles = makeStyles((colors) => ({
     textAlign: 'center',
   },
   trendSection: {
-    backgroundColor: colors.background,
+    gap: Spacing.two,
     marginTop: Spacing.four,
-    paddingHorizontal: Spacing.five,
-    paddingTop: Spacing.four,
-    paddingBottom: Spacing.four,
   },
   trendInsight: {
-    ...Typography.bodyLarge,
-    fontWeight: '700',
-    fontStyle: 'italic',
+    ...Typography.titleSmall,
     color: colors.text,
-  },
-  trendInsightRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
   },
   trendSubtitle: {
     ...Typography.bodySmall,
-    fontWeight: '500',
-    color: colors.text,
-    marginTop: Spacing.two,
+    color: colors.textSecondary,
   },
   trendChart: {
     width: '100%',
     height: 101,
-    marginTop: Spacing.two,
   },
   actionRow: {
     flexDirection: 'row',
-    marginTop: Spacing.three,
+    marginTop: Spacing.two,
   },
   actionButton: {
     flex: 1,
+    minHeight: MinTapTarget,
     backgroundColor: colors.primary,
-    paddingVertical: Spacing.three,
+    paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionButtonLeft: {
-    borderTopLeftRadius: Radius.control,
-    borderBottomLeftRadius: Radius.control,
+    borderTopLeftRadius: Radius.pill,
+    borderBottomLeftRadius: Radius.pill,
   },
   actionButtonRight: {
-    borderTopRightRadius: Radius.control,
-    borderBottomRightRadius: Radius.control,
+    borderTopRightRadius: Radius.pill,
+    borderBottomRightRadius: Radius.pill,
   },
   actionButtonText: {
-    ...Typography.caption,
-    fontWeight: '500',
+    ...Typography.bodySmall,
+    fontWeight: '600',
     color: colors.onPrimary,
     textAlign: 'center',
   },

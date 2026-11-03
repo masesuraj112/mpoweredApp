@@ -8,8 +8,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
-import { BrandText } from '@/components/brand/BrandText';
-import { BrandScreen } from '@/components/mpowered/BrandScreen';
+import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -52,13 +51,9 @@ export default function HomeScreen() {
       hero={
         // The week at a glance.
         <>
-            <View style={styles.intro}>
-              <Text style={styles.greeting}>{getGreeting(name)}</Text>
-              <BrandText style={styles.heading}>{'Let’s build your MPowered plan.'}</BrandText>
-              <BrandText style={styles.description}>
-                {'Assess your pain intensity and its impacts weekly to obtain your MPowered plan.'}
-              </BrandText>
-            </View>
+            <HeroGreeting>{getGreeting(name)}</HeroGreeting>
+            <HeroTitle>{'Let’s build your MPowered plan.'}</HeroTitle>
+            <HeroLead>{'Assess your pain intensity and its impacts weekly to obtain your MPowered plan.'}</HeroLead>
 
             <View
               style={styles.progressSection}
@@ -166,25 +161,9 @@ const ASSESSMENT_BUTTON_WIDTH = 104;
 const ROW_MIN_HEIGHT = ASSESSMENT_BUTTON_HEIGHT + 2 * Spacing.two;
 
 const useStyles = makeStyles((colors) => ({
-  intro: {
-    marginBottom: Spacing.three,
+  progressSection: {
+    marginTop: Spacing.two,
   },
-  greeting: {
-    color: colors.onBrandMuted,
-    ...Typography.titleSmall,
-  },
-  heading: {
-    marginTop: Spacing.three,
-    color: colors.onBrand,
-    ...Typography.display,
-  },
-  description: {
-    marginTop: Spacing.one,
-    color: colors.onBrandMuted,
-    ...Typography.bodySmall,
-    letterSpacing: 0.25,
-  },
-  progressSection: {},
   progressTrack: {
     height: 10,
     overflow: 'hidden',

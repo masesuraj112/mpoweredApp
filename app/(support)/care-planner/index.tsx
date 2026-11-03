@@ -3,7 +3,7 @@ import { PillButton } from '@/components/mpowered/support-person/PillButton';
 import { SupportedPatientCard } from '@/components/mpowered/support-person/SupportedPatientCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { BrandScreen } from '@/components/mpowered/BrandScreen';
+import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
 import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useSupportPerson } from '@/features/support-person/context';
@@ -31,15 +31,11 @@ export default function CarePlannerHomeScreen() {
       hero={
         <>
           <View style={styles.greetingRow}>
-            <Text style={styles.greeting}>{getGreeting(name)}</Text>
+            <HeroGreeting>{getGreeting(name)}</HeroGreeting>
             <NotificationBell count={requests.length} onPress={openRequests} tone="onBrand" />
           </View>
-          <Text style={styles.title} accessibilityRole="header">
-            Your support makes a difference
-          </Text>
-          <Text style={styles.lead}>
-            Help prepare for upcoming appointments by reviewing and adding questions for the doctor
-          </Text>
+          <HeroTitle>Your support makes a difference</HeroTitle>
+          <HeroLead>Help prepare for upcoming appointments by reviewing and adding questions for the doctor</HeroLead>
         </>
       }>
       {status === 'loading' ? (
@@ -91,21 +87,6 @@ const useStyles = makeStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.three,
-  },
-  greeting: {
-    flexShrink: 1,
-    color: colors.onBrandMuted,
-    ...Typography.titleSmall,
-  },
-  title: {
-    marginTop: Spacing.three,
-    color: colors.onBrand,
-    ...Typography.display,
-  },
-  lead: {
-    marginTop: Spacing.one,
-    color: colors.onBrandMuted,
-    ...Typography.bodySmall,
   },
   sectionHeading: {
     marginBottom: Spacing.three,

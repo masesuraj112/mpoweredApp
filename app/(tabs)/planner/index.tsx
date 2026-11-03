@@ -1,13 +1,13 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 
 import { MyAppointmentsSection } from '@/components/care-planner/MyAppointmentsSection';
 import { PlannerIntro } from '@/components/care-planner/PlannerIntro';
 import { ShortcutCarousel, type Shortcut } from '@/components/care-planner/ShortcutCarousel';
 import { SponsorFooter } from '@/components/care-planner/SponsorFooter';
-import { ContentColumn, makeStyles, Spacing } from '@/constants/theme';
+import { BrandScreen } from '@/components/mpowered/BrandScreen';
+import { makeStyles, Spacing } from '@/constants/theme';
 import { useAppointments } from '@/features/care-planner/useAppointments';
 
 export default function PlannerScreen() {
@@ -43,9 +43,9 @@ export default function PlannerScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <PlannerIntro />
+    // The sections below set their own gutters, so the body is not padded again.
+    <BrandScreen hero={<PlannerIntro />} padBody={false}>
+      <View style={styles.sections}>
         <ShortcutCarousel shortcuts={shortcuts} />
         <MyAppointmentsSection
           state={appointments}
@@ -60,20 +60,14 @@ export default function PlannerScreen() {
           }
         />
         <SponsorFooter />
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </BrandScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    ...ContentColumn,
+const useStyles = makeStyles(() => ({
+  sections: {
     gap: Spacing.four,
-    paddingTop: Spacing.four,
     paddingBottom: Spacing.four,
   },
 }));
