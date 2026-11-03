@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { getProfile, type UserProfile } from '../services/auth';
+import { clearAssessmentDrafts } from '../features/assessments/drafts';
 import { cancelAllReminders } from '../services/notifications';
 import type { AppError } from '../lib/errors';
 
@@ -47,8 +48,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
-            // Also covers a session that ends without Sign out (for example it expired).
-            if (event === 'SIGNED_OUT') void cancelAllReminders();
+            // Saved assessment drafts hold health answers and belong to no user, so they must not
+            // outlive a sign-out (this also covers account deletion and an expired session). The phone's
+            // reminders go too, also for a session that ends without Sign out.
+            if (event === 'SIGNED_OUT') {
+                clearAssessmentDrafts().catch((error: unknown) => {
+                    console.error('[Assessment] Failed to clear local drafts:', error);
+                });
+                void cancelAllReminders();
+            }
             if (mounted) {
                 setSession(session);
                 setLoading(false);

@@ -89,6 +89,16 @@ export const Fonts = Platform.select({
   },
 });
 
+/**
+ * The welcome splash (Figma 2003:362). The same in light and dark mode, and the native splash uses the top
+ * colour (app.json), so the two join up.
+ */
+export const SplashColors = {
+  gradientTop: '#391777',
+  gradientBottom: '#1C0546',
+  text: '#A591CF',
+} as const;
+
 export const Spacing = {
   half: 2,
   one: 4,

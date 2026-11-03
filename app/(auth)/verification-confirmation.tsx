@@ -2,16 +2,17 @@ import { Image } from 'expo-image';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fitCanvas } from '@/features/auth/canvas';
 
 const SLIDE_DURATIONS = [5000, 6500] as const;
 
 export default function VerificationConfirmationScreen() {
   const { refreshProfile } = useAuth();
   const [slide, setSlide] = useState(0);
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
+  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   useEffect(() => {
     if (slide >= SLIDE_DURATIONS.length) return;
@@ -31,8 +32,8 @@ export default function VerificationConfirmationScreen() {
           {
             width: canvasWidth,
             height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
+            left,
+            top,
           },
         ]}
       >

@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { router } from 'expo-router';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fitCanvas } from '@/features/auth/canvas';
 
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
+import { focusCodeInput } from '@/features/auth/focusCodeInput';
 import { authErrorMessage } from '@/features/auth/messages';
 import {
   OTP_LENGTH,
@@ -37,10 +40,9 @@ export default function VerifyScreen() {
   const [hasResent, setHasResent] = useState(false);
   const codeInputRef = useRef<TextInputInstance>(null);
   const doneBar = useKeyboardDoneBar();
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const scale = Math.min(1, width / 412, height / 823);
-  const canvasWidth = 412 * scale;
-  const canvasHeight = 823 * scale;
+  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
   const isCodeComplete = isOtpComplete(code);
   const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
   const isCountingDown = resendSecondsRemaining !== null;
@@ -134,8 +136,8 @@ export default function VerifyScreen() {
           {
             width: canvasWidth,
             height: canvasHeight,
-            left: (width - canvasWidth) / 2,
-            top: (height - canvasHeight) / 2,
+            left,
+            top,
           },
         ]}
       >
@@ -189,7 +191,7 @@ export default function VerifyScreen() {
               key={index}
               accessibilityRole="button"
               accessibilityLabel={`Enter verification code, digit ${index + 1}`}
-              onPress={() => codeInputRef.current?.focus()}
+              onPress={() => focusCodeInput(codeInputRef.current)}
               style={[
                 styles.codeCell,
                 {
@@ -208,6 +210,8 @@ export default function VerifyScreen() {
           ))}
           <TextInput
             ref={codeInputRef}
+            // Open the keyboard (and the iOS code suggestion) as soon as the screen shows.
+            autoFocus
             accessibilityLabel="Verification code"
             autoComplete="one-time-code"
             keyboardType="number-pad"
