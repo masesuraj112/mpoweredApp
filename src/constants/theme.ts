@@ -1,6 +1,7 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Design tokens: colours, spacing, radii, elevation and text styles. Use these instead of literals in
+ * components and screens. Every colour exists in both `light` and `dark` (the app ships light only for
+ * now, see docs/ui/styling.md). A token is added here only when a design value has no equivalent yet.
  */
 
 import { Platform } from 'react-native';
@@ -32,6 +33,11 @@ export const Colors = {
     onSecondaryContainer: '#4A4459',
     controlBorder: '#3A3A3A',
     controlChecked: '#5B4A9E',
+    surface: '#FEF7FF',
+    surfaceGrouped: '#F2F2F7',
+    textTertiary: 'rgba(60, 60, 67, 0.6)',
+    outlineMedium: '#79747E',
+    divider: '#E7E0EC',
   },
   dark: {
     text: '#ffffff',
@@ -59,35 +65,15 @@ export const Colors = {
     onSecondaryContainer: '#E8DEF8',
     controlBorder: '#CAC4D0',
     controlChecked: '#D0BCFF',
+    surface: '#141218',
+    surfaceGrouped: '#1C1C1E',
+    textTertiary: 'rgba(235, 235, 245, 0.6)',
+    outlineMedium: '#938F99',
+    divider: '#49454F',
   },
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
-
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
 
 /**
  * The welcome splash (Figma 2003:362). The same in light and dark mode, and the native splash uses the top
@@ -103,6 +89,8 @@ export const Spacing = {
   half: 2,
   one: 4,
   two: 8,
+  /** Between `two` and `three`. */
+  mid: 12,
   three: 16,
   four: 24,
   five: 32,
@@ -113,6 +101,22 @@ export const Radius = {
   card: 12,
   control: 10,
   pill: 999,
+  small: 4,
+  medium: 8,
+  large: 16,
+  extraLarge: 24,
+} as const;
+
+/** Shadows. Spread one into a style: `{ ...Elevation.level1 }`. */
+export const Elevation = {
+  /** Raised pill buttons. */
+  level1: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+  },
 } as const;
 
 /** Minimum touch target (dp) for interactive elements. */
@@ -131,6 +135,20 @@ export const Typography = {
   bodyLarge: { fontSize: 16, lineHeight: 24, letterSpacing: 0.5 },
   /** 14/20 medium with wider tracking: short messages and hints. */
   bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
+  /** 14/20 regular: paragraph text. */
+  bodyMediumRegular: { fontSize: 14, lineHeight: 20, letterSpacing: 0.25 },
+  /** 24/32 semibold: screen titles. */
+  headlineSmall: { fontSize: 24, lineHeight: 32, fontWeight: '600' },
+  /** 22/28 semibold: section and page headings. */
+  titleLarge: { fontSize: 22, lineHeight: 28, fontWeight: '600' },
+  /** 16/24 semibold with tracking: card titles and list headings. */
+  titleMedium: { fontSize: 16, lineHeight: 24, fontWeight: '600', letterSpacing: 0.15 },
+  /** 12/16 regular: captions and helper text. */
+  bodySmall: { fontSize: 12, lineHeight: 16, letterSpacing: 0.4 },
+  /** 12/16 medium: small labels, badges and calendar headings. */
+  labelMedium: { fontSize: 12, lineHeight: 16, fontWeight: '500', letterSpacing: 0.5 },
+  /** 11/16 medium: the smallest label (superscripts and tab captions). */
+  labelSmall: { fontSize: 11, lineHeight: 16, fontWeight: '500', letterSpacing: 0.5 },
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;

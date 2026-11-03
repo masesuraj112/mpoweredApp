@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { Colors, Elevation, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
 
@@ -93,11 +93,7 @@ const styles = StyleSheet.create({
   },
   elevated: {
     backgroundColor: Colors.light.background,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 2,
+    ...Elevation.level1,
   },
   tonal: {
     backgroundColor: Colors.light.primaryContainer,

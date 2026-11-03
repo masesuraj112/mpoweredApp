@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
@@ -44,7 +44,7 @@ export default function EmotionScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Management">
+    <TrackerQuestionScreen title="My Management">
       <ChoiceCard
         title="Emotion"
         prompt={
@@ -79,7 +79,7 @@ export default function EmotionScreen() {
         />
       </ChoiceCard>
       {doneBar.bar}
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

@@ -1,8 +1,10 @@
 import { Tabs } from 'expo-router';
 import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import { TabIcon } from '@/components/navigation/TabIcon';
+import { Colors } from '@/constants/theme';
 import { RemindersProvider } from '@/features/notifications/RemindersContext';
 import { useOpenTappedReminder } from '@/features/notifications/useOpenTappedReminder';
 
@@ -12,11 +14,11 @@ const painTrackerIcon = require('../../assets/images/home-page/stickman.svg');
 const carePlannerIcon = require('../../assets/images/home-page/care-planner.svg');
 const settingsIcon = require('../../assets/images/home-page/settings.svg');
 
-function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
-  const color = '#49454F';
+function TabBarIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
+  const color = Colors.light.onSurfaceVariant;
 
   return (
-    <View style={[styles.iconContainer, focused && styles.iconContainerSelected]}>
+    <TabIcon focused={focused}>
       {name === 'person' || name === 'planner' || name === 'settings' ? (
         <Image
           source={
@@ -40,7 +42,7 @@ function TabIcon({ name, focused }: { name: TabIconName; focused: boolean }) {
           />
         </Svg>
       )}
-    </View>
+    </TabIcon>
   );
 }
 
@@ -62,28 +64,28 @@ export default function TabsLayout() {
           name="home"
           options={{
             title: 'Pain Tracker',
-            tabBarIcon: ({ focused }) => <TabIcon name="person" focused={focused} />,
+            tabBarIcon: ({ focused }) => <TabBarIcon name="person" focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="health"
           options={{
             title: 'My Health',
-            tabBarIcon: ({ focused }) => <TabIcon name="folder" focused={focused} />,
+            tabBarIcon: ({ focused }) => <TabBarIcon name="folder" focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="planner"
           options={{
             title: 'Care Planner',
-            tabBarIcon: ({ focused }) => <TabIcon name="planner" focused={focused} />,
+            tabBarIcon: ({ focused }) => <TabBarIcon name="planner" focused={focused} />,
           }}
         />
         <Tabs.Screen
           name="settings"
           options={{
             title: 'Settings',
-            tabBarIcon: ({ focused }) => <TabIcon name="settings" focused={focused} />,
+            tabBarIcon: ({ focused }) => <TabBarIcon name="settings" focused={focused} />,
           }}
         />
         {/* The assessment screens live here but have no tab. `href: null` makes the whole group unreachable on SDK 58, so every push to /tracker/* bounced back to Home. */}
@@ -105,16 +107,6 @@ const styles = StyleSheet.create({
     marginTop: 3,
     fontSize: 12,
     lineHeight: 16,
-  },
-  iconContainer: {
-    width: 56,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  iconContainerSelected: {
-    backgroundColor: '#EADDFF',
   },
   painTrackerIcon: {
     width: 18,

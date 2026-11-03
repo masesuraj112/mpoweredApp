@@ -1,5 +1,5 @@
 import { ManagementAssessmentProvider } from '@/features/assessments/management/context';
-import { AssessmentHeader } from '@/components/mpowered/AssessmentHeader';
+import { TrackerHeader } from '@/components/tracker/TrackerHeader';
 import { Stack } from 'expo-router';
 
 export default function ManagementLayout() {
@@ -8,7 +8,7 @@ export default function ManagementLayout() {
 			<Stack
 				screenOptions={{
 					headerShown: true,
-					header: () => <AssessmentHeader />,
+					header: () => <TrackerHeader />,
 				}}
 			/>
 		</ManagementAssessmentProvider>

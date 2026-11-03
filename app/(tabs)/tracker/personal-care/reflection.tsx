@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
@@ -52,7 +52,7 @@ export default function ReflectionScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Personal Care">
+    <TrackerQuestionScreen title="My Personal Care">
       <ChoiceCard
         title="Reflection on your personal care"
         prompt={<Text style={styles.prompt}>Write any reflections of pain impacts on your daily life:</Text>}
@@ -81,7 +81,7 @@ export default function ReflectionScreen() {
         </Text>
       </ChoiceCard>
       {doneBar.bar}
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

@@ -1,3 +1,4 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
@@ -22,60 +23,40 @@ export default function StandingScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="Standing Impacts"
-          prompt={
-            <Text style={styles.promptText}>
-              Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
-            </Text>
-          }
-          questionNumber={6}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/movement/sitting')}
-          onRecord={handleNext}
-          disabled={!answers.standingImpact}
-          variant="management"
-          style={{ flex: 1, height: undefined }}
-        >
-          <View style={styles.optionsList}>
-            {STANDING_OPTIONS.map((option, index) => (
-              <AssessmentRadioRow
-                key={option}
-                label={option}
-                selected={answers.standingImpact === option}
-                onPress={() => updateAnswer('standingImpact', option)}
-                weight={rowWeight(option)}
-                isLast={index === STANDING_OPTIONS.length - 1}
-              />
-            ))}
-          </View>
-        </ChoiceCard>
-      </View>
-    </View>
+    <TrackerQuestionScreen title="My Movement">
+      <ChoiceCard
+        title="Standing Impacts"
+        prompt={
+          <Text style={styles.promptText}>
+            Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
+          </Text>
+        }
+        questionNumber={6}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/movement/sitting')}
+        onRecord={handleNext}
+        disabled={!answers.standingImpact}
+        variant="management"
+        style={{ flex: 1, height: undefined }}
+      >
+        <View style={styles.optionsList}>
+          {STANDING_OPTIONS.map((option, index) => (
+            <AssessmentRadioRow
+              key={option}
+              label={option}
+              selected={answers.standingImpact === option}
+              onPress={() => updateAnswer('standingImpact', option)}
+              weight={rowWeight(option)}
+              isLast={index === STANDING_OPTIONS.length - 1}
+            />
+          ))}
+        </View>
+      </ChoiceCard>
+    </TrackerQuestionScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptText: {
     color: '#1D1B20',
     fontSize: scaleFont(12),
