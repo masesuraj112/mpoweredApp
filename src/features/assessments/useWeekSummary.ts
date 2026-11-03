@@ -29,7 +29,9 @@ export function useWeekSummary<TEntry, TSummary>(
   const [state, setState] = useState<WeekSummaryState<TSummary>>({ status: 'loading' });
   // Always the latest callbacks, so callers can pass inline functions without re-running the load.
   const latest = useRef(options);
-  latest.current = options;
+  useEffect(() => {
+    latest.current = options;
+  });
 
   useEffect(() => {
     if (!weekStart) return;
