@@ -58,6 +58,9 @@ export default function TabsLayout() {
           tabBarInactiveTintColor: Colors.light.onSurfaceVariant,
           tabBarLabelStyle: styles.tabLabel,
           tabBarStyle: styles.tabBar,
+          // Android shrinks the window when the keyboard opens, which would lift the bar on top of it.
+          // Hiding it keeps it out of the way, as on iPhone where the keyboard covers it.
+          tabBarHideOnKeyboard: true,
         }}
       >
         <Tabs.Screen
