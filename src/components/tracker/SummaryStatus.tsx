@@ -8,15 +8,21 @@ import { Spacing } from '@/constants/theme';
 type SummaryStatusProps = {
   state: { status: 'loading' } | { status: 'error'; message: string };
   onClose: () => void;
+  /** Spoken while loading. Defaults to "Loading your summary". */
+  loadingLabel?: string;
 };
 
 /** What a tracker summary screen shows while its entry loads, or when it could not be shown. */
-export function SummaryStatus({ state, onClose }: SummaryStatusProps) {
+export function SummaryStatus({
+  state,
+  onClose,
+  loadingLabel = 'Loading your summary',
+}: SummaryStatusProps) {
   return (
     <Screen scroll={false}>
       <View style={styles.centered}>
         {state.status === 'loading' ? (
-          <ActivityIndicator accessibilityLabel="Loading your summary" />
+          <ActivityIndicator accessibilityLabel={loadingLabel} />
         ) : (
           <>
             <AppText

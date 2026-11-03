@@ -43,6 +43,21 @@ describe('SummaryReport', () => {
     expect(baseProps.onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('reopens the questions from Edit answers', async () => {
+    const onEdit = jest.fn();
+    await render(inProvider(<SummaryReport {...baseProps} onEdit={onEdit} />));
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Edit answers' }));
+
+    expect(onEdit).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves out Edit answers when the entry cannot be edited', async () => {
+    await render(inProvider(<SummaryReport {...baseProps} />));
+
+    expect(screen.queryByRole('button', { name: 'Edit answers' })).toBeNull();
+  });
+
   it('lists each result under "My results:"', async () => {
     await render(
       inProvider(
@@ -106,6 +121,16 @@ describe('SummaryStatus', () => {
 
     expect(screen.getByLabelText('Loading your summary')).toBeTruthy();
     expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  it('uses the loading label it is given', async () => {
+    await render(
+      inProvider(
+        <SummaryStatus state={{ status: 'loading' }} onClose={jest.fn()} loadingLabel="Loading your answers" />,
+      ),
+    );
+
+    expect(screen.getByLabelText('Loading your answers')).toBeTruthy();
   });
 
   it('shows the error as an alert with a Close button', async () => {

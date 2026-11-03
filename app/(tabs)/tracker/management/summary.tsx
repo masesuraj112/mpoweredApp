@@ -4,6 +4,7 @@ import { MANAGEMENT_TIPS_URL } from '@/constants/managementOptions';
 import { managementSaveMessage } from '@/features/assessments/management/messages';
 import { toManagementSummary } from '@/features/assessments/management/summary';
 import { useWeekSummary } from '@/features/assessments/useWeekSummary';
+import { isThisWeek } from '@/features/assessments/week';
 import { getManagementEntryForWeek } from '@/services/management';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -18,6 +19,8 @@ export default function SummaryScreen() {
     errorMessage: managementSaveMessage,
   });
   const close = () => router.replace('/(tabs)/home');
+  // Only this week's entry can be changed: the questions save to the current week.
+  const edit = weekStart && isThisWeek(weekStart) ? () => router.replace('/tracker/management/edit') : undefined;
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
@@ -37,6 +40,7 @@ export default function SummaryScreen() {
       // TODO: Persist this report to the My Health before showing its saved status.
       savedText="Saved to My Health"
       onClose={close}
+      onEdit={edit}
     />
   );
 }

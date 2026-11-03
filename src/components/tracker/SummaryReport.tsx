@@ -26,6 +26,8 @@ type SummaryReportProps = {
   /** The note beside the Close button, for example "Saved to My Health". */
   savedText: string;
   onClose: () => void;
+  /** Shows an "Edit answers" button that reopens the questions. Leave out when the entry cannot be edited. */
+  onEdit?: () => void;
 };
 
 /**
@@ -43,6 +45,7 @@ export function SummaryReport({
   children,
   savedText,
   onClose,
+  onEdit,
 }: SummaryReportProps) {
   return (
     <Screen scroll={false}>
@@ -98,12 +101,22 @@ export function SummaryReport({
           <AppText variant="bodySmall" color="textTertiary" style={styles.savedText}>
             {savedText}
           </AppText>
-          <Button
-            label="Close"
-            variant="outlined"
-            accessibilityLabel="Close summary"
-            onPress={onClose}
-          />
+          <View style={styles.actions}>
+            {onEdit ? (
+              <Button
+                label="Edit answers"
+                variant="tonal"
+                accessibilityHint="Opens the questions again with your answers filled in"
+                onPress={onEdit}
+              />
+            ) : null}
+            <Button
+              label="Close"
+              variant="outlined"
+              accessibilityLabel="Close summary"
+              onPress={onClose}
+            />
+          </View>
         </View>
       </View>
     </Screen>
@@ -196,9 +209,15 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.mid,
+  },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
   },
   savedText: {
     flexShrink: 1,

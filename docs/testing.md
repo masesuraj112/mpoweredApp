@@ -71,6 +71,7 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Saving management sends validated values; a lost-response retry succeeds | `management.test.ts` | Service | `unit-tests` |
 | A saved assessment (all five) can be edited only through its `update_*_assessment` function: answers change in place, child lists are replaced, the submission id and date are kept, the save validation still applies, another user or an empty week gets `NOT_FOUND`, anon cannot call it | `099_update_assessments` | Database | `database-tests` |
 | Editing an assessment loads this week's saved entry back into the question screens (after the local draft has loaded, so it cannot overwrite them); every saved entry maps back to answers that pass validation; a failed or missing load shows a message | `savedAnswers.test.ts`, `useEditSavedAnswers.test.ts` | Unit | `unit-tests` |
+| A tracker summary shows Edit answers only for this week's entry, and the button reopens the questions | `SummaryReport.test.tsx`, `week.test.ts` (`isThisWeek`) | Component, Unit | `unit-tests` |
 | Database errors map to app codes (including `MEDICATION_CONFLICT`) and show friendly management messages | `errors.test.ts`; management `messages.test.ts` | Unit | `unit-tests` |
 | Local numbers become `+614...` and anything that is not an Australian mobile is rejected | `phone.test.ts` (accepted shapes, rejected input, idempotence, display format) | Unit | `unit-tests` |
 | The sign-in code is exactly six digits | `otp.test.ts` | Unit | `unit-tests` |
