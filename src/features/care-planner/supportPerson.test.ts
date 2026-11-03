@@ -12,6 +12,7 @@ import {
   MAX_SUPPORT_PEOPLE,
   MOBILE_REQUIRED_MESSAGE,
   NAME_REQUIRED_MESSAGE,
+  PHONE_REQUIRED_MESSAGE,
   toSupportPerson,
   validateField,
   validateSupportPerson,
@@ -41,15 +42,26 @@ describe('validateSupportPerson', () => {
     expect(validateSupportPerson(draft({ name: '   ' })).name).toBe(NAME_REQUIRED_MESSAGE);
   });
 
-  it('accepts a name alone: phone and email are both optional', () => {
-    expect(hasErrors(validateSupportPerson(draft({ name: 'Bron' })))).toBe(false);
+  it('rejects a name alone: the phone is required', () => {
+    const errors = validateSupportPerson(draft({ name: 'Bron' }));
+    expect(errors.phone).toBe(PHONE_REQUIRED_MESSAGE);
+    expect(hasErrors(errors)).toBe(true);
   });
 
-  it('rejects a bad phone number only when one is entered', () => {
+  it('asks for a phone number when it is blank', () => {
+    expect(validateSupportPerson(draft({ name: 'Bron', phone: '   ' })).phone).toBe(
+      PHONE_REQUIRED_MESSAGE,
+    );
+  });
+
+  it('rejects a bad phone number', () => {
     expect(validateSupportPerson(draft({ name: 'Bron', phone: '12345' })).phone).toBe(
       MOBILE_REQUIRED_MESSAGE,
     );
-    expect(validateSupportPerson(draft({ name: 'Bron', phone: '' })).phone).toBeUndefined();
+  });
+
+  it('accepts a name and phone without an email', () => {
+    expect(hasErrors(validateSupportPerson(draft({ name: 'Bron', phone: '0400 000 000' })))).toBe(false);
   });
 
   it('accepts an Australian mobile with spaces or in +61 form', () => {
@@ -83,6 +95,14 @@ describe('validateField', () => {
 
   it('asks for the name once something else has been entered', () => {
     expect(validateField('name', draft({ phone: '0400 000 000' }))).toBe(NAME_REQUIRED_MESSAGE);
+  });
+
+  it('stays quiet about a blank phone on an untouched form', () => {
+    expect(validateField('phone', draft())).toBeUndefined();
+  });
+
+  it('asks for the phone once something else has been entered', () => {
+    expect(validateField('phone', draft({ name: 'Bron' }))).toBe(PHONE_REQUIRED_MESSAGE);
   });
 
   it('checks the phone and email on their own', () => {
