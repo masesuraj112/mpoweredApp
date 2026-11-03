@@ -111,6 +111,8 @@ export default function HomeScreen() {
                   label={isRecorded ? 'Edit' : 'Record'}
                   accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
                   variant={isRecorded ? 'tonal' : 'primary'}
+                  pill
+                  style={styles.assessmentButton}
                   trailingGlyph="→"
                   disabled={!isProgressLoaded}
                   onPress={() => openAssessment(assessment)}
@@ -225,6 +227,10 @@ const styles = StyleSheet.create({
   assessmentCopy: {
     flex: 1,
     gap: Spacing.half,
+  },
+  // Record and Edit are the same width, so the two columns line up.
+  assessmentButton: {
+    minWidth: 105,
   },
   pressed: {
     opacity: 0.8,
