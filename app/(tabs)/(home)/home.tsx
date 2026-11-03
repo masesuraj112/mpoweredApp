@@ -134,6 +134,8 @@ export default function HomeScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
                     disabled={!isProgressLoaded}
+                    // The pill is 40 high; the slop makes the touch area the full 48.
+                    hitSlop={(MinTapTarget - ASSESSMENT_BUTTON_HEIGHT) / 2}
                     onPress={() => openAssessment(assessment)}
                     style={({ pressed }) => [
                       styles.assessmentButton,
@@ -187,6 +189,11 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+// The Record / Edit pill, and the cards that hold it: the pill plus the card's padding above and below.
+const ASSESSMENT_BUTTON_HEIGHT = 40;
+const ASSESSMENT_BUTTON_WIDTH = 104;
+const ROW_MIN_HEIGHT = ASSESSMENT_BUTTON_HEIGHT + 2 * Spacing.two;
 
 const useStyles = makeStyles((colors) => ({
   screen: {
@@ -272,7 +279,7 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.three,
   },
   assessmentRow: {
-    minHeight: 50,
+    minHeight: ROW_MIN_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -300,14 +307,16 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.two,
-    minHeight: MinTapTarget,
+    gap: Spacing.one,
+    minHeight: ASSESSMENT_BUTTON_HEIGHT,
+    // Record and Edit share one width (Record's) so the column of buttons lines up.
+    minWidth: ASSESSMENT_BUTTON_WIDTH,
     backgroundColor: colors.surfaceContainer,
     // Both states carry the border so Edit and Record are the same size.
     borderWidth: 2,
     borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
     alignSelf: 'center',
   },
   recordButton: {
@@ -337,13 +346,15 @@ const useStyles = makeStyles((colors) => ({
   buttonPressed: {
     opacity: 0.8,
   },
+  // The same size and padding as an assessment card, and the same gap above it as between them.
   reflection: {
-    minHeight: 50,
+    minHeight: ROW_MIN_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    marginTop: Spacing.two,
-    paddingHorizontal: Spacing.four,
+    marginTop: Spacing.three,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
     borderRadius: Radius.card,
     backgroundColor: colors.surfaceContainer,
   },
