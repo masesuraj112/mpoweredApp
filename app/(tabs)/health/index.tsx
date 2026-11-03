@@ -114,19 +114,19 @@ export default function HealthScreen() {
             accessibilityRole="button"
             style={[styles.actionButton, styles.actionButtonLeft]}
             onPress={() => router.push('/health/tracking/history')}>
-            <Text style={styles.actionButtonText}>Pain History</Text>
+            <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>Pain History</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             style={styles.actionButton}
             onPress={() => router.push('/planner')}>
-            <Text style={styles.actionButtonText}>Plan Appointment</Text>
+            <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>Plan Appointment</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
             style={[styles.actionButton, styles.actionButtonRight]}
             onPress={() => router.push('/health/pain-guide')}>
-            <Text style={styles.actionButtonText}>Pain Guide</Text>
+            <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>Pain Guide</Text>
           </Pressable>
         </View>
       </View>
@@ -222,8 +222,12 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.one,
     marginTop: Spacing.two,
   },
+  // Each button starts at its label's width and the three share what's left, so "Plan Appointment" gets
+  // the room it needs; a label only shrinks (a little) if it still can't fit on one line.
   actionButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 'auto',
     minHeight: MinTapTarget,
     borderRadius: ACTION_INNER_RADIUS,
     backgroundColor: colors.primary,
