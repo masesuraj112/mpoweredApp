@@ -22,12 +22,14 @@ import type { AnswerInput } from '@/features/care-planner/planTypes';
 import { CONSENT_NEEDED_MESSAGE, FIRST_TIME_ANSWERS_HINT, getReviewMode } from '@/features/care-planner/reviewMode';
 import { useAppointmentIdParam } from '@/features/care-planner/useAppointmentIdParam';
 import { useAppointmentPlan } from '@/features/care-planner/useAppointmentPlan';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { markAppointmentSaved, saveAnswers } from '@/services/care-planner';
 
 export default function ReviewScreen() {
   const router = useRouter();
   const { appointmentId } = useAppointmentIdParam();
   const state = useAppointmentPlan(appointmentId);
+  const reminders = useReminders();
   const { refresh } = state;
 
   // Consent is signed on its own screen. Re-read the plan when coming back so the tick shows.
@@ -60,6 +62,8 @@ export default function ReviewScreen() {
       setSaveFailed(true);
       return;
     }
+    // A saved appointment gets its reminders (drafts never do).
+    reminders.refresh();
     router.dismissTo('/planner');
   };
 
@@ -105,7 +109,6 @@ export default function ReviewScreen() {
         <>
           <PlanActionBar
             mode={mode}
-            consented={consented}
             onSave={saveAppointment}
             saving={saving}
             onModifyQuestions={() =>

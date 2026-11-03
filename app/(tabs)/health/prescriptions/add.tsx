@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import {

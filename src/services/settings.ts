@@ -1,6 +1,6 @@
-// The signed-in user's notification choices (Settings > Notifications). Nothing sends reminders
-// yet; these only store the choices. Returns a Result and never throws to the UI. The Supabase
-// client is the last optional argument so tests can pass a fake one.
+// The signed-in user's notification choices (Settings > Notifications). The reminders themselves
+// are planned and scheduled on the phone (features/notifications). Returns a Result and never
+// throws to the UI. The Supabase client is the last optional argument so tests can pass a fake one.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 

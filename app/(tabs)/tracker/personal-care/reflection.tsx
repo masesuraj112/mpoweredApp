@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
@@ -9,6 +9,7 @@ import {
   MAX_REFLECTION_WORDS,
 } from '@/features/assessments/reflection';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
+import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePersonalCareEntry } from '@/services/assessments';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -17,6 +18,7 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
+  const reminders = useReminders();
   const doneBar = useKeyboardDoneBar();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,6 +36,8 @@ export default function ReflectionScreen() {
 
     const entryDate = getLocalToday();
     const result = await savePersonalCareEntry(answers, entryDate);
+    // The next assessment reminder counts from this one.
+    if (result.ok) reminders.refresh();
 
     inFlight.current = false;
     setSaving(false);
@@ -48,7 +52,7 @@ export default function ReflectionScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Personal Care">
+    <TrackerQuestionScreen title="My Personal Care">
       <ChoiceCard
         title="Reflection on your personal care"
         prompt={<Text style={styles.prompt}>Write any reflections of pain impacts on your daily life:</Text>}
@@ -77,7 +81,7 @@ export default function ReflectionScreen() {
         </Text>
       </ChoiceCard>
       {doneBar.bar}
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

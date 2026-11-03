@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleHeight } from '@/services/scale';
@@ -16,7 +16,7 @@ export default function MoodScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <ScaleSliderInput
         titleText="Mood"
         questionText="Over the past week, how much has pain impacted your mood?"
@@ -30,6 +30,6 @@ export default function MoodScreen() {
         variant="personalCare"
         cardHeight={scaleHeight(330)}
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }

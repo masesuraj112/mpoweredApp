@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'jest-expo',
+  globalSetup: '<rootDir>/jest.globalSetup.js',
   setupFiles: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/assets/(.*)$': '<rootDir>/assets/$1', // must come first: same alias prefix as the next line
@@ -8,6 +9,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/features/auth/afterVerify.ts',
     'src/features/auth/patientIntro.ts',
+    'src/features/splash/startup.ts',
+    'src/features/splash/useMinimumDuration.ts',
     'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
     'src/features/assessments/drafts.ts',
@@ -15,6 +18,15 @@ module.exports = {
     'src/features/assessments/pain/validate.ts',
     'src/features/assessments/pain/messages.ts',
     'src/features/assessments/pain/summary.ts',
+    'src/features/notifications/schedule.ts',
+    'src/services/notifications.ts',
+    'src/features/notifications/messages.ts',
+    'src/features/notifications/syncReminders.ts',
+    'src/features/notifications/RemindersContext.tsx',
+    'src/features/notifications/useReminderPermission.ts',
+    'src/features/notifications/reminderRoute.ts',
+    'src/features/notifications/useOpenTappedReminder.ts',
+    'src/features/notifications/testReminders.ts',
     'src/features/care-planner/appointmentDisplay.ts',
     'src/features/care-planner/planDisplay.ts',
     'src/features/care-planner/signature.ts',
@@ -73,5 +85,7 @@ module.exports = {
     'src/features/support-person/mappers.ts',
     'src/services/support-person.ts',
     'src/features/support-person/useSupportedAppointmentQuestions.ts',
+    'src/constants/theme.ts',
+    'src/features/assessments/useWeekSummary.ts',
   ],
 };

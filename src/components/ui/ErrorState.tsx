@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 
 import { Button } from './Button';
 
@@ -28,9 +28,7 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
   },
   message: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
+    ...Typography.bodyMedium,
     textAlign: 'center',
     color: Colors.light.onSurface,
   },

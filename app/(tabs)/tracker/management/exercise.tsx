@@ -1,3 +1,4 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
@@ -16,74 +17,55 @@ export default function ExerciseScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Management</Text>
-        <ChoiceCard
-          title="Exercise"
-          prompt={
-            <View style={styles.promptContent}>
-              <Text style={styles.promptText}>
-                In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
-              </Text>
-              <Text style={styles.examples}>
-                Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.
-              </Text>
-            </View>
-          }
-          questionNumber={3}
-          totalQuestions={4}
-          onPrevious={() => router.push('/tracker/management/otc')}
-          onRecord={handleNext}
-          disabled={!answers.exerciseDays}
-          variant="management"
-          cardHeight={scaleHeight(516)}
-        >
-          <View style={styles.optionsList}>
-            {EXERCISE_OPTIONS.map((option, index) => {
-              const isSelected = answers.exerciseDays === option;
-              const isLast = index === EXERCISE_OPTIONS.length - 1;
-
-              return (
-                <Pressable
-                  key={option}
-                  onPress={() => updateAnswer('exerciseDays', option)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={option}
-                  style={[styles.optionRow, !isLast && styles.optionDivider]}
-                >
-                  <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                    {isSelected && <View style={styles.radioDot} />}
-                  </View>
-                  <Text style={styles.optionText}>{option}</Text>
-                </Pressable>
-              );
-            })}
+    <TrackerQuestionScreen title="My Management">
+      <ChoiceCard
+        title="Exercise"
+        prompt={
+          <View style={styles.promptContent}>
+            <Text style={styles.promptText}>
+              In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
+            </Text>
+            <Text style={styles.examples}>
+              Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.
+            </Text>
           </View>
-        </ChoiceCard>
-      </View>
-    </View>
+        }
+        questionNumber={3}
+        totalQuestions={4}
+        onPrevious={() => router.push('/tracker/management/otc')}
+        onRecord={handleNext}
+        disabled={!answers.exerciseDays}
+        variant="management"
+        cardHeight={scaleHeight(516)}
+      >
+        <View style={styles.optionsList}>
+          {EXERCISE_OPTIONS.map((option, index) => {
+            const isSelected = answers.exerciseDays === option;
+            const isLast = index === EXERCISE_OPTIONS.length - 1;
+
+            return (
+              <Pressable
+                key={option}
+                onPress={() => updateAnswer('exerciseDays', option)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={option}
+                style={[styles.optionRow, !isLast && styles.optionDivider]}
+              >
+                <View style={[styles.radio, isSelected && styles.radioSelected]}>
+                  {isSelected && <View style={styles.radioDot} />}
+                </View>
+                <Text style={styles.optionText}>{option}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ChoiceCard>
+    </TrackerQuestionScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptContent: {
     gap: scaleHeight(12),
   },

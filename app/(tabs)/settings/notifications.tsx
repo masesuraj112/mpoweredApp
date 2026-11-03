@@ -5,19 +5,75 @@ import {
   SettingsModalToggleRow,
 } from '@/components/mpowered/SettingsModal';
 import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { syncReminders, type SyncOutcome } from '@/features/notifications/syncReminders';
+import {
+  nextSavedAppointment,
+  TEST_REMINDER_LABELS,
+  testReminder,
+  type TestReminderKind,
+} from '@/features/notifications/testReminders';
+import { useReminderPermission } from '@/features/notifications/useReminderPermission';
 import { useNotificationSettings } from '@/features/settings/useNotificationSettings';
+import { listAppointments } from '@/services/care-planner';
+import { listScheduledReminders, scheduleTestReminder } from '@/services/notifications';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 const COUNT_OPTIONS = ['1', '2', '3', '4', '5', '6', '7'];
+
+// Development only: what a re-plan did, for "Re-plan reminders now".
+const SYNC_OUTCOME_TEXT: Record<SyncOutcome, string> = {
+  scheduled: 'Planned and scheduled.',
+  cancelled: 'Both kinds of reminder are off, so everything was cancelled.',
+  'no-permission': 'Notifications are not allowed for this app, so nothing changed.',
+  failed: 'Could not read the settings, appointments or assessments (connection or sign-in?).',
+};
 const UNIT_OPTIONS = ['days', 'weeks'];
 
-/** Saves the choices only: nothing sends reminders yet (docs/settings-backend.md, step 7). */
+/**
+ * The patient's reminder choices. Turning reminders on asks the phone for permission first; if it's
+ * refused the toggle stays off (docs/backend/notifications-build-plan.md, decision N-E).
+ */
 export default function NotificationsScreen() {
   const { state, reload, settings, update, saveError } = useNotificationSettings();
+  const permission = useReminderPermission();
+
+  const turnOn = async (change: { assessmentReminders: boolean } | { appointmentReminders: boolean }) => {
+    const on = Object.values(change)[0];
+    if (on && !(await permission.ensure())) return;
+    update(change);
+  };
+
+  // Development builds only (manual QA, docs/backend/notifications-build-plan.md section 6.4).
+  const sendTestReminder = async (kind: TestReminderKind) => {
+    if (!(await permission.ensure())) return;
+    const appointments = kind === 'assessment' ? null : await listAppointments();
+    const next = appointments?.ok ? nextSavedAppointment(appointments.data, new Date()) : null;
+    const reminder = testReminder(kind, next);
+    const result = await scheduleTestReminder(reminder);
+    const opens = reminder.target ? '' : '\nThere is no saved appointment ahead, so tapping it opens nothing.';
+    Alert.alert(
+      'Test reminder',
+      result.ok
+        ? `It arrives in about 10 seconds. Leave the app or lock the phone to see it.${opens}`
+        : 'It could not be scheduled.',
+    );
+  };
+  const replanNow = async () => {
+    const outcome = await syncReminders(new Date());
+    const scheduled = await listScheduledReminders();
+    const count = scheduled.ok ? scheduled.data.length : '?';
+    Alert.alert('Re-plan reminders', `${SYNC_OUTCOME_TEXT[outcome]}\nScheduled now: ${count}`);
+  };
+  const showScheduled = async () => {
+    const result = await listScheduledReminders();
+    const lines = result.ok ? result.data.map(r => `${r.id}: ${r.title}`) : ['Could not read them.'];
+    Alert.alert(`Scheduled reminders (${result.ok ? result.data.length : '?'})`, lines.join('\n') || 'None');
+  };
 
   // --- Screenshot 2: "Assessment reminders frequency" popup -----------------
   const [frequencyOpen, setFrequencyOpen] = useState(false);
@@ -65,6 +121,14 @@ export default function NotificationsScreen() {
               We could not save that change. Please check your connection and try again.
             </Text>
           )}
+          {permission.denied && (
+            <View style={styles.permission}>
+              <Text style={styles.permissionText} accessibilityRole="alert">
+                Notifications are turned off for MPowered in your phone’s settings, so reminders can’t be shown.
+              </Text>
+              <Button label="Open settings" variant="outlined" onPress={permission.openSettings} />
+            </View>
+          )}
           <Text style={styles.sectionTitle}>Assessment reminders</Text>
           <View style={styles.group}>
             <SettingsOption
@@ -72,7 +136,8 @@ export default function NotificationsScreen() {
               trailing={
                 <SettingsToggle
                   value={settings.assessmentReminders}
-                  onValueChange={value => update({ assessmentReminders: value })}
+                  accessibilityLabel="Assessment reminders"
+                  onValueChange={value => turnOn({ assessmentReminders: value })}
                 />
               }
             />
@@ -85,12 +150,25 @@ export default function NotificationsScreen() {
               trailing={
                 <SettingsToggle
                   value={settings.appointmentReminders}
-                  onValueChange={value => update({ appointmentReminders: value })}
+                  accessibilityLabel="Appointment reminders"
+                  onValueChange={value => turnOn({ appointmentReminders: value })}
                 />
               }
             />
             <SettingsOption label="Set reminder frequency" onPress={openAppointment} />
           </View>
+          {__DEV__ && (
+            <>
+              <Text style={styles.sectionTitle}>Developer</Text>
+              <View style={styles.group}>
+                {(Object.keys(TEST_REMINDER_LABELS) as TestReminderKind[]).map(kind => (
+                  <SettingsOption key={kind} label={TEST_REMINDER_LABELS[kind]} onPress={() => sendTestReminder(kind)} />
+                ))}
+                <SettingsOption label="Re-plan reminders now" onPress={replanNow} />
+                <SettingsOption label="Show scheduled reminders" onPress={showScheduled} />
+              </View>
+            </>
+          )}
         </>
       )}
 
@@ -127,4 +205,6 @@ const styles = {
   sectionTitle: { fontSize: 20, fontWeight: '600' as const, marginBottom: 12 },
   group: { marginBottom: 24 },
   errorText: { color: Colors.light.error, fontSize: 14, marginBottom: 16 },
+  permission: { gap: Spacing.two, marginBottom: Spacing.four },
+  permissionText: { color: Colors.light.onSurface, fontSize: 14, lineHeight: 20 },
 };

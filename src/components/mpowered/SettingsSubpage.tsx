@@ -1,16 +1,17 @@
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNode, useState } from 'react';
 
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.content}>
+      {/* The whole page scrolls, so nothing is cut off on a small phone or with large text. */}
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>{title}</Text>
         {children}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -148,9 +149,10 @@ const styles = StyleSheet.create({
     lineHeight: scaleHeight(29),
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: scaleWidth(24),
     paddingTop: scaleHeight(24),
+    paddingBottom: scaleHeight(24),
   },
   option: {
     minHeight: scaleHeight(56),
