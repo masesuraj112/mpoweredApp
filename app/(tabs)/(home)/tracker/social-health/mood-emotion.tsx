@@ -13,24 +13,24 @@ import { Pressable, StyleSheet, View } from 'react-native';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
 const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number }> = {
   frustrated: {
-    icon: require('../../../../assets/images/social-health/frustrated-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/frustrated-selected.svg'),
+    icon: require('../../../../../assets/images/social-health/frustrated-unselected.svg'),
+    selectedIcon: require('../../../../../assets/images/social-health/frustrated-selected.svg'),
   },
   sad: {
-    icon: require('../../../../assets/images/social-health/sad-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/sad-selected.svg'),
+    icon: require('../../../../../assets/images/social-health/sad-unselected.svg'),
+    selectedIcon: require('../../../../../assets/images/social-health/sad-selected.svg'),
   },
   okay: {
-    icon: require('../../../../assets/images/social-health/okay-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/okay-selected.svg'),
+    icon: require('../../../../../assets/images/social-health/okay-unselected.svg'),
+    selectedIcon: require('../../../../../assets/images/social-health/okay-selected.svg'),
   },
   calm: {
-    icon: require('../../../../assets/images/social-health/calm-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/calm-selected.svg'),
+    icon: require('../../../../../assets/images/social-health/calm-unselected.svg'),
+    selectedIcon: require('../../../../../assets/images/social-health/calm-selected.svg'),
   },
   delighted: {
-    icon: require('../../../../assets/images/social-health/delighted-unselected.svg'),
-    selectedIcon: require('../../../../assets/images/social-health/delighted-selected.svg'),
+    icon: require('../../../../../assets/images/social-health/delighted-unselected.svg'),
+    selectedIcon: require('../../../../../assets/images/social-health/delighted-selected.svg'),
   },
 };
 
