@@ -43,19 +43,20 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     gap: Spacing.three,
   },
+  // The stronger lavender, so a given permission stands out on the tinted patient card as well as the page.
   chip: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
-    backgroundColor: colors.surfaceContainer,
+    backgroundColor: colors.secondaryContainer,
     paddingVertical: Spacing.two,
   },
   chipDisabled: {
     backgroundColor: colors.background,
   },
   chipText: {
-    color: colors.primary,
+    color: colors.onSecondaryContainer,
     ...Typography.caption,
     fontWeight: '600',
     letterSpacing: 0.3,
