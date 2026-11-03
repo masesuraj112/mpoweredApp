@@ -32,6 +32,16 @@ jest.mock('@expo/ui', () => {
         testID,
         onPress: () => onValueChange(!value),
       }),
+    // A slider screen readers can step up and down, as the native one can.
+    Slider: ({ value, onValueChange, min = 0, max = 1, step = 1, disabled }) =>
+      React.createElement(View, {
+        accessibilityRole: 'adjustable',
+        accessibilityValue: { min, max, now: value },
+        accessibilityState: { disabled: !!disabled },
+        accessibilityActions: [{ name: 'increment' }, { name: 'decrement' }],
+        onAccessibilityAction: (event) =>
+          onValueChange(Math.min(max, Math.max(min, value + (event.nativeEvent.actionName === 'increment' ? step : -step)))),
+      }),
     // A menu picker: one pressable per option, so a test can choose one by its label.
     Picker: Object.assign(
       ({ selectedValue, onValueChange, children }) =>
