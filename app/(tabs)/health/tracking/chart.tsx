@@ -135,6 +135,7 @@ export default function TrackingChartScreen() {
                 options={locationOptions}
                 onChange={setSelectedLocation}
                 accessibilityLabel="Pain location"
+                variant="chip"
                 style={styles.filterChip}
               />
             </View>
@@ -229,16 +230,14 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: Spacing.two,
   },
   cardTitle: {
     ...Typography.titleSmall,
     color: colors.textSecondary,
   },
+  // The picker draws its own pill; this only keeps it from crowding the title.
   filterChip: {
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    backgroundColor: colors.surfaceContainer,
     maxWidth: '55%',
   },
   emptyText: {

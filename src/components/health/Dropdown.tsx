@@ -13,14 +13,28 @@ type DropdownProps<T extends string> = {
   onChange: (value: T) => void;
   /** What the dropdown is for, for example "Pain location". Spoken with the chosen value. */
   accessibilityLabel: string;
-  /** `field` sits in a form; `chip` is a filter. Both are the platform's own menu picker. */
+  /** `field` is a full-width box for forms; `chip` is a small pill for filters. Both are the platform's own menu picker. */
   variant?: 'field' | 'chip';
   style?: StyleProp<ViewStyle>;
 };
 
 /** A choice from a list, shown as the platform's own menu picker. */
-export function Dropdown<T extends string>({ value, options, onChange, accessibilityLabel, style }: DropdownProps<T>) {
+export function Dropdown<T extends string>({
+  value,
+  options,
+  onChange,
+  accessibilityLabel,
+  variant = 'field',
+  style,
+}: DropdownProps<T>) {
   return (
-    <NativePicker value={value} options={options} onChange={onChange} accessibilityLabel={accessibilityLabel} style={style} />
+    <NativePicker
+      value={value}
+      options={options}
+      onChange={onChange}
+      accessibilityLabel={accessibilityLabel}
+      compact={variant === 'chip'}
+      style={style}
+    />
   );
 }
