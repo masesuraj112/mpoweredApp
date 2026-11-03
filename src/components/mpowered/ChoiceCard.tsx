@@ -28,8 +28,8 @@ interface ChoiceCardProps {
 
 /**
  * One assessment question: a title, the question, its answers, then the question count and the
- * Previous / Next (or Record) buttons. The card fills the page so the buttons always sit at its foot,
- * and the page scrolls when the answers are longer than the screen.
+ * Previous / Next (or Record) buttons. The card is as tall as what it holds, and the page scrolls when the
+ * answers are longer than the screen.
  */
 export function ChoiceCard({
   title,
@@ -164,7 +164,6 @@ export function QuestionHint({ children }: { children: ReactNode }) {
 
 const useStyles = makeStyles((colors) => ({
   card: {
-    flexGrow: 1,
     gap: Spacing.three,
     padding: Spacing.three,
     borderRadius: Radius.card,
@@ -191,7 +190,6 @@ const useStyles = makeStyles((colors) => ({
     color: colors.textSecondary,
   },
   answers: {
-    flexGrow: 1,
     gap: Spacing.three,
   },
   validationMessage: {

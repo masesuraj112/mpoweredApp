@@ -2,7 +2,6 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -72,8 +71,11 @@ export default function PrescriptionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <PrescriptionsHeader title="My Prescriptions" />
 
         {state.status === 'loading' && <LoadingState label="Loading your prescriptions" />}
@@ -140,7 +142,7 @@ export default function PrescriptionsScreen() {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 

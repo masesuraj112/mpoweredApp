@@ -30,9 +30,10 @@ export function ScreenTitle({ title }: { title: string }) {
 }
 
 /**
- * The same for the assessment screens. Their header belongs to the Pain Tracker stack's `tracker` route
+ * The title for the assessment screens. Their header belongs to the Pain Tracker stack's `tracker` route
  * (so its back button returns Home from any question), a navigator or two above the screen, so the title
- * is set there, each time a screen comes into view.
+ * is set there, each time a screen comes into view. It is the standard title, not a large one: iOS can
+ * only shrink a large title with a scroll view in the header's own screen, and these are nested deeper.
  */
 // Just what the walk up the navigators needs.
 type NavigatorLevel = {
@@ -48,7 +49,7 @@ export function useTrackerTitle(title: string) {
       let nav: NavigatorLevel | undefined = navigation;
       while (nav) {
         if (nav.getState()?.routeNames?.includes('tracker')) {
-          nav.setOptions({ title, headerLargeTitle: true });
+          nav.setOptions({ title, headerLargeTitle: false });
           return;
         }
         nav = nav.getParent();

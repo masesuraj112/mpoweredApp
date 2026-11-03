@@ -29,9 +29,11 @@ export function PlannerFlowScreen({
   const styles = useStyles();
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+    // The scroll view is the screen's first view, so the large title in the header follows it (iOS).
+    <>
       <ScreenTitle title={title} />
       <ScrollView
+        style={styles.safeArea}
         scrollEnabled={scrollEnabled}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         contentInsetAdjustmentBehavior="automatic"
@@ -39,14 +41,21 @@ export function PlannerFlowScreen({
         {children}
       </ScrollView>
 
-      {footer}
-    </SafeAreaView>
+      {footer ? (
+        <SafeAreaView style={styles.footer} edges={['bottom']}>
+          {footer}
+        </SafeAreaView>
+      ) : null}
+    </>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  footer: {
     backgroundColor: colors.background,
   },
   content: {

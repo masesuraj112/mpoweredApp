@@ -6,7 +6,6 @@ import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/them
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
 import { Alert, Platform, ScrollView, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
 /** Pending requests from patients to add this user as their support person (Figma 3911-24738). */
@@ -47,7 +46,7 @@ export default function SupportRequestsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom']}>
+    <>
       {/* Already on the requests screen, so the bell only shows the count, at the header's end. */}
       <Stack.Screen
         options={{
@@ -56,7 +55,10 @@ export default function SupportRequestsScreen() {
           headerRight: () => <NotificationBell count={requests.length} />,
         }}
       />
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
 
         {status === 'loading' ? (
           <LoadingState label="Loading support person requests" />
@@ -76,7 +78,7 @@ export default function SupportRequestsScreen() {
           ))
         )}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 

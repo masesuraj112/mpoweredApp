@@ -1,7 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -37,9 +36,12 @@ export default function WeekSummaryScreen() {
   const title = type ? `My ${ASSESSMENT_LABELS[type]} Summary` : 'Summary';
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+    <>
       <ScreenTitle title={title} />
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         {weekStart && <Text style={styles.period}>Period: {formatWeekRange(weekStart)}</Text>}
         <View style={styles.divider} />
 
@@ -50,7 +52,7 @@ export default function WeekSummaryScreen() {
         )}
         {section && <ProfileSectionCard section={section} />}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 

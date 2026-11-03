@@ -129,8 +129,11 @@ export default function AddPrescriptionScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
 
         <Text style={styles.helperText}>Type the name of your medication</Text>
@@ -238,7 +241,7 @@ export default function AddPrescriptionScreen() {
         </Pressable>
       </ScrollView>
       {doneBar.bar}
-    </SafeAreaView>
+    </>
   );
 }
 

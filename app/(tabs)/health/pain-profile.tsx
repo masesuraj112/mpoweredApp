@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
 import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -63,8 +62,11 @@ export default function PainProfileScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <PrescriptionsHeader
           title="My Pain Profiles"
           topBarLabel="Homescreen"
@@ -92,7 +94,7 @@ export default function PainProfileScreen() {
           </Pressable>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 

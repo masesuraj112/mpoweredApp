@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -50,8 +49,11 @@ export default function TrackingHistoryScreen() {
     pdf.run('print', () => buildHistoryHtml(weeks, formatLongDate(getLocalToday())));
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <TrackingScreenHeader
           activeTab="history"
           onPrintPdf={weeks.length > 0 ? printPdf : undefined}
@@ -123,7 +125,7 @@ export default function TrackingHistoryScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 

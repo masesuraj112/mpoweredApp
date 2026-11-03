@@ -25,7 +25,7 @@ type AssessmentSummaryProps = {
 
 /**
  * The report shown after an assessment is recorded. Every assessment's summary has this layout; only
- * the words differ. The page scrolls as one, and Close sits at the foot of the report.
+ * the words differ. The report is as tall as its answers, with Close at its foot; the page scrolls as one.
  */
 export function AssessmentSummary({
   subheading,
@@ -154,7 +154,6 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.three,
   },
   report: {
-    flexGrow: 1,
     gap: Spacing.three,
     padding: Spacing.three,
     borderRadius: Radius.card,
@@ -201,7 +200,6 @@ const useStyles = makeStyles((colors) => ({
     textDecorationLine: 'underline',
   },
   results: {
-    flexGrow: 1,
     gap: Spacing.three,
   },
   result: {

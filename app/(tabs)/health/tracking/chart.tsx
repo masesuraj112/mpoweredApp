@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from '@/components/mpowered/Dropdown';
 import { PainIntensityChart } from '@/components/mpowered/PainIntensityChart';
 import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
@@ -106,8 +105,11 @@ export default function TrackingChartScreen() {
     );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <TrackingScreenHeader
           activeTab="chart"
           onPrintPdf={loadState.status === 'ready' && records.length > 0 ? printPdf : undefined}
@@ -204,7 +206,7 @@ export default function TrackingChartScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
 
