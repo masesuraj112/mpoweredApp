@@ -40,10 +40,11 @@ export function BrandScreen({ hero, children }: BrandScreenProps) {
         showsVerticalScrollIndicator={false}>
         {/* Pulling down past the top shows the gradient's own colour, not the page, above it. */}
         <View style={styles.overscroll} />
+        {/* Top to bottom, so its whole top edge is the status bar strip's colour and the two join. */}
         <LinearGradient
           colors={Gradients.brand}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 1 }}
           style={[styles.hero, { paddingTop: insets.top + Spacing.four }]}>
           <View style={styles.column}>{hero}</View>
         </LinearGradient>
