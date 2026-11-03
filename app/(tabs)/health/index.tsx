@@ -136,7 +136,7 @@ export default function HealthScreen() {
 
 
 const ACTION_INNER_RADIUS = 6;
-const ACTION_OUTER_RADIUS = 16;
+const ACTION_OUTER_RADIUS = 12;
 
 const useStyles = makeStyles((colors) => ({
   profileTitle: {
