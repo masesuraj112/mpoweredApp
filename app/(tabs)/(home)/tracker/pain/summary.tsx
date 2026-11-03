@@ -1,85 +1,83 @@
-import {
-  AssessmentSummary,
-  SummaryEmphasis,
-  SummaryHeading,
-  SummaryResult,
-  SummaryStatus,
-  SummaryText,
-} from '@/components/mpowered/AssessmentSummary';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { toPainSummary, type PainSummaryData } from '@/features/assessments/pain/summary';
-import { getPainEntryForWeek } from '@/services/assessments';
+import { IntensityRow } from '@/components/tracker/IntensityRow';
+import { ReportSection } from '@/components/tracker/ReportSection';
+import { SummaryReport } from '@/components/tracker/SummaryReport';
+import { SummaryStatus } from '@/components/tracker/SummaryStatus';
+import { AppText } from '@/components/ui/AppText';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
-
-interface PainSummaryProps {
-  summary: PainSummaryData;
-  onClose: () => void;
-}
-
-function PainSummaryView({ summary, onClose }: PainSummaryProps) {
-  const { intensity } = summary;
-  return (
-    <AssessmentSummary
-      subheading="This helps guide your treatment and support your recovery."
-      reportTitle="My Pain"
-      period={summary.period}
-      savedLabel="Saved to My Health"
-      onClose={onClose}>
-      <SummaryHeading>Pain location</SummaryHeading>
-      <SummaryText>
-        I have pain in the following areas:
-        {summary.locations.map((location) => `\n• ${location}`).join('')}
-      </SummaryText>
-      <SummaryHeading>Pain characteristics</SummaryHeading>
-      <SummaryText>
-        My pain were: <SummaryEmphasis>{summary.characteristics.join(', ')}</SummaryEmphasis>
-      </SummaryText>
-      <SummaryHeading>Pain intensity</SummaryHeading>
-      <SummaryResult heading={`Current pain: ${intensity.current.value}`} value={intensity.current.description} />
-      <SummaryResult heading={`Mildest pain: ${intensity.mildest.value}`} value={intensity.mildest.description} />
-      <SummaryResult heading={`Worst pain: ${intensity.worst.value}`} value={intensity.worst.description} />
-      <SummaryResult heading={`Average pain: ${intensity.average.value}`} value={intensity.average.description} />
-    </AssessmentSummary>
-  );
-}
-
-type SummaryState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; summary: PainSummaryData };
+import { toPainSummary } from '@/features/assessments/pain/summary';
+import { useWeekSummary } from '@/features/assessments/useWeekSummary';
+import { getPainEntryForWeek } from '@/services/assessments';
+import { Spacing } from '@/constants/theme';
+import { router, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 
 // The route: shows the entry that was just saved for the week passed in the 'weekStart' param.
 export default function PainSummary() {
   const params = useLocalSearchParams<{ weekStart?: string | string[] }>();
   const weekStart = Array.isArray(params.weekStart) ? params.weekStart[0] : params.weekStart;
-  const [state, setState] = useState<SummaryState>({ status: 'loading' });
-  const close = () => router.dismissTo('/home');
+  const state = useWeekSummary({
+    weekStart,
+    load: getPainEntryForWeek,
+    toSummary: toPainSummary,
+    errorMessage: painSaveMessage,
+  });
+  const close = () => router.replace('/home');
 
-  useEffect(() => {
-    if (!weekStart) return;
-    let cancelled = false;
-    getPainEntryForWeek(weekStart).then(result => {
-      if (cancelled) return;
-      if (!result.ok) {
-        setState({ status: 'error', message: painSaveMessage(result.error) });
-      } else if (!result.data) {
-        setState({ status: 'error', message: 'We could not find your saved entry.' });
-      } else {
-        setState({ status: 'ready', summary: toPainSummary(result.data) });
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [weekStart]);
+  if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
-  const view: SummaryState = weekStart
-    ? state
-    : { status: 'error', message: 'We could not find the week to show.' };
+  const { summary } = state;
+  const { current, mildest, worst, average } = summary.intensity;
+  return (
+    <SummaryReport
+      title="My Pain"
+      period={summary.period}
+      intro="This helps guide your treatment and support your recovery."
+      savedText="Saved to My Health"
+      onClose={close}>
+      <ReportSection heading="Pain location">
+        <AppText variant="bodyMediumRegular" color="onSurface">
+          I have pain in the following areas:
+        </AppText>
+        <View style={styles.locations}>
+          {summary.locations.map((location) => (
+            <AppText key={location} variant="labelLargeBold" color="onSurface">
+              • {location}
+            </AppText>
+          ))}
+        </View>
+      </ReportSection>
 
-  if (view.status === 'ready') {
-    return <PainSummaryView summary={view.summary} onClose={close} />;
-  }
-  return <SummaryStatus message={view.status === 'loading' ? undefined : view.message} onClose={close} />;
+      <ReportSection heading="Pain characteristics">
+        <AppText variant="bodyMediumRegular" color="onSurface">
+          My pain were:{' '}
+          <AppText variant="labelLargeBold" color="onSurface">
+            {summary.characteristics.join(', ')}
+          </AppText>
+        </AppText>
+      </ReportSection>
+
+      <ReportSection heading="Pain intensity">
+        <View style={styles.intensityGrid}>
+          <IntensityRow label="Current Pain" value={current.value} description={current.description} />
+          <IntensityRow label="Mildest pain" value={mildest.value} description={mildest.description} />
+          <IntensityRow label="Worst pain" value={worst.value} description={worst.description} />
+          <IntensityRow label="Average pain" value={average.value} description={average.description} />
+        </View>
+      </ReportSection>
+    </SummaryReport>
+  );
 }
+
+const styles = StyleSheet.create({
+  locations: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.three,
+  },
+  intensityGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: Spacing.mid,
+  },
+});

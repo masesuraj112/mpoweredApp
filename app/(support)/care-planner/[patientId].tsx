@@ -1,54 +1,60 @@
-import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
-import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
-import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+
+import { AppointmentCard } from '@/components/support-person/AppointmentCard';
+import { PermissionChips } from '@/components/support-person/PermissionChips';
+import { SectionLabel } from '@/components/support-person/SectionLabel';
+import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { Screen } from '@/components/ui/Screen';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Spacing } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
 
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
-  const styles = useStyles();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const { status, reload, getPatient } = useSupportPerson();
   const patient = getPatient(patientId);
 
-  // The header itself comes from the layout; only the patient's name is known here.
   const header = (
     <Stack.Screen
       options={{
-        title: patient ? `${patient.name}’s Appointments` : 'Appointments',
-        headerBackTitle: 'Care Planner',
+        headerShown: true,
+        header: () => (
+          <ScreenHeader title={patient ? `${patient.name}’s Appointments` : 'Appointments'} onBack={() => router.back()} />
+        ),
       }}
     />
   );
 
   if (status !== 'ready') {
     return (
-      <View style={styles.screen}>
+      <Screen edges={[]}>
         {header}
         {status === 'loading' ? (
           <LoadingState label="Loading appointments" />
         ) : (
           <ErrorState message="We could not load this person's appointments." onRetry={reload} />
         )}
-      </View>
+      </Screen>
     );
   }
 
   // e.g. the support person unpaired from this patient in Settings, or followed an old link.
   if (!patient) {
     return (
-      <View style={styles.screen}>
+      <Screen edges={[]}>
         {header}
-        <Text style={[styles.empty, styles.notFound]}>You no longer support this person.</Text>
-      </View>
+        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
+          You no longer support this person.
+        </AppText>
+      </Screen>
     );
   }
 
@@ -58,29 +64,27 @@ export default function PatientAppointmentsScreen() {
   const firstName = patient.name.split(' ')[0];
 
   return (
-    <>
+    <Screen edges={[]}>
       {header}
-      {/* The scroll view is the screen's root so iOS starts it below the header and ends it above the tabs. */}
-      <ScrollView
-        style={styles.screen}
-        contentContainerStyle={styles.content}
-        contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.patientText}>
-          <Text style={styles.name} numberOfLines={1}>
-            {patient.name}
-          </Text>
-          {patient.condition ? (
-            <Text style={styles.condition} numberOfLines={1}>
-              {patient.condition}
-            </Text>
-          ) : null}
+      <View style={styles.content}>
+        <View style={styles.patientRow}>
+          <View style={styles.patientText}>
+            <AppText accessibilityRole="header" variant="headlineSmall" numberOfLines={1}>
+              {patient.name}
+            </AppText>
+            {patient.condition ? (
+              <AppText variant="labelLargeBold" color="textTertiary" numberOfLines={1}>
+                {patient.condition}
+              </AppText>
+            ) : null}
+          </View>
         </View>
 
         <PermissionChips canAddQuestions={patient.canAddQuestions} canAddAnswers={patient.canAddAnswers} />
 
         <AppointmentSection
           title="Upcoming appointments"
-          emptyText={noneShared ? ` hasn’t added you to an appointment yet.` : 'No upcoming appointments.'}
+          emptyText={noneShared ? `${firstName} hasn’t added you to an appointment yet.` : 'No upcoming appointments.'}
           appointments={upcoming}
           patient={patient}
           isUpcoming
@@ -92,8 +96,8 @@ export default function PatientAppointmentsScreen() {
           patient={patient}
           isUpcoming={false}
         />
-      </ScrollView>
-    </>
+      </View>
+    </Screen>
   );
 }
 
@@ -106,20 +110,21 @@ type AppointmentSectionProps = {
 };
 
 function AppointmentSection({ title, emptyText, appointments, patient, isUpcoming }: AppointmentSectionProps) {
-  const styles = useStyles();
   const actionTypes = getAppointmentActions(patient, isUpcoming);
 
   return (
     <View style={styles.section}>
       <SectionLabel>{title}</SectionLabel>
       {appointments.length === 0 ? (
-        <Text style={styles.empty}>{emptyText}</Text>
+        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
+          {emptyText}
+        </AppText>
       ) : (
-        appointments.map(appointment => (
+        appointments.map((appointment) => (
           <AppointmentCard
             key={appointment.appointmentId}
             appointment={appointment}
-            actions={actionTypes.map(action => ({
+            actions={actionTypes.map((action) => ({
               label: APPOINTMENT_ACTION_LABELS[action],
               onPress: () => openAppointmentAction(action, patient.id, appointment.appointmentId),
             }))}
@@ -130,41 +135,19 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+const styles = StyleSheet.create({
   content: {
-    ...ContentColumn,
     gap: Spacing.three,
-    paddingTop: Spacing.four,
-    paddingBottom: Spacing.five,
-    paddingHorizontal: Spacing.four,
+  },
+  patientRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.mid,
   },
   patientText: {
-    gap: Spacing.half,
-  },
-  name: {
-    color: colors.text,
-    ...Typography.title,
-    letterSpacing: -0.48,
-  },
-  condition: {
-    color: colors.textSecondary,
-    ...Typography.bodySmall,
-    fontWeight: '600',
-    letterSpacing: 0.1,
+    flex: 1,
   },
   section: {
     gap: Spacing.two,
   },
-  empty: {
-    color: colors.onSurfaceVariant,
-    ...Typography.bodySmall,
-    letterSpacing: 0.25,
-  },
-  notFound: {
-    padding: Spacing.four,
-  },
-}));
+});

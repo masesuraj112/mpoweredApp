@@ -1,6 +1,8 @@
-import { ChoiceList, ChoiceRow } from '@/components/mpowered/ChoiceRow';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard, QuestionHint, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt } from '@/components/tracker/ChoicePrompt';
+import { RadioOptionRow } from '@/components/tracker/RadioOptionRow';
 import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { router } from 'expo-router';
@@ -16,40 +18,34 @@ export default function ExerciseScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Management">
+    <TrackerQuestionScreen title="My Management">
       <ChoiceCard
         title="Exercise"
         prompt={
-          <>
-            <QuestionPrompt>
-              In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
-            </QuestionPrompt>
-            <QuestionHint>
-              Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.
-            </QuestionHint>
-          </>
+          <ChoicePrompt note="Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.">
+            In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
+          </ChoicePrompt>
         }
         questionNumber={3}
         totalQuestions={4}
-        onPrevious={() => router.dismissTo('/tracker/management/otc')}
+        onPrevious={() => router.push('/tracker/management/otc')}
         onRecord={handleNext}
         disabled={!answers.exerciseDays}
         variant="management"
       >
-        <ChoiceList>
+        <ChoiceOptionList>
           {EXERCISE_OPTIONS.map((option, index) => (
-            <ChoiceRow
+            <RadioOptionRow
               key={option}
-              kind="radio"
               label={option}
               selected={answers.exerciseDays === option}
               onPress={() => updateAnswer('exerciseDays', option)}
               isLast={index === EXERCISE_OPTIONS.length - 1}
             />
           ))}
-        </ChoiceList>
+        </ChoiceOptionList>
       </ChoiceCard>
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

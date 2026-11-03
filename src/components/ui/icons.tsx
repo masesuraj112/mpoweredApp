@@ -29,6 +29,31 @@ export function CalendarIcon({ size = 20, color }: IconProps) {
   );
 }
 
+function Stroke({ d, size, color, width = 2 }: { d: string; size: number; color?: string; width?: number }) {
+  const colors = useThemeColors();
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
+      <Path d={d} stroke={color ?? colors.text} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function ChevronDownIcon({ size = 20, color }: IconProps) {
+  return <Stroke d="M6 9l6 6 6-6" size={size} color={color} />;
+}
+
+export function ChevronLeftIcon({ size = 20, color }: IconProps) {
+  return <Stroke d="M15 6l-6 6 6 6" size={size} color={color} />;
+}
+
+export function ChevronRightIcon({ size = 20, color }: IconProps) {
+  return <Stroke d="M9 6l6 6-6 6" size={size} color={color} />;
+}
+
+export function CheckIcon({ size = 20, color }: IconProps) {
+  return <Stroke d="M5 12.5l4.5 4.5L19 7.5" size={size} color={color} width={2.5} />;
+}
+
 export function PhoneIcon({ size = 20, color }: IconProps) {
   const colors = useThemeColors();
   const stroke = color ?? colors.text;

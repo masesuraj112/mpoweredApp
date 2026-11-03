@@ -7,10 +7,10 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
-    'src/features/splash/startup.ts',
-    'src/features/splash/useMinimumDuration.ts',
     'src/features/auth/afterVerify.ts',
     'src/features/auth/patientIntro.ts',
+    'src/features/splash/startup.ts',
+    'src/features/splash/useMinimumDuration.ts',
     'src/features/auth/focusCodeInput.ts',
     'src/features/assessments/week.ts',
     'src/features/assessments/drafts.ts',
@@ -84,5 +84,7 @@ module.exports = {
     'src/features/support-person/mappers.ts',
     'src/services/support-person.ts',
     'src/features/support-person/useSupportedAppointmentQuestions.ts',
+    'src/constants/theme.ts',
+    'src/features/assessments/useWeekSummary.ts',
   ],
 };

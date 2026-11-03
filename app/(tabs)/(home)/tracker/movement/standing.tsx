@@ -1,13 +1,11 @@
-import { ChoiceList } from '@/components/mpowered/ChoiceRow';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
-import { ChoiceCard, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
+import { RadioOptionRow } from '@/components/tracker/RadioOptionRow';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
-import { Text } from 'react-native';
 import { STANDING_OPTIONS } from '@/features/assessments/movement/options';
-
-
 
 export default function StandingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -21,24 +19,24 @@ export default function StandingScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Movement">
+    <TrackerQuestionScreen title="My Movement">
       <ChoiceCard
         title="Standing Impacts"
         prompt={
-          <QuestionPrompt>
-            Select the <Text style={{ textDecorationLine: 'underline' }}>MOST</Text> relevant statement:
-          </QuestionPrompt>
+          <ChoicePrompt>
+            Select the <PromptEmphasis>MOST</PromptEmphasis> relevant statement:
+          </ChoicePrompt>
         }
         questionNumber={6}
         totalQuestions={7}
-        onPrevious={() => router.dismissTo('/tracker/movement/sitting')}
+        onPrevious={() => router.push('/tracker/movement/sitting')}
         onRecord={handleNext}
         disabled={!answers.standingImpact}
         variant="management"
       >
-        <ChoiceList>
+        <ChoiceOptionList>
           {STANDING_OPTIONS.map((option, index) => (
-            <AssessmentRadioRow
+            <RadioOptionRow
               key={option}
               label={option}
               selected={answers.standingImpact === option}
@@ -46,9 +44,9 @@ export default function StandingScreen() {
               isLast={index === STANDING_OPTIONS.length - 1}
             />
           ))}
-        </ChoiceList>
+        </ChoiceOptionList>
       </ChoiceCard>
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

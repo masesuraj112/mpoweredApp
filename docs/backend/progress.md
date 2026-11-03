@@ -199,6 +199,24 @@ Plan: `support-person-backend-build-plan.md` (Revision 3). Branch `feature/suppo
 ## Decisions
 S2–S6 and M7 settled on 29 Oct 2026 (see the plan's section 2). The designer approved S3 and S5.
 
+# App icons and splash progress
+
+Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Status key as above. No migrations.
+
+## Steps
+- [x] I0 Branch and plan
+- [x] I1 MPowered name and iOS icon (`.icon`); template and 8 Oct draft icons deleted (I-G)
+- [x] I2 Android, fallback, notification and splash images from `mpoweredicon.svg` (one-off script, not kept)
+- [x] I3 Native splash (M on `#391777`, 120 wide, also in dark mode; held until the session is read; 300 ms fade)
+- [x] I4 `WelcomeSplash` component (`SplashColors` tokens; Figma wordmark and waves SVGs; render test)
+- [x] I5 Show it: "Welcome to" signed out (3 s), "Welcome back to" signed in (at least 3 s, an overlay on the navigator)
+- [x] I6a App config assets guard test (`__tests__/unit/app-config-assets.test.ts`; checked it fails with an icon missing)
+- [x] I6b Docs (`docs/testing.md` rows and manual note); CI to confirm on the PR
+- [ ] I6c Manual QA on a preview build (iPhone and Android)
+
+## Decisions
+I-A to I-G settled on 2 Nov 2026 (see the plan's section 2).
+
 # Notifications progress
 
 Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key as above. No migrations.
@@ -218,23 +236,7 @@ Plan: `notifications-build-plan.md`. Branch `feature/notifications`. Status key 
 
 ## Decisions
 N-A to N-E settled on 2 Nov 2026 (see the plan's section 2). MHA may revisit the notification wording (N-D).
-# App icons and splash progress
 
-Plan: `app-icons-and-splash-plan.md`. Branch `feature/app-icons-and-splash`. Status key as above. No migrations.
-
-## Steps
-- [x] I0 Branch and plan
-- [x] I1 MPowered name and iOS icon (`.icon`); template and 8 Oct draft icons deleted (I-G)
-- [x] I2 Android, fallback, notification and splash images from `mpoweredicon.svg` (one-off script, not kept)
-- [x] I3 Native splash (M on `#391777`, 120 wide, also in dark mode; held until the session is read; 300 ms fade)
-- [x] I4 `WelcomeSplash` component (`SplashColors` tokens; Figma wordmark and waves SVGs; render test)
-- [x] I5 Show it: "Welcome to" signed out (3 s), "Welcome back to" signed in (at least 3 s, an overlay on the navigator)
-- [x] I6a App config assets guard test (`__tests__/unit/app-config-assets.test.ts`; checked it fails with an icon missing)
-- [x] I6b Docs (`docs/testing.md` rows and manual note); CI to confirm on the PR
-- [ ] I6c Manual QA on a preview build (iPhone and Android)
-
-## Decisions
-I-A to I-G settled on 2 Nov 2026 (see the plan's section 2).
 # Sign up vs sign in fix progress
 
 Plan: `sign-up-sign-in-plan.md`. Branch `fix/sign-up-sign-in-mismatch`. Status key as above. No migrations.

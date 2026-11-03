@@ -1,12 +1,17 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Dropdown } from '@/components/mpowered/Dropdown';
+import { useEffect, useState, type ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { Dropdown } from '@/components/health/Dropdown';
+import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+import { AppText } from '@/components/ui/AppText';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { TextField } from '@/components/ui/TextField';
+import { Spacing } from '@/constants/theme';
 import {
   FORMS,
   STRENGTH_UNITS,
@@ -18,7 +23,6 @@ import {
 } from '@/features/health-profile/prescriptions';
 import { getPrescription, savePrescription } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 function pluralOptions<T extends string>(singulars: Record<T, string>, quantity: string) {
   const isSingular = Number(quantity) === 1;
   return (Object.keys(singulars) as T[]).map((value) => ({
@@ -39,8 +43,19 @@ const EMPTY_FORM: PrescriptionForm = {
 
 type LoadState = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready' };
 
+/** A label above a control that has no label of its own (the dropdowns). */
+function LabeledField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View style={styles.dropdownField}>
+      <AppText variant="labelLarge" color="onSurface">
+        {label}
+      </AppText>
+      {children}
+    </View>
+  );
+}
+
 export default function AddPrescriptionScreen() {
-  const styles = useStyles();
   // Present when opened from the edit button on the prescriptions list
   const { id: idParam } = useLocalSearchParams<{ id?: string }>();
   const id = idParam ? Number(idParam) : undefined;
@@ -99,227 +114,145 @@ export default function AddPrescriptionScreen() {
     router.back();
   };
 
-  const errorFor = (field: keyof PrescriptionForm) =>
-    error?.field === field ? <Text style={styles.fieldError}>{error.message}</Text> : null;
-  const inputStyle = (field: keyof PrescriptionForm) => [
-    styles.input,
-    error?.field === field && styles.inputError,
-  ];
+  const errorFor = (field: keyof PrescriptionForm) => (error?.field === field ? error.message : null);
 
   if (!isValidId) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        <PrescriptionsHeader title="Edit prescription" />
+      <HealthSubpage header={<PrescriptionsHeader title="Edit prescription" />}>
         <ErrorState message="We could not find this prescription." />
-      </SafeAreaView>
+      </HealthSubpage>
     );
   }
 
   if (loadState.status !== 'ready') {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-        <PrescriptionsHeader title="Edit prescription" />
+      <HealthSubpage header={<PrescriptionsHeader title="Edit prescription" />}>
         {loadState.status === 'loading' ? (
           <LoadingState label="Loading prescription" />
         ) : (
           <ErrorState message={loadState.message} />
         )}
-      </SafeAreaView>
+      </HealthSubpage>
     );
   }
 
   return (
-    <>
-      <ScrollView
-        style={styles.safeArea}
-        contentContainerStyle={styles.content}
-        contentInsetAdjustmentBehavior="automatic">
-        <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
+    <HealthSubpage
+      header={<PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />}
+    >
+      <View style={styles.form}>
+        <AppText variant="bodyLarge">Type the name of your medication</AppText>
 
-        <Text style={styles.helperText}>Type the name of your medication</Text>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Medication name</Text>
-          <TextInput
-            style={inputStyle('name')}
-            value={values.name}
-            onChangeText={setField('name')}
-            placeholder="e.g. Perindopril arginine"
-            maxLength={100}
-          />
-          {errorFor('name')}
-        </View>
+        <TextField
+          label="Medication name"
+          value={values.name}
+          onChangeText={setField('name')}
+          placeholder="e.g. Perindopril arginine"
+          maxLength={100}
+          error={errorFor('name')}
+        />
 
         <View style={styles.row}>
-          <View style={[styles.field, styles.fieldGrow]}>
-            <Text style={styles.label}>Strength</Text>
-            <TextInput
-              style={inputStyle('strength')}
+          <View style={styles.rowItem}>
+            <TextField
+              label="Strength"
               value={values.strength}
               onChangeText={setField('strength')}
               keyboardType="decimal-pad"
+              autoCapitalize="none"
               inputAccessoryViewID={doneBar.id}
               placeholder="0"
+              error={errorFor('strength')}
             />
-            {errorFor('strength')}
           </View>
-          <View style={[styles.field, styles.fieldFixed]}>
-            <Text style={styles.label}>Strength unit</Text>
-            <Dropdown
-              value={values.strengthUnit}
-              options={strengthUnitOptions}
-              onChange={setField('strengthUnit')}
-              accessibilityLabel="Strength unit"
-            />
+          <View style={styles.rowItem}>
+            <LabeledField label="Strength unit">
+              <Dropdown
+                value={values.strengthUnit}
+                options={strengthUnitOptions}
+                onChange={setField('strengthUnit')}
+                accessibilityLabel="Strength unit"
+              />
+            </LabeledField>
           </View>
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Form</Text>
+        <LabeledField label="Form">
           <Dropdown
             value={values.form}
             options={formOptions}
             onChange={setField('form')}
             accessibilityLabel="Form"
           />
-        </View>
+        </LabeledField>
 
-        <Text style={styles.helperText}>Dosage</Text>
+        <AppText variant="bodyLarge">Dosage</AppText>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>How many per application</Text>
-          <TextInput
-            style={inputStyle('amount')}
-            value={values.amount}
-            onChangeText={setField('amount')}
-            keyboardType="decimal-pad"
-            inputAccessoryViewID={doneBar.id}
-            placeholder="0"
-          />
-          {errorFor('amount')}
-        </View>
+        <TextField
+          label="How many per application"
+          value={values.amount}
+          onChangeText={setField('amount')}
+          keyboardType="decimal-pad"
+          autoCapitalize="none"
+          inputAccessoryViewID={doneBar.id}
+          placeholder="0"
+          error={errorFor('amount')}
+        />
 
         <View style={styles.row}>
-          <View style={[styles.field, styles.fieldGrow]}>
-            <Text style={styles.label}>Repeat every</Text>
-            <TextInput
-              style={inputStyle('repeatsEvery')}
+          <View style={styles.rowItem}>
+            <TextField
+              label="Repeat every"
               value={values.repeatsEvery}
               onChangeText={setField('repeatsEvery')}
               keyboardType="number-pad"
+              autoCapitalize="none"
               inputAccessoryViewID={doneBar.id}
+              error={errorFor('repeatsEvery')}
             />
-            {errorFor('repeatsEvery')}
           </View>
-          <View style={[styles.field, styles.fieldFixed]}>
-            <Text style={styles.label}>Unit of time</Text>
-            <Dropdown
-              value={values.unitOfTime}
-              options={unitOfTimeOptions}
-              onChange={setField('unitOfTime')}
-              accessibilityLabel="Unit of time"
-            />
+          <View style={styles.rowItem}>
+            <LabeledField label="Unit of time">
+              <Dropdown
+                value={values.unitOfTime}
+                options={unitOfTimeOptions}
+                onChange={setField('unitOfTime')}
+                accessibilityLabel="Unit of time"
+              />
+            </LabeledField>
           </View>
         </View>
 
         {error && !error.field && (
-          <Text style={[styles.fieldError, styles.formError]} accessibilityRole="alert">
+          <AppText accessibilityRole="alert" variant="bodySmall" color="error">
             {error.message}
-          </Text>
+          </AppText>
         )}
 
-        <Pressable
-          style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-          onPress={handleSave}
+        <Button
+          label={saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
+          variant="primary"
           disabled={saving}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: saving, busy: saving }}
-        >
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save medication'}
-          </Text>
-        </Pressable>
-      </ScrollView>
+          onPress={handleSave}
+        />
+      </View>
       {doneBar.bar}
-    </>
+    </HealthSubpage>
   );
 }
 
-
-const useStyles = makeStyles((colors) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  content: {
-    ...ContentColumn,
-    paddingBottom: Spacing.five,
-  },
-  helperText: {
-    ...Typography.bodyLarge,
-    color: colors.text,
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.three,
-  },
-  field: {
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.three,
+const styles = StyleSheet.create({
+  form: {
+    gap: Spacing.three,
   },
   row: {
     flexDirection: 'row',
     gap: Spacing.three,
   },
-  fieldGrow: {
+  rowItem: {
     flex: 1,
   },
-  fieldFixed: {
-    flex: 1,
+  dropdownField: {
+    gap: Spacing.one,
   },
-  label: {
-    ...Typography.caption,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: Spacing.two,
-  },
-  input: {
-    backgroundColor: colors.surfaceContainer,
-    borderRadius: 4,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    ...Typography.bodyLarge,
-    color: colors.text,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
-  },
-  saveButton: {
-    marginTop: Spacing.five,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  fieldError: {
-    ...Typography.caption,
-    color: colors.error,
-    marginTop: Spacing.one,
-  },
-  formError: {
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.three,
-  },
-  saveButtonText: {
-    ...Typography.caption,
-    fontWeight: '600',
-    color: colors.text,
-  },
-}));
+});

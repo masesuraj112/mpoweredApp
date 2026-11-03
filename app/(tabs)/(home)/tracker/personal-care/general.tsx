@@ -1,9 +1,8 @@
-import { QuestionPrompt } from '@/components/mpowered/ChoiceCard';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { router } from 'expo-router';
-import { Text } from 'react-native';
 import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
 export default function GeneralScreen() {
@@ -29,13 +28,13 @@ export default function GeneralScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Personal Care">
+    <TrackerQuestionScreen title="My Personal Care">
       <MultiChoiceList
         title="General Activities Impacts"
         prompt={
-          <QuestionPrompt>
-            Select <Text style={{ textDecorationLine: 'underline' }}>ALL</Text> relevant statements:
-          </QuestionPrompt>
+          <ChoicePrompt>
+            Select <PromptEmphasis>ALL</PromptEmphasis> relevant statements:
+          </ChoicePrompt>
         }
         options={GENERAL_ACTIVITY_OPTIONS}
         selectedIndices={selected}
@@ -48,7 +47,7 @@ export default function GeneralScreen() {
         searchEnabled={false}
         selectedChipsEnabled={false}
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

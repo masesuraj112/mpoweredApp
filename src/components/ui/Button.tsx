@@ -15,6 +15,8 @@ type ButtonProps = {
    */
   variant?: ButtonVariant;
   disabled?: boolean;
+  /** Accepted for main's callers: every button here is already fully rounded, so it changes nothing. */
+  pill?: boolean;
   /** Decorative text shown before the label (for example a plus). Hidden from screen readers. */
   leadingGlyph?: string;
   /** Decorative text shown after the label (for example an arrow). Hidden from screen readers. */

@@ -4,10 +4,10 @@ import {
   SettingsModalGroup,
   SettingsModalInfoRow,
   SettingsModalText,
-} from '@/components/mpowered/SettingsModal';
+} from '@/components/settings/SettingsModal';
 // Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
-// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useAuth } from '@/context/AuthContext';

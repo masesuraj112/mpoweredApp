@@ -1,20 +1,19 @@
-import { useInputStyles } from '@/components/mpowered/inputStyles';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard, QuestionHint } from '@/components/mpowered/ChoiceCard';
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { TrackerPageTitle } from '@/components/tracker/TrackerQuestionScreen';
+import { AppText } from '@/components/ui/AppText';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { InputAccessoryView, Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
-import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
-const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
 export default function ActivityScreen() {
-  const styles = useStyles();
-  const inputStyles = useInputStyles();
-  const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
+  const doneBar = useKeyboardDoneBar();
 
   // Keep the raw text locally so partial input like "0" or "1." isn't rewritten mid-typing.
   const [text, setText] = useState(answers.activeHours?.toString() ?? '');
@@ -29,7 +28,9 @@ export default function ActivityScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Movement">
+    // A wrapping Touchable steals taps from the TextInput (notably on web), so the keyboard closes on scroll instead.
+    <Screen edges={[]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+      <TrackerPageTitle>My Movement</TrackerPageTitle>
       <ChoiceCard
         title="General Movement Impacts"
         prompt="On average, how many hours per day were you able to stay active or mobile last week?"
@@ -45,54 +46,36 @@ export default function ActivityScreen() {
           onChangeText={handleChange}
           keyboardType="decimal-pad"
           placeholder="Input number only"
-          placeholderTextColor={colors.textSubtle}
+          placeholderTextColor={Colors.light.textSecondary}
           maxLength={5}
-          style={[inputStyles.input, isOverMax && styles.inputError]}
+          style={[styles.input, isOverMax && styles.inputError]}
           accessibilityLabel="Hours active per day"
-          inputAccessoryViewID={ACCESSORY_ID}
+          inputAccessoryViewID={doneBar.id}
         />
-        <QuestionHint>
+        {doneBar.bar}
+        <AppText variant="bodySmall" color="onSurfaceVariant" style={styles.helper}>
           Stay active could mean doing your typical activities like working, driving, doing
           house chores, meeting with people, et cetera.
-        </QuestionHint>
+        </AppText>
       </ChoiceCard>
-
-      {Platform.OS === 'ios' && (
-        <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View style={styles.accessoryBar}>
-            <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
-              <Text style={styles.accessoryDone}>Done</Text>
-            </Pressable>
-          </View>
-        </InputAccessoryView>
-      )}
-    </AssessmentScreen>
+    </Screen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
+const styles = StyleSheet.create({
   input: {
-    height: 56,
-    borderRadius: 4,
-    paddingHorizontal: Spacing.three,
     ...Typography.bodyLarge,
-    color: colors.text,
-    backgroundColor: colors.surfaceContainer,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
+    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderWidth: 1,
+    borderColor: Colors.light.outlineMedium,
+    borderRadius: Radius.small,
+    color: Colors.light.onSurface,
   },
   inputError: {
-    borderBottomColor: colors.error,
+    borderColor: Colors.light.error,
   },
-  accessoryBar: {
-    alignItems: 'flex-end',
-    backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+  helper: {
+    marginTop: Spacing.three,
   },
-  accessoryDone: {
-    color: colors.primary,
-    ...Typography.bodyLarge,
-    fontWeight: '600',
-  },
-}));
+});

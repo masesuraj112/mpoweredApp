@@ -56,12 +56,13 @@ const useStyles = makeStyles((colors) => ({
   container: { flex: 1, paddingHorizontal: Spacing.four, paddingTop: Spacing.six, paddingBottom: Spacing.six },
   title: { color: colors.text, ...Typography.display, textAlign: 'center', marginBottom: Spacing.two },
   subtitle: { textAlign: 'center', color: colors.textSubtle, marginBottom: Spacing.four },
-  input: { color: colors.text, backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall, marginBottom: 'auto' },
+  input: { color: colors.text, backgroundColor: colors.surfaceContainer, borderRadius: Radius.control, padding: Spacing.three, minHeight: 140, textAlignVertical: 'top', ...Typography.bodySmall },
   continueButton: {
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: Spacing.five,
+    // Straight under the text box, so it stays in reach with the keyboard open.
+    marginTop: Spacing.four,
     minHeight: MinTapTarget,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.four,

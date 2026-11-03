@@ -6,7 +6,7 @@
  * against the surface it is used on (checked by theme.test.ts).
  */
 
-import { StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 
 export const Palette = {
   violet: '#391777',
@@ -45,12 +45,16 @@ const lightColors = {
     /** Placeholders and the least important text (still AA on the background). */
     textSubtle: Palette.inkSubtle,
     textDisabled: Palette.inkDisabled,
+    /** Same as textSubtle; kept for components that name the third text level. */
+    textTertiary: Palette.inkSubtle,
     /** Screens. */
     background: Palette.paper,
     /** Cards, rows, inputs and sheets that sit on the background. */
     surface: Palette.white,
     /** Quiet grouped areas. */
     surfaceMuted: Palette.mist,
+    /** Grouped lists, as in Settings. */
+    surfaceGrouped: Palette.mist,
     /** Tinted sections and soft buttons. */
     surfaceContainer: Palette.tint,
     /** A fill a little lighter than surfaceContainer, for a button that sits on a tinted card. */
@@ -70,12 +74,16 @@ const lightColors = {
     /** Edges of inputs, chips and buttons: 3:1 or more, so controls are visible. */
     outline: Palette.border,
     outlineStrong: Palette.borderStrong,
+    outlineMedium: Palette.border,
     /** Decorative lines between rows and sections. */
     divider: Palette.line,
     success: Palette.success,
+    successStrong: Palette.success,
     successContainer: Palette.successContainer,
+    onSuccessContainer: Palette.success,
     warning: Palette.warning,
     warningContainer: Palette.warningContainer,
+    onWarningContainer: Palette.warning,
     error: Palette.error,
     errorContainer: Palette.errorContainer,
     onErrorContainer: Palette.onErrorContainer,
@@ -86,6 +94,10 @@ const lightColors = {
     onCalendarSelected: Palette.white,
     controlBorder: Palette.inkMuted,
     controlChecked: Palette.primary,
+    /** A slider's empty track, and the ends of its filled part. */
+    sliderTrack: Palette.tint,
+    sliderFillStart: Palette.lavenderSoft,
+    sliderFillEnd: Palette.primaryDeep,
     /** The brand gradient's colours, for things drawn on it. */
     brand: Palette.violet,
     brandDeep: Palette.midnight,
@@ -104,9 +116,11 @@ const darkColors: ThemeColors = {
     textSecondary: '#BDB6CC',
     textSubtle: '#A9A2B8',
     textDisabled: '#6E6585',
+    textTertiary: '#A9A2B8',
     background: '#120A22',
     surface: '#1B1230',
     surfaceMuted: '#170F2A',
+    surfaceGrouped: '#170F2A',
     surfaceContainer: '#2A1F49',
     surfaceRaised: '#382B5E',
     backgroundElement: '#1F1636',
@@ -123,11 +137,15 @@ const darkColors: ThemeColors = {
     onSurfaceVariant: '#BDB6CC',
     outline: '#8C8699',
     outlineStrong: '#ADA7B9',
+    outlineMedium: '#8C8699',
     divider: '#2E2640',
     success: '#7FD49C',
+    successStrong: '#7FD49C',
     successContainer: '#12351F',
+    onSuccessContainer: '#B9EBC9',
     warning: '#F2C46D',
     warningContainer: '#3A2A0A',
+    onWarningContainer: '#F2C46D',
     error: '#F2B8B5',
     errorContainer: '#5C1A16',
     onErrorContainer: '#F9DEDC',
@@ -138,6 +156,9 @@ const darkColors: ThemeColors = {
     onCalendarSelected: Palette.midnight,
     controlBorder: '#BDB6CC',
     controlChecked: '#C5B0FF',
+    sliderTrack: '#2A1F49',
+    sliderFillStart: '#C5B0FF',
+    sliderFillEnd: '#E4DAFF',
     brand: Palette.violet,
     brandDeep: Palette.midnight,
     onBrand: Palette.white,
@@ -185,6 +206,8 @@ export const Spacing = {
   half: 2,
   one: 4,
   two: 8,
+  /** Between `two` and `three`. */
+  mid: 12,
   three: 16,
   four: 24,
   five: 32,
@@ -195,6 +218,22 @@ export const Radius = {
   card: 12,
   control: 10,
   pill: 999,
+  small: 4,
+  medium: 8,
+  large: 16,
+  extraLarge: 24,
+} as const;
+
+/** Shadows. Spread one into a style: `{ ...Elevation.level1 }`. */
+export const Elevation = {
+  /** Raised pill buttons. */
+  level1: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+  },
 } as const;
 
 /** Minimum touch target (dp) for interactive elements. */
@@ -228,6 +267,19 @@ export const Typography = {
   labelLargeBold: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
   /** 14/20: the smallest text, for captions, dates and chart labels. */
   caption: { fontSize: 14, lineHeight: 20 },
+  // The names main's components use (the Material 3 scale), mapped onto the sizes above.
+  /** 24/30 bold: screen titles (as `title`). */
+  headlineSmall: { fontSize: 24, lineHeight: 30, fontWeight: '700' },
+  /** 22/28 bold: section and page headings. */
+  titleLarge: { fontSize: 22, lineHeight: 28, fontWeight: '700' },
+  /** 17/24 semibold: card titles and list headings. */
+  titleMedium: { fontSize: 17, lineHeight: 24, fontWeight: '600' },
+  /** 15/22: paragraph text (as `bodySmall`). */
+  bodyMediumRegular: { fontSize: 15, lineHeight: 22 },
+  /** 14/20 medium: small labels and badges. */
+  labelMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500' },
+  /** 14/20 medium: the smallest label. */
+  labelSmall: { fontSize: 14, lineHeight: 20, fontWeight: '500' },
 } as const;
 
 /**
@@ -237,6 +289,9 @@ export const Typography = {
 export const HeaderTitleFonts = {
   headerTitleStyle: { fontFamily: Fonts.heading, fontSize: Typography.titleSmall.fontSize },
 } as const;
+
+/** Room the tab bar takes at the bottom of a screen that draws under it. */
+export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 
 /** Content never stretches wider than this on tablets; it is centred instead. */
 export const MaxContentWidth = 640;

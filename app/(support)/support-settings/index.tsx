@@ -1,4 +1,4 @@
-import { SettingsHome, type SettingsRowProps } from '@/components/mpowered/SettingsHome';
+import { SettingsHome, type SettingsRowProps } from '@/components/settings/SettingsHome';
 import { router } from 'expo-router';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');

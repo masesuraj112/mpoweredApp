@@ -5,8 +5,8 @@ import {
   SettingsModalGroup,
   SettingsModalSection,
   SettingsModalToggleRow,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';

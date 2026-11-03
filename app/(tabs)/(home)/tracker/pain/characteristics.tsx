@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { router } from 'expo-router';
@@ -38,11 +38,11 @@ export default function PainCharacteristicsScreen() {
 
   const handlePrevious = () => {
     saveSelection();
-    router.dismissTo('/tracker/pain/location');
+    router.push('/tracker/pain/location');
   };
 
   return (
-    <AssessmentScreen title="My Pain">
+    <TrackerQuestionScreen title="My Pain">
       <MultiChoiceList
         title="Pain characteristics"
         prompt="For each following words, check if that adjectives applies to your pain."
@@ -59,6 +59,6 @@ export default function PainCharacteristicsScreen() {
         searchEnabled
         selectedChipsEnabled={false}
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }

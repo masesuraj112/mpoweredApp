@@ -1,11 +1,11 @@
-import { ChoiceList, ChoiceRow } from '@/components/mpowered/ChoiceRow';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
-import { Text } from 'react-native';
-import { ChoiceCard, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { CheckboxOptionRow } from '@/components/tracker/CheckboxOptionRow';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
 import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
-
 
 export default function GeneralScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -26,38 +26,35 @@ export default function GeneralScreen() {
    router.push('/tracker/movement/walking');
  };
 
-
-
-
 return (
-    <AssessmentScreen title="My Movement">
+    <TrackerQuestionScreen title="My Movement">
       <ChoiceCard
         title="General Movement Impacts"
         prompt={
-          <QuestionPrompt>
-            Select <Text style={{ textDecorationLine: 'underline' }}>ALL</Text> relevant statements:
-          </QuestionPrompt>
+          <ChoicePrompt>
+            Select <PromptEmphasis>ALL</PromptEmphasis> relevant statements:
+          </ChoicePrompt>
         }
         questionNumber={2}
         totalQuestions={7}
-        onPrevious={() => router.dismissTo('/tracker/movement/activity')}
+        onPrevious={() => router.push('/tracker/movement/activity')}
         onRecord={handleNext}
         disabled={selected.length === 0}
         variant="management"
       >
-        <ChoiceList>
+        <ChoiceOptionList>
           {GENERAL_IMPACT_OPTIONS.map((option, index) => (
-            <ChoiceRow
+            <CheckboxOptionRow
               key={option}
-              kind="checkbox"
               label={option}
               selected={selected.includes(option)}
               onPress={() => toggle(option)}
               isLast={index === GENERAL_IMPACT_OPTIONS.length - 1}
             />
           ))}
-        </ChoiceList>
+        </ChoiceOptionList>
       </ChoiceCard>
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
+

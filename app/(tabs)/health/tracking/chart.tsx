@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { Dropdown } from '@/components/mpowered/Dropdown';
-import { PainIntensityChart } from '@/components/mpowered/PainIntensityChart';
-import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { Dropdown } from '@/components/health/Dropdown';
+import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { PainIntensityChart } from '@/components/health/PainIntensityChart';
+import { TrackingScreenHeader } from '@/components/health/TrackingScreenHeader';
+import { AppText } from '@/components/ui/AppText';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 import { getLocalToday } from '@/features/assessments/week';
 import { healthLoadMessage } from '@/features/health-profile/messages';
 import { buildTrackingChartHtml } from '@/features/health-profile/pdf-export';
@@ -23,9 +28,9 @@ import { usePdfExport } from '@/hooks/usePdfExport';
 import type { AppError } from '@/lib/errors';
 import { getPainEntries } from '@/services/health';
 
-import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 const PAGE_SIZE = 5;
 const ALL_LOCATIONS = '__all__';
+const CHART_HEIGHT = 270;
 
 type LoadState =
   | { status: 'loading' }
@@ -33,7 +38,6 @@ type LoadState =
   | { status: 'ready' };
 
 export default function TrackingChartScreen() {
-  const styles = useStyles();
   const [selectedMetric, setSelectedMetric] = useState<PainMetric>('average');
   const [selectedLocation, setSelectedLocation] = useState<string>(ALL_LOCATIONS);
   const [records, setRecords] = useState<WeeklyPainRecord[]>([]);
@@ -105,228 +109,185 @@ export default function TrackingChartScreen() {
     );
 
   return (
-    <>
-      <ScrollView
-        style={styles.safeArea}
-        contentContainerStyle={styles.content}
-        contentInsetAdjustmentBehavior="automatic">
+    <HealthSubpage
+      header={
         <TrackingScreenHeader
           activeTab="chart"
           onPrintPdf={loadState.status === 'ready' && records.length > 0 ? printPdf : undefined}
           printing={pdf.busy !== null}
         />
+      }
+    >
+      {loadState.status === 'loading' && <LoadingState label="Loading your tracking records" />}
+      {loadState.status === 'error' && (
+        <ErrorState message={healthLoadMessage(loadState.error)} onRetry={retry} />
+      )}
+      {loadState.status === 'ready' && records.length === 0 && (
+        <AppText variant="bodyMediumRegular" color="onSurfaceVariant" style={styles.emptyText}>
+          You have no pain records yet. Complete the Pain tracker to see your chart here.
+        </AppText>
+      )}
 
-        {loadState.status === 'loading' && <LoadingState label="Loading your tracking records" />}
-        {loadState.status === 'error' && (
-          <ErrorState message={healthLoadMessage(loadState.error)} onRetry={retry} />
-        )}
-        {loadState.status === 'ready' && records.length === 0 && (
-          <Text style={styles.emptyText}>
-            You have no pain records yet. Complete the Pain tracker to see your chart here.
-          </Text>
-        )}
+      {loadState.status === 'ready' && records.length > 0 && (
+        <View>
+          <View style={styles.cardHeaderRow}>
+            <AppText accessibilityRole="header" variant="titleLarge" color="textSecondary">
+              Pain Intensity
+            </AppText>
+            <Dropdown
+              value={selectedLocation}
+              options={locationOptions}
+              onChange={setSelectedLocation}
+              accessibilityLabel="Pain location"
+              variant="chip"
+              style={styles.filterChip}
+            />
+          </View>
 
-        {loadState.status === 'ready' && records.length > 0 && (
-          <View style={styles.card}>
-            <View style={styles.cardHeaderRow}>
-              <Text style={styles.cardTitle}>Pain Intensity</Text>
-              <Dropdown
-                value={selectedLocation}
-                options={locationOptions}
-                onChange={setSelectedLocation}
-                accessibilityLabel="Pain location"
-                style={styles.filterChip}
+          {chartData.length > 0 ? (
+            <PainIntensityChart data={chartData} height={CHART_HEIGHT} />
+          ) : (
+            <AppText variant="bodyMediumRegular" color="onSurfaceVariant" style={styles.emptyText}>
+              No records for this location in the loaded weeks.
+            </AppText>
+          )}
+
+          <View accessibilityRole="tablist" style={styles.metricRow}>
+            {PAIN_METRICS.map((metric) => {
+              const isActive = metric.key === selectedMetric;
+              return (
+                <Pressable
+                  key={metric.key}
+                  style={[styles.metricButton, isActive && styles.metricButtonActive]}
+                  onPress={() => setSelectedMetric(metric.key)}
+                  accessibilityRole="tab"
+                  accessibilityLabel={metric.label}
+                  accessibilityState={{ selected: isActive }}
+                >
+                  <AppText variant="labelLargeBold" color={isActive ? 'primary' : 'text'}>
+                    {metric.label}
+                  </AppText>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {visibleRecords.length > 0 && (
+            <View style={styles.table}>
+              <View style={styles.tableRow}>
+                <AppText variant="labelMedium" color="onSurfaceVariant" style={styles.tableDate}>
+                  Week
+                </AppText>
+                <AppText variant="labelMedium" color="onSurfaceVariant" style={styles.tableValue}>
+                  {metricLabel} pain
+                </AppText>
+              </View>
+              {visibleRecords.map((record, index) => (
+                <View
+                  key={record.weekStart}
+                  style={[styles.tableRow, index === visibleRecords.length - 1 && styles.tableRowLast]}
+                >
+                  <AppText variant="bodySmall" color="text" style={styles.tableDate}>
+                    {record.rangeLabel}
+                  </AppText>
+                  <AppText variant="labelMedium" color="text" style={styles.tableValue}>
+                    {record[selectedMetric]}
+                  </AppText>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {hasMore && (
+            <View style={styles.seeMore}>
+              <Button
+                label={loadingMore ? 'Loading…' : 'See more records'}
+                variant="tonal"
+                disabled={loadingMore}
+                onPress={loadMore}
               />
             </View>
-
-            {chartData.length > 0 ? (
-              <PainIntensityChart data={chartData} height={270} />
-            ) : (
-              <Text style={styles.emptyText}>No records for this location in the loaded weeks.</Text>
-            )}
-
-            <View style={styles.metricRow}>
-              {PAIN_METRICS.map((metric) => {
-                const isActive = metric.key === selectedMetric;
-                return (
-                  <Pressable
-                    key={metric.key}
-                    style={[styles.metricButton, isActive && styles.metricButtonActive]}
-                    onPress={() => setSelectedMetric(metric.key)}
-                    accessibilityRole="tab"
-                    accessibilityState={{ selected: isActive }}
-                  >
-                    <Text style={[styles.metricButtonText, isActive && styles.metricButtonTextActive]}>
-                      {metric.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-
-            {visibleRecords.length > 0 && (
-              <View style={styles.table}>
-                <View style={styles.tableRow}>
-                  <Text style={[styles.tableDate, styles.tableHeader]}>Week</Text>
-                  <Text style={[styles.tableValue, styles.tableHeader]}>{metricLabel} pain</Text>
-                </View>
-                {visibleRecords.map((record, index) => (
-                  <View
-                    key={record.weekStart}
-                    style={[styles.tableRow, index === visibleRecords.length - 1 && styles.tableRowLast]}
-                  >
-                    <Text style={styles.tableDate}>{record.rangeLabel}</Text>
-                    <Text style={styles.tableValue}>{record[selectedMetric]}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {hasMore && (
-              <Pressable
-                style={styles.seeMoreButton}
-                onPress={loadMore}
-                disabled={loadingMore}
-                accessibilityRole="button"
-                accessibilityState={{ busy: loadingMore }}
-              >
-                <Text style={styles.seeMoreButtonText}>
-                  {loadingMore ? 'Loading…' : 'See more records'}
-                </Text>
-              </Pressable>
-            )}
-            {loadMoreNotice && (
-              <Text
-                style={[styles.notice, loadMoreNotice.isError && styles.noticeError]}
-                accessibilityLiveRegion="polite"
-              >
-                {loadMoreNotice.text}
-              </Text>
-            )}
-          </View>
-        )}
-      </ScrollView>
-    </>
+          )}
+          {loadMoreNotice && (
+            <AppText
+              accessibilityLiveRegion="polite"
+              variant="bodySmall"
+              color={loadMoreNotice.isError ? 'error' : 'successStrong'}
+              style={styles.notice}
+            >
+              {loadMoreNotice.text}
+            </AppText>
+          )}
+        </View>
+      )}
+    </HealthSubpage>
   );
 }
 
-
-const useStyles = makeStyles((colors) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  content: {
-    ...ContentColumn,
-    paddingBottom: Spacing.five,
-  },
-  card: {
-    marginHorizontal: Spacing.four,
-    marginTop: Spacing.three,
-  },
+const styles = StyleSheet.create({
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  cardTitle: {
-    ...Typography.titleSmall,
-    color: colors.textSecondary,
+    gap: Spacing.two,
   },
   filterChip: {
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    backgroundColor: colors.surfaceContainer,
+    flexShrink: 1,
     maxWidth: '55%',
   },
   emptyText: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
     textAlign: 'center',
-    marginHorizontal: Spacing.four,
     marginVertical: Spacing.five,
   },
-  tableHeader: {
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
   notice: {
-    ...Typography.caption,
-    color: colors.success,
     textAlign: 'center',
-    marginTop: Spacing.two,
-  },
-  noticeError: {
-    color: colors.error,
+    marginTop: Spacing.mid,
   },
   metricRow: {
     flexDirection: 'row',
     marginTop: Spacing.three,
-    borderRadius: Radius.card,
+    borderWidth: 1,
+    borderColor: Colors.light.divider,
+    borderRadius: Radius.extraLarge,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainer,
   },
   metricButton: {
     flex: 1,
+    minHeight: MinTapTarget,
     alignItems: 'center',
-    paddingVertical: Spacing.two,
-    backgroundColor: colors.surface,
+    justifyContent: 'center',
+    backgroundColor: Colors.light.background,
   },
   metricButtonActive: {
-    backgroundColor: colors.secondaryContainer,
-  },
-  metricButtonText: {
-    ...Typography.caption,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  metricButtonTextActive: {
-    color: colors.primary,
+    backgroundColor: Colors.light.primaryContainer,
   },
   table: {
     marginTop: Spacing.three,
+    paddingHorizontal: Spacing.mid,
+    borderWidth: 1,
+    borderColor: Colors.light.divider,
     borderRadius: Radius.control,
-    paddingHorizontal: Spacing.three,
-    backgroundColor: colors.surfaceContainer,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.three,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
     gap: Spacing.two,
+    paddingVertical: Spacing.mid,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.divider,
   },
   tableRowLast: {
     borderBottomWidth: 0,
   },
   tableDate: {
     flex: 1.6,
-    ...Typography.caption,
-    color: colors.text,
   },
   tableValue: {
     flex: 1,
-    ...Typography.caption,
-    fontWeight: '600',
-    color: colors.text,
     textAlign: 'center',
   },
-  seeMoreButton: {
-    marginTop: Spacing.three,
-    backgroundColor: colors.background,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
+  seeMore: {
     alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
+    marginTop: Spacing.three,
   },
-  seeMoreButtonText: {
-    ...Typography.caption,
-    fontWeight: '500',
-    color: colors.text,
-  },
-}));
+});

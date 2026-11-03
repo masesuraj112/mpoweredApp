@@ -3,8 +3,8 @@ import {
   SettingsModalGroup,
   SettingsModalInlineRow,
   SettingsModalToggleRow,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';

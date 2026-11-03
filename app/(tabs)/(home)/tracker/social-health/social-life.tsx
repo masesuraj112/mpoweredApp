@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { SOCIAL_LIFE_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { router } from 'expo-router';
@@ -20,7 +20,7 @@ export default function SocialLifeScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <SingleChoiceInput
         titleText="Social life"
         questionNumber={1}
@@ -31,7 +31,7 @@ export default function SocialLifeScreen() {
         onRecord={handleNext}
         variant="personalCare"
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

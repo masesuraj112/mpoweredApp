@@ -1,4 +1,4 @@
-import { SettingsHome, type SettingsRowProps } from '@/components/mpowered/SettingsHome';
+import { SettingsHome, type SettingsRowProps } from '@/components/settings/SettingsHome';
 import { router } from 'expo-router';
 
 const privacyIcon = require('../../../assets/images/settings/privacy-data-legal.svg');

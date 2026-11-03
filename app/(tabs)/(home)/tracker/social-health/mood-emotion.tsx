@@ -1,46 +1,42 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard, QuestionHint, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoicePrompt } from '@/components/tracker/ChoicePrompt';
+import { AppText } from '@/components/ui/AppText';
+import { MinTapTarget, Spacing } from '@/constants/theme';
 import { MOOD_EMOTION_VALUES, type MoodEmotion } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
 // Icons for each stored mood value; the values themselves come from MOOD_EMOTION_VALUES.
-const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number; iconHeight: number }> = {
+const MOOD_ICONS: Record<MoodEmotion, { icon: number; selectedIcon: number }> = {
   frustrated: {
-    icon: require('@/assets/images/social-health/frustrated-unselected.svg'),
-    selectedIcon: require('@/assets/images/social-health/frustrated-selected.svg'),
-    iconHeight: 24,
+    icon: require('../../../../assets/images/social-health/frustrated-unselected.svg'),
+    selectedIcon: require('../../../../assets/images/social-health/frustrated-selected.svg'),
   },
   sad: {
-    icon: require('@/assets/images/social-health/sad-unselected.svg'),
-    selectedIcon: require('@/assets/images/social-health/sad-selected.svg'),
-    iconHeight: 24,
+    icon: require('../../../../assets/images/social-health/sad-unselected.svg'),
+    selectedIcon: require('../../../../assets/images/social-health/sad-selected.svg'),
   },
   okay: {
-    icon: require('@/assets/images/social-health/okay-unselected.svg'),
-    selectedIcon: require('@/assets/images/social-health/okay-selected.svg'),
-    iconHeight: 24,
+    icon: require('../../../../assets/images/social-health/okay-unselected.svg'),
+    selectedIcon: require('../../../../assets/images/social-health/okay-selected.svg'),
   },
   calm: {
-    icon: require('@/assets/images/social-health/calm-unselected.svg'),
-    selectedIcon: require('@/assets/images/social-health/calm-selected.svg'),
-    iconHeight: 25,
+    icon: require('../../../../assets/images/social-health/calm-unselected.svg'),
+    selectedIcon: require('../../../../assets/images/social-health/calm-selected.svg'),
   },
   delighted: {
-    icon: require('@/assets/images/social-health/delighted-unselected.svg'),
-    selectedIcon: require('@/assets/images/social-health/delighted-selected.svg'),
-    iconHeight: 25,
+    icon: require('../../../../assets/images/social-health/delighted-unselected.svg'),
+    selectedIcon: require('../../../../assets/images/social-health/delighted-selected.svg'),
   },
 };
 
 const MOOD_EMOTIONS = MOOD_EMOTION_VALUES.map(value => ({ value, ...MOOD_ICONS[value] }));
 
 export default function MoodEmotionScreen() {
-  const styles = useStyles();
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const selected = MOOD_EMOTIONS.find(emotion => emotion.value === answers.moodEmotion);
   // Only show the mandatory message once the user has tried to continue without a selection.
@@ -55,20 +51,17 @@ export default function MoodEmotionScreen() {
   };
 
   const prompt = (
-    <View>
-      <QuestionPrompt>Over the past week, how was your mood generally?</QuestionPrompt>
-      <QuestionHint>Tap below emoji to describe your mood</QuestionHint>
-    </View>
+    <ChoicePrompt note="Tap below emoji to describe your mood">Over the past week, how was your mood generally?</ChoicePrompt>
   );
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <ChoiceCard
         title="Mood"
         prompt={prompt}
         questionNumber={6}
         totalQuestions={7}
-        onPrevious={() => router.dismissTo('/tracker/social-health/enjoyment')}
+        onPrevious={() => router.push('/tracker/social-health/enjoyment')}
         onRecord={handleNext}
         validationMessage={
           attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
@@ -85,58 +78,52 @@ export default function MoodEmotionScreen() {
                 accessibilityRole="radio"
                 accessibilityState={{ checked: isSelected }}
                 accessibilityLabel={`I was feeling ${emotion.value}`}
-                hitSlop={12}
                 style={styles.emojiSlot}
               >
                 {isSelected ? (
-                  // The selected SVG is 40x40 with a drop shadow bleeding past the 24px emoji.
+                  // The selected SVG is 40x40, with a drop shadow around the 24dp emoji.
                   <Image source={emotion.selectedIcon} style={styles.selectedIcon} contentFit="contain" />
                 ) : (
-                  <Image
-                    source={emotion.icon}
-                    style={{ width: 24, height: emotion.iconHeight }}
-                    contentFit="contain"
-                  />
+                  <Image source={emotion.icon} style={styles.icon} contentFit="contain" />
                 )}
               </Pressable>
             );
           })}
         </View>
         {/* Subtitle reflects the selected emotion. */}
-        <Text style={styles.selectionText}>{selected ? `I was feeling ${selected.value}` : ''}</Text>
+        <AppText variant="labelLargeBold" color="text" style={styles.selectionText}>
+          {selected ? `I was feeling ${selected.value}` : ''}
+        </AppText>
       </ChoiceCard>
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
+const styles = StyleSheet.create({
   emojiRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: Spacing.five,
+    gap: Spacing.one,
     marginTop: Spacing.one,
   },
   emojiSlot: {
-    width: 24,
-    height: 24,
+    width: MinTapTarget,
+    height: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  icon: {
+    width: 24,
+    height: 24,
+  },
   selectedIcon: {
-    position: 'absolute',
-    top: -6,
-    left: -8,
     width: 40,
     height: 40,
   },
   selectionText: {
-    marginTop: Spacing.three,
-    minHeight: 16,
-    ...Typography.caption,
-    fontWeight: '600',
+    marginTop: Spacing.mid,
+    minHeight: Spacing.four,
     fontStyle: 'italic',
-    letterSpacing: 0.5,
     textAlign: 'center',
-    color: colors.text,
   },
-}));
+});

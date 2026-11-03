@@ -1,9 +1,15 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { ProfileSectionCard } from '@/components/mpowered/ProfileSectionCard';
+import { StyleSheet } from 'react-native';
+
+import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { ProfileSectionCard } from '@/components/health/ProfileSectionCard';
+import { AppText } from '@/components/ui/AppText';
+import { Divider } from '@/components/ui/Divider';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Spacing } from '@/constants/theme';
 import { formatWeekRange } from '@/features/assessments/week';
 import { ASSESSMENT_LABELS, isAssessmentType } from '@/features/health-profile/assessment-types';
 import { healthLoadMessage } from '@/features/health-profile/messages';
@@ -12,13 +18,10 @@ import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 
-import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
-import { ScreenTitle } from '@/components/ui/nativeHeader';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
 export default function WeekSummaryScreen() {
-  const styles = useStyles();
   const params = useLocalSearchParams<{ type?: string; weekStart?: string }>();
   const type = isAssessmentType(params.type) ? params.type : null;
   const weekStart = params.weekStart && ISO_DATE.test(params.weekStart) ? params.weekStart : null;
@@ -36,47 +39,35 @@ export default function WeekSummaryScreen() {
   const title = type ? `My ${ASSESSMENT_LABELS[type]} Summary` : 'Summary';
 
   return (
-    <>
-      <ScreenTitle title={title} />
-      <ScrollView
-        style={styles.safeArea}
-        contentContainerStyle={styles.content}
-        contentInsetAdjustmentBehavior="automatic">
-        {weekStart && <Text style={styles.period}>Period: {formatWeekRange(weekStart)}</Text>}
-        <View style={styles.divider} />
+    <HealthSubpage
+      header={<ScreenHeader padForStatusBar={false} backLabel="Back to history" onBack={() => router.back()} />}
+    >
+      <AppText accessibilityRole="header" variant="titleLarge">
+        {title}
+      </AppText>
+      {weekStart && (
+        <AppText variant="bodySmall" color="textSecondary" style={styles.period}>
+          Period: {formatWeekRange(weekStart)}
+        </AppText>
+      )}
+      <Divider style={styles.divider} />
 
-        {(!type || !weekStart) && <ErrorState message="We could not find the week to show." />}
-        {type && weekStart && state.status === 'loading' && <LoadingState label="Loading your summary" />}
-        {type && weekStart && state.status === 'error' && (
-          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
-        )}
-        {section && <ProfileSectionCard section={section} />}
-      </ScrollView>
-    </>
+      {(!type || !weekStart) && <ErrorState message="We could not find the week to show." />}
+      {type && weekStart && state.status === 'loading' && <LoadingState label="Loading your summary" />}
+      {type && weekStart && state.status === 'error' && (
+        <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+      )}
+      {section && <ProfileSectionCard section={section} />}
+    </HealthSubpage>
   );
 }
 
-
-const useStyles = makeStyles((colors) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  content: {
-    ...ContentColumn,
-    paddingBottom: Spacing.five,
-  },
+const styles = StyleSheet.create({
   period: {
-    ...Typography.caption,
-    color: colors.textSubtle,
     marginTop: Spacing.one,
-    marginHorizontal: Spacing.four,
   },
   divider: {
-    height: 1,
-    backgroundColor: colors.outline,
-    marginHorizontal: Spacing.three,
     marginTop: Spacing.two,
     marginBottom: Spacing.four,
   },
-}));
+});

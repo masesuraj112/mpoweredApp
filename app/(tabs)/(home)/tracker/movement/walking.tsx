@@ -1,10 +1,10 @@
-import { ChoiceList } from '@/components/mpowered/ChoiceRow';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
-import { ChoiceCard, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
+import { RadioOptionRow } from '@/components/tracker/RadioOptionRow';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
-import { Text } from 'react-native';
 
 export const WALKING_OPTIONS = [
   'Pain does not prevent me walking any distance',
@@ -14,7 +14,6 @@ export const WALKING_OPTIONS = [
   'I can only walk using a stick or crutches',
   'I am in bed most of the time',
 ];
-
 
 export default function WalkingScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
@@ -28,24 +27,24 @@ export default function WalkingScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Movement">
+    <TrackerQuestionScreen title="My Movement">
       <ChoiceCard
         title="Walking Impacts"
         prompt={
-          <QuestionPrompt>
-            Select the <Text style={{ textDecorationLine: 'underline' }}>MOST</Text> relevant statement:
-          </QuestionPrompt>
+          <ChoicePrompt>
+            Select the <PromptEmphasis>MOST</PromptEmphasis> relevant statement:
+          </ChoicePrompt>
         }
         questionNumber={3}
         totalQuestions={7}
-        onPrevious={() => router.dismissTo('/tracker/movement/general')}
+        onPrevious={() => router.push('/tracker/movement/general')}
         onRecord={handleNext}
         disabled={!answers.walkingImpact}
         variant="management"
       >
-        <ChoiceList>
+        <ChoiceOptionList>
           {WALKING_OPTIONS.map((option, index) => (
-            <AssessmentRadioRow
+            <RadioOptionRow
               key={option}
               label={option}
               selected={answers.walkingImpact === option}
@@ -53,9 +52,9 @@ export default function WalkingScreen() {
               isLast={index === WALKING_OPTIONS.length - 1}
             />
           ))}
-        </ChoiceList>
+        </ChoiceOptionList>
       </ChoiceCard>
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

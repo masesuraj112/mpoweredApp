@@ -1,6 +1,6 @@
-import { QuestionPrompt, QuestionHint } from '@/components/mpowered/ChoiceCard';
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ChoicePrompt } from '@/components/tracker/ChoicePrompt';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { NO_MEDICATION_OPTION } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { toggleMedicationOption } from '@/features/assessments/management/medication';
@@ -42,17 +42,13 @@ export default function MedicationScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Management">
+    <TrackerQuestionScreen title="My Management">
       <MultiChoiceList
         title="Medication"
         prompt={
-          <>
-            <QuestionPrompt>
-              Over the past week, select medications that you consumed to manage your pain.
-            </QuestionPrompt>
-            <QuestionHint>Not taking medications? Just click the record button</QuestionHint>
-            <QuestionHint>Generated based on your medication scripts</QuestionHint>
-          </>
+          <ChoicePrompt note={['Not taking medications? Just click the record button', 'Generated based on your medication scripts']}>
+            Over the past week, select medications that you consumed to manage your pain.
+          </ChoicePrompt>
         }
         options={MEDICATION_OPTIONS}
         supportingTexts={MEDICATION_SUPPORTING_TEXT}
@@ -65,7 +61,7 @@ export default function MedicationScreen() {
         searchEnabled={false}
         selectedChipsEnabled={false}
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

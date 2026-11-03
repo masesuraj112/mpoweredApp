@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { router } from 'expo-router';
 import { SLEEPING_OPTIONS } from '@/features/assessments/personal-care/options';
@@ -18,7 +18,7 @@ export default function SleepingScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Personal Care">
+    <TrackerQuestionScreen title="My Personal Care">
       <SingleChoiceInput
         titleText="Sleeping"
         questionNumber={3}
@@ -26,11 +26,11 @@ export default function SleepingScreen() {
         options={SLEEPING_OPTIONS}
         selectedIndex={selectedIndex}
         onSelectionChange={index => updateAnswer('sleepingLevel', SLEEPING_OPTIONS[index])}
-        onPrevious={() => router.dismissTo('/tracker/personal-care/care')}
+        onPrevious={() => router.push('/tracker/personal-care/care')}
         onRecord={handleNext}
         variant="personalCare"
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

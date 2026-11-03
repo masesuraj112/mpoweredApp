@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { TRAVELLING_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { router } from 'expo-router';
@@ -20,7 +20,7 @@ export default function TravellingScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <SingleChoiceInput
         titleText="Travelling"
         questionNumber={2}
@@ -28,11 +28,11 @@ export default function TravellingScreen() {
         options={SOCIAL_HEALTH_OPTIONS}
         selectedIndex={selectedIndex}
         onSelectionChange={index => updateAnswer('travel', SOCIAL_HEALTH_OPTIONS[index])}
-        onPrevious={() => router.dismissTo('/tracker/social-health/social-life')}
+        onPrevious={() => router.push('/tracker/social-health/social-life')}
         onRecord={handleNext}
         variant="personalCare"
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

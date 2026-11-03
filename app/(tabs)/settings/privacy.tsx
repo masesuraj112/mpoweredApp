@@ -1,4 +1,4 @@
-import { SettingsSubpage, useSettingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsSubpage, useSettingsSubpageStyles } from '@/components/settings/SettingsSubpage';
 import { Text } from 'react-native';
 
 export default function PrivacyScreen() {

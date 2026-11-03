@@ -16,7 +16,7 @@ const OPTIONS: { id: UserType; title: string; description: string; benefits: str
     description: 'I am managing my own health journey',
     benefits: [
       'Track your symptoms and progress',
-      'Connect with your care team',
+      'Connect with your support people',
       'Access personalised health insights',
     ],
   },

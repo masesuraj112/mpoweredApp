@@ -36,6 +36,7 @@ export const SUPPORT_PEOPLE_LIMIT_MESSAGE =
   'You can add up to two support people to an appointment. Remove one to add someone else.';
 
 export const NAME_REQUIRED_MESSAGE = 'Please enter a name.';
+export const PHONE_REQUIRED_MESSAGE = 'Please enter a phone number.';
 export const MOBILE_REQUIRED_MESSAGE = 'Please enter an Australian mobile number, e.g. 0400 000 000.';
 
 /** True while another support person can still be added to an appointment with `count` people. */
@@ -74,8 +75,8 @@ export function findPersonWithPhone(
 }
 
 /**
- * Checks a draft that has something in it. The name is required; phone and email are optional,
- * but whichever is filled in must be valid. `knownPeople` are the patient's saved support people:
+ * Checks a draft that has something in it. The name and phone are required (US17); the email is
+ * optional, but must be valid if filled in. `knownPeople` are the patient's saved support people:
  * a number that is already one of theirs is reported instead of silently renaming that person. The phone must be an Australian mobile, because only
  * mobiles can sign in by SMS (the support person's login is matched to this number later).
  */
@@ -86,7 +87,9 @@ export function validateSupportPerson(
 ): SupportPersonErrors {
   const errors: SupportPersonErrors = {};
   if (draft.name.trim() === '') errors.name = NAME_REQUIRED_MESSAGE;
-  if (draft.phone.trim() !== '' && !isValidAuMobile(draft.phone)) {
+  if (draft.phone.trim() === '') {
+    errors.phone = PHONE_REQUIRED_MESSAGE;
+  } else if (!isValidAuMobile(draft.phone)) {
     errors.phone = MOBILE_REQUIRED_MESSAGE;
   } else {
     // Saving a number that is already saved would rename that person, so ask first.
@@ -107,10 +110,12 @@ export function validateField(
   field: keyof SupportPersonErrors,
   draft: SupportPersonDraft,
 ): string | undefined {
-  // The name is only checked once something else has been entered, so an untouched form is quiet.
+  // The name and phone are only required once something else has been entered, so an untouched
+  // form is quiet.
   if (field === 'name') {
     return draft.name.trim() === '' && !isDraftEmpty(draft) ? NAME_REQUIRED_MESSAGE : undefined;
   }
+  if (field === 'phone' && draft.phone.trim() === '' && isDraftEmpty(draft)) return undefined;
   return validateSupportPerson(draft)[field];
 }
 

@@ -57,8 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
             // Saved assessment drafts hold health answers and belong to no user, so they must not
-            // outlive a sign-out (this also covers account deletion and an expired session).
-            // Reminders are cancelled for the same reason.
+            // outlive a sign-out (this also covers account deletion and an expired session). The phone's
+            // reminders go too, also for a session that ends without Sign out.
             if (event === 'SIGNED_OUT') {
                 if (mounted) setSignInHeld(false);
                 clearAssessmentDrafts().catch((error: unknown) => {

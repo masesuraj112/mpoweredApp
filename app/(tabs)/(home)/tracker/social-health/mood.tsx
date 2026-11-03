@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { router } from 'expo-router';
 
@@ -15,7 +15,7 @@ export default function MoodScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <ScaleSliderInput
         titleText="Mood"
         questionText="Over the past week, how much has pain impacted your mood?"
@@ -28,6 +28,6 @@ export default function MoodScreen() {
         onRecord={handleNext}
         variant="personalCare"
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }

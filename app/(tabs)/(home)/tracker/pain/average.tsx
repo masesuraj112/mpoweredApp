@@ -1,5 +1,5 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
+import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
@@ -7,7 +7,6 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-
 
 export default function CurrePainLevel() {
   const { answers, updateAnswer } = usePainAssessment();
@@ -45,8 +44,8 @@ export default function CurrePainLevel() {
   };
 
   return (
-    <AssessmentScreen title="My Pain">
-      <ScaleSliderInput
+    <TrackerQuestionScreen title="My Pain">
+<ScaleSliderInput
         underLinedText="average pain"
         titleText="Pain Intensity"
         assessmentType="pain"
@@ -54,13 +53,13 @@ export default function CurrePainLevel() {
         totalQuestions={6}
         initialValue={answers.averagePain ?? 0}
         onValueChange={value => updateAnswer('averagePain', value)}
-        onPrevious={() => router.dismissTo('/tracker/pain/worst')}
+        onPrevious={() => router.push('/tracker/pain/worst')}
         onRecord={handleFinish}
         disabled={saving}
         validationMessage={errorMessage ?? undefined}
         variant="painTracker"
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 
