@@ -73,10 +73,6 @@ export default function PainLocationScreen() {
     router.push('/tracker/pain/characteristics');
   };
 
-  const handlePrevious = () => {
-    saveSelection();
-    router.back();
-  };
 
   return (
     <AssessmentScreen title="My Pain">
@@ -91,7 +87,6 @@ export default function PainLocationScreen() {
         questionNumber={1}
         totalQuestions={6}
         onRecord={handleRecord}
-        onPrevious={handlePrevious}
         disabled={selected.length === 0}
         variant="painTracker"
       />
