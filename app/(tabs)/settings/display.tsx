@@ -1,28 +1,28 @@
-// Text size and dark mode only changed local state (nothing reads them), so they're commented out
-// until they work, and the Settings home hides the Display row (see docs/settings-backend.md).
-// import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
-// import { useState } from 'react';
-import { SettingsSubpage, useSettingsSubpageStyles } from '@/components/settings/SettingsSubpage';
-import { Text } from 'react-native';
+import { SettingsOption, SettingsSelect, SettingsSubpage } from '@/components/settings/SettingsSubpage';
+import { APPEARANCE_LABELS, useAppearance, type AppearanceChoice } from '@/features/settings/appearance';
 
-// const textSizeIcon = require('../../../assets/images/settings/textsize.svg');
-// const darkModeIcon = require('../../../assets/images/settings/darkmode.svg');
+// Text size stays out until something reads it; the app already follows the phone's text size.
+const darkModeIcon = require('../../../assets/images/settings/darkmode.svg');
+
+const CHOICES = Object.keys(APPEARANCE_LABELS) as AppearanceChoice[];
 
 export default function DisplayScreen() {
-  const settingsSubpageStyles = useSettingsSubpageStyles();
-  // const [darkMode, setDarkMode] = useState(false);
-  // const [textSize, setTextSize] = useState('Medium');
+  const { choice, setChoice } = useAppearance();
 
   return (
     <SettingsSubpage title="Display">
-      <Text style={settingsSubpageStyles.placeholder}>Display settings are coming soon.</Text>
-      {/* <SettingsOption
-        icon={textSizeIcon}
-        label="Text size"
-        elevated
-        trailing={<SettingsSelect value={textSize} options={['Small', 'Medium', 'Large']} onChange={setTextSize} />}
+      <SettingsOption
+        icon={darkModeIcon}
+        label="Appearance"
+        trailing={
+          <SettingsSelect
+            value={APPEARANCE_LABELS[choice]}
+            options={CHOICES.map((option) => APPEARANCE_LABELS[option])}
+            onChange={(label) => setChoice(CHOICES.find((option) => APPEARANCE_LABELS[option] === label) ?? 'system')}
+            accessibilityLabel="Appearance"
+          />
+        }
       />
-      <SettingsOption icon={darkModeIcon} label="Enable dark mode" trailing={<SettingsToggle value={darkMode} onValueChange={setDarkMode} />} /> */}
     </SettingsSubpage>
   );
 }

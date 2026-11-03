@@ -10,11 +10,14 @@ import { Colors, Spacing, useThemeColors, type ThemeColors } from '../src/consta
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/startup';
 import { useMinimumDuration } from '../src/features/splash/useMinimumDuration';
+import { restoreAppearance } from '../src/features/settings/appearance';
 
 // Keep the native splash (the M on purple) up until the session has been read, so the app never shows a
 // blank screen while it starts. It then fades into the first screen (docs/backend/app-icons-and-splash-plan.md).
 void SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ duration: 300, fade: true });
+// A light or dark choice from Settings > Display, applied before the first screen shows.
+void restoreAppearance();
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
