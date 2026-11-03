@@ -1,5 +1,6 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
 import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
@@ -15,9 +16,10 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, TextInput } from 'react-native';
 
-import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { makeStyles, Typography, useThemeColors } from '@/constants/theme';
 export default function ReflectionScreen() {
   const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const reminders = useReminders();
@@ -57,7 +59,7 @@ export default function ReflectionScreen() {
     <AssessmentScreen title="My Personal Care">
       <ChoiceCard
         title="Reflection on your personal care"
-        prompt={<Text style={styles.prompt}>Write any reflections of pain impacts on your daily life:</Text>}
+        prompt={<QuestionPrompt>Write any reflections of pain impacts on your daily life:</QuestionPrompt>}
         questionNumber={4}
         totalQuestions={4}
         onPrevious={() => router.push('/tracker/personal-care/sleeping')}
@@ -65,7 +67,6 @@ export default function ReflectionScreen() {
         disabled={saving || overLimit}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={554}
       >
         <TextInput
           accessibilityLabel="Reflection on your personal care"
@@ -76,7 +77,7 @@ export default function ReflectionScreen() {
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"
           placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
-          style={styles.reflectionInput}
+          style={[inputStyles.input, inputStyles.multiline]}
         />
         <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
           {wordCount} / {MAX_REFLECTION_WORDS} words
@@ -88,31 +89,12 @@ export default function ReflectionScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  prompt: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  reflectionInput: {
-    minHeight: 80,
-    borderRadius: Radius.control,
-    backgroundColor: colors.surfaceContainer,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    color: colors.text,
-    ...Typography.caption,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
-  },
   counter: {
-    marginTop: Spacing.one,
-    textAlign: 'right',
+    ...Typography.bodySmall,
     color: colors.textSecondary,
-    ...Typography.caption,
+    textAlign: 'right',
   },
   counterOver: {
     color: colors.error,
-    fontWeight: '600',
   },
 }));

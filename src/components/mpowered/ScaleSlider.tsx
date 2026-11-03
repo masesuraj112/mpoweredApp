@@ -3,7 +3,8 @@ import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { ChoiceCard } from './ChoiceCard';
+import { ChoiceCard, QuestionPrompt } from './ChoiceCard';
+import { useInputStyles } from './inputStyles';
 import { useKeyboardDoneBar } from './KeyboardDoneBar';
 
 import { makeStyles, Palette, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
@@ -25,7 +26,6 @@ interface ScaleSliderProps {
   validationMessage?: string;
   /** Leave undefined to show the "0 to 10" placeholder until the user answers. */
   initialValue?: number;
-  cardHeight?: number;
   variant?: 'default' | 'painTracker' | 'personalCare';
 }
 
@@ -81,18 +81,15 @@ export function ScaleSliderInput({
   disabled = false,
   validationMessage,
   initialValue,
-  cardHeight,
   variant = 'default',
-
 }: ScaleSliderProps) {
-  const stylesSheet = useStylesSheet();
+  const styles = useStyles();
   const sliderSheet = useSliderSheet();
-  const personalCareSheet = usePersonalCareSheet();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const [value, setValue] = useState(initialValue ?? 0);
   // Tracks whether a score has been entered so the input can show its placeholder.
   const [hasValue, setHasValue] = useState(initialValue !== undefined);
-  const isPersonalCare = variant === 'personalCare';
   const [sliderWidth, setSliderWidth] = useState(0);
   const doneBar = useKeyboardDoneBar();
 
@@ -122,13 +119,23 @@ export function ScaleSliderInput({
   const thumbGap = thumbWidth / 2;
   const fillWidth = (value / 10) * sliderWidth;
 
-  const prompt = isPersonalCare ? (
-    <View>
-      {questionText && <Text style={personalCareSheet.questionText}>{questionText}</Text>}
-      <View style={personalCareSheet.scoreRow}>
-        <Text style={personalCareSheet.scoreLabel}>My score is</Text>
+  // Every score question reads the same: the question (if any), then "My … is" and the score box.
+  const prompt = (
+    <View style={styles.prompt}>
+      {questionText && <QuestionPrompt>{questionText}</QuestionPrompt>}
+      <View style={styles.scoreRow}>
+        <QuestionPrompt>
+          {underLinedText ? (
+            <>
+              My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
+            </>
+          ) : (
+            'My score is'
+          )}
+        </QuestionPrompt>
         <TextInput
-          style={personalCareSheet.scoreInput}
+          style={[inputStyles.input, styles.scoreInput]}
+          accessibilityLabel={underLinedText ? `My ${underLinedText}, 0 to 10` : 'My score, 0 to 10'}
           keyboardType="number-pad"
           // The iOS number pad has no return key, so this Done bar is the only way to close it.
           inputAccessoryViewID={doneBar.id}
@@ -139,17 +146,6 @@ export function ScaleSliderInput({
         />
       </View>
     </View>
-  ) : (
-    <Text style={stylesSheet.painLevelText}>
-      My <Text style={{ textDecorationLine: 'underline' }}>{underLinedText}</Text> is
-      <TextInput
-        style={stylesSheet.underlineText}
-        keyboardType="number-pad"
-        inputAccessoryViewID={doneBar.id}
-        value={hasValue ? String(value) : ''}
-        onChangeText={changeNumber}
-      />
-    </Text>
   );
 
   return (
@@ -163,7 +159,6 @@ export function ScaleSliderInput({
       previousDisabled={previousDisabled}
       disabled={disabled}
       validationMessage={validationMessage}
-      cardHeight={cardHeight}
       variant={variant}
     >
       <View
@@ -217,7 +212,7 @@ export function ScaleSliderInput({
         />
       </View>
 
-      <Text style={isPersonalCare ? personalCareSheet.descriptionText : stylesSheet.descriptionText}>
+      <Text style={styles.descriptionText}>
         {getScoreDescription(assessmentType, value)}
       </Text>
       {doneBar.bar}
@@ -225,70 +220,25 @@ export function ScaleSliderInput({
   );
 }
 
-const useStylesSheet = makeStyles((colors) => ({
-  painLevelText: {
-    color: colors.text,
-    ...Typography.titleSmall,
-  },
-  underlineText: {
-    color: colors.text,
-    ...Typography.titleSmall,
-    borderBottomWidth: 2,
-    width: 30,
-    borderBottomColor: colors.text,
-    minWidth: 10,
-    textAlign: 'center',
-    paddingBottom: Spacing.one,
-    marginLeft: Spacing.two,
-  },
-  descriptionText: {
-    color: colors.text,
-    marginTop: Spacing.two,
-    ...Typography.bodyLarge,
-    fontWeight: '700',
-    fontStyle: 'italic',
-  },
-}));
-
-const usePersonalCareSheet = makeStyles((colors) => ({
-  questionText: {
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    color: colors.text,
-    marginBottom: Spacing.three,
+const useStyles = makeStyles((colors) => ({
+  prompt: {
+    gap: Spacing.three,
   },
   scoreRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    flexWrap: 'wrap',
     gap: Spacing.three,
   },
-  scoreLabel: {
-    ...Typography.bodySmall,
-    fontWeight: '600',
-    letterSpacing: 0.1,
-    color: colors.text,
-  },
   scoreInput: {
-    width: 64,
-    ...Typography.bodySmall,
-    fontWeight: '500',
-    letterSpacing: 0.1,
+    minWidth: 104,
     textAlign: 'center',
-    color: colors.text,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outlineStrong,
-    paddingVertical: Spacing.half,
   },
   descriptionText: {
-    marginTop: Spacing.one,
-    ...Typography.caption,
-    fontWeight: '600',
+    ...Typography.bodyLarge,
     fontStyle: 'italic',
-    letterSpacing: 0.5,
     textAlign: 'center',
-    color: colors.text,
+    color: colors.textSecondary,
   },
 }));
 

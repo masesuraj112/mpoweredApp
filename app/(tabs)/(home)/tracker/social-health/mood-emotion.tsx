@@ -1,4 +1,5 @@
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { ChoiceCard, QuestionHint, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
 import { MOOD_EMOTION_VALUES, type MoodEmotion } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { Image } from 'expo-image';
@@ -55,94 +56,60 @@ export default function MoodEmotionScreen() {
 
   const prompt = (
     <View>
-      <Text style={styles.questionText}>Over the past week, how was your mood generally?</Text>
-      <Text style={styles.hintText}>Tap below emoji to describe your mood</Text>
+      <QuestionPrompt>Over the past week, how was your mood generally?</QuestionPrompt>
+      <QuestionHint>Tap below emoji to describe your mood</QuestionHint>
     </View>
   );
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Social Health</Text>
-        <ChoiceCard
-          title="Mood"
-          prompt={prompt}
-          questionNumber={6}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/social-health/enjoyment')}
-          onRecord={handleNext}
-          validationMessage={
-            attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
-          }
-          variant="personalCare"
-          cardHeight={300}
-        >
-          <View style={styles.emojiRow}>
-            {MOOD_EMOTIONS.map(emotion => {
-              const isSelected = emotion.value === selected?.value;
-              return (
-                <Pressable
-                  key={emotion.value}
-                  onPress={() => updateAnswer('moodEmotion', emotion.value)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={`I was feeling ${emotion.value}`}
-                  hitSlop={12}
-                  style={styles.emojiSlot}
-                >
-                  {isSelected ? (
-                    // The selected SVG is 40x40 with a drop shadow bleeding past the 24px emoji.
-                    <Image source={emotion.selectedIcon} style={styles.selectedIcon} contentFit="contain" />
-                  ) : (
-                    <Image
-                      source={emotion.icon}
-                      style={{ width: 24, height: emotion.iconHeight }}
-                      contentFit="contain"
-                    />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-          {/* Subtitle reflects the selected emotion. */}
-          <Text style={styles.selectionText}>{selected ? `I was feeling ${selected.value}` : ''}</Text>
-        </ChoiceCard>
-      </View>
-    </View>
+    <AssessmentScreen title="My Social Health">
+      <ChoiceCard
+        title="Mood"
+        prompt={prompt}
+        questionNumber={6}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/social-health/enjoyment')}
+        onRecord={handleNext}
+        validationMessage={
+          attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
+        }
+        variant="personalCare"
+      >
+        <View style={styles.emojiRow}>
+          {MOOD_EMOTIONS.map(emotion => {
+            const isSelected = emotion.value === selected?.value;
+            return (
+              <Pressable
+                key={emotion.value}
+                onPress={() => updateAnswer('moodEmotion', emotion.value)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={`I was feeling ${emotion.value}`}
+                hitSlop={12}
+                style={styles.emojiSlot}
+              >
+                {isSelected ? (
+                  // The selected SVG is 40x40 with a drop shadow bleeding past the 24px emoji.
+                  <Image source={emotion.selectedIcon} style={styles.selectedIcon} contentFit="contain" />
+                ) : (
+                  <Image
+                    source={emotion.icon}
+                    style={{ width: 24, height: emotion.iconHeight }}
+                    contentFit="contain"
+                  />
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+        {/* Subtitle reflects the selected emotion. */}
+        <Text style={styles.selectionText}>{selected ? `I was feeling ${selected.value}` : ''}</Text>
+      </ChoiceCard>
+    </AssessmentScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
-  questionText: {
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-    color: colors.text,
-  },
-  hintText: {
-    marginTop: 1,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-    color: colors.textSubtle,
-  },
   emojiRow: {
     flexDirection: 'row',
     justifyContent: 'center',

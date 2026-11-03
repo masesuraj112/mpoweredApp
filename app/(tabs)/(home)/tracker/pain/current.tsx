@@ -1,21 +1,16 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { router } from 'expo-router';
-import { Keyboard, Pressable, Text } from 'react-native';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
-  const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
   
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      {/* input component goes here */}
-      <Text style={styles.cardTitle}>My Pain</Text>
-      
+    <AssessmentScreen title="My Pain">
+      {/* input component goes here */}      
       <ScaleSliderInput
         underLinedText="current pain"
         titleText="Pain Intensity"
@@ -32,18 +27,7 @@ export default function CurrePainLevel() {
         }}
         variant="painTracker"
       />
-    </Pressable>
+    </AssessmentScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.four, // extra top space to clear the status bar/notch area
-  },
-  cardTitle: {
-      color: colors.text,
-      ...Typography.headline,
-      marginBottom: Spacing.three
-  },
-}));

@@ -188,6 +188,8 @@ export default function HomeScreen() {
           <Text style={styles.supported}>Supported by ABBVIE</Text>
         </View>
       </ScrollView>
+      {/* The status bar always sits on the gradient's colour, however iOS insets the scroll view. */}
+      <View style={[styles.statusBarFill, { height: insets.top }]} />
     </SafeAreaView>
   );
 }
@@ -205,6 +207,13 @@ const useStyles = makeStyles((colors) => ({
   hero: {
     paddingHorizontal: Spacing.five,
     paddingBottom: Spacing.four,
+  },
+  statusBarFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: Gradients.brand[0],
   },
   overscroll: {
     position: 'absolute',

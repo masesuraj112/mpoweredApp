@@ -27,7 +27,6 @@ export default function EnjoymentScreen() {
         onPrevious={() => router.push('/tracker/social-health/relationships')}
         onRecord={handleNext}
         variant="personalCare"
-        cardHeight={330}
       />
     </AssessmentScreen>
   );

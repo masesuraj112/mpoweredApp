@@ -1,12 +1,12 @@
+import { QuestionPrompt, QuestionHint } from '@/components/mpowered/ChoiceCard';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { NO_MEDICATION_OPTION } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { toggleMedicationOption } from '@/features/assessments/management/medication';
 import { SAMPLE_PRESCRIPTION_SCRIPTS } from '@/features/health-profile/prescriptions';
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
 // TODO: List the user's own prescriptions once the prescriptions backend exists (M5).
 const MEDICATION_OPTIONS = [
   ...SAMPLE_PRESCRIPTION_SCRIPTS.map(script => script.name),
@@ -18,7 +18,6 @@ const MEDICATION_SUPPORTING_TEXT = [
 ];
 
 export default function MedicationScreen() {
-  const styles = useStyles();
   const { answers, updateAnswer } = useManagementAssessment();
   const savedMedications = answers.medications ?? [];
   const noMedication = answers.noMedication === true;
@@ -43,72 +42,30 @@ export default function MedicationScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Management</Text>
-        <MultiChoiceList
-          title="Medication"
-          prompt={
-            <View style={styles.promptContent}>
-              <Text style={styles.promptText}>
-                Over the past week, select medications that you consumed to manage your pain.
-              </Text>
-              <Text style={styles.helperText}>Not taking medications? Just click the record button</Text>
-              <Text style={styles.sourceText}>Generated based on your medication scripts</Text>
-            </View>
-          }
-          options={MEDICATION_OPTIONS}
-          supportingTexts={MEDICATION_SUPPORTING_TEXT}
-          selectedIndices={selected}
-          onOptionPress={handleOptionPress}
-          questionNumber={1}
-          totalQuestions={4}
-          onRecord={() => router.push('/tracker/management/otc')}
-          variant="management"
-          searchEnabled={false}
-          scrollable
-          listHeight={253}
-          selectedChipsEnabled={false}
-          cardHeight={516}
-        />
-      </View>
-    </View>
+    <AssessmentScreen title="My Management">
+      <MultiChoiceList
+        title="Medication"
+        prompt={
+          <>
+            <QuestionPrompt>
+              Over the past week, select medications that you consumed to manage your pain.
+            </QuestionPrompt>
+            <QuestionHint>Not taking medications? Just click the record button</QuestionHint>
+            <QuestionHint>Generated based on your medication scripts</QuestionHint>
+          </>
+        }
+        options={MEDICATION_OPTIONS}
+        supportingTexts={MEDICATION_SUPPORTING_TEXT}
+        selectedIndices={selected}
+        onOptionPress={handleOptionPress}
+        questionNumber={1}
+        totalQuestions={4}
+        onRecord={() => router.push('/tracker/management/otc')}
+        variant="management"
+        searchEnabled={false}
+        selectedChipsEnabled={false}
+      />
+    </AssessmentScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
-  promptContent: {
-    gap: Spacing.two,
-  },
-  promptText: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  helperText: {
-    color: colors.textSecondary,
-    ...Typography.caption,
-    fontStyle: 'italic',
-  },
-  sourceText: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-  },
-}));

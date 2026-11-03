@@ -1,13 +1,15 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
 import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard, QuestionHint, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { router } from 'expo-router';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export default function OtcScreen() {
   const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = useManagementAssessment();
   const doneBar = useKeyboardDoneBar();
@@ -16,18 +18,17 @@ export default function OtcScreen() {
     <AssessmentScreen title="My Management">
       <ChoiceCard
         title="Medication"
-        prompt={<Text style={styles.prompt}>Over the past week, did you consume any over the counter (OTC) medication.</Text>}
+        prompt={<QuestionPrompt>Over the past week, did you consume any over the counter (OTC) medication.</QuestionPrompt>}
         questionNumber={2}
         totalQuestions={4}
         onPrevious={() => router.push('/tracker/management/medication')}
         onRecord={() => router.push('/tracker/management/exercise')}
         variant="management"
-        cardHeight={516}
       >
         <View style={styles.inputContent}>
-          <Text style={styles.helperText}>
+          <QuestionHint>
             Not taking OTC medications? Just click the record button
-          </Text>
+          </QuestionHint>
           <TextInput
             accessibilityLabel="Over the counter medication name"
             multiline
@@ -37,7 +38,7 @@ export default function OtcScreen() {
             placeholder="Input name of over the counter medication"
             placeholderTextColor={colors.textSubtle}
             textAlignVertical="top"
-            style={styles.input}
+            style={[inputStyles.input, inputStyles.multiline]}
           />
         </View>
       </ChoiceCard>
@@ -47,20 +48,9 @@ export default function OtcScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
-  prompt: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
   inputContent: {
     gap: Spacing.two,
     paddingHorizontal: Spacing.one,
-  },
-  helperText: {
-    color: colors.textSecondary,
-    ...Typography.caption,
-    fontStyle: 'italic',
   },
   input: {
     height: 146,

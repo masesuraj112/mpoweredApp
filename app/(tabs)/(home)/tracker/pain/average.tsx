@@ -1,3 +1,4 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
@@ -6,12 +7,9 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePainEntry } from '@/services/assessments';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, Pressable, Text } from 'react-native';
-import { Spacing, Typography, makeStyles } from '@/constants/theme';
 
 
 export default function CurrePainLevel() {
-  const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
   const reminders = useReminders();
   const [saving, setSaving] = useState(false);
@@ -47,11 +45,7 @@ export default function CurrePainLevel() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      {/* input component goes here */}
-      <Text style={styles.cardTitle}>My Pain</Text>
-
+    <AssessmentScreen title="My Pain">
       <ScaleSliderInput
         underLinedText="average pain"
         titleText="Pain Intensity"
@@ -66,18 +60,7 @@ export default function CurrePainLevel() {
         validationMessage={errorMessage ?? undefined}
         variant="painTracker"
       />
-    </Pressable>
+    </AssessmentScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.four, // extra top space to clear the status bar/notch area
-  },
-  cardTitle: {
-      color: colors.text,
-      ...Typography.headline,
-      marginBottom: Spacing.three
-  },
-}));

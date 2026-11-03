@@ -1,5 +1,6 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
 import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard, QuestionHint, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { managementSaveMessage } from '@/features/assessments/management/messages';
@@ -8,11 +9,11 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveManagementEntry } from '@/services/management';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
 
-import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 export default function EmotionScreen() {
-  const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = useManagementAssessment();
   const reminders = useReminders();
@@ -50,14 +51,14 @@ export default function EmotionScreen() {
       <ChoiceCard
         title="Emotion"
         prompt={
-          <View style={styles.promptContent}>
-            <Text style={styles.promptText}>
+          <>
+            <QuestionPrompt>
               Over the past week, did you perform any strategies to manage your stress level or emotion?
-            </Text>
-            <Text style={styles.examples}>
+            </QuestionPrompt>
+            <QuestionHint>
               Examples: meditation, journaling, meeting people
-            </Text>
-          </View>
+            </QuestionHint>
+          </>
         }
         questionNumber={4}
         totalQuestions={4}
@@ -66,7 +67,6 @@ export default function EmotionScreen() {
         disabled={saving}
         validationMessage={errorMessage ?? undefined}
         variant="management"
-        cardHeight={516}
       >
         <TextInput
           accessibilityLabel="Emotion management strategies"
@@ -77,7 +77,7 @@ export default function EmotionScreen() {
           placeholder="Write about any strategies you used to manage your emotions"
           placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
-          style={styles.input}
+          style={[inputStyles.input, inputStyles.multiline]}
         />
       </ChoiceCard>
       {doneBar.bar}
@@ -85,30 +85,3 @@ export default function EmotionScreen() {
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  promptContent: {
-    gap: Spacing.two,
-  },
-  promptText: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  examples: {
-    color: colors.textSecondary,
-    ...Typography.caption,
-    fontStyle: 'italic',
-  },
-  input: {
-    height: 146,
-    borderRadius: Radius.control,
-    backgroundColor: colors.surfaceContainer,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    color: colors.text,
-    ...Typography.bodySmall,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
-  },
-}));

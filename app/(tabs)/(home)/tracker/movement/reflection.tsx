@@ -1,3 +1,5 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
@@ -7,23 +9,14 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveMovementEntry } from '@/services/assessments';
 import { useRef, useState } from 'react';
 import { countWords, isReflectionTooLong, MAX_REFLECTION_WORDS } from '@/features/assessments/reflection';
-import {
-  InputAccessoryView,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { InputAccessoryView, Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
-import { ContentColumn, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'reflectionDone';
 
 export default function ReflectionScreen() {
   const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
   const reminders = useReminders();
@@ -60,48 +53,33 @@ export default function ReflectionScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <KeyboardAvoidingView
-        style={styles.screen}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={109}
+    <AssessmentScreen title="My Movement">
+      <ChoiceCard
+        title="Reflection on your movement"
+        prompt="Write any reflections of pain impacts on your mobility."
+        questionNumber={7}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/movement/standing')}
+        onRecord={handleRecord}
+        disabled={saving || overLimit}
+        validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
+        variant="personalCare"
       >
-        {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-        >
-          <Text style={styles.pageTitle}>My Movement</Text>
-          <ChoiceCard
-            title="Reflection on your movement"
-            prompt="Write any reflections of pain impacts on your mobility."
-            questionNumber={7}
-            totalQuestions={7}
-            onPrevious={() => router.push('/tracker/movement/standing')}
-            onRecord={handleRecord}
-            disabled={saving || overLimit}
-            validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
-            variant="personalCare"
-            style={{ flex: 1, height: undefined }}
-          >
-            <TextInput
-              value={answers.reflection ?? ''}
-              onChangeText={text => updateAnswer('reflection', text)}
-              placeholder="For instance, when pain occurred, you lie down for the whole day"
-              placeholderTextColor={colors.textSubtle}
-              multiline
-              textAlignVertical="top"
-              style={styles.input}
-              accessibilityLabel="Reflection on your movement"
-              inputAccessoryViewID={ACCESSORY_ID}
-            />
-            <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
-              {wordCount}/{MAX_REFLECTION_WORDS} words
-            </Text>
-          </ChoiceCard>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <TextInput
+          value={answers.reflection ?? ''}
+          onChangeText={text => updateAnswer('reflection', text)}
+          placeholder="For instance, when pain occurred, you lie down for the whole day"
+          placeholderTextColor={colors.textSubtle}
+          multiline
+          textAlignVertical="top"
+          style={[inputStyles.input, inputStyles.multiline]}
+          accessibilityLabel="Reflection on your movement"
+          inputAccessoryViewID={ACCESSORY_ID}
+        />
+        <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
+          {wordCount}/{MAX_REFLECTION_WORDS} words
+        </Text>
+      </ChoiceCard>
 
       {Platform.OS === 'ios' && (
         <InputAccessoryView nativeID={ACCESSORY_ID}>
@@ -112,25 +90,11 @@ export default function ReflectionScreen() {
           </View>
         </InputAccessoryView>
       )}
-    </View>
+    </AssessmentScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: { flex: 1, backgroundColor: colors.surface },
-  container: {
-    ...ContentColumn,
-    flexGrow: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
   input: {
     flex: 1,
     minHeight: 120,
@@ -153,14 +117,12 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.bodyLarge,
     fontWeight: '600',
   },
-  counter: { 
-    alignSelf: 'flex-end',
-    marginTop: Spacing.one,
-    ...Typography.caption,
+  counter: {
+    ...Typography.bodySmall,
     color: colors.textSecondary,
+    textAlign: 'right',
   },
-  counterOver: { 
-    color: colors.error, 
-    fontWeight: '600', 
+  counterOver: {
+    color: colors.error,
   },
 }));

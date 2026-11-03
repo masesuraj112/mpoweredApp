@@ -1,13 +1,15 @@
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { TextInput, TextInputProps } from 'react-native';
-import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
+
+import { useInputStyles } from './inputStyles';
 
 type SearchBarProps = TextInputProps & {
   placeholder?: string;
 };
 
 export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBarProps) {
-  const styles = useStyles();
+  const styles = useInputStyles();
   const colors = useThemeColors();
   const doneBar = useKeyboardDoneBar();
 
@@ -25,18 +27,3 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
     </>
   );
 }
-
-const useStyles = makeStyles((colors) => ({
-  input: {
-    color: colors.text,
-    height: 30,
-    width: '100%',
-    borderRadius: 4,
-    paddingHorizontal: Spacing.two,
-    textAlign: 'center',
-    ...Typography.bodySmall,
-    backgroundColor: colors.surfaceContainer,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
-  },
-}));

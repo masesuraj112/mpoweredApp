@@ -1,5 +1,6 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
 import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard, QuestionPrompt } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { socialHealthSaveMessage } from '@/features/assessments/social-health/messages';
@@ -8,11 +9,11 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveSocialHealthEntry } from '@/services/social-health';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Text, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
-import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
 export default function MoodTriggerScreen() {
-  const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = useSocialHealthAssessment();
   const reminders = useReminders();
@@ -49,7 +50,7 @@ export default function MoodTriggerScreen() {
     <AssessmentScreen title="My Social Health">
       <ChoiceCard
         title="Mood"
-        prompt={<Text style={styles.prompt}>What triggered that mood?</Text>}
+        prompt={<QuestionPrompt>What triggered that mood?</QuestionPrompt>}
         questionNumber={7}
         totalQuestions={7}
         onPrevious={() => router.push('/tracker/social-health/mood-emotion')}
@@ -57,7 +58,6 @@ export default function MoodTriggerScreen() {
         disabled={saving}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={274}
       >
         <TextInput
           accessibilityLabel="What triggered that mood?"
@@ -68,7 +68,7 @@ export default function MoodTriggerScreen() {
           placeholder="i.e: delayed in work due to pain, inability to meet with friends, etc"
           placeholderTextColor={colors.textSubtle}
           textAlignVertical="top"
-          style={styles.reflectionInput}
+          style={[inputStyles.input, inputStyles.multiline]}
         />
       </ChoiceCard>
       {doneBar.bar}
@@ -76,22 +76,3 @@ export default function MoodTriggerScreen() {
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  prompt: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  reflectionInput: {
-    minHeight: 80,
-    borderRadius: Radius.control,
-    backgroundColor: colors.surfaceContainer,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    color: colors.text,
-    ...Typography.caption,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.outline,
-  },
-}));

@@ -1,10 +1,12 @@
+import { useInputStyles } from '@/components/mpowered/inputStyles';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
@@ -12,6 +14,7 @@ const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
 
 export default function PainLocationScreen() {
   const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = usePainAssessment();
   const savedLocations = answers.painLocations ?? [];
@@ -76,10 +79,7 @@ export default function PainLocationScreen() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Pain</Text>
+    <AssessmentScreen title="My Pain">
       <MultiChoiceList
         title="Pain location"
         prompt="I have had pain in these areas last week."
@@ -94,10 +94,7 @@ export default function PainLocationScreen() {
         onPrevious={handlePrevious}
         disabled={selected.length === 0}
         variant="painTracker"
-        scrollable
       />
-      </View>
-
       <Modal visible={isOtherModalVisible} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
@@ -108,7 +105,7 @@ export default function PainLocationScreen() {
               onChangeText={setDraftOtherLocation}
               placeholder="Knee"
               placeholderTextColor={colors.text}
-              style={styles.input}
+              style={[inputStyles.input]}
               accessibilityLabel="Other pain location"
               inputAccessoryViewID={doneBar.id}
             />
@@ -160,26 +157,11 @@ export default function PainLocationScreen() {
           </View>
         </View>
       </Modal>
-    </Pressable>
+    </AssessmentScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
   modalBackdrop: {
     flex: 1,
     alignItems: 'center',

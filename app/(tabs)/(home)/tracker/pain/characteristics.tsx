@@ -1,13 +1,11 @@
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, Text, View } from 'react-native';
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export default function PainCharacteristicsScreen() {
-  const styles = useStyles();
   const { answers, updateAnswer } = usePainAssessment();
   const [selected, setSelected] = useState<number[]>(() =>
     PAIN_CHARACTERISTICS_OPTIONS.reduce<number[]>((indices, option, index) => {
@@ -44,47 +42,23 @@ export default function PainCharacteristicsScreen() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Pain</Text>
-        <MultiChoiceList
-          title="Pain characteristics"
-          prompt="For each following words, check if that adjectives applies to your pain."
-          subPrompt="(scroll down for more options)"
-          options={[...PAIN_CHARACTERISTICS_OPTIONS]}
-          selectedIndices={selected}
-          onSelectionChange={handleSelectionChange}
-          questionNumber={2}
-          totalQuestions={6}
-          onRecord={handleNext}
-          onPrevious={handlePrevious}
-          disabled={selected.length === 0}
-          cardHeight={599}
-          variant="painTracker"
-          searchEnabled
-          scrollable
-          selectedChipsEnabled={false}
-        />
-      </View>
-    </Pressable>
+    <AssessmentScreen title="My Pain">
+      <MultiChoiceList
+        title="Pain characteristics"
+        prompt="For each following words, check if that adjectives applies to your pain."
+        subPrompt="(scroll down for more options)"
+        options={[...PAIN_CHARACTERISTICS_OPTIONS]}
+        selectedIndices={selected}
+        onSelectionChange={handleSelectionChange}
+        questionNumber={2}
+        totalQuestions={6}
+        onRecord={handleNext}
+        onPrevious={handlePrevious}
+        disabled={selected.length === 0}
+        variant="painTracker"
+        searchEnabled
+        selectedChipsEnabled={false}
+      />
+    </AssessmentScreen>
   );
 }
-
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
-}));

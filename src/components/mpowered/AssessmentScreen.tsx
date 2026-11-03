@@ -10,7 +10,7 @@ import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/them
  * and the iOS keyboard has no hide key, so without this the keyboard can cover Next / Record with
  * no way to dismiss it. Buttons and inputs inside still receive their own taps first.
  * On iOS, inputs can also add a "Done" bar above the keyboard with `useKeyboardDoneBar`.
- * The page stays above the tab bar and scrolls when the question is longer than the screen.
+ * The page stays above the tab bar and the keyboard, and scrolls when the question is longer than the screen.
  */
 export function AssessmentScreen({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
@@ -18,7 +18,12 @@ export function AssessmentScreen({ title, children }: { title: string; children:
     // Not exposed to screen readers: it's a convenience, not a control.
     <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
       <SafeAreaView style={styles.screen} edges={['bottom']}>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          // Keeps the focused text box above the keyboard (iOS; Android resizes the window).
+          automaticallyAdjustKeyboardInsets>
           <Text style={styles.pageTitle}>{title}</Text>
           {children}
         </ScrollView>

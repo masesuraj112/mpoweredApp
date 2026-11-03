@@ -1,12 +1,12 @@
+import { QuestionPrompt } from '@/components/mpowered/ChoiceCard';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
 export default function GeneralScreen() {
-  const styles = useStyles();
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const savedActivities = answers.generalActivities ?? [];
   const selected = GENERAL_ACTIVITY_OPTIONS.reduce<number[]>((indices, activity, index) => {
@@ -29,56 +29,26 @@ export default function GeneralScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Personal Care</Text>
-        <MultiChoiceList
-          title="General Activities Impacts"
-          prompt={
-            <Text style={styles.prompt}>
-              Select <Text style={styles.underlinedPrompt}>ALL</Text> relevant statements:
-            </Text>
-          }
-          options={GENERAL_ACTIVITY_OPTIONS}
-          selectedIndices={selected}
-          onSelectionChange={handleSelectionChange}
-          questionNumber={1}
-          totalQuestions={4}
-          onRecord={handleNext}
-          disabled={selected.length === 0}
-          variant="personalCare"
-          searchEnabled={false}
-          scrollable
-          selectedChipsEnabled={false}
-        />
-      </View>
-    </View>
+    <AssessmentScreen title="My Personal Care">
+      <MultiChoiceList
+        title="General Activities Impacts"
+        prompt={
+          <QuestionPrompt>
+            Select <Text style={{ textDecorationLine: 'underline' }}>ALL</Text> relevant statements:
+          </QuestionPrompt>
+        }
+        options={GENERAL_ACTIVITY_OPTIONS}
+        selectedIndices={selected}
+        onSelectionChange={handleSelectionChange}
+        questionNumber={1}
+        totalQuestions={4}
+        onRecord={handleNext}
+        disabled={selected.length === 0}
+        variant="personalCare"
+        searchEnabled={false}
+        selectedChipsEnabled={false}
+      />
+    </AssessmentScreen>
   );
 }
 
-const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.surface,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
-  prompt: {
-    color: colors.text,
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-  },
-  underlinedPrompt: {
-    textDecorationLine: 'underline',
-  },
-}));

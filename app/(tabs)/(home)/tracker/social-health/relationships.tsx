@@ -27,7 +27,6 @@ export default function RelationshipsScreen() {
         onPrevious={() => router.push('/tracker/social-health/mood')}
         onRecord={handleNext}
         variant="personalCare"
-        cardHeight={330}
       />
     </AssessmentScreen>
   );

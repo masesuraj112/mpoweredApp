@@ -1,24 +1,18 @@
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { useInputStyles } from '@/components/mpowered/inputStyles';
+import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { ChoiceCard, QuestionHint } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import {
-  InputAccessoryView,
-  Keyboard,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { InputAccessoryView, Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
-import { ContentColumn, makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
 export default function ActivityScreen() {
   const styles = useStyles();
+  const inputStyles = useInputStyles();
   const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
 
@@ -35,42 +29,33 @@ export default function ActivityScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
+    <AssessmentScreen title="My Movement">
+      <ChoiceCard
+        title="General Movement Impacts"
+        prompt="On average, how many hours per day were you able to stay active or mobile last week?"
+        questionNumber={1}
+        totalQuestions={7}
+        onRecord={() => router.push('/tracker/movement/general')}
+        disabled={answers.activeHours === undefined || isOverMax}
+        validationMessage={isOverMax ? `Please enter ${MAX_HOURS} hours or less` : undefined}
+        variant="personalCare"
       >
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="General Movement Impacts"
-          prompt="On average, how many hours per day were you able to stay active or mobile last week?"
-          questionNumber={1}
-          totalQuestions={7}
-          onRecord={() => router.push('/tracker/movement/general')}
-          disabled={answers.activeHours === undefined || isOverMax}
-          validationMessage={isOverMax ? `Please enter ${MAX_HOURS} hours or less` : undefined}
-          variant="personalCare"
-          style={{ flex: 1, height: undefined }}
-        >
-          <TextInput
-            value={text}
-            onChangeText={handleChange}
-            keyboardType="decimal-pad"
-            placeholder="Input number only"
-            placeholderTextColor={colors.textSubtle}
-            maxLength={5}
-            style={[styles.input, isOverMax && styles.inputError]}
-            accessibilityLabel="Hours active per day"
-            inputAccessoryViewID={ACCESSORY_ID}
-          />
-          <Text style={styles.helper}>
-            Stay active could mean doing your typical activities like working, driving, doing
-            house chores, meeting with people, et cetera.
-          </Text>
-        </ChoiceCard>
-      </ScrollView>
+        <TextInput
+          value={text}
+          onChangeText={handleChange}
+          keyboardType="decimal-pad"
+          placeholder="Input number only"
+          placeholderTextColor={colors.textSubtle}
+          maxLength={5}
+          style={[inputStyles.input, isOverMax && styles.inputError]}
+          accessibilityLabel="Hours active per day"
+          inputAccessoryViewID={ACCESSORY_ID}
+        />
+        <QuestionHint>
+          Stay active could mean doing your typical activities like working, driving, doing
+          house chores, meeting with people, et cetera.
+        </QuestionHint>
+      </ChoiceCard>
 
       {Platform.OS === 'ios' && (
         <InputAccessoryView nativeID={ACCESSORY_ID}>
@@ -81,25 +66,11 @@ export default function ActivityScreen() {
           </View>
         </InputAccessoryView>
       )}
-    </View>
+    </AssessmentScreen>
   );
 }
 
 const useStyles = makeStyles((colors) => ({
-  screen: { flex: 1, backgroundColor: colors.surface },
-  container: {
-    ...ContentColumn,
-    flexGrow: 1,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
-  },
   input: {
     height: 56,
     borderRadius: 4,
@@ -111,13 +82,7 @@ const useStyles = makeStyles((colors) => ({
     borderBottomColor: colors.outline,
   },
   inputError: {
-    borderColor: colors.error,
-  },
-  helper: {
-    marginTop: Spacing.three,
-    ...Typography.caption,
-    letterSpacing: 0.4,
-    color: colors.textSecondary,
+    borderBottomColor: colors.error,
   },
   accessoryBar: {
     alignItems: 'flex-end',

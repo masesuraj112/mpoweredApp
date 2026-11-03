@@ -1,17 +1,11 @@
 import { ReactNode } from 'react';
-import {
-    Keyboard,
-    Pressable,
-    StyleProp,
-    Text,
-    View,
-    ViewStyle,
-} from 'react-native';
+import { Keyboard, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
 interface ChoiceCardProps {
   title: string;
-  /** Pass a string or nested `<Text>` elements */
+  /** A string, or `QuestionPrompt` / `QuestionHint` elements (wrapped in a View for more than one). */
   prompt: ReactNode;
   children: ReactNode;
   questionNumber?: number;
@@ -20,13 +14,22 @@ interface ChoiceCardProps {
   onPrevious?: () => void;
   previousDisabled?: boolean;
   validationMessage?: string;
-  cardHeight?: number;
   isRecording?: boolean;
   disabled?: boolean;
+  /**
+   * Only changes the wording of the main button: an assessment (`painTracker`, `personalCare`,
+   * `management`) ends on Record, a plain questionnaire on Finish. Every variant looks the same.
+   */
   variant?: 'default' | 'painTracker' | 'personalCare' | 'management';
+  /** Placement only (margins); the card sizes itself. */
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ * One assessment question: a title, the question, its answers, then the question count and the
+ * Previous / Next (or Record) buttons. The card fills the page so the buttons always sit at its foot,
+ * and the page scrolls when the answers are longer than the screen.
+ */
 export function ChoiceCard({
   title,
   prompt,
@@ -37,24 +40,29 @@ export function ChoiceCard({
   onPrevious,
   previousDisabled = false,
   validationMessage,
-  cardHeight,
   isRecording = false,
   disabled = false,
   variant = 'default',
   style,
 }: ChoiceCardProps) {
-  const footerStyles = useFooterStyles();
   const styles = useStyles();
-  const isPainTracker = variant === 'painTracker';
-  const isPersonalCare = variant === 'personalCare';
-  const isManagement = variant === 'management';
-  const isFlowAssessment = isPersonalCare || isManagement;
-  const isAssessment = isPainTracker || isFlowAssessment;
+  const isAssessment = variant !== 'default';
   const showPager = questionNumber !== undefined && totalQuestions !== undefined;
-  const showNavigation = (isPainTracker && (onPrevious || onRecord)) || (isFlowAssessment && !!onRecord);
-  const showRecord = !!onRecord && !showNavigation;
   const isLastQuestion = showPager && questionNumber === totalQuestions;
-  const showFooter = showPager || showRecord || showNavigation;
+  // A single question with no count records its answer straight away.
+  const recordOnly = !showPager && !onPrevious;
+  const primaryLabel = recordOnly
+    ? isRecording
+      ? 'Recording…'
+      : 'Record'
+    : isLastQuestion
+      ? isAssessment
+        ? 'Record'
+        : 'Finish'
+      : 'Next';
+  const primaryAccessibilityLabel = recordOnly ? 'Record answer' : primaryLabel;
+  const primaryDisabled = disabled || isRecording || !onRecord;
+  const showFooter = showPager || !!onRecord || !!onPrevious;
 
   // Close the keyboard before moving on, otherwise it stays open over the next question.
   const handlePrevious = () => {
@@ -67,351 +75,180 @@ export function ChoiceCard({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        isAssessment && (isPersonalCare ? styles.personalCareContainer : styles.painTrackerContainer),
-        cardHeight !== undefined && { height: cardHeight },
-        style,
-      ]}
-    >
-      <Text
-        style={[
-          styles.titleText,
-          isPainTracker && styles.painTrackerTitle,
-            isFlowAssessment && styles.personalCareTitle,
-        ]}
-      >
+    <View style={[styles.card, style]}>
+      <Text accessibilityRole="header" style={styles.title}>
         {title}
       </Text>
-      <View style={[styles.divider, isAssessment && styles.painTrackerDivider]} />
+      <View style={styles.divider} />
 
-      {typeof prompt === 'string' ? (
-        <View style={[styles.promptWrapper, isFlowAssessment && styles.personalCarePromptWrapper]}>
-          {typeof prompt === 'string' ? (
-           <Text style={[styles.promptText, isFlowAssessment && styles.personalCarePromptText]}>{prompt}</Text>
-          ) : (
-            prompt
-          )}
-       </View>
-      ) : (
-        <View
-          style={[
-            styles.promptContainer,
-            isPainTracker && styles.painTrackerPrompt,
-            isFlowAssessment && styles.personalCarePromptContainer,
-          ]}
-        >
-          {prompt}
-        </View>
-      )}
-
-      <View style={[styles.optionsList, isAssessment && styles.painTrackerOptionsList]}>
-        {children}
+      <View style={styles.prompt}>
+        {typeof prompt === 'string' ? <QuestionPrompt>{prompt}</QuestionPrompt> : prompt}
       </View>
 
-      {validationMessage && (
-        <Text style={styles.validationMessage}>{validationMessage}</Text>
-      )}
+      <View style={styles.answers}>{children}</View>
+
+      {validationMessage ? (
+        <Text accessibilityRole="alert" style={styles.validationMessage}>
+          {validationMessage}
+        </Text>
+      ) : null}
 
       {showFooter && (
-        <View
-          style={[
-            footerStyles.row,
-            variant === 'painTracker' && footerStyles.painTrackerRow,
-            !showPager && showRecord && footerStyles.rowRight,
-            showPager && !showRecord && !showNavigation && footerStyles.rowLeft,
-            showNavigation && footerStyles.navigationRow,
-          ]}
-        >
-          {showPager && (
-            <View
-              style={[
-                footerStyles.pill,
-                isAssessment && footerStyles.painTrackerPager,
-              ]}
-              accessibilityRole="text"
-            >
-              <Text style={[footerStyles.pillText, isFlowAssessment && footerStyles.personalCarePagerText]}>
+        <View style={styles.footer}>
+          {showPager ? (
+            <View style={styles.pager}>
+              <Text style={styles.pagerText}>
                 {questionNumber}/{totalQuestions}
               </Text>
             </View>
+          ) : (
+            <View />
           )}
-
-          {showNavigation && (
-            <View style={footerStyles.navigationGroup}>
-              {/* First steps omit Previous when no previous route is provided. */}
-              {(!isFlowAssessment || onPrevious) && (
-                <Pressable
-                  onPress={handlePrevious}
-                  disabled={previousDisabled || !onPrevious}
-                  accessibilityRole="button"
-                  accessibilityLabel="Previous"
-                  accessibilityState={{ disabled: previousDisabled || !onPrevious }}
-                  style={[footerStyles.navigationButton, (previousDisabled || !onPrevious) && footerStyles.buttonDisabled]}
-                >
-                  <Text style={footerStyles.navigationButtonText}>← Prev</Text>
-                </Pressable>
-              )}
+          <View style={styles.buttons}>
+            {onPrevious && (
+              <Pressable
+                onPress={handlePrevious}
+                disabled={previousDisabled}
+                accessibilityRole="button"
+                accessibilityLabel="Previous"
+                accessibilityState={{ disabled: previousDisabled }}
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.secondaryButton,
+                  previousDisabled && styles.disabled,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.buttonText, styles.secondaryButtonText]}>← Prev</Text>
+              </Pressable>
+            )}
+            {onRecord && (
               <Pressable
                 onPress={handleRecord}
-                disabled={disabled || isRecording || !onRecord}
+                disabled={primaryDisabled}
                 accessibilityRole="button"
-                accessibilityLabel={isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next'}
-                accessibilityState={{ disabled: disabled || isRecording || !onRecord }}
-                style={[
-                  footerStyles.navigationButton,
-                  (disabled || isRecording || !onRecord) &&
-                    footerStyles.disabledNavigationButton,
-                ]}
-              >
-                <Text
-                  style={[
-                    footerStyles.nextButtonText,
-                    (disabled || isRecording || !onRecord) &&
-                      footerStyles.disabledNavigationButtonText,
-                  ]}
-                >
-                  {isAssessment && isLastQuestion ? 'Record' : isLastQuestion ? 'Finish' : 'Next →'}
+                accessibilityLabel={primaryAccessibilityLabel}
+                accessibilityState={{ disabled: primaryDisabled }}
+                style={({ pressed }) => [
+                  styles.button,
+                  primaryDisabled ? styles.disabledButton : styles.primaryButton,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.buttonText, primaryDisabled ? styles.disabledButtonText : styles.primaryButtonText]}>
+                  {isLastQuestion || recordOnly ? primaryLabel : `${primaryLabel} →`}
                 </Text>
               </Pressable>
-            </View>
-          )}
-
-          {showRecord && (
-            <Pressable
-              onPress={handleRecord}
-              disabled={disabled || isRecording}
-              accessibilityRole="button"
-              accessibilityLabel="Record answer"
-              accessibilityState={{ disabled: disabled || isRecording }}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              style={({ pressed }) => [
-                footerStyles.pill,
-                footerStyles.recordButton,
-                isAssessment && footerStyles.painTrackerRecordButton,
-                pressed && footerStyles.recordButtonPressed,
-                (disabled || isRecording) && footerStyles.buttonDisabled,
-              ]}
-            >
-              <Text style={[footerStyles.pillText, isAssessment && footerStyles.painTrackerRecordText]}>
-                {isRecording ? 'Recording...' : 'Record'}
-              </Text>
-              {!isRecording && (
-                <Text style={[footerStyles.arrow, isAssessment && footerStyles.painTrackerRecordText]}>
-                  →
-                </Text>
-              )}
-            </Pressable>
-          )}
+            )}
+          </View>
         </View>
       )}
     </View>
   );
 }
 
+/** The question itself. Nest a `<Text>` with only `textDecorationLine` to underline a word. */
+export function QuestionPrompt({ children }: { children: ReactNode }) {
+  const styles = useStyles();
+  return <Text style={styles.promptText}>{children}</Text>;
+}
+
+/** A secondary line under the question: examples, "scroll for more", where the options come from. */
+export function QuestionHint({ children }: { children: ReactNode }) {
+  const styles = useStyles();
+  return <Text style={styles.hintText}>{children}</Text>;
+}
+
 const useStyles = makeStyles((colors) => ({
-  container: {
+  card: {
+    flexGrow: 1,
+    gap: Spacing.three,
+    padding: Spacing.three,
     borderRadius: Radius.card,
-    paddingTop: Spacing.four,
-    paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.four,
     backgroundColor: colors.surfaceContainer,
   },
-  titleText: {
+  title: {
+    ...Typography.titleSmall,
     color: colors.text,
-    ...Typography.headline,
-    marginBottom: Spacing.three,
   },
   divider: {
-    borderTopWidth: 1,
-    borderTopColor: colors.text,
-    width: '100%',
-    marginBottom: Spacing.three,
+    height: 1,
+    backgroundColor: colors.divider,
   },
-  promptContainer: {
-    marginBottom: Spacing.two,
-  },
-  promptWrapper: {
-    marginBottom: Spacing.two,
+  prompt: {
+    gap: Spacing.one,
   },
   promptText: {
-    color: colors.text,
-    ...Typography.bodySmall,
-    fontWeight: '600',
-  },
-  validationMessage: {
-    color: colors.error,
-    ...Typography.caption,
-    textAlign: 'right',
-    marginTop: Spacing.two,
-  },
-  optionsList: {
-    width: '100%',
-  },
-  painTrackerOptionsList: {
-    flex: 1,
-    minHeight: 0,
-  },
-  painTrackerContainer: {
-    height: 572,
-    borderRadius: Radius.card,
-    paddingTop: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.three,
-    backgroundColor: colors.surfaceContainer,
-  },
-  personalCareContainer: {
-    flex: 1,
-    minHeight: 0,
-    borderRadius: Radius.card,
-    paddingTop: Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.three,
-    backgroundColor: colors.surfaceContainer,
-  },
-  painTrackerTitle: {
-    color: colors.text,
-    ...Typography.titleSmall,
-    marginBottom: Spacing.two,
-  },
-  personalCareTitle: {
     ...Typography.bodyLarge,
-    fontWeight: '500',
-    letterSpacing: 0.15,
-    marginBottom: Spacing.two,
+    fontWeight: '600',
     color: colors.text,
   },
-  painTrackerDivider: {
-    borderTopColor: colors.divider,
-    marginBottom: Spacing.three,
+  hintText: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
   },
-  painTrackerPrompt: {
-    height: 68,
-    marginBottom: Spacing.one,
-  },
-  personalCarePromptContainer: {
-    marginBottom: Spacing.three,
-  },
-  personalCarePromptWrapper: {
-    marginBottom: Spacing.three,
-  },
-  personalCarePromptText: {
-    ...Typography.caption,
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    color: colors.text,
-  },
-}));
-
-const useFooterStyles = makeStyles((colors) => ({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: Spacing.three,
-  },
-  rowLeft: {
-    justifyContent: 'flex-start',
-  },
-  rowRight: {
-    justifyContent: 'flex-end',
-  },
-  painTrackerRow: {
-    flexShrink: 0,
-    marginTop: Spacing.two,
-  },
-  navigationRow: {
-    justifyContent: 'space-between',
-  },
-  navigationGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  answers: {
+    flexGrow: 1,
     gap: Spacing.three,
   },
-  navigationButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    alignSelf: 'center',
-  },
-  navigationButtonText: {
-    color: colors.onPrimary,
+  validationMessage: {
     ...Typography.bodySmall,
-    fontWeight: '500',
+    color: colors.error,
   },
-  nextButton: {
-    backgroundColor: colors.primary,
-  },
-  nextButtonText: {
-    color: colors.onPrimary,
-    ...Typography.bodySmall,
-    fontWeight: '500',
-  },
-  pill: {
-    borderRadius: Radius.pill,
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
+  footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surfaceContainer,
-  },
-  recordButton: {
+    justifyContent: 'space-between',
     gap: Spacing.two,
   },
-  recordButtonPressed: {
-    backgroundColor: colors.background,
-  },
-  painTrackerRecordButton: {
-    backgroundColor: colors.primary,
-    minHeight: MinTapTarget,
+  pager: {
+    minHeight: 32,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.three,
     borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
+    backgroundColor: colors.surface,
+  },
+  pagerText: {
+    ...Typography.bodySmall,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  buttons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  button: {
+    minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Radius.pill,
   },
-  painTrackerPager: {
-    width: 54,
-    height: 31,
-    borderRadius: Radius.control,
-    paddingVertical: 0,
-    paddingHorizontal: 0,
+  primaryButton: {
+    backgroundColor: colors.primary,
   },
-  painTrackerRecordText: {
-    ...Typography.bodySmall,
-    fontWeight: '500',
-    color: colors.onPrimary,
-  },
-  personalCarePagerText: {
-    ...Typography.bodySmall,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  disabledNavigationButton: {
+  secondaryButton: {
     backgroundColor: colors.secondaryContainer,
   },
-  disabledNavigationButtonText: {
+  disabledButton: {
+    backgroundColor: colors.secondaryContainer,
+  },
+  buttonText: {
+    ...Typography.labelLargeBold,
+  },
+  primaryButtonText: {
+    color: colors.onPrimary,
+  },
+  secondaryButtonText: {
+    color: colors.onSecondaryContainer,
+  },
+  disabledButtonText: {
     color: colors.textSecondary,
   },
-  pillText: {
-    ...Typography.subtitle,
-    fontWeight: '400',
-    color: colors.text,
+  disabled: {
+    opacity: 0.5,
   },
-  arrow: {
-    ...Typography.subtitle,
-    fontWeight: '400',
-    color: colors.text,
+  pressed: {
+    opacity: 0.8,
   },
 }));
