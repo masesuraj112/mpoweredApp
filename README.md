@@ -4,6 +4,9 @@ MPowered is a mobile app (iOS and Android) for patients and their support people
 
 This README explains how the repository is organised, how to run the app, and where everything else is documented.
 
+> **This is the `playground/design-fixes` branch**, a design playground kept up to date with `main`. It is not meant to be merged as it is. The section [How this branch differs from main](#how-this-branch-differs-from-main) lists what it changes.
+
+- [How this branch differs from main](#how-this-branch-differs-from-main)
 - [Technology](#technology)
 - [Repository map](#repository-map)
 - [Getting started](#getting-started)
@@ -14,6 +17,42 @@ This README explains how the repository is organised, how to run the app, and wh
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Licence](#licence)
+
+## How this branch differs from main
+
+Everything on `main` is in this branch, plus design and front-end work on top. Nothing differs in the database, migrations, services or generated types.
+
+### New features
+
+- **App lock.** An optional Face ID, fingerprint or passcode lock for someone already signed in, turned on from either Account page. It asks as the app opens and after 5 minutes in the background, and signing out turns it off. Code: `src/features/app-lock/`, `src/components/auth/AppLockScreen.tsx`, `AppLockGate.tsx`, `src/components/settings/AppLockOption.tsx`. Adds `expo-local-authentication` and its Face ID message in `app.json`. Expo Go on iPhone cannot use Face ID, so it uses the passcode there; a development build is needed to try Face ID.
+- **Display settings,** for patients and support persons: **Text size** (Default, Large, Extra large, on top of the phone's own size; `src/features/settings/textSize.ts`) and **Appearance** (Match phone, Light, Dark; `appearance.ts`). Both are kept on the device.
+- **Dark mode.** `main` locks the app to light mode; this branch follows the phone (`userInterfaceStyle: "automatic"`). Every colour comes from the theme, with light and dark values.
+
+### The platform's own controls
+
+- The **tab bar** is the platform's own (`NativeTabs`), in place of main's drawn tab bar and its icons.
+- **Headers and back buttons** are the platform's own, with each page's title in the header bar (`src/components/ui/nativeHeader.tsx`). Main's `ScreenHeader` keeps its name but now puts its title in that bar.
+- **Pickers, switches and the 0 to 10 slider** are the platform's own (`NativePicker`, with an Android version, `NativeSwitch`, `NativeSlider`), in place of main's drawn dropdown, toggle, calendar, time wheels and slider. `@react-native-community/slider` is removed.
+
+### Structure
+
+- Home and the tracker screens sit in a stack at `app/(tabs)/(home)/`, which the platform back button needs. The URLs are the same (`/home`, `/tracker/...`).
+- Prev, Close and Save go back to the screen that is already open (`router.dismissTo`) rather than opening another copy of it, and no questionnaire shows Prev on its first question (`__tests__/first-question.test.tsx`).
+
+### Look
+
+- A palette drawn from the splash screen: deep violet for the brand, a vibrant purple for actions, lavender surfaces. Contrast is tested in both modes (`src/constants/theme.test.ts`).
+- Sulphur Point (`@expo-google-fonts/sulphur-point`) for page titles only; everything else uses the phone's font. No text is smaller than 14.
+- Gradient headers on Home, My Health and the Care Planner (`src/components/ui/BrandScreen.tsx`); question cards that are only as tall as their content; one report layout for every summary; Settings rows in main's outlined style with a full-width Sign out.
+- Main's components keep their names and props but take this branch's styling (tracker, health, support person, sign-in and `ui`).
+- Smaller changes: no avatars in the support person screens, Settings and prescription icons that show in dark mode, and the notification icon in the brand purple.
+
+### When running this branch
+
+- Restart Metro with `npx expo start -c` after switching to it, and rebuild any development build, because it adds and removes native packages.
+- Edit answers (from `main`) needs the migration `20261103052056_update_assessment_functions` on the database it talks to.
+
+To see every change: `git diff origin/main --stat`, or `git diff origin/main -- <path>` for one file or folder.
 
 ## Technology
 
