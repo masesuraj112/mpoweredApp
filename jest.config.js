@@ -86,5 +86,7 @@ module.exports = {
     'src/features/support-person/useSupportedAppointmentQuestions.ts',
     'src/constants/theme.ts',
     'src/features/assessments/useWeekSummary.ts',
+    'src/features/assessments/savedAnswers.ts',
+    'src/features/assessments/useEditSavedAnswers.ts',
   ],
 };
