@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 
-import { makeStyles, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, Spacing } from '@/constants/theme';
+import { ScreenTitle } from '@/components/ui/nativeHeader';
 interface PrescriptionsHeaderProps {
   title: string;
   /** Optional label shown on the right of the top bar, e.g. "Homescreen" */
@@ -15,12 +16,10 @@ interface PrescriptionsHeaderProps {
 export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: PrescriptionsHeaderProps) {
   const styles = useStyles();
   return (
-    <View>
-      <View style={styles.titleRow}>
-        <Text style={styles.title}>{title}</Text>
-        {titleAccessory}
-      </View>
-    </View>
+    <>
+      <ScreenTitle title={title} />
+      {titleAccessory ? <View style={styles.titleRow}>{titleAccessory}</View> : null}
+    </>
   );
 }
 
@@ -31,10 +30,5 @@ const useStyles = makeStyles((colors) => ({
     justifyContent: 'space-between',
     marginTop: Spacing.three,
     marginHorizontal: Spacing.four,
-  },
-  title: {
-    flexShrink: 1,
-    ...Typography.display,
-    color: colors.text,
   },
 }));

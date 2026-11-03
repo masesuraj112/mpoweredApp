@@ -105,7 +105,6 @@ export default function ReviewScreen() {
   return (
     <PlannerFlowScreen
       title="Review My Appointment Plan"
-      titleWeight="regular"
       footer={
         <>
           <PlanActionBar

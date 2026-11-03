@@ -5,7 +5,12 @@ import GeneralScreen from '../app/(tabs)/(home)/tracker/personal-care/general';
 import { ManagementAssessmentProvider } from '@/features/assessments/management/context';
 import { PersonalCareAssessmentProvider } from '@/features/assessments/personal-care/context';
 
-jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn(), replace: jest.fn() } }));
+// The screens set their header title through the navigation hooks; outside a navigator there is none.
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), back: jest.fn(), replace: jest.fn(), dismissTo: jest.fn() },
+  useNavigation: () => ({ getState: () => undefined, getParent: () => undefined, setOptions: jest.fn() }),
+  useFocusEffect: jest.fn(),
+}));
 
 const checkedStates = () => screen.getAllByRole('checkbox').map(box => !!box.props.accessibilityState?.checked);
 

@@ -5,8 +5,9 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
-import { Alert, Platform, ScrollView, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
 
 /** Pending requests from patients to add this user as their support person (Figma 3911-24738). */
 export default function SupportRequestsScreen() {
@@ -47,14 +48,15 @@ export default function SupportRequestsScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title} accessibilityRole="header">
-            Support person requests
-          </Text>
-          {/* Already on the requests screen, so the bell only shows the count here. */}
-          <NotificationBell count={requests.length} />
-        </View>
+      {/* Already on the requests screen, so the bell only shows the count, at the header's end. */}
+      <Stack.Screen
+        options={{
+          title: 'Support person requests',
+          headerLargeTitle: true,
+          headerRight: () => <NotificationBell count={requests.length} />,
+        }}
+      />
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
 
         {status === 'loading' ? (
           <LoadingState label="Loading support person requests" />
@@ -89,19 +91,6 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.four,
     paddingBottom: Spacing.five,
     paddingHorizontal: Spacing.four,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: Spacing.two,
-    marginBottom: Spacing.two,
-  },
-  title: {
-    flex: 1,
-    color: colors.text,
-    ...Typography.display,
-    letterSpacing: -0.48,
   },
   empty: {
     color: colors.onSurfaceVariant,

@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { useTrackerTitle } from '@/components/ui/nativeHeader';
 export default function ReflectionScreen() {
   const styles = useStyles();
   const navigation = useNavigation();
@@ -20,6 +21,7 @@ export default function ReflectionScreen() {
   // The text as last saved, so leaving without changes does not save again.
   const [savedText, setSavedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
+  useTrackerTitle(isComplete ? 'Edit this week’s reflection' : 'This week’s reflection');
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -92,11 +94,7 @@ export default function ReflectionScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-
-        <Text style={styles.heading}>
-          {isComplete ? 'Edit this week’s reflection' : 'This week’s reflection'}
-        </Text>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.description}>
           Write down anything you would like to remember or discuss with your care team.
           Going back to Home keeps your draft for this week.
@@ -151,11 +149,6 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.four,
-  },
-  heading: {
-    marginBottom: Spacing.two,
-    color: colors.text,
-    ...Typography.display,
   },
   description: {
     marginBottom: Spacing.three,

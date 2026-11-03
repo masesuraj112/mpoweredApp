@@ -3,7 +3,12 @@ import PainCharacteristicsScreen from '../app/(tabs)/(home)/tracker/pain/charact
 import PainLocationScreen from '../app/(tabs)/(home)/tracker/pain/location';
 import { PainAssessmentProvider } from '@/features/assessments/pain/context';
 
-jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn(), replace: jest.fn() } }));
+// The screens set their header title through the navigation hooks; outside a navigator there is none.
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), back: jest.fn(), replace: jest.fn(), dismissTo: jest.fn() },
+  useNavigation: () => ({ getState: () => undefined, getParent: () => undefined, setOptions: jest.fn() }),
+  useFocusEffect: jest.fn(),
+}));
 
 // A bare string inside a View throws on native, which crashed these screens back to Home.
 describe.each([

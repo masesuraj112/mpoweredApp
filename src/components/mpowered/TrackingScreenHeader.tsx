@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 
 import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { ScreenTitle } from '@/components/ui/nativeHeader';
 export type TrackingTab = 'chart' | 'history';
 
 interface TrackingScreenHeaderProps {
@@ -19,8 +20,8 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
   const colors = useThemeColors();
   return (
     <View>
+      <ScreenTitle title="My Health Tracking Records" />
       <View style={styles.titleRow}>
-        <Text style={styles.title}>My Health Tracking Records</Text>
         <Pressable
           style={[styles.printChip, !onPrintPdf && styles.printChipDisabled]}
           onPress={onPrintPdf}
@@ -69,11 +70,6 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.three,
-  },
-  title: {
-    flex: 1,
-    ...Typography.display,
-    color: colors.text,
   },
   printChip: {
     borderRadius: Radius.pill,

@@ -92,7 +92,6 @@ export default function SupportedAppointmentPlanScreen() {
   return (
     <PlannerFlowScreen
       title={patient ? `${patient.name}’s Appointment Plan` : 'Appointment Plan'}
-      titleWeight="regular"
       footer={
         <>
           {access.canEditQuestions ? (

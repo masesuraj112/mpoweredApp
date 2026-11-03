@@ -130,7 +130,7 @@ export default function AddPrescriptionScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
         <PrescriptionsHeader title={isEditing ? 'Edit prescription' : 'Add prescription'} />
 
         <Text style={styles.helperText}>Type the name of your medication</Text>

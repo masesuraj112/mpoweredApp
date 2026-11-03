@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
-import { ScrollView, Text, type ScrollViewProps } from 'react-native';
+import { ScrollView, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing } from '@/constants/theme';
+import { ScreenTitle } from '@/components/ui/nativeHeader';
 
 type PlannerFlowScreenProps = {
   title: string;
-  /** `bold` is the default; the review screen's title is regular weight in the design. */
-  titleWeight?: 'bold' | 'regular';
   /** The scrolling content, shown under the title. */
   children: ReactNode;
   /** Shown below the scrolling content (an action bar), never over it. */
@@ -17,12 +16,11 @@ type PlannerFlowScreenProps = {
 };
 
 /**
- * The layout shared by the planner flow screens: safe area, a Back button, a scrolling body with
- * the screen title, and an optional footer. The Back button returns to the previous screen.
+ * The layout shared by the planner flow screens: the title in the native header (whose back button
+ * returns to the previous screen), a scrolling body and an optional footer.
  */
 export function PlannerFlowScreen({
   title,
-  titleWeight = 'bold',
   children,
   footer,
   scrollEnabled,
@@ -32,16 +30,12 @@ export function PlannerFlowScreen({
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-
+      <ScreenTitle title={title} />
       <ScrollView
         scrollEnabled={scrollEnabled}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}>
-        <Text
-          accessibilityRole="header"
-          style={[styles.title, titleWeight === 'bold' && styles.titleBold]}>
-          {title}
-        </Text>
         {children}
       </ScrollView>
 
@@ -61,13 +55,5 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.four,
-  },
-  title: {
-    ...Typography.display,
-    color: colors.text,
-  },
-  // Headings are already Sulphur Point Bold; a fontWeight on a custom font can lose the face on iOS.
-  titleBold: {
-    color: colors.text,
   },
 }));

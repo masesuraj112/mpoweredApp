@@ -1,10 +1,11 @@
 import { ReactNode } from 'react';
-import { Keyboard, Pressable, ScrollView, Text } from 'react-native';
+import { Keyboard, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing } from '@/constants/theme';
+import { useTrackerTitle } from '@/components/ui/nativeHeader';
 /**
- * Page shell for assessment questions: white background, page title, then the question card.
+ * Page shell for assessment questions: the title in the native header, then the question card.
  *
  * Tapping anywhere outside a text box closes the keyboard. Multiline inputs have no return-to-close
  * and the iOS keyboard has no hide key, so without this the keyboard can cover Next / Record with
@@ -14,6 +15,7 @@ import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/them
  */
 export function AssessmentScreen({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
+  useTrackerTitle(title);
   return (
     // Not exposed to screen readers: it's a convenience, not a control.
     <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
@@ -23,8 +25,9 @@ export function AssessmentScreen({ title, children }: { title: string; children:
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           // Keeps the focused text box above the keyboard (iOS; Android resizes the window).
-          automaticallyAdjustKeyboardInsets>
-          <Text style={styles.pageTitle}>{title}</Text>
+          automaticallyAdjustKeyboardInsets
+          // Lets the large title in the header follow the page as it scrolls (iOS).
+          contentInsetAdjustmentBehavior="automatic">
           {children}
         </ScrollView>
       </SafeAreaView>
@@ -42,11 +45,5 @@ const useStyles = makeStyles((colors) => ({
     flexGrow: 1,
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
-  },
-  pageTitle: {
-    ...Typography.display,
-    color: colors.text,
-    marginLeft: Spacing.two,
-    marginBottom: Spacing.three,
   },
 }));

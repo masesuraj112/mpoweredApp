@@ -107,7 +107,7 @@ export default function TrackingChartScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
         <TrackingScreenHeader
           activeTab="chart"
           onPrintPdf={loadState.status === 'ready' && records.length > 0 ? printPdf : undefined}

@@ -14,6 +14,7 @@ import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 
 import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
+import { ScreenTitle } from '@/components/ui/nativeHeader';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
@@ -37,8 +38,8 @@ export default function WeekSummaryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{title}</Text>
+      <ScreenTitle title={title} />
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
         {weekStart && <Text style={styles.period}>Period: {formatWeekRange(weekStart)}</Text>}
         <View style={styles.divider} />
 
@@ -62,12 +63,6 @@ const useStyles = makeStyles((colors) => ({
   content: {
     ...ContentColumn,
     paddingBottom: Spacing.five,
-  },
-  title: {
-    ...Typography.display,
-    color: colors.text,
-    marginTop: Spacing.three,
-    marginHorizontal: Spacing.four,
   },
   period: {
     ...Typography.caption,

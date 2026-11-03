@@ -51,7 +51,7 @@ export default function TrackingHistoryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="never">
+      <ScrollView contentContainerStyle={styles.content} contentInsetAdjustmentBehavior="automatic">
         <TrackingScreenHeader
           activeTab="history"
           onPrintPdf={weeks.length > 0 ? printPdf : undefined}
