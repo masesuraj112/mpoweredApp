@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { BackBarHeader } from '@/components/ui/BackBar';
 
 import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
@@ -16,22 +17,11 @@ interface TrackingScreenHeaderProps {
 
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   return (
     <View>
-      {/* The bar's colour runs up behind the status bar to the top of the screen. */}
-      <View style={[styles.topBar, { paddingTop: insets.top + Spacing.two }]}>
-        {/* Back always returns to the start of My Health, however deep in the stack we are */}
-        <Pressable
-          style={styles.backRow}
-          hitSlop={8}
-          onPress={() => router.dismissTo('/health')}
-        >
-          <Text style={styles.backChevron}>‹</Text>
-          <Text style={styles.backText}>Back</Text>
-        </Pressable>
-      </View>
+      {/* Back always returns to the start of My Health, however deep in the stack we are */}
+      <BackBarHeader label="Back to My Health" onPress={() => router.dismissTo('/health')} />
 
       <View style={styles.titleRow}>
         <Text style={styles.title}>My Health Tracking Records</Text>
@@ -76,28 +66,6 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
 }
 
 const useStyles = makeStyles((colors) => ({
-  topBar: {
-    backgroundColor: colors.secondaryContainer,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-    paddingBottom: Spacing.three,
-  },
-  backRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-  },
-  backChevron: {
-    ...Typography.title,
-    color: colors.textSecondary,
-    marginRight: Spacing.half,
-    marginTop: -Spacing.half,
-  },
-  backText: {
-    ...Typography.bodyLarge,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { BackBarHeader } from '@/components/ui/BackBar';
 export default function ReflectionScreen() {
   const styles = useStyles();
   const colors = useThemeColors();
@@ -82,18 +83,10 @@ export default function ReflectionScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.screen} edges={['bottom']}>
+      {/* Leaving keeps the reflection as an unfinished draft. */}
+      <BackBarHeader label="Back to Home" onPress={goBack} disabled={isSaving} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to Home"
-          disabled={isSaving}
-          onPress={goBack}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.backArrow}>‹</Text>
-          <Text style={styles.backText}>Back to Home</Text>
-        </Pressable>
 
         <Text style={styles.heading}>
           {isComplete ? 'Edit this week’s reflection' : 'This week’s reflection'}
@@ -152,22 +145,6 @@ const useStyles = makeStyles((colors) => ({
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.four,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    minHeight: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.four,
-  },
-  backArrow: {
-    marginRight: Spacing.two,
-    color: colors.textSecondary,
-    ...Typography.headline,
-  },
-  backText: {
-    color: colors.textSecondary,
-    ...Typography.bodyLarge,
   },
   heading: {
     marginBottom: Spacing.two,
