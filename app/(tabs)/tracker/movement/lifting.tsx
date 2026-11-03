@@ -1,3 +1,4 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
@@ -21,61 +22,41 @@ export default function LiftingScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="Lifting Impacts"
-          prompt={
-            <Text style={styles.promptText}>
-              Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
-            </Text>
-          }
-          questionNumber={4}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/movement/walking')}
-          onRecord={handleNext}
-          disabled={!answers.liftingImpact}
-          variant="management"
-          style={{ flex: 1, height: undefined }}
-        >
-          <View style={styles.optionsList}>
-            {LIFTING_OPTIONS.map((option, index) => (
-              <AssessmentRadioRow
-                key={option}
-                label={option}
-                selected={answers.liftingImpact === option}
-                onPress={() => updateAnswer('liftingImpact', option)}
-                weight={rowWeight(option)}
-                isLast={index === LIFTING_OPTIONS.length - 1}
-                textStyle={styles.optionText}
-              />
-            ))}
-          </View>
-        </ChoiceCard>
-      </View>
-    </View>
+    <TrackerQuestionScreen title="My Movement">
+      <ChoiceCard
+        title="Lifting Impacts"
+        prompt={
+          <Text style={styles.promptText}>
+            Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
+          </Text>
+        }
+        questionNumber={4}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/movement/walking')}
+        onRecord={handleNext}
+        disabled={!answers.liftingImpact}
+        variant="management"
+        style={{ flex: 1, height: undefined }}
+      >
+        <View style={styles.optionsList}>
+          {LIFTING_OPTIONS.map((option, index) => (
+            <AssessmentRadioRow
+              key={option}
+              label={option}
+              selected={answers.liftingImpact === option}
+              onPress={() => updateAnswer('liftingImpact', option)}
+              weight={rowWeight(option)}
+              isLast={index === LIFTING_OPTIONS.length - 1}
+              textStyle={styles.optionText}
+            />
+          ))}
+        </View>
+      </ChoiceCard>
+    </TrackerQuestionScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptText: {
     color: '#1D1B20',
     fontSize: scaleFont(12),

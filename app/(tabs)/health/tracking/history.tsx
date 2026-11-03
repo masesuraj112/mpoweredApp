@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TrackingScreenHeader } from '@/components/mpowered/TrackingScreenHeader';
+import { TrackingScreenHeader } from '@/components/health/TrackingScreenHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';

@@ -1,5 +1,5 @@
 import { PainAssessmentProvider } from '@/features/assessments/pain/context';
-import { AssessmentHeader } from '@/components/mpowered/AssessmentHeader';
+import { TrackerHeader } from '@/components/tracker/TrackerHeader';
 import { Stack } from 'expo-router';
 
 export default function PainLayout() {
@@ -8,7 +8,7 @@ export default function PainLayout() {
       <Stack
         screenOptions={{
           headerShown: true,
-          header: () => <AssessmentHeader />,
+          header: () => <TrackerHeader />,
         }}
       >
         <Stack.Screen name="summary" options={{ headerShown: false }} />

@@ -1,3 +1,4 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { AssessmentRadioRow } from '@/components/mpowered/AssessmentRadioRow';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
@@ -29,60 +30,40 @@ export default function WalkingScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="Walking Impacts"
-          prompt={
-            <Text style={styles.promptText}>
-              Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
-            </Text>
-          }
-          questionNumber={3}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/movement/general')}
-          onRecord={handleNext}
-          disabled={!answers.walkingImpact}
-          variant="management"
-          style={{ flex: 1, height: undefined }}
-        >
-          <View style={styles.optionsList}>
-            {WALKING_OPTIONS.map((option, index) => (
-              <AssessmentRadioRow
-                key={option}
-                label={option}
-                selected={answers.walkingImpact === option}
-                onPress={() => updateAnswer('walkingImpact', option)}
-                weight={rowWeight(option)}
-                isLast={index === WALKING_OPTIONS.length - 1}
-              />
-            ))}
-          </View>
-        </ChoiceCard>
-      </View>
-    </View>
+    <TrackerQuestionScreen title="My Movement">
+      <ChoiceCard
+        title="Walking Impacts"
+        prompt={
+          <Text style={styles.promptText}>
+            Select the <Text style={styles.promptUnderline}>MOST</Text> relevant statement:
+          </Text>
+        }
+        questionNumber={3}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/movement/general')}
+        onRecord={handleNext}
+        disabled={!answers.walkingImpact}
+        variant="management"
+        style={{ flex: 1, height: undefined }}
+      >
+        <View style={styles.optionsList}>
+          {WALKING_OPTIONS.map((option, index) => (
+            <AssessmentRadioRow
+              key={option}
+              label={option}
+              selected={answers.walkingImpact === option}
+              onPress={() => updateAnswer('walkingImpact', option)}
+              weight={rowWeight(option)}
+              isLast={index === WALKING_OPTIONS.length - 1}
+            />
+          ))}
+        </View>
+      </ChoiceCard>
+    </TrackerQuestionScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptText: {
     color: '#1D1B20',
     fontSize: scaleFont(12),

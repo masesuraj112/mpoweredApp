@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PrescriptionsHeader } from '@/components/mpowered/PrescriptionsHeader';
+import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { healthLoadMessage } from '@/features/health-profile/messages';

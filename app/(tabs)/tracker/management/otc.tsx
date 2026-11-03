@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { useManagementAssessment } from '@/features/assessments/management/context';
@@ -11,7 +11,7 @@ export default function OtcScreen() {
   const doneBar = useKeyboardDoneBar();
 
   return (
-    <AssessmentScreen title="My Management">
+    <TrackerQuestionScreen title="My Management">
       <ChoiceCard
         title="Medication"
         prompt={<Text style={styles.prompt}>Over the past week, did you consume any over the counter (OTC) medication.</Text>}
@@ -40,7 +40,7 @@ export default function OtcScreen() {
         </View>
       </ChoiceCard>
       {doneBar.bar}
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
 

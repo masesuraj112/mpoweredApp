@@ -2,6 +2,10 @@ jest.mock('@/services/settings', () => ({
   getNotificationSettings: jest.fn(),
   saveNotificationSettings: jest.fn(),
 }));
+const mockRefreshReminders = jest.fn();
+jest.mock('@/features/notifications/RemindersContext', () => ({
+  useReminders: () => ({ refresh: mockRefreshReminders }),
+}));
 
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 
@@ -30,6 +34,7 @@ async function setup() {
 beforeEach(() => {
   mockGet.mockReset().mockResolvedValue({ ok: true, data: defaults });
   mockSave.mockReset().mockResolvedValue({ ok: true, data: undefined });
+  mockRefreshReminders.mockReset();
 });
 
 describe('useNotificationSettings', () => {
@@ -59,6 +64,7 @@ describe('useNotificationSettings', () => {
     expect(mockSave).toHaveBeenCalledWith({ ...defaults, assessmentReminders: true });
     expect(result.current.settings).toEqual({ ...defaults, assessmentReminders: true });
     expect(result.current.saveError).toBeNull();
+    expect(mockRefreshReminders).toHaveBeenCalledTimes(1);
   });
 
   it('puts the previous value back and sets an error when the save fails', async () => {
@@ -72,6 +78,7 @@ describe('useNotificationSettings', () => {
     expect(saved).toBe(false);
     expect(result.current.settings).toEqual(defaults);
     expect(result.current.saveError).toEqual(error);
+    expect(mockRefreshReminders).not.toHaveBeenCalled();
 
     await act(async () => result.current.clearSaveError());
     expect(result.current.saveError).toBeNull();

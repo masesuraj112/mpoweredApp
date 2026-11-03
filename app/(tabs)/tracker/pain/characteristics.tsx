@@ -1,10 +1,10 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
+import { scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function PainCharacteristicsScreen() {
   const { answers, updateAnswer } = usePainAssessment();
@@ -43,48 +43,25 @@ export default function PainCharacteristicsScreen() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Pain</Text>
-        <MultiChoiceList
-          title="Pain characteristics"
-          prompt="For each following words, check if that adjectives applies to your pain."
-          subPrompt="(scroll down for more options)"
-          options={[...PAIN_CHARACTERISTICS_OPTIONS]}
-          selectedIndices={selected}
-          onSelectionChange={handleSelectionChange}
-          questionNumber={2}
-          totalQuestions={6}
-          onRecord={handleNext}
-          onPrevious={handlePrevious}
-          disabled={selected.length === 0}
-          cardHeight={scaleHeight(599)}
-          variant="painTracker"
-          searchEnabled
-          scrollable
-          selectedChipsEnabled={false}
-        />
-      </View>
-    </Pressable>
+    <TrackerQuestionScreen title="My Pain">
+      <MultiChoiceList
+        title="Pain characteristics"
+        prompt="For each following words, check if that adjectives applies to your pain."
+        subPrompt="(scroll down for more options)"
+        options={[...PAIN_CHARACTERISTICS_OPTIONS]}
+        selectedIndices={selected}
+        onSelectionChange={handleSelectionChange}
+        questionNumber={2}
+        totalQuestions={6}
+        onRecord={handleNext}
+        onPrevious={handlePrevious}
+        disabled={selected.length === 0}
+        cardHeight={scaleHeight(599)}
+        variant="painTracker"
+        searchEnabled
+        scrollable
+        selectedChipsEnabled={false}
+      />
+    </TrackerQuestionScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(22),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(9),
-    marginBottom: scaleHeight(18),
-  },
-});

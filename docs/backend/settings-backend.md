@@ -26,9 +26,9 @@ Built by the login, support person front end and Care Planner branches. Reuse it
   - Services: `sendVerificationCode(phone)` and `verifyCode(phone, code)` in `src/services/auth.ts`.
   - Helpers: `OTP_LENGTH`, `RESEND_SECONDS`, `sanitiseCode`, `isCodeComplete` (`src/features/auth/otp.ts`),
     `authErrorMessage` (`src/features/auth/messages.ts`), `formatForDisplay` (`src/features/auth/phone.ts`).
-  - Not sign-in paths: `app/(auth)/dev-login.tsx` (email and password, development builds only, nothing links
-    to it) and the Email provider, which `supabase/config.toml` still enables for local and CI use. Turning it
-    off in production is on `docs/backend/production-auth-checklist.md`. Both belong to the login work, not this branch.
+  - Not a sign-in path: the Email provider, which `supabase/config.toml` still enables for local and CI use. Turning
+    it off in production is on `docs/backend/production-auth-checklist.md`. It belongs to the login work, not this
+    branch. (The email and password `dev-login` screen was removed on 2 Nov 2026.)
 - **Profile in the app:** `getProfile()` in `src/services/auth.ts` returns `{ userType, name, phone }`, and
   `AuthContext` exposes it as `profile`, with `refreshProfile()`.
 - **Sign out:** `signOut()` in `src/services/auth.ts`, used by both Account pages.
@@ -200,7 +200,7 @@ last optional argument, never send a user or patient id, always filter `users` b
 - Load the settings when the screen opens.
 - Save straight away when a toggle changes, and when the user taps Ok in either popup.
 - If a save fails, put the previous value back.
-- No reminders are scheduled yet: this branch only stores the choices.
+- No reminders are scheduled yet: this branch only stores the choices. (Reminders are sent since `feature/notifications`: `notifications-build-plan.md`.)
 
 ### 8. Export my data (shared `app/(tabs)/settings/legal.tsx`)
 The support person Legal page re-exports this screen, so one button serves both apps.
@@ -293,8 +293,8 @@ parts no automated test covers. Tick each one in the PR description, with a note
       `verify_jwt = false` from `supabase/config.toml`; the function checks the sign-in token itself.
 - [ ] **App:** `.env` points at the dev project, `EXPO_PUBLIC_BYPASS_AUTH=false`, `npx expo start -c`, open in
       Expo Go on a phone.
-- [ ] **Accounts:** a patient and a support person on dev test numbers (dev-login accounts have no `users` row
-      and can't reach the tabs), plus a **throwaway** account for the deletion checks. Deletion is
+- [ ] **Accounts:** a patient and a support person on dev test numbers, plus a **throwaway** account for the
+      deletion checks. Deletion is
       permanent. A real number only gets codes if it's verified on the Twilio trial account.
 
 ### Account: patient (commits 1–6)
@@ -314,7 +314,7 @@ parts no automated test covers. Tick each one in the PR description, with a note
 - [ ] The first visit shows the defaults: both off, every 3 days, day-before and on-the-day off.
 - [ ] Each toggle, the frequency popup (for example every 2 weeks) and the appointment popup are kept after a restart.
 - [ ] In flight mode a change flips back, with "We could not save that change…" at the top.
-- [ ] No reminders arrive; this branch only stores the choices.
+- [ ] No reminders arrive; this branch only stores the choices. (True for this branch; `feature/notifications` sends them.)
 
 ### Export my data (commits 11–13)
 - [ ] Tapping it shows "Preparing your data…", then the share sheet with `mpowered-my-data-YYYY-MM-DD.json` (today's date).
@@ -426,5 +426,5 @@ Notes:
 - The support person Account page already has no Change password, email or Face ID.
 - **Privacy policy and Terms** (`settings/privacy.tsx`, `settings/terms.tsx`) only say "coming soon", and nothing
   links to `terms.tsx`. Content to write, not backend work. Both apps share them.
-- **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7).
+- **Notification toggles** don't send reminders yet, but are kept because this branch saves them (step 7). `feature/notifications` makes them send reminders.
 - **Export my data / Account deletion** currently do `() => undefined`. They are kept because steps 8 and 9 make them work.
