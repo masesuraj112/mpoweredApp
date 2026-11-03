@@ -1,6 +1,6 @@
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { getWeeklyReflection, saveWeeklyReflection } from '@/services/home';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useNavigation, usePreventRemove } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -12,9 +12,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
-import { BackBarHeader } from '@/components/ui/BackBar';
 export default function ReflectionScreen() {
   const styles = useStyles();
+  const navigation = useNavigation();
   const colors = useThemeColors();
   const [reflection, setReflection] = useState('');
   // The text as last saved, so leaving without changes does not save again.
@@ -73,19 +73,25 @@ export default function ReflectionScreen() {
     void saveAndLeave(true);
   };
 
-  const goBack = () => {
-    // Nothing new to keep (or the saved text never loaded, so it must not be overwritten).
-    if (isLoading || loadFailed || !reflection.trim() || reflection.trim() === savedText.trim()) {
-      router.dismissTo('/home');
-      return;
-    }
-    void saveAndLeave(false);
-  };
+  // Leaving with the platform's back button (or gesture) keeps new text as an unfinished draft. Nothing
+  // new to keep, or text that never loaded (so it must not be overwritten), leaves straight away.
+  const hasUnsavedText =
+    !isLoading && !loadFailed && reflection.trim() !== '' && reflection.trim() !== savedText.trim();
+  usePreventRemove(hasUnsavedText && !isSaving, ({ data }) => {
+    void (async () => {
+      setIsSaving(true);
+      const result = await saveWeeklyReflection(reflection, { isComplete: false });
+      if (!result.ok) {
+        setIsSaving(false);
+        setError('Your reflection could not be saved. Please try again.');
+        return;
+      }
+      navigation.dispatch(data.action);
+    })();
+  });
 
   return (
     <SafeAreaView style={styles.screen} edges={['bottom']}>
-      {/* Leaving keeps the reflection as an unfinished draft. */}
-      <BackBarHeader label="Back to Home" onPress={goBack} disabled={isSaving} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
         <Text style={styles.heading}>

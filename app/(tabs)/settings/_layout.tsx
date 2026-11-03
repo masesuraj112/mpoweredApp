@@ -1,12 +1,12 @@
 import { Stack } from 'expo-router';
 
-import { HeaderTitleFonts, useThemeColors } from '@/constants/theme';
+import { useNativeHeaderOptions } from '@/components/ui/nativeHeader';
 
 // The platform's own header: each page sets its title (SettingsSubpage), and Back is labelled Settings.
 export default function SettingsLayout() {
-  const colors = useThemeColors();
+  const header = useNativeHeaderOptions();
   return (
-    <Stack screenOptions={{ ...HeaderTitleFonts, headerTintColor: colors.primary, headerBackTitle: 'Settings' }}>
+    <Stack screenOptions={{ ...header, headerBackTitle: 'Settings' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );

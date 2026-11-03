@@ -1,8 +1,6 @@
-import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
-import { BackBarHeader } from '@/components/ui/BackBar';
 
 import { makeStyles, Spacing, Typography } from '@/constants/theme';
 interface PrescriptionsHeaderProps {
@@ -18,9 +16,6 @@ export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: Pres
   const styles = useStyles();
   return (
     <View>
-      {/* Back always returns to the start of My Health, however deep in the stack we are */}
-      <BackBarHeader label="Back to My Health" title={topBarLabel} onPress={() => router.dismissTo('/health')} />
-
       <View style={styles.titleRow}>
         <Text style={styles.title}>{title}</Text>
         {titleAccessory}

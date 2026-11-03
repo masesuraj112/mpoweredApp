@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,7 +14,6 @@ import { fail } from '@/lib/result';
 import { getAssessments } from '@/services/health';
 
 import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
-import { BackBarHeader } from '@/components/ui/BackBar';
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // The summary of one assessment for one week, opened from the History tab.
@@ -38,7 +37,6 @@ export default function WeekSummaryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <BackBarHeader label="Back to history" onPress={() => router.back()} />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{title}</Text>
         {weekStart && <Text style={styles.period}>Period: {formatWeekRange(weekStart)}</Text>}

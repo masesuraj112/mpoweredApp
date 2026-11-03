@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import { BackBarHeader } from '@/components/ui/BackBar';
 
 import { makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 export type TrackingTab = 'chart' | 'history';
@@ -20,9 +19,6 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
   const colors = useThemeColors();
   return (
     <View>
-      {/* Back always returns to the start of My Health, however deep in the stack we are */}
-      <BackBarHeader label="Back to My Health" onPress={() => router.dismissTo('/health')} />
-
       <View style={styles.titleRow}>
         <Text style={styles.title}>My Health Tracking Records</Text>
         <Pressable

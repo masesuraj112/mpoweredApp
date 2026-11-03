@@ -1,9 +1,7 @@
-import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { ScrollView, Text, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackBarHeader } from '@/components/ui/BackBar';
 import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 
 type PlannerFlowScreenProps = {
@@ -31,11 +29,9 @@ export function PlannerFlowScreen({
   keyboardShouldPersistTaps,
 }: PlannerFlowScreenProps) {
   const styles = useStyles();
-  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <BackBarHeader onPress={() => router.back()} />
 
       <ScrollView
         scrollEnabled={scrollEnabled}
