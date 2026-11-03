@@ -23,7 +23,8 @@ import {
 import type { SupportPerson } from '@/features/care-planner/types';
 import { useMySupportPersons } from '@/features/care-planner/useMySupportPersons';
 import { useState } from 'react';
-import { Alert, Pressable, Text } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const deleteIcon = require('../../../assets/images/settings/delete.svg');
@@ -124,7 +125,14 @@ export default function SupportPersonsScreen() {
             icon={accountIcon}
             label={person.name}
             accessibilityLabel={status ? `${person.name}, ${status}` : person.name}
-            trailing={status ? <Text style={styles.status}>{status} →</Text> : undefined}
+            trailing={
+              status ? (
+                <View style={styles.statusRow}>
+                  <Text style={styles.status}>{status}</Text>
+                  <ArrowGlyph style={styles.status} />
+                </View>
+              ) : undefined
+            }
             onPress={() => openDraft(draftFrom(person))}
           />
         );
@@ -197,6 +205,11 @@ export default function SupportPersonsScreen() {
 }
 
 const useStyles = makeStyles((colors) => ({
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
   status: {
     color: colors.onSurfaceVariant,
     ...Typography.bodySmall,

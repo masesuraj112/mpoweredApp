@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { ArrowGlyph } from './icons';
 
 type BackButtonProps = {
   onPress: () => void;
@@ -16,9 +17,7 @@ export function BackButton({ onPress, label = 'Back' }: BackButtonProps) {
       onPress={onPress}
       style={({ pressed }) => [styles.target, pressed && styles.pressed]}>
       <View style={styles.pill}>
-        <Text accessibilityElementsHidden importantForAccessibility="no" style={styles.text}>
-          ←
-        </Text>
+        <ArrowGlyph direction="left" style={styles.text} />
         <Text style={styles.text}>{label}</Text>
       </View>
     </Pressable>

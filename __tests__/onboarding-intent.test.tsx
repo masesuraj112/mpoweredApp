@@ -38,7 +38,7 @@ describe('OnboardingCarousel intent', () => {
   it('Get started records sign-up and opens the sign-up questions', async () => {
     await setup();
 
-    fireEvent.press(screen.getByText('Get started →'));
+    fireEvent.press(screen.getByText('Get started'));
 
     expect(await screen.findByText('intent: sign-up')).toBeTruthy();
     expect(mockPush).toHaveBeenCalledWith('/(auth)/user-type');

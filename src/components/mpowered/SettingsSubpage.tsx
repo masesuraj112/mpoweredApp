@@ -6,6 +6,7 @@ import { ReactNode } from 'react';
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
 import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
   return (
@@ -71,7 +72,7 @@ export function SettingsOption({
     >
       {icon && <Image source={icon} style={styles.optionIcon} contentFit="contain" accessibilityLabel="" />}
       <Text style={[styles.optionLabel, destructive && styles.destructiveText]}>{label}</Text>
-      {trailing ?? (onPress && <Text style={[styles.optionArrow, destructive && styles.destructiveText]}>→</Text>)}
+      {trailing ?? (onPress && <ArrowGlyph style={[styles.optionArrow, destructive && styles.destructiveText]} />)}
     </Pressable>
   );
 }

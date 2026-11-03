@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useOnboarding } from '@/context/Onboarding-Context';
 
 import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 const SLIDES = [
   {
@@ -103,7 +104,8 @@ export default function OnboardingCarousel() {
             router.push('/(auth)/user-type');
           }}
         >
-          <Text style={styles.primaryButtonText}>Get started →</Text>
+          <Text style={styles.primaryButtonText}>Get started</Text>
+          <ArrowGlyph style={styles.primaryButtonText} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -179,6 +181,8 @@ const useStyles = makeStyles((colors) => ({
 
     primaryButton: {
         backgroundColor: colors.primary,
+        flexDirection: 'row',
+        gap: Spacing.two,
         alignItems: 'center',
         minHeight: MinTapTarget,
         borderRadius: Radius.pill,

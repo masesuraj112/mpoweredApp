@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Keyboard, Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 interface ChoiceCardProps {
   title: string;
@@ -118,7 +119,8 @@ export function ChoiceCard({
                   previousDisabled && styles.disabled,
                   pressed && styles.pressed,
                 ]}>
-                <Text style={[styles.buttonText, styles.secondaryButtonText]}>← Prev</Text>
+                <ArrowGlyph direction="left" style={[styles.buttonText, styles.secondaryButtonText]} />
+                <Text style={[styles.buttonText, styles.secondaryButtonText]}>Prev</Text>
               </Pressable>
             )}
             {onRecord && (
@@ -134,8 +136,11 @@ export function ChoiceCard({
                   pressed && styles.pressed,
                 ]}>
                 <Text style={[styles.buttonText, primaryDisabled ? styles.disabledButtonText : styles.primaryButtonText]}>
-                  {isLastQuestion || recordOnly ? primaryLabel : `${primaryLabel} →`}
+                  {primaryLabel}
                 </Text>
+                {!isLastQuestion && !recordOnly && (
+                  <ArrowGlyph style={[styles.buttonText, primaryDisabled ? styles.disabledButtonText : styles.primaryButtonText]} />
+                )}
               </Pressable>
             )}
           </View>
@@ -218,6 +223,8 @@ const useStyles = makeStyles((colors) => ({
   },
   button: {
     minHeight: MinTapTarget,
+    flexDirection: 'row',
+    gap: Spacing.one,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.four,

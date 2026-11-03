@@ -3,6 +3,7 @@ import { ActivityIndicator, Linking, Pressable, Text, View } from 'react-native'
 
 import { AssessmentScreen } from './AssessmentScreen';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 type AssessmentSummaryProps = {
   /** One line under the page title, for example why the answers matter. */
@@ -62,7 +63,8 @@ export function AssessmentSummary({
                   accessibilityRole="link"
                   accessibilityLabel={tipsLabel}
                   style={({ pressed }) => [styles.tips, pressed && styles.pressed]}>
-                  <Text style={styles.tipsText}>{tipsLabel} →</Text>
+                  <Text style={styles.tipsText}>{tipsLabel}</Text>
+                  <ArrowGlyph style={styles.tipsText} />
                 </Pressable>
               ) : null}
             </View>
@@ -186,7 +188,10 @@ const useStyles = makeStyles((colors) => ({
   },
   tips: {
     minHeight: MinTapTarget,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+    justifyContent: 'flex-start',
     alignSelf: 'flex-start',
   },
   tipsText: {

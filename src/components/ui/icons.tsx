@@ -1,3 +1,4 @@
+import { StyleSheet, useWindowDimensions, type StyleProp, type TextStyle } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 
 import { useThemeColors } from '@/constants/theme';
@@ -53,4 +54,27 @@ export function ArrowRightIcon({ size = 16, color }: IconProps) {
       <Path d="M4 12h15M13 6l6 6-6 6" stroke={stroke} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   );
+}
+
+export function ArrowLeftIcon({ size = 16, color }: IconProps) {
+  const colors = useThemeColors();
+  const stroke = color ?? colors.text;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
+      <Path d="M20 12H5M11 6l-6 6 6 6" stroke={stroke} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/**
+ * An arrow to sit beside a label in a row, in place of the "→" / "←" characters (which sit low in
+ * Android's font). Pass the label's text style: the arrow takes its colour and size, and grows with the
+ * phone's text size like the label does.
+ */
+export function ArrowGlyph({ direction = 'right', style }: { direction?: 'left' | 'right'; style?: StyleProp<TextStyle> }) {
+  const { fontScale } = useWindowDimensions();
+  const flat = StyleSheet.flatten(style) ?? {};
+  const size = Math.round((flat.fontSize ?? 16) * fontScale);
+  const color = typeof flat.color === 'string' ? flat.color : undefined;
+  return direction === 'left' ? <ArrowLeftIcon size={size} color={color} /> : <ArrowRightIcon size={size} color={color} />;
 }

@@ -1,7 +1,8 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 type AnswerModalActionsProps = {
   canGoPrevious: boolean;
@@ -67,12 +68,10 @@ function StepButton({ label, glyph, enabled, onPress }: StepButtonProps) {
       onPress={onPress}
       style={styles.stepTarget}>
       <View style={[styles.step, enabled ? styles.stepEnabled : styles.stepDisabled]}>
-        <Text
-          accessibilityElementsHidden
-          importantForAccessibility="no"
-          style={[styles.glyph, enabled ? styles.glyphEnabled : styles.glyphDisabled]}>
-          {glyph}
-        </Text>
+        <ArrowGlyph
+          direction={glyph === '←' ? 'left' : 'right'}
+          style={[styles.glyph, enabled ? styles.glyphEnabled : styles.glyphDisabled]}
+        />
       </View>
     </Pressable>
   );

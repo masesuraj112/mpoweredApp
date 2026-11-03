@@ -1,6 +1,7 @@
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import { MinTapTarget, Radius, Spacing, Typography, makeStyles } from '@/constants/theme';
+import { ArrowGlyph } from './icons';
 
 type ButtonVariant = 'elevated' | 'tonal' | 'primary' | 'outlined';
 
@@ -60,19 +61,21 @@ export function Button({
         style,
       ]}>
       <View style={[styles.pill, styles[variant]]}>
-        {leadingGlyph ? (
-          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
-            {leadingGlyph}
-          </Text>
-        ) : null}
+        {leadingGlyph ? <Glyph glyph={leadingGlyph} style={labelStyle} /> : null}
         <Text style={labelStyle}>{label}</Text>
-        {trailingGlyph ? (
-          <Text accessibilityElementsHidden importantForAccessibility="no" style={labelStyle}>
-            {trailingGlyph}
-          </Text>
-        ) : null}
+        {trailingGlyph ? <Glyph glyph={trailingGlyph} style={labelStyle} /> : null}
       </View>
     </Pressable>
+  );
+}
+
+/** Decorative text beside the label. Arrows are drawn, so they centre on the label on Android too. */
+function Glyph({ glyph, style }: { glyph: string; style: StyleProp<TextStyle> }) {
+  if (glyph === '→' || glyph === '←') return <ArrowGlyph direction={glyph === '←' ? 'left' : 'right'} style={style} />;
+  return (
+    <Text accessibilityElementsHidden importantForAccessibility="no" style={style}>
+      {glyph}
+    </Text>
   );
 }
 

@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowGlyph } from '@/components/ui/icons';
 
 export type SettingsRowProps = {
   icon: string;
@@ -81,7 +82,7 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
         <Text style={styles.rowIcon} accessibilityElementsHidden>{icon}</Text>
       )}
       <Text style={styles.rowLabel}>{label}</Text>
-      {onPress && <Text style={styles.chevron} accessibilityElementsHidden>→</Text>}
+      {onPress && <ArrowGlyph style={styles.chevron} />}
     </Pressable>
   );
 }

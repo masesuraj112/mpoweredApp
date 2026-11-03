@@ -7,9 +7,9 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
-import { ArrowRightIcon } from '@/components/ui/icons';
+import { ArrowGlyph } from '@/components/ui/icons';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -31,7 +31,6 @@ const ASSESSMENTS: Assessment[] = [
 
 export default function HomeScreen() {
   const styles = useStyles();
-  const colors = useThemeColors();
   const name = useAuth().profile?.name ?? '';
   const {
     recorded: recordedAssessments,
@@ -121,7 +120,9 @@ export default function HomeScreen() {
                     {isRecorded ? 'Edit' : 'Record'}
                   </Text>
                   {/* A drawn arrow: the "→" character sits low on Android and never centres on the label. */}
-                  <ArrowRightIcon color={isRecorded ? colors.onPrimaryContainer : colors.onPrimary} />
+                  <ArrowGlyph
+                    style={[styles.assessmentButtonText, isRecorded ? styles.editButtonText : styles.recordButtonText]}
+                  />
                 </Pressable>
               </View>
             );
@@ -146,7 +147,7 @@ export default function HomeScreen() {
           {hasReflection && (
             <View style={styles.reflectionEditRow}>
               <Text style={styles.reflectionEdit}>Edit</Text>
-              <ArrowRightIcon size={14} color={colors.textSecondary} />
+              <ArrowGlyph style={styles.reflectionEdit} />
             </View>
           )}
         </Pressable>
