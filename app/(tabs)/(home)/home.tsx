@@ -342,8 +342,8 @@ const useStyles = makeStyles((colors) => ({
   // A completed assessment's Edit: the Record colour as an outline, so it reads as a button on its card.
   editButton: {
     borderColor: colors.primary,
-    // One step darker than the card it sits on, so it reads as a button.
-    backgroundColor: colors.secondaryContainer,
+    // A little lighter than the card it sits on, so it reads as a button without looking heavy.
+    backgroundColor: colors.surfaceRaised,
   },
   assessmentButtonText: {
     color: colors.text,

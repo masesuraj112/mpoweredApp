@@ -22,6 +22,7 @@ export const Palette = {
   paper: '#FFFFFF',
   white: '#FFFFFF',
   tint: '#ECE3FF',
+  tintSoft: '#F7F3FF',
   tintStrong: '#D9C8FF',
   mist: '#F3F2F6',
   line: '#E5E3EA',
@@ -52,6 +53,8 @@ const lightColors = {
     surfaceMuted: Palette.mist,
     /** Tinted sections and soft buttons. */
     surfaceContainer: Palette.tint,
+    /** A fill a little lighter than surfaceContainer, for a button that sits on a tinted card. */
+    surfaceRaised: Palette.tintSoft,
     backgroundElement: Palette.mist,
     backgroundSelected: Palette.tintStrong,
     primary: Palette.primary,
@@ -105,6 +108,7 @@ const darkColors: ThemeColors = {
     surface: '#1B1230',
     surfaceMuted: '#170F2A',
     surfaceContainer: '#2A1F49',
+    surfaceRaised: '#382B5E',
     backgroundElement: '#1F1636',
     backgroundSelected: '#2E2350',
     primary: '#C5B0FF',

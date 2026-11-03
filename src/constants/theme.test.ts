@@ -51,6 +51,7 @@ const pairs: [Role, Role, number][] = [
   ['onCalendarSelected', 'calendarSelected', TEXT],
   // Boxes are solid fills: surfaceContainer, and secondaryContainer when selected.
   ['primary', 'surfaceContainer', TEXT],
+  ['onPrimaryContainer', 'surfaceRaised', TEXT],
   ['error', 'surfaceContainer', TEXT],
   ['text', 'secondaryContainer', TEXT],
   ['textSecondary', 'secondaryContainer', TEXT],
@@ -71,6 +72,11 @@ describe.each(['light', 'dark'] as const)('%s theme contrast (WCAG AA)', (scheme
   // Not a WCAG rule (boxes are not controls), but a box must visibly stand apart from the page.
   it.each(['surfaceContainer', 'secondaryContainer'] as const)('%s stands out from the background', (box) => {
     expect(contrast(c[box], c.background)).toBeGreaterThanOrEqual(1.2);
+  });
+
+  it('makes surfaceRaised visibly lighter than the card it sits on', () => {
+    expect(luminance(c.surfaceRaised)).toBeGreaterThan(luminance(c.surfaceContainer));
+    expect(contrast(c.surfaceRaised, c.surfaceContainer)).toBeGreaterThanOrEqual(1.05);
   });
 
   it('keeps white text readable across the whole brand gradient', () => {
