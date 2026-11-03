@@ -13,7 +13,9 @@ export default function TabsLayout() {
   return (
     <RemindersProvider>
       <NativeTabs tintColor={colors.primary} indicatorColor={colors.primaryContainer}>
-        <NativeTabs.Trigger name="(home)">
+        {/* Home's hero runs under the status bar, so the tab must not push its scroll view down; every
+            screen in this tab keeps clear of the edges with its own safe area. */}
+        <NativeTabs.Trigger name="(home)" disableAutomaticContentInsets>
           <NativeTabs.Trigger.Icon sf="figure.stand" md="accessibility_new" />
           <NativeTabs.Trigger.Label>Pain Tracker</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>

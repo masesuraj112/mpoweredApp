@@ -71,6 +71,8 @@ export default function HomeScreen() {
         contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
       >
+        {/* Pulling down past the top shows the gradient's own colour, not the page, above the hero. */}
+        <View style={styles.overscroll} />
         {/* The week at a glance, on the brand gradient, from the top of the screen to both edges. */}
         <LinearGradient
           colors={Gradients.brand}
@@ -194,9 +196,14 @@ const useStyles = makeStyles((colors) => ({
   hero: {
     paddingHorizontal: Spacing.five,
     paddingBottom: Spacing.four,
-    borderBottomLeftRadius: Radius.card * 2,
-    borderBottomRightRadius: Radius.card * 2,
-    overflow: 'hidden',
+  },
+  overscroll: {
+    position: 'absolute',
+    top: -1000,
+    left: 0,
+    right: 0,
+    height: 1000,
+    backgroundColor: Gradients.brand[0],
   },
   heroContent: {
     ...ContentColumn,
@@ -215,9 +222,7 @@ const useStyles = makeStyles((colors) => ({
   },
   greeting: {
     color: colors.onBrandMuted,
-    ...Typography.bodySmall,
-    fontWeight: '500',
-    letterSpacing: 0.25,
+    ...Typography.titleSmall,
   },
   heading: {
     marginTop: Spacing.three,
