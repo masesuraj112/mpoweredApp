@@ -148,9 +148,10 @@ const strokeProps = {
 } as const;
 
 const useStyles = makeStyles((colors) => ({
+  // The plain surface colour, not the card's lavender, so the box's edges show on a tinted card.
   surface: {
     borderRadius: Radius.control / 2,
-    backgroundColor: colors.surfaceContainer,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
     borderBottomWidth: 2,
     borderBottomColor: colors.outline,
