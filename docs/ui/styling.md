@@ -29,6 +29,21 @@ Audience: developers working on the UI. This page is the reference for the UI re
 | `Typography.labelMedium` | 12/16 medium | small labels |
 | `Typography.labelSmall` | 11/16 medium | smallest labels |
 
+## Shared components
+
+Use these instead of writing the same styles again.
+
+| Component | Where | Use for |
+| --- | --- | --- |
+| `AppText` | `components/ui` | Any text. Pass a `variant` (a `Typography` key) and a `color` token; `style` is for layout only. |
+| `Screen` | `components/ui` | The page: safe area, background, padding, scrolling, width cap, optional footer. Pass `edges={[]}` under a navigation header or tab bar. |
+| `ScreenHeader` | `components/ui` | The lilac back bar. Pad from the safe-area inset by default; pass `padForStatusBar={false}` when the screen already sits in a `SafeAreaView`. |
+| `Divider` | `components/ui` | A hairline rule. |
+| `TabIcon` | `components/navigation` | The pill behind a tab bar icon. |
+| `TrackerQuestionScreen`, `TrackerHeader` | `components/tracker` | The shell and header of the tracker question screens. |
+| `SummaryReport`, `SummaryStatus`, `ReportSection`, `ResultSection` | `components/tracker` | The tracker summary screens. They only load their entry with `useWeekSummary` and pass props. |
+| `PrescriptionsHeader`, `TrackingScreenHeader` | `components/health` | The My Health sub-page headers. |
+
 ## Colour mapping for the migration
 
 Exact matches map to the token that already holds the value. Near-duplicates (visual drift) are merged into the closest token.
