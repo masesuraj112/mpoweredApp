@@ -51,7 +51,6 @@ export default function SupportRequestsScreen() {
       <Stack.Screen
         options={{
           title: 'Support person requests',
-          headerLargeTitle: true,
           headerRight: () => <NotificationBell count={requests.length} />,
         }}
       />

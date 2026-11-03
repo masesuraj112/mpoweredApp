@@ -10,32 +10,29 @@ import { HeaderTitleFonts, useThemeColors } from '@/constants/theme';
  */
 export function useNativeHeaderOptions() {
   const colors = useThemeColors();
-  // No custom header background or shadow (the navigation theme supplies them, as the Settings pages
-  // always had): on iOS a set background leaves the large title invisible until the page is scrolled.
-  // Both titles get the text colour explicitly so they show in light and dark mode.
+  // No custom header background or shadow: the navigation theme supplies them, as on the Settings pages.
+  // The title gets the text colour explicitly so it shows in light and dark mode.
   return {
     headerShown: true,
     title: '',
     headerTitleStyle: { ...HeaderTitleFonts.headerTitleStyle, color: colors.text },
-    headerLargeTitleStyle: { ...HeaderTitleFonts.headerLargeTitleStyle, color: colors.text },
     headerTintColor: colors.primary,
   } as const;
 }
 
 /**
- * Puts the page's title in the native header: large while the page is at the top, shrinking into the bar
- * as it scrolls (iOS); the bar's title on Android. The page's scroll view needs
- * `contentInsetAdjustmentBehavior="automatic"` for the large title to follow it.
+ * Puts the page's title in the native header bar. Every screen uses the standard bar title (as the
+ * assessments do), never the large iOS title, so the header looks the same everywhere and doesn't change
+ * as the page scrolls.
  */
 export function ScreenTitle({ title }: { title: string }) {
-  return <Stack.Screen options={{ title, headerLargeTitle: true }} />;
+  return <Stack.Screen options={{ title }} />;
 }
 
 /**
  * The title for the assessment screens. Their header belongs to the Pain Tracker stack's `tracker` route
  * (so its back button returns Home from any question), a navigator or two above the screen, so the title
- * is set there, each time a screen comes into view. It is the standard title, not a large one: iOS can
- * only shrink a large title with a scroll view in the header's own screen, and these are nested deeper.
+ * is set there, each time a screen comes into view.
  */
 // Just what the walk up the navigators needs.
 type NavigatorLevel = {
@@ -51,7 +48,7 @@ export function useTrackerTitle(title: string) {
       let nav: NavigatorLevel | undefined = navigation;
       while (nav) {
         if (nav.getState()?.routeNames?.includes('tracker')) {
-          nav.setOptions({ title, headerLargeTitle: false });
+          nav.setOptions({ title });
           return;
         }
         nav = nav.getParent();

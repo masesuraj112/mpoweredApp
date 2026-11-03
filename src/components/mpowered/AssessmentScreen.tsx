@@ -26,7 +26,6 @@ export function AssessmentScreen({ title, children }: { title: string; children:
           keyboardDismissMode="on-drag"
           // Keeps the focused text box above the keyboard (iOS; Android resizes the window).
           automaticallyAdjustKeyboardInsets
-          // Lets the large title in the header follow the page as it scrolls (iOS).
           contentInsetAdjustmentBehavior="automatic">
           {children}
         </ScrollView>

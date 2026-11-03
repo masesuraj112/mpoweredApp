@@ -206,7 +206,7 @@ export const MinTapTarget = 48;
  * never turn font scaling off. Nothing is smaller than 14.
  */
 export const Typography = {
-  /** 34/41 in Sulphur Point: each page's top-level heading, the same size as the native large titles. */
+  /** 34/41 in Sulphur Point: the title on each home page's gradient. */
   display: { fontFamily: Fonts.heading, fontSize: 34, lineHeight: 41 },
   /** 28/34 bold: big numbers and question cards. */
   headline: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
@@ -231,13 +231,11 @@ export const Typography = {
 } as const;
 
 /**
- * Spread into a native Stack's screen options: a native header's title is that page's top-level heading.
- * The standard bar title is 20 rather than the platform's 17, so it reads as a heading; large titles keep
- * the platform's size.
+ * Spread into a native Stack's screen options: a native header's title is that page's top-level heading,
+ * at 20 rather than the platform's 17 so it reads as a heading.
  */
 export const HeaderTitleFonts = {
   headerTitleStyle: { fontFamily: Fonts.heading, fontSize: Typography.titleSmall.fontSize },
-  headerLargeTitleStyle: { fontFamily: Fonts.heading },
 } as const;
 
 /** Content never stretches wider than this on tablets; it is centred instead. */

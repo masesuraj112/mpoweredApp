@@ -29,7 +29,6 @@ export function PlannerFlowScreen({
   const styles = useStyles();
 
   return (
-    // The scroll view is the screen's first view, so the large title in the header follows it (iOS).
     <>
       <ScreenTitle title={title} />
       <ScrollView

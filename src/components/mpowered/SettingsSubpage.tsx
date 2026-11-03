@@ -11,8 +11,8 @@ export function SettingsSubpage({ title, children }: { title: string; children: 
   const styles = useStyles();
   return (
     <>
-      {/* The page title lives in the native header (a large title on iOS, as in the Settings app). */}
-      <Stack.Screen options={{ title, headerLargeTitle: true }} />
+      {/* The page title lives in the native header bar. */}
+      <Stack.Screen options={{ title }} />
       {/* The whole page scrolls, so nothing is cut off on a small phone or with large text. The scroll view
           sits under the native header, which sets its insets. */}
       <ScrollView
