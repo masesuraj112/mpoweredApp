@@ -135,6 +135,8 @@ export const Typography = {
   bodyLarge: { fontSize: 16, lineHeight: 24, letterSpacing: 0.5 },
   /** 14/20 medium with wider tracking: short messages and hints. */
   bodyMedium: { fontSize: 14, lineHeight: 20, fontWeight: '500', letterSpacing: 0.25 },
+  /** 14/20 regular: paragraph text. */
+  bodyMediumRegular: { fontSize: 14, lineHeight: 20, letterSpacing: 0.25 },
   /** 24/32 semibold: screen titles. */
   headlineSmall: { fontSize: 24, lineHeight: 32, fontWeight: '600' },
   /** 22/28 semibold: section and page headings. */

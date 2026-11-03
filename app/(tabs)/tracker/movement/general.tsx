@@ -1,3 +1,4 @@
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -30,72 +31,52 @@ export default function GeneralScreen() {
 
 
 return (
-    <View style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="General Movement Impacts"
-          prompt={
-            <Text style={styles.promptText}>
-              Select <Text style={styles.promptUnderline}>ALL</Text> relevant statements:
-            </Text>
-          }
-          questionNumber={2}
-          totalQuestions={7}
-          onPrevious={() => router.push('/tracker/movement/activity')}
-          onRecord={handleNext}
-          disabled={selected.length === 0}
-          variant="management"
-          style={{ flex: 1, height: undefined }}
-        >
-          <View style={styles.optionsList}>
-            {GENERAL_IMPACT_OPTIONS.map((option, index) => {
-              const isSelected = selected.includes(option);
-              const isLast = index === GENERAL_IMPACT_OPTIONS.length - 1;
+    <TrackerQuestionScreen title="My Movement">
+      <ChoiceCard
+        title="General Movement Impacts"
+        prompt={
+          <Text style={styles.promptText}>
+            Select <Text style={styles.promptUnderline}>ALL</Text> relevant statements:
+          </Text>
+        }
+        questionNumber={2}
+        totalQuestions={7}
+        onPrevious={() => router.push('/tracker/movement/activity')}
+        onRecord={handleNext}
+        disabled={selected.length === 0}
+        variant="management"
+        style={{ flex: 1, height: undefined }}
+      >
+        <View style={styles.optionsList}>
+          {GENERAL_IMPACT_OPTIONS.map((option, index) => {
+            const isSelected = selected.includes(option);
+            const isLast = index === GENERAL_IMPACT_OPTIONS.length - 1;
 
-              return (
-                <Pressable
-                  key={option}
-                  onPress={() => toggle(option)}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={option}
-                  style={[styles.optionRow, !isLast && styles.optionDivider]}
-                >
-                  <Text style={styles.optionText} allowFontScaling={false}>
-                    {option}
-                  </Text>
-                  <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
-                    {isSelected && <Text style={styles.checkmark}>✓</Text>}
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        </ChoiceCard>
-      </View>
-    </View>
+            return (
+              <Pressable
+                key={option}
+                onPress={() => toggle(option)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={option}
+                style={[styles.optionRow, !isLast && styles.optionDivider]}
+              >
+                <Text style={styles.optionText} allowFontScaling={false}>
+                  {option}
+                </Text>
+                <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                  {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ChoiceCard>
+    </TrackerQuestionScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   promptText: {
     color: '#1D1B20',
     fontSize: scaleFont(12),

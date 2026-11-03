@@ -1,4 +1,4 @@
-import { AssessmentScreen } from '@/components/mpowered/AssessmentScreen';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleHeight } from '@/services/scale';
@@ -16,7 +16,7 @@ export default function EnjoymentScreen() {
   };
 
   return (
-    <AssessmentScreen title="My Social Health">
+    <TrackerQuestionScreen title="My Social Health">
       <ScaleSliderInput
         titleText="Enjoyment of life"
         questionText="Over the past week, how much has pain impacted your ability to enjoy life?"
@@ -30,6 +30,6 @@ export default function EnjoymentScreen() {
         variant="personalCare"
         cardHeight={scaleHeight(330)}
       />
-    </AssessmentScreen>
+    </TrackerQuestionScreen>
   );
 }
