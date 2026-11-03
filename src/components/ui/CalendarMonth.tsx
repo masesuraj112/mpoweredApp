@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Colors, MinTapTarget } from '@/constants/theme';
+import { Colors, MinTapTarget, Radius, Typography } from '@/constants/theme';
 import {
   buildMonthGrid,
   formatAccessibleDate,
@@ -109,10 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   heading: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '500',
-    letterSpacing: 0.5,
+    ...Typography.labelMedium,
     color: Colors.light.textSecondary,
   },
   dayTarget: {
@@ -132,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
   },
   daySelected: {
-    borderRadius: 8,
+    borderRadius: Radius.medium,
     backgroundColor: Colors.light.calendarSelected,
   },
   dayText: {
