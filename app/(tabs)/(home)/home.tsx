@@ -298,6 +298,8 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.two,
     minHeight: MinTapTarget,
     backgroundColor: colors.surfaceContainer,
+    // Both states carry the border so Edit and Record are the same size.
+    borderWidth: 2,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
@@ -307,8 +309,9 @@ const useStyles = makeStyles((colors) => ({
     borderColor: colors.primary,
     backgroundColor: colors.primary,
   },
+  // A completed assessment's Edit: the Record colour as an outline, so it reads as a button on its card.
   editButton: {
-    borderColor: colors.primaryContainer,
+    borderColor: colors.primary,
     backgroundColor: colors.primaryContainer,
   },
   assessmentButtonText: {
