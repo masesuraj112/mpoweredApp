@@ -159,6 +159,8 @@ export const Typography = {
   bodyMediumRegular: { fontSize: 14, lineHeight: 20, letterSpacing: 0.25 },
   /** 24/32 semibold: screen titles. */
   headlineSmall: { fontSize: 24, lineHeight: 32, fontWeight: '600' },
+  /** 28/36 regular: the big message on a full-screen slide. */
+  headlineMedium: { fontSize: 28, lineHeight: 36 },
   /** 22/28 semibold: section and page headings. */
   titleLarge: { fontSize: 22, lineHeight: 28, fontWeight: '600' },
   /** 16/24 semibold with tracking: card titles and list headings. */

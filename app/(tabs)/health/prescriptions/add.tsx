@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Dropdown } from '@/components/health/Dropdown';
 import { HealthSubpage } from '@/components/health/HealthSubpage';
 import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';

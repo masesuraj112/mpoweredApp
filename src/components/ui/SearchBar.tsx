@@ -1,11 +1,13 @@
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, type TextInputProps } from 'react-native';
+
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 type SearchBarProps = TextInputProps & {
   placeholder?: string;
 };
 
+/** A centred search box for filtering a list of options. */
 export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBarProps) {
   const doneBar = useKeyboardDoneBar();
 
@@ -15,7 +17,7 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
         {...props}
         inputAccessoryViewID={doneBar.id}
         placeholder={placeholder}
-        placeholderTextColor="rgba(0, 0, 0, 0.19)"
+        placeholderTextColor={Colors.light.textDisabled}
         style={[styles.input, style]}
         accessibilityLabel={props.accessibilityLabel ?? placeholder}
       />
@@ -26,13 +28,14 @@ export function SearchBar({ placeholder = 'Search', style, ...props }: SearchBar
 
 const styles = StyleSheet.create({
   input: {
-    height: scaleHeight(30),
+    ...Typography.bodyMedium,
     width: '100%',
-    borderWidth: 2,
-    borderColor: 'rgba(0, 0, 0, 0.28)',
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(7),
+    minHeight: MinTapTarget,
+    paddingHorizontal: Spacing.two,
+    borderWidth: 1,
+    borderColor: Colors.light.outline,
+    borderRadius: Radius.medium,
     textAlign: 'center',
-    fontSize: scaleFont(14),
+    color: Colors.light.text,
   },
 });

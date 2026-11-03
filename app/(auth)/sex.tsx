@@ -1,7 +1,13 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthOption } from '@/components/auth/AuthOption';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useOnboarding } from '@/context/Onboarding-Context';
 
 const OPTIONS = [
   { label: 'Female', value: 'female' as const },
@@ -19,38 +25,26 @@ export default function SexScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Your sex</Text>
-      {OPTIONS.map((opt) => (
-        <Pressable
-          key={opt.value}
-          style={[styles.option, selected === opt.value && styles.optionSelected]}
-          onPress={() => setSelected(opt.value)}
-        >
-          <Text style={styles.optionText}>{opt.label}</Text>
-        </Pressable>
+    <AuthScreen>
+      <AuthTitle>Your sex</AuthTitle>
+      {OPTIONS.map((option) => (
+        <AuthOption
+          key={option.value}
+          label={option.label}
+          selected={selected === option.value}
+          onPress={() => setSelected(option.value)}
+        />
       ))}
-    <Pressable
-        disabled={!selected}
-        style={[styles.continueButton, !selected && styles.continueButtonDisabled]}
-        onPress={handleContinue}
-    >
-  <Text style={[styles.continueText, !selected && styles.continueTextDisabled]}>Continue</Text>
-    </Pressable>
-      <Text style={styles.tip}>💡 Research shows that people may experience pain differently depending on their sex</Text>
-    </View>
+      <AuthButton label="Continue" disabled={!selected} onPress={handleContinue} />
+      <AppText variant="bodySmall" color="textSecondary" style={styles.centered}>
+        💡 Research shows that people may experience pain differently depending on their sex
+      </AppText>
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 32 },
-  option: { width: '100%', backgroundColor: '#EDE9F5', borderRadius: 24, paddingVertical: 16, alignItems: 'center', marginBottom: 12 },
-  optionSelected: { backgroundColor: '#D9D0EE' },
-  optionText: { color: '#5B3FA5', fontWeight: '600', fontSize: 15 },
-  continueButton: { backgroundColor: '#5B3FA5', width: '100%', paddingVertical: 16, borderRadius: 24, alignItems: 'center', marginTop: 20 },
-  continueButtonDisabled: { backgroundColor: '#D9D0EE' },
-  continueText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  continueTextDisabled: { color: '#5B3FA5' },
-  tip: { textAlign: 'center', color: '#8A8590', marginTop: 32, fontSize: 13, paddingHorizontal: 16 },
+  centered: {
+    textAlign: 'center',
+  },
 });

@@ -1,6 +1,11 @@
-import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AppText } from '@/components/ui/AppText';
+import { Spacing } from '@/constants/theme';
+import { useOnboarding } from '@/context/Onboarding-Context';
 
 // TODO: confirm final URLs with the team before shipping
 const TERMS_URL = 'https://mpowered.example/terms';
@@ -14,59 +19,45 @@ export default function ConsentScreen() {
     router.push(data.userType === 'support-person' ? '/(auth)/login-bridge' : '/(auth)/sex');
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.greeting}>Hello {data.name || 'there'} 👋</Text>
-      <Text style={styles.body}>A few quick questions so we can make things more relevant for you</Text>
+    <AuthScreen>
+      <AppText accessibilityRole="header" variant="titleLarge">
+        Hello {data.name || 'there'} 👋
+      </AppText>
+      <AppText variant="titleMedium" style={styles.body}>
+        A few quick questions so we can make things more relevant for you
+      </AppText>
 
-      <Pressable style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueText}>Continue</Text>
-      </Pressable>
+      <AuthButton label="Continue" onPress={handleContinue} />
 
-      <Text style={styles.legal}>
+      <AppText variant="bodyMediumRegular">
         By continuing you agree to MPowered&apos;s{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)}>Terms and Conditions</Text>
-        {' '}and{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)}>Privacy Policy</Text>
-      </Text>
-    </View>
+        <AppText
+          accessibilityRole="link"
+          variant="labelLargeBold"
+          style={styles.link}
+          onPress={() => Linking.openURL(TERMS_URL)}
+        >
+          Terms and Conditions
+        </AppText>{' '}
+        and{' '}
+        <AppText
+          accessibilityRole="link"
+          variant="labelLargeBold"
+          style={styles.link}
+          onPress={() => Linking.openURL(PRIVACY_URL)}
+        >
+          Privacy Policy
+        </AppText>
+      </AppText>
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 100
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 16
-  },
   body: {
-    fontSize: 18,
-    fontWeight: '600',
-    lineHeight: 26,
-    marginBottom: 32
-  },
-  continueButton: {
-    backgroundColor: '#5B3FA5',
-    paddingVertical: 16,
-    borderRadius: 24,
-    alignItems: 'center',
-    marginBottom: 24
-  },
-  continueText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16
-  },
-  legal: {
-    fontSize: 15,
-    lineHeight: 22
+    marginBottom: Spacing.three,
   },
   link: {
-    fontWeight: '700',
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
   },
 });

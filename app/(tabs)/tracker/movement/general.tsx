@@ -2,7 +2,7 @@ import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScree
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
-import { CheckboxOptionRow } from '@/components/tracker/CheckboxOptionRow';
+import { CheckboxOptionRow } from '@/components/ui/CheckboxOptionRow';
 import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
 import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
 import { GENERAL_IMPACT_OPTIONS } from '@/features/assessments/movement/options';
