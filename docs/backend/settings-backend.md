@@ -298,7 +298,7 @@ parts no automated test covers. Tick each one in the PR description, with a note
       permanent. A real number only gets codes if it's verified on the Twilio trial account.
 
 ### Account: patient (commits 1–6)
-- [ ] There's no Change password or email field. Account has an optional app lock (Unlock with Face ID / fingerprint): turning it on asks the phone first, the app then asks to unlock as it opens and after 5 minutes away, and signing out turns it off. Display has only Appearance (Match phone, Light, Dark), which switches the whole app at once and is kept after closing it.
+- [ ] There's no Change password or email field. Account has an optional app lock (Unlock with Face ID / fingerprint): turning it on asks the phone first, the app then asks to unlock as it opens and after 5 minutes away, and signing out turns it off. Display has Text size (Default, Large, Extra large, on top of the phone's own text size) and Appearance (Match phone, Light, Dark); both apply at once and are kept after closing the app.
 - [ ] Personal details shows your real name, your year of birth from sign-up, and your phone (read-only, as `04xx xxx xxx`).
 - [ ] Change the name and year, tap Ok, leave the page and come back, then restart the app: the changes are kept.
 - [ ] Clear the year and save: it stays empty after a restart.

@@ -12,6 +12,7 @@ module.exports = {
     'src/features/app-lock/policy.ts',
     'src/features/app-lock/AppLockContext.tsx',
     'src/features/settings/appearance.ts',
+    'src/features/settings/textSize.ts',
     'src/features/splash/startup.ts',
     'src/features/splash/useMinimumDuration.ts',
     'src/features/auth/focusCodeInput.ts',

@@ -13,6 +13,7 @@ import { showWelcomeBack, WELCOME_SPLASH_MS } from '../src/features/splash/start
 import { useMinimumDuration } from '../src/features/splash/useMinimumDuration';
 import { AppLockProvider } from '../src/features/app-lock/AppLockContext';
 import { restoreAppearance } from '../src/features/settings/appearance';
+import { restoreTextSize } from '../src/features/settings/textSize';
 
 // Keep the native splash (the M on purple) up until the session has been read, so the app never shows a
 // blank screen while it starts. It then fades into the first screen (docs/backend/app-icons-and-splash-plan.md).
@@ -20,6 +21,8 @@ void SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ duration: 300, fade: true });
 // A light or dark choice from Settings > Display, applied before the first screen shows.
 void restoreAppearance();
+// The text size from Settings > Display, the same way.
+void restoreTextSize();
 
 // Dev-only: set EXPO_PUBLIC_BYPASS_AUTH=true in .env to reach every route regardless of session
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';

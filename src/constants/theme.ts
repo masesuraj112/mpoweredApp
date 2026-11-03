@@ -6,6 +6,7 @@
  * against the surface it is used on (checked by theme.test.ts).
  */
 
+import { useSyncExternalStore } from 'react';
 import { Platform, StyleSheet, useColorScheme, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 
 export const Palette = {
@@ -305,15 +306,64 @@ export function useThemeColors(): ThemeColors {
   return useColorScheme() === 'dark' ? Colors.dark : Colors.light;
 }
 
+/*
+ * The app's own text size (Settings > Display), on top of the phone's text size. 1 is the size in
+ * Typography; it only ever grows, so nothing goes below 14.
+ */
+let textScale = 1;
+const textScaleListeners = new Set<() => void>();
+
+export function setTextScale(scale: number) {
+  if (scale === textScale) return;
+  textScale = scale;
+  textScaleListeners.forEach((listener) => listener());
+}
+
+function subscribeToTextScale(listener: () => void) {
+  textScaleListeners.add(listener);
+  return () => {
+    textScaleListeners.delete(listener);
+  };
+}
+
+/** The current text size, re-rendering when it changes. */
+export function useTextScale(): number {
+  return useSyncExternalStore(subscribeToTextScale, () => textScale);
+}
+
+/** A text style at the current text size: its font size and line height grow together. */
+export function scaleText<S extends TextStyle>(style: S, scale: number): S {
+  if (scale === 1 || style.fontSize === undefined) return style;
+  return {
+    ...style,
+    fontSize: Math.round(style.fontSize * scale),
+    ...(style.lineHeight !== undefined && { lineHeight: Math.round(style.lineHeight * scale) }),
+  };
+}
+
 /**
- * Style sheets that follow the phone's appearance. The factory runs once per mode; the returned hook
- * picks the right sheet, so styles stay as cheap as a plain StyleSheet.create.
+ * Style sheets that follow the phone's appearance and the app's text size. Each mode and size is built
+ * once, the first time it is needed, so styles stay as cheap as a plain StyleSheet.create.
  */
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
 export function makeStyles<T extends NamedStyles<T>>(factory: (colors: ThemeColors) => T): () => T {
-  const sheets = { light: StyleSheet.create(factory(Colors.light)), dark: StyleSheet.create(factory(Colors.dark)) };
+  const sheets = new Map<string, T>();
+  const sheetFor = (scheme: 'light' | 'dark', scale: number): T => {
+    const key = `${scheme}:${scale}`;
+    let sheet = sheets.get(key);
+    if (!sheet) {
+      const styles = factory(Colors[scheme]);
+      const scaled = Object.fromEntries(
+        Object.entries(styles).map(([name, style]) => [name, scaleText(style as TextStyle, scale)]),
+      ) as T;
+      sheet = StyleSheet.create(scaled);
+      sheets.set(key, sheet);
+    }
+    return sheet;
+  };
   return function useStyles() {
-    return useColorScheme() === 'dark' ? sheets.dark : sheets.light;
+    const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+    return sheetFor(scheme, useTextScale());
   };
 }
