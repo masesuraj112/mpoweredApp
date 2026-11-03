@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { useEffect, useState } from 'react';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
 import { router, Stack } from 'expo-router';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View, type TextInputInstance } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fitCanvas } from '@/features/auth/canvas';
+import { Pressable, StyleSheet, View } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { CodeInput } from '@/components/auth/CodeInput';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { MinTapTarget, Spacing } from '@/constants/theme';
 
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
-import { focusCodeInput } from '@/features/auth/focusCodeInput';
 import { authErrorMessage } from '@/features/auth/messages';
 import {
   OTP_LENGTH,
@@ -23,11 +27,6 @@ import { toProfileArgs } from '@/features/auth/profile';
 import { hasProfile, sendVerificationCode, verifyCode } from '@/services/auth';
 import { createProfile } from '@/services/profile';
 
-// Six cells: 6 * 40 + 5 * 10 = 290 wide
-const CODE_CELL_WIDTH = 40;
-const CODE_CELL_GAP = 10;
-const CODE_ROW_WIDTH = OTP_LENGTH * CODE_CELL_WIDTH + (OTP_LENGTH - 1) * CODE_CELL_GAP;
-
 export default function VerifyScreen() {
   const { data } = useOnboarding();
   const { refreshProfile, holdSignIn } = useAuth();
@@ -40,11 +39,7 @@ export default function VerifyScreen() {
   // The code was sent on the phone screen just before this one, so the wait starts now.
   const [resendSecondsRemaining, setResendSecondsRemaining] = useState<number | null>(RESEND_SECONDS);
   const [hasResent, setHasResent] = useState(false);
-  const codeInputRef = useRef<TextInputInstance>(null);
   const doneBar = useKeyboardDoneBar();
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
   const isCodeComplete = isOtpComplete(code);
   const canVerify = (isSignedIn || isCodeComplete) && !isVerifying;
   const isCountingDown = resendSecondsRemaining !== null;
@@ -149,317 +144,90 @@ export default function VerifyScreen() {
   };
 
   return (
-    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
+    <AuthScreen>
       {/* Once the code is accepted the person is signed in, so going back to the phone screen would mislead. */}
       <Stack.Screen options={{ headerBackVisible: !isSignedIn, gestureEnabled: !isSignedIn }} />
-      <View
-        style={[
-          styles.canvas,
-          {
-            width: canvasWidth,
-            height: canvasHeight,
-            left,
-            top,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.title,
-            {
-              left: 47 * scale,
-              top: 168 * scale,
-              width: 313 * scale,
-              height: 75 * scale,
-              fontSize: 22 * scale,
-              lineHeight: 28 * scale,
-            },
-          ]}
-        >
-          We’re sending the verification code to this number
-        </Text>
 
-        {displayPhone !== '' && (
-          <Text
-            accessibilityLabel={`Phone number ${displayPhone}`}
-            style={[
-              styles.phoneNumber,
-              {
-                left: 47 * scale,
-                top: 252 * scale,
-                width: 313 * scale,
-                fontSize: 18 * scale,
-                lineHeight: 24 * scale,
-              },
-            ]}
-          >
-            {displayPhone}
-          </Text>
-        )}
+      <AuthTitle>We’re sending the verification code to this number</AuthTitle>
 
-        <View
-          style={[
-            styles.codeRow,
-            {
-              left: 51 * scale,
-              top: 309 * scale,
-              width: CODE_ROW_WIDTH * scale,
-              height: 51 * scale,
-            },
-          ]}
+      {displayPhone !== '' && (
+        <AppText
+          accessibilityLabel={`Phone number ${displayPhone}`}
+          variant="titleMedium"
+          style={styles.centered}
         >
-          {Array.from({ length: OTP_LENGTH }, (_, index) => (
-            <Pressable
-              key={index}
-              accessibilityRole="button"
-              accessibilityLabel={`Enter verification code, digit ${index + 1}`}
-              onPress={() => focusCodeInput(codeInputRef.current)}
-              style={[
-                styles.codeCell,
-                {
-                  left: index * (CODE_CELL_WIDTH + CODE_CELL_GAP) * scale,
-                  width: CODE_CELL_WIDTH * scale,
-                  height: 51 * scale,
-                  borderRadius: 5 * scale,
-                  borderWidth: scale,
-                },
-              ]}
-            >
-              <Text style={[styles.codeDigit, { fontSize: 16 * scale, lineHeight: 24 * scale }]}>
-                {code[index] ?? ''}
-              </Text>
-            </Pressable>
-          ))}
-          <TextInput
-            ref={codeInputRef}
-            // Open the keyboard (and the iOS code suggestion) as soon as the screen shows.
-            autoFocus
-            accessibilityLabel="Verification code"
-            autoComplete="one-time-code"
-            keyboardType="number-pad"
-            // The iOS number pad has no return key, so add a Done bar to close it.
-            inputAccessoryViewID={doneBar.id}
-            maxLength={OTP_LENGTH}
-            onChangeText={handleCodeChange}
-            value={code}
-            style={styles.hiddenInput}
-          />
-          {doneBar.bar}
+          {displayPhone}
+        </AppText>
+      )}
+
+      <CodeInput
+        value={code}
+        onChangeText={handleCodeChange}
+        length={OTP_LENGTH}
+        inputAccessoryViewID={doneBar.id}
+      />
+      {doneBar.bar}
+
+      {resendSecondsRemaining !== null ? (
+        <View style={styles.resendStatus}>
+          <AppText variant="bodyLarge" style={styles.centered}>
+            {hasResent ? 'Sent!' : 'Code sent. This may take a moment.'}
+          </AppText>
+          <AppText variant="labelMedium" color="textSecondary" style={styles.centered}>
+            You can resend in {formatResendWait(resendSecondsRemaining)}
+          </AppText>
         </View>
-
-        {resendSecondsRemaining !== null ? (
-          <>
-            <Text
-              style={[
-                styles.resendStatus,
-                {
-                  left: 49 * scale,
-                  top: 382 * scale,
-                  width: 313 * scale,
-                  height: 19 * scale,
-                  fontSize: 16 * scale,
-                  lineHeight: 24 * scale,
-                  letterSpacing: 0.15 * scale,
-                },
-              ]}
-            >
-              {hasResent ? 'Sent!' : 'Code sent. This may take a moment.'}
-            </Text>
-            <Text
-              style={[
-                styles.resendCountdown,
-                {
-                  left: 49 * scale,
-                  top: 405 * scale,
-                  width: 313 * scale,
-                  height: 19 * scale,
-                  fontSize: 12 * scale,
-                  lineHeight: 16 * scale,
-                  letterSpacing: 0.5 * scale,
-                },
-              ]}
-            >
-              You can resend in {formatResendWait(resendSecondsRemaining)}
-            </Text>
-          </>
-        ) : (
-          <>
-            <View
-              style={[
-                styles.resendRow,
-                { left: 49 * scale, top: 380 * scale, height: 24 * scale, gap: 8 * scale },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.resendPrompt,
-                  {
-                    fontSize: 16 * scale,
-                    lineHeight: 24 * scale,
-                    letterSpacing: 0.15 * scale,
-                  },
-                ]}
-              >
-                Didn’t receive a code?
-              </Text>
-              <Pressable
-                accessibilityRole="button"
-                disabled={isResending}
-                onPress={handleResend}
-                style={styles.resendButton}
-              >
-                <Text
-                  style={[
-                    styles.resendText,
-                    {
-                      fontSize: 16 * scale,
-                      lineHeight: 24 * scale,
-                      letterSpacing: 0.15 * scale,
-                    },
-                  ]}
-                >
-                  Resend
-                </Text>
-              </Pressable>
-            </View>
-          </>
-        )}
-
-        {errorMessage !== null && (
-          <Text
-            accessibilityRole="alert"
-            style={[
-              styles.errorText,
-              {
-                left: 49 * scale,
-                top: 436 * scale,
-                width: 313 * scale,
-                fontSize: 12 * scale,
-                lineHeight: 16 * scale,
-              },
-            ]}
+      ) : (
+        <View style={styles.resendRow}>
+          <AppText variant="bodyLarge">Didn’t receive a code?</AppText>
+          <Pressable
+            accessibilityRole="button"
+            disabled={isResending}
+            onPress={handleResend}
+            style={styles.resendButton}
           >
-            {errorMessage}
-          </Text>
-        )}
+            <AppText variant="bodyLarge" color="primary" style={styles.underlined}>
+              Resend
+            </AppText>
+          </Pressable>
+        </View>
+      )}
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !canVerify }}
-          disabled={!canVerify}
-          onPress={handleVerify}
-          style={[
-            styles.verifyButton,
-            {
-              left: 40 * scale,
-              top: 471 * scale,
-              width: 333 * scale,
-              height: 48 * scale,
-              borderRadius: 12 * scale,
-            },
-            !canVerify && styles.verifyButtonDisabled,
-          ]}
-        >
-          <Text
-            style={[
-              styles.verifyText,
-              { fontSize: 14 * scale, lineHeight: 20 * scale, letterSpacing: 0.1 * scale },
-              !canVerify && styles.verifyTextDisabled,
-            ]}
-          >
-            {isSignedIn ? 'Try again' : 'Verify'}
-          </Text>
-        </Pressable>
-      </View>
-    </Pressable>
+      {errorMessage !== null && (
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.centered}>
+          {errorMessage}
+        </AppText>
+      )}
+
+      <AuthButton
+        label={isSignedIn ? 'Try again' : 'Verify'}
+        disabled={!canVerify}
+        busy={isVerifying}
+        onPress={handleVerify}
+      />
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  canvas: {
-    position: 'absolute',
-    backgroundColor: '#FFFFFF',
-  },
-  title: {
-    position: 'absolute',
-    color: '#000000',
-    fontWeight: '500',
-  },
-  phoneNumber: {
-    position: 'absolute',
-    color: '#000000',
-    fontWeight: '600',
-  },
-  codeRow: {
-    position: 'absolute',
-  },
-  codeCell: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E7E0EC',
-    borderColor: '#79747E',
-  },
-  codeDigit: {
-    color: '#000000',
-    fontWeight: '400',
-  },
-  hiddenInput: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    opacity: 0,
-  },
-  resendRow: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  resendPrompt: {
-    color: '#000000',
-    fontWeight: '500',
-  },
-  resendButton: {
-    justifyContent: 'center',
-  },
-  resendText: {
-    color: '#6155F5',
-    fontWeight: '500',
-    textDecorationLine: 'underline',
+  centered: {
+    textAlign: 'center',
   },
   resendStatus: {
-    position: 'absolute',
-    color: '#000000',
-    fontWeight: '500',
+    gap: Spacing.one,
   },
-  resendCountdown: {
-    position: 'absolute',
-    color: '#898A8D',
-    fontWeight: '500',
-  },
-  errorText: {
-    position: 'absolute',
-    color: '#B3261E',
-  },
-  verifyButton: {
-    position: 'absolute',
+  resendRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6750A4',
+    columnGap: Spacing.two,
   },
-  verifyButtonDisabled: {
-    backgroundColor: '#EADDFF',
+  resendButton: {
+    minHeight: MinTapTarget,
+    justifyContent: 'center',
   },
-  verifyText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  verifyTextDisabled: {
-    color: '#6750A4',
+  underlined: {
+    textDecorationLine: 'underline',
   },
 });

@@ -1,12 +1,17 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet } from 'react-native';
+
+import { AuthButton } from '@/components/auth/AuthButton';
+import { AuthInput } from '@/components/auth/AuthInput';
+import { AuthScreen } from '@/components/auth/AuthScreen';
+import { AuthTitle } from '@/components/auth/AuthTitle';
+import { AppText } from '@/components/ui/AppText';
+import { useKeyboardDoneBar } from '@/components/ui/KeyboardDoneBar';
+import { Colors } from '@/constants/theme';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
 import { sendVerificationCode } from '@/services/auth';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fitCanvas } from '@/features/auth/canvas';
 
 const formatPhoneNumber = (digits: string) => {
   const localNumber = digits.slice(0, 10);
@@ -24,9 +29,6 @@ export default function PhoneScreen() {
   const doneBar = useKeyboardDoneBar();
   const phoneNumberDigits = phoneNumber.replace(/\D/g, '').slice(0, 10);
   const isValidPhoneNumber = /^04\d{8}$/.test(phoneNumberDigits);
-  const insets = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
-  const { scale, canvasWidth, canvasHeight, left, top } = fitCanvas({ width, height }, insets);
 
   const handleContinue = async () => {
     if (isSending) return;
@@ -54,197 +56,55 @@ export default function PhoneScreen() {
   };
 
   return (
-    // Tapping anywhere outside the input closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View
-        style={[
-          styles.canvas,
-          {
-            width: canvasWidth,
-            height: canvasHeight,
-            left,
-            top,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.title,
-            {
-              left: 65 * scale,
-              top: 198 * scale,
-              width: 281 * scale,
-              height: 28 * scale,
-              fontSize: 22 * scale,
-              lineHeight: 28 * scale,
-            },
-          ]}
-        >
-          Your phone number
-        </Text>
+    <AuthScreen>
+      <AuthTitle>Your phone number</AuthTitle>
 
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              left: 72 * scale,
-              top: 245 * scale,
-              width: 268 * scale,
-              height: 56 * scale,
-              borderTopLeftRadius: 4 * scale,
-              borderTopRightRadius: 4 * scale,
-              borderBottomWidth: scale,
-              borderBottomColor: isValidPhoneNumber ? '#6750A4' : '#49454F',
-            },
-          ]}
-        >
-          <TextInput
-            accessibilityLabel="Phone number"
-            value={phoneNumber}
-            onChangeText={handlePhoneNumberChange}
-            placeholder="04xx xxx xxx"
-            placeholderTextColor="#1D1B20"
-            keyboardType="phone-pad"
-            // The iOS phone pad has no return key, so add a Done bar to close it.
-            inputAccessoryViewID={doneBar.id}
-            maxLength={12}
-            style={[
-              styles.input,
-              {
-                paddingHorizontal: 16 * scale,
-                fontSize: 16 * scale,
-                lineHeight: 24 * scale,
-                letterSpacing: 0.5 * scale,
-              },
-            ]}
-          />
-        </View>
-        {doneBar.bar}
+      <AuthInput
+        accessibilityLabel="Phone number"
+        value={phoneNumber}
+        onChangeText={handlePhoneNumberChange}
+        placeholder="04xx xxx xxx"
+        keyboardType="phone-pad"
+        // The iOS phone pad has no return key, so add a Done bar to close it.
+        inputAccessoryViewID={doneBar.id}
+        maxLength={12}
+        // The underline turns purple once the number is complete.
+        style={[styles.phoneInput, isValidPhoneNumber && styles.phoneInputValid]}
+      />
+      {doneBar.bar}
 
-        <Text
-          style={[
-            styles.helperText,
-            {
-              left: 65 * scale,
-              top: 333 * scale,
-              width: 281 * scale,
-              height: 71 * scale,
-              fontSize: 16 * scale,
-              lineHeight: 24 * scale,
-              letterSpacing: 0.5 * scale,
-            },
-          ]}
-        >
-          We will send the six digit verification codes to this number
-        </Text>
+      <AppText variant="bodyLarge" style={styles.centered}>
+        We will send the six digit verification codes to this number
+      </AppText>
 
-        {(showPhoneError || sendError !== null) && (
-          <Text
-            accessibilityRole="alert"
-            style={[
-              styles.phoneError,
-              {
-                left: 49 * scale,
-                top: 405 * scale,
-                width: 313 * scale,
-                fontSize: 12 * scale,
-                lineHeight: 16 * scale,
-              },
-            ]}
-          >
-            {showPhoneError
-              ? 'Please enter an Australian phone number in the format 04xx xxx xxx'
-              : sendError}
-          </Text>
-        )}
+      {(showPhoneError || sendError !== null) && (
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.centered}>
+          {showPhoneError ? 'Please enter an Australian phone number in the format 04xx xxx xxx' : sendError}
+        </AppText>
+      )}
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Continue"
-          accessibilityState={{ busy: isSending }}
-          disabled={isSending}
-          onPress={handleContinue}
-          style={[
-            styles.continueButton,
-            {
-              left: 53 * scale,
-              top: 462 * scale,
-              width: 306 * scale,
-              height: 52 * scale,
-              borderRadius: 16 * scale,
-            },
-            !isValidPhoneNumber && styles.continueButtonDisabled,
-          ]}
-        >
-          <Text
-            style={[
-              styles.continueText,
-              { fontSize: 14 * scale, lineHeight: 20 * scale, letterSpacing: 0.1 * scale },
-              !isValidPhoneNumber && styles.continueTextDisabled,
-            ]}
-          >
-            {isSending ? 'Sending…' : 'Continue'}
-          </Text>
-        </Pressable>
-      </View>
-    </Pressable>
+      <AuthButton
+        label={isSending ? 'Sending…' : 'Continue'}
+        accessibilityLabel="Continue"
+        pale={!isValidPhoneNumber}
+        disabled={isSending}
+        busy={isSending}
+        onPress={handleContinue}
+      />
+    </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  canvas: {
-    position: 'absolute',
-    backgroundColor: '#FFFFFF',
-  },
-  title: {
-    position: 'absolute',
-    color: '#000000',
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  inputContainer: {
-    position: 'absolute',
-    backgroundColor: '#E6E0E9',
-    borderBottomColor: '#49454F',
-    overflow: 'hidden',
-  },
-  input: {
-    flex: 1,
-    color: '#1D1B20',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: '400',
-  },
-  helperText: {
-    position: 'absolute',
-    color: '#000000',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: '400',
-  },
-  phoneError: {
-    position: 'absolute',
-    color: '#B3261E',
+  centered: {
     textAlign: 'center',
   },
-  continueButton: {
-    position: 'absolute',
-    backgroundColor: '#6750A4',
-    alignItems: 'center',
-    justifyContent: 'center',
+  phoneInput: {
+    textAlign: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.light.onSurfaceVariant,
   },
-  continueButtonDisabled: {
-    backgroundColor: '#EADDFF',
-  },
-  continueText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  continueTextDisabled: {
-    color: '#6750A4',
+  phoneInputValid: {
+    borderBottomColor: Colors.light.primary,
   },
 });
