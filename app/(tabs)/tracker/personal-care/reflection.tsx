@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
@@ -63,7 +63,6 @@ export default function ReflectionScreen() {
         disabled={saving || overLimit}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={scaleHeight(554)}
       >
         <TextInput
           accessibilityLabel="Reflection on your personal care"

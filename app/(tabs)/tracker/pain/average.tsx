@@ -1,4 +1,4 @@
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
+import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { painSaveMessage } from '@/features/assessments/pain/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';

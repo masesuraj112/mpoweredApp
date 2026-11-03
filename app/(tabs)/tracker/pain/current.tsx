@@ -1,4 +1,4 @@
-import { ScaleSliderInput } from '@/components/mpowered/ScaleSlider';
+import { ScaleSliderInput } from '@/components/tracker/ScaleSliderInput';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont } from '@/services/scale';
 import { router } from 'expo-router';

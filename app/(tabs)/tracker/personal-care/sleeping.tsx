@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { router } from 'expo-router';
 import { SLEEPING_OPTIONS } from '@/features/assessments/personal-care/options';

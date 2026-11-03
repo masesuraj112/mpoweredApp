@@ -1,4 +1,4 @@
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -82,7 +82,6 @@ export default function ReflectionScreen() {
             disabled={saving || overLimit}
             validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
             variant="personalCare"
-            style={{ flex: 1, height: undefined }}
           >
             <TextInput
               value={answers.reflection ?? ''}

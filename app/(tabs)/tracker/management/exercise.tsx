@@ -1,10 +1,11 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceOptionList } from '@/components/tracker/ChoiceOptionList';
+import { ChoicePrompt } from '@/components/tracker/ChoicePrompt';
+import { RadioOptionRow } from '@/components/tracker/RadioOptionRow';
 import { EXERCISE_OPTIONS } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function ExerciseScreen() {
   const { answers, updateAnswer } = useManagementAssessment();
@@ -21,14 +22,9 @@ export default function ExerciseScreen() {
       <ChoiceCard
         title="Exercise"
         prompt={
-          <View style={styles.promptContent}>
-            <Text style={styles.promptText}>
-              In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
-            </Text>
-            <Text style={styles.examples}>
-              Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.
-            </Text>
-          </View>
+          <ChoicePrompt note="Examples: walking, stretching, strengthening, yoga, resistance band work, or balance exercises.">
+            In the past 7 days, did you perform any exercises to manage your musculoskeletal pain or improve your movement?
+          </ChoicePrompt>
         }
         questionNumber={3}
         totalQuestions={4}
@@ -36,92 +32,20 @@ export default function ExerciseScreen() {
         onRecord={handleNext}
         disabled={!answers.exerciseDays}
         variant="management"
-        cardHeight={scaleHeight(516)}
       >
-        <View style={styles.optionsList}>
-          {EXERCISE_OPTIONS.map((option, index) => {
-            const isSelected = answers.exerciseDays === option;
-            const isLast = index === EXERCISE_OPTIONS.length - 1;
-
-            return (
-              <Pressable
-                key={option}
-                onPress={() => updateAnswer('exerciseDays', option)}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: isSelected }}
-                accessibilityLabel={option}
-                style={[styles.optionRow, !isLast && styles.optionDivider]}
-              >
-                <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                  {isSelected && <View style={styles.radioDot} />}
-                </View>
-                <Text style={styles.optionText}>{option}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <ChoiceOptionList>
+          {EXERCISE_OPTIONS.map((option, index) => (
+            <RadioOptionRow
+              key={option}
+              label={option}
+              selected={answers.exerciseDays === option}
+              onPress={() => updateAnswer('exerciseDays', option)}
+              isLast={index === EXERCISE_OPTIONS.length - 1}
+            />
+          ))}
+        </ChoiceOptionList>
       </ChoiceCard>
     </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  promptContent: {
-    gap: scaleHeight(12),
-  },
-  promptText: {
-    color: '#000000',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.5,
-  },
-  examples: {
-    color: '#727272',
-    fontSize: scaleFont(12),
-    fontStyle: 'italic',
-    lineHeight: scaleHeight(18),
-  },
-  optionsList: {
-    width: '96%',
-    alignSelf: 'center',
-    borderRadius: scaleWidth(12),
-    backgroundColor: '#FEF7FF',
-    paddingHorizontal: scaleWidth(16),
-  },
-  optionRow: {
-    minHeight: scaleHeight(56),
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: scaleWidth(16),
-  },
-  optionDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
-  },
-  radio: {
-    width: scaleWidth(20),
-    height: scaleWidth(20),
-    borderWidth: 2,
-    borderColor: '#49454F',
-    borderRadius: scaleWidth(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioSelected: {
-    borderColor: '#5B4A9E',
-  },
-  radioDot: {
-    width: scaleWidth(10),
-    height: scaleWidth(10),
-    borderRadius: scaleWidth(5),
-    backgroundColor: '#5B4A9E',
-  },
-  optionText: {
-    color: '#1D1B20',
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-    lineHeight: scaleHeight(20),
-    letterSpacing: 0.25,
-  },
-});

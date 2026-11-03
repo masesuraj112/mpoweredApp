@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { NO_MEDICATION_OPTION } from '@/constants/managementOptions';
 import { useManagementAssessment } from '@/features/assessments/management/context';
 import { toggleMedicationOption } from '@/features/assessments/management/medication';
@@ -64,10 +64,7 @@ export default function MedicationScreen() {
         onRecord={() => router.push('/tracker/management/otc')}
         variant="management"
         searchEnabled={false}
-        scrollable
-        listHeight={scaleHeight(253)}
         selectedChipsEnabled={false}
-        cardHeight={scaleHeight(516)}
       />
     </TrackerQuestionScreen>
   );

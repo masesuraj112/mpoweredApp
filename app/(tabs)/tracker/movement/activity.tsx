@@ -1,4 +1,4 @@
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
@@ -51,7 +51,6 @@ export default function ActivityScreen() {
           disabled={answers.activeHours === undefined || isOverMax}
           validationMessage={isOverMax ? `Please enter ${MAX_HOURS} hours or less` : undefined}
           variant="personalCare"
-          style={{ flex: 1, height: undefined }}
         >
           <TextInput
             value={text}

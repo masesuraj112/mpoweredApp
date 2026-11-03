@@ -1,5 +1,5 @@
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -92,7 +92,6 @@ export default function PainLocationScreen() {
         onPrevious={handlePrevious}
         disabled={selected.length === 0}
         variant="painTracker"
-        scrollable
       />
       </View>
 

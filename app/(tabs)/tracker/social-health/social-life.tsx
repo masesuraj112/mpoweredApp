@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { SOCIAL_LIFE_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleHeight } from '@/services/scale';
@@ -31,8 +31,6 @@ export default function SocialLifeScreen() {
         onSelectionChange={index => updateAnswer('socialLife', SOCIAL_HEALTH_OPTIONS[index])}
         onRecord={handleNext}
         variant="personalCare"
-        scrollable={false}
-        cardHeight={scaleHeight(558)}
       />
     </TrackerQuestionScreen>
   );

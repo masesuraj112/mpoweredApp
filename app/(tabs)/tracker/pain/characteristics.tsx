@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { PAIN_CHARACTERISTICS_OPTIONS } from '@/constants/painCharacteristics';
 import { usePainAssessment } from '@/features/assessments/pain/context';
 import { scaleHeight } from '@/services/scale';
@@ -56,10 +56,8 @@ export default function PainCharacteristicsScreen() {
         onRecord={handleNext}
         onPrevious={handlePrevious}
         disabled={selected.length === 0}
-        cardHeight={scaleHeight(599)}
         variant="painTracker"
         searchEnabled
-        scrollable
         selectedChipsEnabled={false}
       />
     </TrackerQuestionScreen>

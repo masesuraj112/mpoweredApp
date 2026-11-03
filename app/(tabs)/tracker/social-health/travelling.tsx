@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { SingleChoiceInput } from '@/components/mpowered/SingleChoiceList';
+import { SingleChoiceInput } from '@/components/tracker/SingleChoiceInput';
 import { TRAVELLING_OPTIONS } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleHeight } from '@/services/scale';
@@ -32,8 +32,6 @@ export default function TravellingScreen() {
         onPrevious={() => router.push('/tracker/social-health/social-life')}
         onRecord={handleNext}
         variant="personalCare"
-        scrollable={false}
-        cardHeight={scaleHeight(558)}
       />
     </TrackerQuestionScreen>
   );

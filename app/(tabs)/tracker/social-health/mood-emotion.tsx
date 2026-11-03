@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { MOOD_EMOTION_VALUES, type MoodEmotion } from '@/constants/socialHealthOptions';
 import { useSocialHealthAssessment } from '@/features/assessments/social-health/context';
 import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
@@ -73,7 +73,6 @@ export default function MoodEmotionScreen() {
           attemptedNext && !selected ? 'This question is mandatory and requires a response' : undefined
         }
         variant="personalCare"
-        cardHeight={scaleHeight(300)}
       >
         <View style={styles.emojiRow}>
           {MOOD_EMOTIONS.map(emotion => {

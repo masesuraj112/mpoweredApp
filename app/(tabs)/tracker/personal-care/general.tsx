@@ -1,5 +1,5 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
 import { scaleFont, scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
@@ -46,7 +46,6 @@ export default function GeneralScreen() {
         disabled={selected.length === 0}
         variant="personalCare"
         searchEnabled={false}
-        scrollable
         selectedChipsEnabled={false}
       />
     </TrackerQuestionScreen>
