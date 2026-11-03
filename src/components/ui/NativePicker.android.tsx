@@ -54,10 +54,15 @@ export function NativePicker<T extends string>({ value, options, onChange, acces
             ...(accessibilityLabel ? [semantics({ contentDescription: accessibilityLabel })] : []),
           ]}
         />
-        <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
+        {/* The open list takes the field's lavender too, rather than Material's own surface colour. */}
+        <ExposedDropdownMenu
+          expanded={expanded}
+          onDismissRequest={() => setExpanded(false)}
+          containerColor={colors.surfaceContainer}>
           {options.map((option) => (
             <DropdownMenuItem
               key={option.value}
+              elementColors={{ textColor: colors.text }}
               onClick={() => {
                 onChange(option.value);
                 setExpanded(false);
