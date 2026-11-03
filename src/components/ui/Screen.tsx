@@ -16,6 +16,7 @@ type ScreenProps = {
   /** Shown below the content (an action bar), never over it. */
   footer?: ReactNode;
   keyboardShouldPersistTaps?: ScrollViewProps['keyboardShouldPersistTaps'];
+  keyboardDismissMode?: ScrollViewProps['keyboardDismissMode'];
 };
 
 /**
@@ -28,12 +29,14 @@ export function Screen({
   edges = ['top'],
   footer,
   keyboardShouldPersistTaps,
+  keyboardDismissMode,
 }: ScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={edges}>
       {scroll ? (
         <ScrollView
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+          keyboardDismissMode={keyboardDismissMode}
           contentContainerStyle={[styles.content, styles.scrollContent]}>
           {children}
         </ScrollView>

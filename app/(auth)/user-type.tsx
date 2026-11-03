@@ -26,7 +26,7 @@ const OPTIONS: {
     description: 'I am managing my own health journey',
     benefits: [
       'Track your symptoms and progress',
-      'Connect with your care team',
+      'Connect with your support people',
       'Access personalised health insights',
     ],
     top: 198,

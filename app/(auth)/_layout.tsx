@@ -1,16 +1,28 @@
 import { OnboardingProvider } from '@/context/Onboarding-Context';
+import { Colors } from '@/constants/theme';
 import { Stack } from 'expo-router';
 
-// export default function AuthLayout() {
-//   return <Stack screenOptions={{ headerShown: false }} />;
-// }
+// A transparent header that shows only the platform's back arrow, so every step can be left without a
+// swipe (docs/backend/sign-up-sign-in-plan.md, 4.6). It only appears when there is a screen to go back to.
+const BACK_ARROW_ONLY = {
+  headerShown: true,
+  headerTransparent: true,
+  headerTitle: '',
+  headerShadowVisible: false,
+  headerBackButtonDisplayMode: 'minimal',
+  headerTintColor: Colors.light.primary,
+} as const;
+
+// No back arrow at the start of the flow, on the "verified" slides, or once the person is signed in and
+// choosing what to do about their account (account-check has its own way back).
+const NO_HEADER = { headerShown: false } as const;
 
 export default function OnboardingLayout() {
   return (
     <OnboardingProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="onboarding" />
+      <Stack screenOptions={BACK_ARROW_ONLY}>
+        <Stack.Screen name="index" options={NO_HEADER} />
+        <Stack.Screen name="onboarding" options={NO_HEADER} />
         <Stack.Screen name="user-type" />
         <Stack.Screen name="name" />
         <Stack.Screen name="consent" />
@@ -22,7 +34,8 @@ export default function OnboardingLayout() {
         <Stack.Screen name="login-bridge" />
         <Stack.Screen name="phone" />
         <Stack.Screen name="verify" />
-        <Stack.Screen name="verification-confirmation" />
+        <Stack.Screen name="account-check" options={NO_HEADER} />
+        <Stack.Screen name="verification-confirmation" options={NO_HEADER} />
       </Stack>
     </OnboardingProvider>
   );

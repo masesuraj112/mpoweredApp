@@ -1,7 +1,7 @@
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Keyboard, Pressable, ScrollView, type ScrollViewInstance, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { SearchBar } from '@/components/mpowered/SearchBar';
@@ -51,6 +51,7 @@ export default function DiagnosisConditionsScreen() {
   const [isAddingCustomCondition, setIsAddingCustomCondition] = useState(false);
   const [customCondition, setCustomCondition] = useState('');
   const doneBar = useKeyboardDoneBar();
+  const selectedChipsRef = useRef<ScrollViewInstance>(null);
   const [selectedChipsContentHeight, setSelectedChipsContentHeight] = useState(0);
   const buttonBottom = Math.max(64 * scale, insets.bottom + 12 * scale);
   const buttonTop = canvasHeight - buttonBottom - 52 * scale;
@@ -61,6 +62,15 @@ export default function DiagnosisConditionsScreen() {
   const filteredConditions = CONDITIONS.filter((condition) =>
     (CONDITION_LABELS[condition] ?? condition).toLowerCase().includes(searchText.trim().toLowerCase()),
   );
+
+  // Once the chips outgrow their space they scroll, so bring the newest one into view.
+  useEffect(() => {
+    if (selectedChipsContentHeight > maxSelectedChipsHeight) {
+      selectedChipsRef.current?.scrollToEnd({ animated: true });
+    } else {
+      selectedChipsRef.current?.scrollTo({ y: 0, animated: false });
+    }
+  }, [selectedConditions.length, selectedChipsContentHeight, maxSelectedChipsHeight]);
 
   const handleContinue = () => router.push('/(auth)/other-conditions');
 
@@ -130,6 +140,7 @@ export default function DiagnosisConditionsScreen() {
         />
 
         <ScrollView
+          ref={selectedChipsRef}
           showsVerticalScrollIndicator={false}
           scrollEnabled={selectedChipsContentHeight > maxSelectedChipsHeight}
           onContentSizeChange={(_, contentHeight) => setSelectedChipsContentHeight(contentHeight)}
@@ -259,9 +270,10 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontWeight: '500',
   },
+  // Keep ScrollView's default overflow: any other value limits the chips to this view's height, which starts at 0,
+  // so their height measures 0 and the view never grows.
   selectedScroller: {
     position: 'absolute',
-    overflow: 'visible',
   },
   searchInput: {
     position: 'absolute',

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useOnboarding } from '@/context/Onboarding-Context';
+
 const SLIDES = [
   {
     heading: 'Track your pain and its impacts weekly',
@@ -30,6 +32,7 @@ const SLIDES = [
 ];
 
 export default function OnboardingCarousel() {
+  const { updateData } = useOnboarding();
   const [index, setIndex] = useState(0);
   const { width, height } = useWindowDimensions();
   // Android draws behind the system buttons, so keep the bottom controls above them.
@@ -87,10 +90,22 @@ export default function OnboardingCarousel() {
         ))}
       </View>
 
-      <Pressable style={styles.primaryButton} onPress={() => router.push('/(auth)/user-type')}>
+      {/* Remember which one was tapped: after the code, the app checks it against the account (sign-up-sign-in-plan.md). */}
+      <Pressable
+        style={styles.primaryButton}
+        onPress={() => {
+          updateData({ intent: 'sign-up' });
+          router.push('/(auth)/user-type');
+        }}
+      >
         <Text style={styles.primaryButtonText}>Get started →</Text>
       </Pressable>
-      <Pressable onPress={() => router.push('/(auth)/phone')}>
+      <Pressable
+        onPress={() => {
+          updateData({ intent: 'sign-in' });
+          router.push('/(auth)/phone');
+        }}
+      >
         <Text style={styles.signIn}>Sign in</Text>
       </Pressable>
     </View>

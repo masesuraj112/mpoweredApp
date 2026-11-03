@@ -4,10 +4,11 @@ import {
   SettingsModalGroup,
   SettingsModalInfoRow,
   SettingsModalText,
-} from '@/components/mpowered/SettingsModal';
+} from '@/components/settings/SettingsModal';
 // Face ID is commented out until it comes back as an app lock (see docs/settings-backend.md, Q1).
-// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+// import { SettingsOption, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
+import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { useAuth } from '@/context/AuthContext';
@@ -16,7 +17,7 @@ import { usePersonalDetails } from '@/features/settings/usePersonalDetails';
 import { signOut } from '@/services/auth';
 import { NAME_MAX_LENGTH } from '@/services/validation';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 // const faceIdIcon = require('../../../assets/images/settings/faceid.svg');
@@ -84,9 +85,7 @@ export default function ProfileScreen() {
         label="Enable FaceID"
         trailing={<SettingsToggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />}
       /> */}
-      <Pressable onPress={handleSignOut} style={styles.signOutButton} accessibilityRole="button">
-        <Text style={styles.signOutText}>Sign out</Text>
-      </Pressable>
+      <Button label="Sign out" variant="primary" onPress={handleSignOut} />
 
       <SettingsModal
         visible={isPersonalDetailsOpen}
@@ -124,17 +123,3 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  signOutButton: {
-    height: 55,
-    marginTop: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    backgroundColor: '#6750A4',
-  },
-  signOutText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-  },
-});

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import VerificationConfirmationScreen from '../app/(auth)/verification-confirmation';
@@ -13,7 +13,12 @@ const metrics = {
 };
 
 describe('sign-in screens on a fixed-size canvas', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => {
+    jest.useFakeTimers();
+    const { width, height } = metrics.frame;
+    const size = { width, height, scale: 1, fontScale: 1 };
+    Dimensions.set({ window: size, screen: size });
+  });
   afterEach(() => jest.useRealTimers());
 
   it('keeps the canvas between the status bar and the system navigation buttons', async () => {

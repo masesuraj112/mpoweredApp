@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24, paddingTop: 100, paddingBottom: 64 },
   title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 8 },
   subtitle: { textAlign: 'center', color: '#8A8590', marginBottom: 24 },
-  input: { backgroundColor: '#EDE9F5', borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15, marginBottom: 'auto' },
-  continueButton: { backgroundColor: '#6750A4', width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 40 },
+  input: { backgroundColor: '#EDE9F5', borderRadius: 8, padding: 16, minHeight: 140, textAlignVertical: 'top', fontSize: 15 },
+  continueButton: { backgroundColor: '#6750A4', width: '100%', maxWidth: 306, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: 24 },
   continueText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 });

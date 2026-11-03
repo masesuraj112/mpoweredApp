@@ -1,6 +1,8 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { useId } from 'react';
-import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, View } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
 
 /**
  * A "Done" bar shown above the iOS keyboard, for keyboards with no way to close them: multiline
@@ -26,9 +28,11 @@ function KeyboardDoneBar({ nativeID }: { nativeID: string }) {
           onPress={Keyboard.dismiss}
           accessibilityRole="button"
           accessibilityLabel="Done, close keyboard"
-          hitSlop={8}
+          style={styles.done}
         >
-          <Text style={styles.doneText}>Done</Text>
+          <AppText variant="titleMedium" color="primary">
+            Done
+          </AppText>
         </Pressable>
       </View>
     </InputAccessoryView>
@@ -39,15 +43,13 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
+    paddingHorizontal: Spacing.three,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#CAC4D0',
-    backgroundColor: '#F7F2FA',
+    borderTopColor: Colors.light.outline,
+    backgroundColor: Colors.light.surfaceContainer,
   },
-  doneText: {
-    color: '#6750A4',
-    fontSize: scaleFont(16),
-    fontWeight: '600',
+  done: {
+    minHeight: MinTapTarget,
+    justifyContent: 'center',
   },
 });

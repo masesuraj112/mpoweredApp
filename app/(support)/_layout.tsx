@@ -1,7 +1,6 @@
 import { TabIcon, TAB_ICON_PILL_HEIGHT, TAB_ICON_PILL_WIDTH } from '@/components/navigation/TabIcon';
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { SupportPersonProvider } from '@/features/support-person/context';
-import { scaleFont, scaleHeight } from '@/services/scale';
 import { Image } from 'expo-image';
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: Colors.light.surfaceContainer,
     borderTopWidth: 0,
-    paddingTop: 6,
+    paddingTop: Spacing.one + Spacing.half,
   },
   // Make the icon area the size of the pill, so the pill doesn't overflow onto the label.
   iconSlot: {
@@ -69,9 +68,7 @@ const styles = StyleSheet.create({
     height: TAB_ICON_PILL_HEIGHT,
   },
   tabLabel: {
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    letterSpacing: 0.5,
-    marginTop: scaleHeight(4),
+    ...Typography.labelMedium,
+    marginTop: Spacing.one,
   },
 });

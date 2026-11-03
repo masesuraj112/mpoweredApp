@@ -24,3 +24,20 @@ describe('OnboardingContext.reset', () => {
     expect(result.current.data.conditions).toEqual([]);
   });
 });
+
+describe('OnboardingContext intent', () => {
+  it('starts empty, records the button tapped, and is cleared by reset', async () => {
+    const { result } = await renderHook(() => useOnboarding(), { wrapper });
+    expect(result.current.data.intent).toBeNull();
+
+    await act(async () => {
+      result.current.updateData({ intent: 'sign-in' });
+    });
+    expect(result.current.data.intent).toBe('sign-in');
+
+    await act(async () => {
+      result.current.reset();
+    });
+    expect(result.current.data.intent).toBeNull();
+  });
+});

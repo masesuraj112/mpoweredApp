@@ -5,8 +5,9 @@ import {
   SettingsModalGroup,
   SettingsModalSection,
   SettingsModalToggleRow,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
+import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -23,7 +24,7 @@ import {
 import type { SupportPerson } from '@/features/care-planner/types';
 import { useMySupportPersons } from '@/features/care-planner/useMySupportPersons';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text } from 'react-native';
+import { Alert, StyleSheet, Text } from 'react-native';
 
 const accountIcon = require('../../../assets/images/settings/account.svg');
 const deleteIcon = require('../../../assets/images/settings/delete.svg');
@@ -129,14 +130,11 @@ export default function SupportPersonsScreen() {
         );
       })}
       {state.status === 'ready' && (
-        <Pressable
+        <Button
+          label="Add support person"
+          variant="primary"
           onPress={() => openDraft({ ...EMPTY_SUPPORT_PERSON_DRAFT })}
-          accessibilityRole="button"
-          accessibilityLabel="Add support person"
-          style={styles.addButton}
-        >
-          <Text style={styles.addButtonText}>Add support person</Text>
-        </Pressable>
+        />
       )}
 
       {draft && (
@@ -201,17 +199,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   sectionTitle: { fontSize: 20, fontWeight: '600', marginBottom: 12 },
-  // Same as the Sign out button on the Account page.
-  addButton: {
-    height: 55,
-    marginTop: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    backgroundColor: '#6750A4',
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-  },
 });

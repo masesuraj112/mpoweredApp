@@ -1,25 +1,19 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { ChoiceCard } from '@/components/mpowered/ChoiceCard';
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
+import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceTextInput } from '@/components/tracker/ChoiceTextInput';
+import { ReflectionWordCounter } from '@/components/tracker/ReflectionWordCounter';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
-import {
-  countWords,
-  isReflectionTooLong,
-  MAX_REFLECTION_WORDS,
-} from '@/features/assessments/reflection';
+import { countWords, isReflectionTooLong } from '@/features/assessments/reflection';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePersonalCareEntry } from '@/services/assessments';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
   const reminders = useReminders();
-  const doneBar = useKeyboardDoneBar();
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // A ref blocks a second tap in the same tick, before the saving state has re-rendered.
@@ -55,7 +49,7 @@ export default function ReflectionScreen() {
     <TrackerQuestionScreen title="My Personal Care">
       <ChoiceCard
         title="Reflection on your personal care"
-        prompt={<Text style={styles.prompt}>Write any reflections of pain impacts on your daily life:</Text>}
+        prompt="Write any reflections of pain impacts on your daily life:"
         questionNumber={4}
         totalQuestions={4}
         onPrevious={() => router.push('/tracker/personal-care/sleeping')}
@@ -63,57 +57,15 @@ export default function ReflectionScreen() {
         disabled={saving || overLimit}
         validationMessage={errorMessage ?? undefined}
         variant="personalCare"
-        cardHeight={scaleHeight(554)}
       >
-        <TextInput
+        <ChoiceTextInput
           accessibilityLabel="Reflection on your personal care"
-          multiline
-          inputAccessoryViewID={doneBar.id}
           value={answers.reflection ?? ''}
           onChangeText={value => updateAnswer('reflection', value)}
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"
-          placeholderTextColor="#B5B5B5"
-          textAlignVertical="top"
-          style={styles.reflectionInput}
         />
-        <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
-          {wordCount} / {MAX_REFLECTION_WORDS} words
-        </Text>
+        <ReflectionWordCounter wordCount={wordCount} overLimit={overLimit} />
       </ChoiceCard>
-      {doneBar.bar}
     </TrackerQuestionScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  prompt: {
-    color: '#1D1B20',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.5,
-  },
-  reflectionInput: {
-    minHeight: scaleHeight(80),
-    borderWidth: 1,
-    borderColor: '#DADADA',
-    borderRadius: scaleWidth(8),
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: scaleWidth(14),
-    paddingVertical: scaleHeight(10),
-    color: '#1D1B20',
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-  },
-  counter: {
-    marginTop: scaleHeight(6),
-    textAlign: 'right',
-    color: '#49454F',
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-  },
-  counterOver: {
-    color: '#B3261E',
-    fontWeight: '600',
-  },
-});

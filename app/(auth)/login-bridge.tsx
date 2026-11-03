@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useOnboarding } from '@/context/Onboarding-Context';
 import { authErrorMessage } from '@/features/auth/messages';
+import { seesPatientIntro } from '@/features/auth/patientIntro';
 import { createProfile } from '@/services/profile';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -10,7 +11,7 @@ import { fitCanvas } from '@/features/auth/canvas';
 
 export default function LoginBridgeScreen() {
   const { data } = useOnboarding();
-  const { session } = useAuth();
+  const { session, refreshProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
@@ -33,6 +34,11 @@ export default function LoginBridgeScreen() {
     setIsSaving(false);
     if (!created.ok) {
       setErrorMessage(authErrorMessage(created.error.code));
+      return;
+    }
+    // The slides are about the patient questionnaires; a support person goes straight to their app.
+    if (!seesPatientIntro(data.userType)) {
+      refreshProfile();
       return;
     }
     router.replace('/(auth)/verification-confirmation' as any);

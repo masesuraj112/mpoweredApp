@@ -1,9 +1,8 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
-import { MultiChoiceList } from '@/components/mpowered/MultiChoiceList';
+import { ChoicePrompt, PromptEmphasis } from '@/components/tracker/ChoicePrompt';
+import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
-import { scaleFont, scaleHeight } from '@/services/scale';
 import { router } from 'expo-router';
-import { StyleSheet, Text } from 'react-native';
 import { GENERAL_ACTIVITY_OPTIONS } from '@/features/assessments/personal-care/options';
 
 export default function GeneralScreen() {
@@ -33,9 +32,9 @@ export default function GeneralScreen() {
       <MultiChoiceList
         title="General Activities Impacts"
         prompt={
-          <Text style={styles.prompt}>
-            Select <Text style={styles.underlinedPrompt}>ALL</Text> relevant statements:
-          </Text>
+          <ChoicePrompt>
+            Select <PromptEmphasis>ALL</PromptEmphasis> relevant statements:
+          </ChoicePrompt>
         }
         options={GENERAL_ACTIVITY_OPTIONS}
         selectedIndices={selected}
@@ -46,22 +45,9 @@ export default function GeneralScreen() {
         disabled={selected.length === 0}
         variant="personalCare"
         searchEnabled={false}
-        scrollable
         selectedChipsEnabled={false}
       />
     </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  prompt: {
-    color: '#1D1B20',
-    fontSize: scaleFont(12),
-    fontWeight: '500',
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.5,
-  },
-  underlinedPrompt: {
-    textDecorationLine: 'underline',
-  },
-});

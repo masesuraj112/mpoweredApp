@@ -1,19 +1,21 @@
-import { AppointmentCard } from '@/components/mpowered/support-person/AppointmentCard';
-import { InitialsAvatar } from '@/components/mpowered/support-person/InitialsAvatar';
-import { PermissionChips } from '@/components/mpowered/support-person/PermissionChips';
-import { SectionLabel } from '@/components/mpowered/support-person/SectionLabel';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+
+import { AppointmentCard } from '@/components/support-person/AppointmentCard';
+import { InitialsAvatar } from '@/components/support-person/InitialsAvatar';
+import { PermissionChips } from '@/components/support-person/PermissionChips';
+import { SectionLabel } from '@/components/support-person/SectionLabel';
+import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Colors } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
@@ -34,24 +36,26 @@ export default function PatientAppointmentsScreen() {
 
   if (status !== 'ready') {
     return (
-      <View style={styles.screen}>
+      <Screen edges={[]}>
         {header}
         {status === 'loading' ? (
           <LoadingState label="Loading appointments" />
         ) : (
           <ErrorState message="We could not load this person's appointments." onRetry={reload} />
         )}
-      </View>
+      </Screen>
     );
   }
 
   // e.g. the support person unpaired from this patient in Settings, or followed an old link.
   if (!patient) {
     return (
-      <View style={styles.screen}>
+      <Screen edges={[]}>
         {header}
-        <Text style={[styles.empty, styles.notFound]}>You no longer support this person.</Text>
-      </View>
+        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
+          You no longer support this person.
+        </AppText>
+      </Screen>
     );
   }
 
@@ -61,19 +65,19 @@ export default function PatientAppointmentsScreen() {
   const firstName = patient.name.split(' ')[0];
 
   return (
-    <View style={styles.screen}>
+    <Screen edges={[]}>
       {header}
-      <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.content}>
         <View style={styles.patientRow}>
           <InitialsAvatar name={patient.name} size={49} />
           <View style={styles.patientText}>
-            <Text style={styles.name} numberOfLines={1}>
+            <AppText accessibilityRole="header" variant="headlineSmall" numberOfLines={1}>
               {patient.name}
-            </Text>
+            </AppText>
             {patient.condition ? (
-              <Text style={styles.condition} numberOfLines={1}>
+              <AppText variant="labelLargeBold" color="textTertiary" numberOfLines={1}>
                 {patient.condition}
-              </Text>
+              </AppText>
             ) : null}
           </View>
         </View>
@@ -82,7 +86,7 @@ export default function PatientAppointmentsScreen() {
 
         <AppointmentSection
           title="Upcoming appointments"
-          emptyText={noneShared ? ` hasn’t added you to an appointment yet.` : 'No upcoming appointments.'}
+          emptyText={noneShared ? `${firstName} hasn’t added you to an appointment yet.` : 'No upcoming appointments.'}
           appointments={upcoming}
           patient={patient}
           isUpcoming
@@ -94,8 +98,8 @@ export default function PatientAppointmentsScreen() {
           patient={patient}
           isUpcoming={false}
         />
-      </ScrollView>
-    </View>
+      </View>
+    </Screen>
   );
 }
 
@@ -114,13 +118,15 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
     <View style={styles.section}>
       <SectionLabel>{title}</SectionLabel>
       {appointments.length === 0 ? (
-        <Text style={styles.empty}>{emptyText}</Text>
+        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
+          {emptyText}
+        </AppText>
       ) : (
-        appointments.map(appointment => (
+        appointments.map((appointment) => (
           <AppointmentCard
             key={appointment.appointmentId}
             appointment={appointment}
-            actions={actionTypes.map(action => ({
+            actions={actionTypes.map((action) => ({
               label: APPOINTMENT_ACTION_LABELS[action],
               onPress: () => openAppointmentAction(action, patient.id, appointment.appointmentId),
             }))}
@@ -132,49 +138,18 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
   content: {
-    gap: scaleHeight(20),
-    paddingTop: scaleHeight(32),
-    paddingBottom: scaleHeight(32),
-    paddingHorizontal: scaleWidth(25),
+    gap: Spacing.three,
   },
   patientRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(10),
+    gap: Spacing.mid,
   },
   patientText: {
     flex: 1,
   },
-  name: {
-    color: Colors.light.text,
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleFont(29),
-    letterSpacing: -0.48,
-  },
-  condition: {
-    marginLeft: scaleWidth(4),
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: scaleFont(14),
-    fontWeight: '600',
-    lineHeight: 20,
-    letterSpacing: 0.1,
-  },
   section: {
-    gap: scaleHeight(7),
-  },
-  empty: {
-    color: Colors.light.onSurfaceVariant,
-    fontSize: scaleFont(14),
-    lineHeight: 20,
-    letterSpacing: 0.25,
-  },
-  notFound: {
-    padding: scaleWidth(25),
+    gap: Spacing.two,
   },
 });
