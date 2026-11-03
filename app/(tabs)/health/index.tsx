@@ -135,6 +135,8 @@ export default function HealthScreen() {
 }
 
 
+const ACTION_INNER_RADIUS = 6;
+
 const useStyles = makeStyles((colors) => ({
   profileTitle: {
     marginTop: Spacing.two,
@@ -213,13 +215,16 @@ const useStyles = makeStyles((colors) => ({
     width: '100%',
     height: 101,
   },
+  // Three buttons that read as one unit: small gaps, round outer ends, slightly rounded inner corners.
   actionRow: {
     flexDirection: 'row',
+    gap: Spacing.one,
     marginTop: Spacing.two,
   },
   actionButton: {
     flex: 1,
     minHeight: MinTapTarget,
+    borderRadius: ACTION_INNER_RADIUS,
     backgroundColor: colors.primary,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.two,
