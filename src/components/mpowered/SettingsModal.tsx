@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { Children, Fragment, ReactNode, useState } from 'react';
 import { Keyboard, Modal, Pressable, ScrollView, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
 
 /* -------------------------------------------------------------------------- */
@@ -142,6 +142,7 @@ export function SettingsModalField({
   ...inputProps
 }: SettingsModalFieldProps) {
   const styles = useStyles();
+  const colors = useThemeColors();
   const [revealed, setRevealed] = useState(false);
 
   const passwordProps: TextInputProps = password
@@ -182,7 +183,14 @@ export function SettingsModalField({
         </Pressable>
       ) : (
         showEditIcon && (
-          <Image source={pencilIcon} style={styles.editIcon} contentFit="contain" accessibilityLabel="" pointerEvents="none" />
+          <Image
+            source={pencilIcon}
+            style={styles.editIcon}
+            contentFit="contain"
+            tintColor={colors.onSurfaceVariant}
+            accessibilityLabel=""
+            pointerEvents="none"
+          />
         )
       )}
     </View>
@@ -267,6 +275,7 @@ export function SettingsModalActionRow({
   destructive?: boolean;
 }) {
   const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onPress}
@@ -275,7 +284,16 @@ export function SettingsModalActionRow({
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <Text style={[styles.rowLabel, destructive && styles.destructiveText]}>{label}</Text>
-      {icon && <Image source={icon} style={styles.rowIcon} contentFit="contain" accessibilityLabel="" />}
+      {/* One-colour icons, tinted to the theme so they show in dark mode; red on a destructive row. */}
+      {icon && (
+        <Image
+          source={icon}
+          style={styles.rowIcon}
+          contentFit="contain"
+          tintColor={destructive ? colors.error : colors.onSurfaceVariant}
+          accessibilityLabel=""
+        />
+      )}
     </Pressable>
   );
 }

@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
-import { ContentColumn, makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { ContentColumn, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { ArrowGlyph } from '@/components/ui/icons';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
@@ -63,6 +63,7 @@ export function SettingsOption({
   accessibilityLabel?: string;
 }) {
   const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onPress}
@@ -70,7 +71,16 @@ export function SettingsOption({
       accessibilityLabel={accessibilityLabel ?? label}
       style={({ pressed }) => [styles.option, elevated && styles.optionElevated, pressed && styles.optionPressed]}
     >
-      {icon && <Image source={icon} style={styles.optionIcon} contentFit="contain" accessibilityLabel="" />}
+      {/* One-colour icons, tinted to the theme so they show in dark mode; red on a destructive row. */}
+      {icon && (
+        <Image
+          source={icon}
+          style={styles.optionIcon}
+          contentFit="contain"
+          tintColor={destructive ? colors.error : colors.onSurfaceVariant}
+          accessibilityLabel=""
+        />
+      )}
       <Text style={[styles.optionLabel, destructive && styles.destructiveText]}>{label}</Text>
       {trailing ?? (onPress && <ArrowGlyph style={[styles.optionArrow, destructive && styles.destructiveText]} />)}
     </Pressable>

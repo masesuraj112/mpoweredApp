@@ -67,6 +67,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
 
 function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps & { isLast: boolean }) {
   const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <Pressable
       onPress={onPress}
@@ -77,7 +78,8 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
       style={({ pressed }) => [styles.row, !isLast && styles.rowDivider, pressed && styles.rowPressed]}
     >
       {asset ? (
-        <Image source={asset} style={styles.rowIcon} contentFit="contain" accessibilityLabel="" />
+        // The icons are drawn in one colour, so tint them to the theme (they'd vanish in dark mode otherwise).
+        <Image source={asset} style={styles.rowIcon} contentFit="contain" tintColor={colors.onSurfaceVariant} accessibilityLabel="" />
       ) : (
         <Text style={styles.rowIcon} accessibilityElementsHidden>{icon}</Text>
       )}
