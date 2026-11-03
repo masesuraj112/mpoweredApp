@@ -22,7 +22,7 @@ React Native 0.88 + Expo SDK 58 + Expo Router + TypeScript (strict) + Supabase. 
 - Flex layouts only: no absolute-pixel "canvas" layouts, no fixed heights. Whole screens scroll inside the safe area (`Screen`).
 - Colours, spacing, radii, shadows and text styles come from `@/constants/theme`, never hard-coded. Set text with `AppText`. Add a missing token there, minimally, to both `light` and `dark`. Leave system font scaling ON.
 - Tap targets at least 48dp. Every interactive element has an accessibilityRole and label. Nothing may depend on swipe alone.
-- `__tests__/unit/styling-guard.test.ts` fails on a hard-coded colour, a removed helper, `components/mpowered` or an absolute-positioned screen layout. `docs/ui/styling.md` has the tokens, the shared components and a checklist for building a screen.
+- `__tests__/unit/styling-guard.test.ts` fails on a hard-coded colour, a removed helper, `components/mpowered` or an absolute-positioned screen layout. `docs/ui/styling.md` has the tokens, the shared components and a checklist for building a screen; `docs/ui/structure.md` maps how the UI is put together and where to look for a bug; `docs/ui/refactor-history.md` records what the UI refactor changed.
 
 ## Figma
 - Use `get_metadata` first for large frames, then `get_design_context` on sub-nodes. Output is React + Tailwind: translate to React Native StyleSheet, and do not copy absolute positioning.

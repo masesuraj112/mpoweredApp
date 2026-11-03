@@ -44,7 +44,7 @@ This README explains how the repository is organised, how to run the app, and wh
 | `.github/workflows/` | `ci.yml` (checks), `eas-update.yml` (publishes app updates), `deploy-db.yml` (manual database deploy) |
 | `app.json`, `eas.json` | Expo and EAS build configuration |
 
-Coding conventions (layout, styling, accessibility, database rules) are in [CLAUDE.md](CLAUDE.md), which applies to people as much as to AI assistants. The styling guide (tokens, shared components, how to build a screen) is [docs/ui/styling.md](docs/ui/styling.md).
+Coding conventions (layout, styling, accessibility, database rules) are in [CLAUDE.md](CLAUDE.md), which applies to people as much as to AI assistants. The styling guide (tokens, shared components, how to build a screen) is [docs/ui/styling.md](docs/ui/styling.md); the map of the UI is [docs/ui/structure.md](docs/ui/structure.md), and what the refactor changed is [docs/ui/refactor-history.md](docs/ui/refactor-history.md).
 
 ## Getting started
 

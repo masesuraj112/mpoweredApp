@@ -2,6 +2,8 @@
 
 Audience: developers building or changing a screen. Read this before you write one; the rules apply to every screen in the app.
 
+See also: [structure.md](structure.md) (how the UI is put together, which shell each area uses, where to look for a bug) and [refactor-history.md](refactor-history.md) (what the UI refactor changed and why).
+
 ## Rules
 
 - Colours, spacing, radii, shadows and text styles come from `src/constants/theme.ts`. No hex or `rgba` literals in components or screens.
