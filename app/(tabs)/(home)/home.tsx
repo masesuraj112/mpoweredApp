@@ -116,15 +116,9 @@ export default function HomeScreen() {
                       isRecorded ? styles.editButtonText : styles.recordButtonText,
                     ]}
                   >
-                    {isRecorded ? 'Edit' : 'Record'}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.arrow,
-                      isRecorded ? styles.editButtonText : styles.recordButtonText,
-                    ]}
-                  >
-                    →
+                    {/* One text, so the arrow shares the label's size and baseline (as separate texts of different
+                        sizes it sat low on Android). */}
+                    {isRecorded ? 'Edit →' : 'Record →'}
                   </Text>
                 </Pressable>
               </View>
@@ -265,10 +259,6 @@ const useStyles = makeStyles((colors) => ({
   },
   editButtonText: {
     color: colors.onPrimaryContainer,
-  },
-  arrow: {
-    color: colors.text,
-    ...Typography.subtitle,
   },
   buttonPressed: {
     opacity: 0.8,
