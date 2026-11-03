@@ -355,7 +355,7 @@ const useStyles = makeStyles((colors) => ({
   cancelText: {
     color: colors.primary,
     ...Typography.bodySmall,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   confirmButton: {
     alignItems: 'center',
@@ -373,7 +373,7 @@ const useStyles = makeStyles((colors) => ({
   confirmText: {
     color: colors.onPrimary,
     ...Typography.bodySmall,
-    fontWeight: '600',
+    fontWeight: '400',
   },
 
   // Text field
@@ -411,7 +411,7 @@ const useStyles = makeStyles((colors) => ({
   revealText: {
     color: colors.primary,
     ...Typography.bodySmall,
-    fontWeight: '600',
+    fontWeight: '400',
   },
 
   // Sections, groups, rows

@@ -217,5 +217,6 @@ const useStyles = makeStyles((colors) => ({
   addButtonText: {
     color: colors.onPrimary,
     ...Typography.titleSmall,
+    fontWeight: '400',
   },
 }));

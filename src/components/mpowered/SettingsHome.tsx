@@ -131,16 +131,19 @@ const useStyles = makeStyles((colors) => ({
     height: 24,
     color: colors.onSurfaceVariant,
     ...Typography.titleSmall,
+    fontWeight: '400',
     textAlign: 'center',
   },
   rowLabel: {
     flex: 1,
     color: colors.onSurface,
     ...Typography.titleSmall,
+    fontWeight: '400',
   },
   chevron: {
     color: colors.text,
     ...Typography.headline,
+    fontWeight: '400',
   },
   signOutButton: {
     marginTop: Spacing.four,
@@ -159,5 +162,6 @@ const useStyles = makeStyles((colors) => ({
   signOutText: {
     color: colors.onPrimary,
     ...Typography.titleSmall,
+    fontWeight: '400',
   },
 }));

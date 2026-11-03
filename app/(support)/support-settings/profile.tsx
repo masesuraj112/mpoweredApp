@@ -114,5 +114,6 @@ const useStyles = makeStyles((colors) => ({
   signOutText: {
     color: colors.onPrimary,
     ...Typography.titleSmall,
+    fontWeight: '400',
   },
 }));

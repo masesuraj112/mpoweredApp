@@ -148,10 +148,12 @@ const useStyles = makeStyles((colors) => ({
     flex: 1,
     color: colors.text,
     ...Typography.titleSmall,
+    fontWeight: '400',
   },
   optionArrow: {
     color: colors.text,
     ...Typography.headline,
+    fontWeight: '400',
   },
   destructiveText: {
     color: colors.error,
