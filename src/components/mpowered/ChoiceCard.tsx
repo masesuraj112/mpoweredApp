@@ -77,13 +77,15 @@ export function ChoiceCard({
 
   return (
     <View style={[styles.card, style]}>
-      <Text accessibilityRole="header" style={styles.title}>
-        {title}
-      </Text>
-      <View style={styles.divider} />
-
-      <View style={styles.prompt}>
-        {typeof prompt === 'string' ? <QuestionPrompt>{prompt}</QuestionPrompt> : prompt}
+      {/* The title, rule and question sit closer together than the rest of the card. */}
+      <View style={styles.heading}>
+        <Text accessibilityRole="header" style={styles.title}>
+          {title}
+        </Text>
+        <View style={styles.divider} />
+        <View style={styles.prompt}>
+          {typeof prompt === 'string' ? <QuestionPrompt>{prompt}</QuestionPrompt> : prompt}
+        </View>
       </View>
 
       <View style={styles.answers}>{children}</View>
@@ -173,8 +175,12 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.titleSmall,
     color: colors.text,
   },
+  heading: {
+    gap: Spacing.two,
+  },
   divider: {
-    height: 1,
+    height: 2,
+    borderRadius: 1,
     backgroundColor: colors.divider,
   },
   prompt: {
