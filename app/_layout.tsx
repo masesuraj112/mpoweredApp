@@ -16,7 +16,7 @@ SplashScreen.setOptions({ duration: 300, fade: true });
 const bypassAuth = __DEV__ && process.env.EXPO_PUBLIC_BYPASS_AUTH === 'true';
 
 function RootNavigator() {
-  const { session, loading, hasProfile, profile, profileError, refreshProfile } = useAuth();
+  const { session, loading, hasProfile, profile, profileError, refreshProfile, signInHeld } = useAuth();
 
   useEffect(() => {
     if (!loading) SplashScreen.hide();
@@ -47,8 +47,9 @@ function RootNavigator() {
 
   // The app itself needs both a session and a profile; everything else stays in (auth). While
   // the profile check runs (hasProfile null) the user stays in (auth): rendering nothing here
-  // would unmount the verify screen in the middle of signing in.
-  const canUseApp = !!session && hasProfile === true;
+  // would unmount the verify screen in the middle of signing in. A held sign-in also stays: the person
+  // is choosing what to do about an account that already exists.
+  const canUseApp = !!session && hasProfile === true && !signInHeld;
   // A failed guard redirects, it no longer hides the group. The default target is the first group
   // that is allowed, which is the bare path "/(tabs)": it has no index route, so it is "unmatched".
   // Each guard therefore names where to go.

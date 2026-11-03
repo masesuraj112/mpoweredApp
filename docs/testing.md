@@ -123,6 +123,10 @@ Pain, social health and management tests share some file names (`validate.test.t
 | Support person database errors map to app codes (permission errors are `NOT_ALLOWED`, never `VALIDATION`) and have friendly messages | `errors.test.ts`; `messages.test.ts` | Unit | `unit-tests` |
 | The support person service sends the exact function arguments and maps rows, including patients with no appointments | `support-person.test.ts`; `src/features/support-person/mappers.test.ts` | Service, Unit | `unit-tests` |
 | The patient's Support persons list shows each invitation's status | `supportPerson.test.ts` (`invitationStatusLabel`); `mappers.test.ts` (status) | Unit | `unit-tests` |
+| After a correct code: signing up with a number that has an account asks about it instead of opening it; signing in with a new number says there is no account; the other cases are unchanged | `afterVerify.test.ts`; `__tests__/verify-routing.test.tsx`; `__tests__/account-check.test.tsx` | Unit, Screen | `unit-tests` |
+| Get started and Sign in record whether the person is signing up or signing in | `__tests__/onboarding-intent.test.tsx`; `__tests__/onboarding-context.test.tsx` | Screen, Unit | `unit-tests` |
+| A held sign-in stays on the sign-in screens until released, and signing out clears the hold | `src/context/AuthContext.test.tsx`; `__tests__/root-routing.test.tsx` | Unit, Screen | `unit-tests` |
+| The sign-up and sign-in steps show a back arrow; the first screen, account-check and the "verified" slides don't | `__tests__/auth-back-arrows.test.tsx` | Screen | `unit-tests` |
 | Reminders are scheduled only for saved, future appointments, at 9:00 the day before and 2 hours before on the day (not before 7:00, at least 30 minutes before), and keep local wall-clock time across daylight saving | `schedule.test.ts`; `schedule.dst.test.ts` | Unit | `unit-tests` |
 | Assessment reminders follow the chosen frequency from the last assessment, and are due at the next 9:00 when overdue or when there is none | `schedule.test.ts`; `syncReminders.test.ts` (`lastAssessmentDate`) | Unit | `unit-tests` |
 | Reminder text never names the doctor, the health service or a condition | `schedule.test.ts` | Unit | `unit-tests` |
@@ -162,6 +166,7 @@ These are not covered by an automated test, so no coverage is claimed for them.
 - The support person app's screens (requests, people you support, appointment plan, Add questions), the consent line and the hidden answer pen before consent, and the empty-condition layout: checked by hand with the two-account list in `docs/backend/support-person-backend-build-plan.md` step T7.
 - Reminders actually appearing on a phone (with the app closed, on the lock screen, after a restart), the permission prompt, and a tap opening the right screen: checked by hand on an iPhone and an Android phone with the list in `docs/backend/notifications-build-plan.md` section 6.4 (the Notifications screen has a development-only test reminder).
 - Two people editing the same plan at once: last save wins (not tested; `docs/support-person.md` section 5).
+- The sign up vs sign in messages and the back arrows on a phone: the wording, tapping the native back arrow, and that the arrow doesn't crowd the first line on phones with a Dynamic Island. Checked by hand with the list in `docs/backend/sign-up-sign-in-plan.md` section 6.
 - The app icons on the home screen (iOS glass, dark and tinted; Android masks and themed icons), the native splash and its fade into the welcome splash, and how the welcome splash looks: checked by hand on a preview build with the list in `docs/backend/app-icons-and-splash-plan.md` section 6.3 (Expo Go shows neither the icon nor the native splash).
 
 ## Not tested / deferred

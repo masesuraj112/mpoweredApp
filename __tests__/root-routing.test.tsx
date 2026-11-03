@@ -13,6 +13,7 @@ type MockAuth = {
   profile: { userType: string } | null;
   profileError: null;
   refreshProfile: () => void;
+  signInHeld?: boolean;
 };
 const mockSignedOut: MockAuth = {
   session: null,
@@ -128,6 +129,26 @@ describe('root layout routing', () => {
     await setAuth(mockSignedOut);
 
     expect(await screen.findByText('auth screen')).toBeTruthy();
+  });
+
+  it('keeps a held sign-in on the auth screens even though the account exists', async () => {
+    await renderRouter(screens, { initialUrl: '/' });
+    await screen.findByText('auth screen');
+
+    await setAuth({ ...patient, signInHeld: true });
+
+    expect(await screen.findByText('auth screen')).toBeTruthy();
+    expect(screen.queryByText('patient home')).toBeNull();
+  });
+
+  it('goes to the account once the hold is released', async () => {
+    await renderRouter(screens, { initialUrl: '/' });
+    await setAuth({ ...patient, signInHeld: true });
+    await screen.findByText('auth screen');
+
+    await setAuth({ ...patient, signInHeld: false });
+
+    expect(await screen.findByText('patient home')).toBeTruthy();
   });
 
   it('shows "Welcome back to" over the app for 3 s when it opens signed in', async () => {

@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import OnboardingCarousel from '../app/(auth)/onboarding';
+import { OnboardingProvider } from '../src/context/Onboarding-Context';
 
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 
@@ -16,7 +17,9 @@ describe('OnboardingCarousel', () => {
   it('keeps the Get started and Sign in controls above the system navigation buttons', async () => {
     const screen = await render(
       <SafeAreaProvider initialMetrics={metrics}>
-        <OnboardingCarousel />
+        <OnboardingProvider>
+          <OnboardingCarousel />
+        </OnboardingProvider>
       </SafeAreaProvider>,
     );
 
