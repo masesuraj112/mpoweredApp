@@ -1,16 +1,11 @@
+import { AppText } from '@/components/ui/AppText';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { getWeeklyReflection, saveWeeklyReflection } from '@/services/home';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput } from 'react-native';
 
 export default function ReflectionScreen() {
   const [reflection, setReflection] = useState('');
@@ -79,144 +74,121 @@ export default function ReflectionScreen() {
     void saveAndLeave(false);
   };
 
+  const saveDisabled = isLoading || isSaving || !reflection.trim();
+  const saveLabel = isComplete ? 'Save changes' : 'Save reflection';
+
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to Home"
-          disabled={isSaving}
-          onPress={goBack}
-          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+    <Screen keyboardShouldPersistTaps="handled">
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Back to Home"
+        disabled={isSaving}
+        onPress={goBack}
+        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+      >
+        <AppText
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+          variant="headlineSmall"
+          color="onSurfaceVariant"
         >
-          <Text style={styles.backArrow}>‹</Text>
-          <Text style={styles.backText}>Back to Home</Text>
-        </Pressable>
+          ‹
+        </AppText>
+        <AppText variant="bodyLarge" color="onSurfaceVariant">
+          Back to Home
+        </AppText>
+      </Pressable>
 
-        <Text style={styles.heading}>
-          {isComplete ? 'Edit this week’s reflection' : 'This week’s reflection'}
-        </Text>
-        <Text style={styles.description}>
-          Write down anything you would like to remember or discuss with your care team.
-          Going back to Home keeps your draft for this week.
-        </Text>
+      <AppText accessibilityRole="header" variant="headlineSmall" color="onSurface" style={styles.heading}>
+        {isComplete ? 'Edit this week’s reflection' : 'This week’s reflection'}
+      </AppText>
+      <AppText variant="bodyMediumRegular" color="onSurfaceVariant" style={styles.description}>
+        Write down anything you would like to remember or discuss with your care team.
+        Going back to Home keeps your draft for this week.
+      </AppText>
 
-        {isLoading ? (
-          <ActivityIndicator accessibilityLabel="Loading your reflection" style={styles.loader} />
-        ) : (
-          <TextInput
-            accessibilityLabel="Weekly reflection"
-            editable={!isSaving}
-            multiline
-            onChangeText={setReflection}
-            placeholder="Write your reflection here..."
-            placeholderTextColor="#79747E"
-            style={styles.input}
-            textAlignVertical="top"
-            value={reflection}
-          />
-        )}
+      {isLoading ? (
+        <ActivityIndicator accessibilityLabel="Loading your reflection" style={styles.loader} />
+      ) : (
+        <TextInput
+          accessibilityLabel="Weekly reflection"
+          editable={!isSaving}
+          multiline
+          onChangeText={setReflection}
+          placeholder="Write your reflection here..."
+          placeholderTextColor={Colors.light.textSecondary}
+          style={styles.input}
+          textAlignVertical="top"
+          value={reflection}
+        />
+      )}
 
-        {error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
+      {error && (
+        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.error}>
+          {error}
+        </AppText>
+      )}
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={isComplete ? 'Save changes' : 'Save reflection'}
-          disabled={isLoading || isSaving || !reflection.trim()}
-          onPress={save}
-          style={({ pressed }) => [
-            styles.saveButton,
-            (isLoading || isSaving || !reflection.trim()) && styles.saveButtonDisabled,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.saveButtonText}>
-            {isSaving ? 'Saving…' : isComplete ? 'Save changes' : 'Save reflection'}
-          </Text>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={saveLabel}
+        accessibilityState={{ disabled: saveDisabled }}
+        disabled={saveDisabled}
+        onPress={save}
+        style={({ pressed }) => [
+          styles.saveButton,
+          saveDisabled && styles.saveButtonDisabled,
+          pressed && styles.pressed,
+        ]}
+      >
+        <AppText variant="labelLargeBold" color="onPrimary">
+          {isSaving ? 'Saving…' : saveLabel}
+        </AppText>
+      </Pressable>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  content: {
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 480,
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
   backButton: {
     alignSelf: 'flex-start',
-    minHeight: 40,
+    minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
-  },
-  backArrow: {
-    marginRight: 8,
-    color: '#49454F',
-    fontSize: 28,
-    lineHeight: 28,
-  },
-  backText: {
-    color: '#49454F',
-    fontSize: 16,
+    gap: Spacing.two,
+    marginBottom: Spacing.four,
   },
   heading: {
-    marginBottom: 8,
-    color: '#1D1B20',
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 30,
+    marginBottom: Spacing.two,
   },
   description: {
-    marginBottom: 20,
-    color: '#49454F',
-    fontSize: 14,
-    lineHeight: 20,
+    marginBottom: Spacing.three,
   },
   input: {
+    ...Typography.bodyLarge,
     minHeight: 220,
-    padding: 16,
+    padding: Spacing.three,
     borderWidth: 1,
-    borderColor: '#79747E',
-    borderRadius: 12,
-    color: '#1D1B20',
-    fontSize: 16,
-    lineHeight: 24,
+    borderColor: Colors.light.outlineMedium,
+    borderRadius: Radius.card,
+    color: Colors.light.onSurface,
   },
   loader: {
-    marginTop: 40,
+    marginTop: Spacing.five,
   },
   error: {
-    marginTop: 12,
-    color: '#B3261E',
-    fontSize: 13,
-    lineHeight: 18,
+    marginTop: Spacing.mid,
   },
   saveButton: {
-    minHeight: 48,
+    minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    borderRadius: 100,
-    backgroundColor: '#6750A4',
+    marginTop: Spacing.three,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.light.primary,
   },
   saveButtonDisabled: {
     opacity: 0.5,
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
   },
   pressed: {
     opacity: 0.8,

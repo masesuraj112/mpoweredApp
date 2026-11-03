@@ -1,11 +1,10 @@
-import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { MultiChoiceList } from '@/components/tracker/MultiChoiceList';
+import { OtherLocationModal } from '@/components/tracker/OtherLocationModal';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { OTHER_LOCATION_LABEL, PAIN_LOCATION_PRESETS } from '@/constants/painLocations';
 import { usePainAssessment } from '@/features/assessments/pain/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const PRESET_OPTIONS = PAIN_LOCATION_PRESETS;
 const PREVIOUS_LOCATIONS = ['Outer thigh', 'Inner thigh'];
@@ -26,8 +25,6 @@ export default function PainLocationScreen() {
     savedLocations.filter(location => !PRESET_OPTIONS.includes(location as never)),
   );
   const [isOtherModalVisible, setIsOtherModalVisible] = useState(false);
-  const [draftOtherLocation, setDraftOtherLocation] = useState('');
-  const doneBar = useKeyboardDoneBar();
 
   const otherIndex = PRESET_OPTIONS.length + customLocations.length;
   const displayOptions: string[] = [...PRESET_OPTIONS, ...customLocations, OTHER_LOCATION_LABEL];
@@ -47,7 +44,6 @@ export default function PainLocationScreen() {
       return;
     }
 
-    setDraftOtherLocation('');
     setIsOtherModalVisible(true);
     return true;
   };
@@ -74,10 +70,7 @@ export default function PainLocationScreen() {
   };
 
   return (
-    // Tapping anywhere outside a text box closes the keyboard. Not exposed to screen readers.
-    <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.screen}>
-      <View style={styles.container}>
-        <Text style={styles.pageTitle}>My Pain</Text>
+    <TrackerQuestionScreen title="My Pain">
       <MultiChoiceList
         title="Pain location"
         prompt="I have had pain in these areas last week."
@@ -93,179 +86,21 @@ export default function PainLocationScreen() {
         disabled={selected.length === 0}
         variant="painTracker"
       />
-      </View>
 
-      <Modal visible={isOtherModalVisible} transparent animationType="fade">
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalLabel}>Other</Text>
-            <TextInput
-              autoFocus
-              value={draftOtherLocation}
-              onChangeText={setDraftOtherLocation}
-              placeholder="Knee"
-              placeholderTextColor="#1D1B20"
-              style={styles.input}
-              accessibilityLabel="Other pain location"
-              inputAccessoryViewID={doneBar.id}
-            />
-            {/* Rendered inside the popup so iOS finds it alongside the field. */}
-            {doneBar.bar}
-            <Text style={styles.previousLabel}>Previously entered locations</Text>
-            <View style={styles.previousLocations}>
-              {PREVIOUS_LOCATIONS.map(location => (
-                <Pressable
-                  key={location}
-                  onPress={() => setDraftOtherLocation(location)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Use ${location}`}
-                  style={styles.previousLocation}
-                >
-                  <Text style={styles.previousLocationText}>{location}</Text>
-                </Pressable>
-              ))}
-            </View>
-            <View style={styles.modalActions}>
-              <Pressable
-                onPress={() => setIsOtherModalVisible(false)}
-                accessibilityRole="button"
-                accessibilityLabel="Cancel"
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  const value = draftOtherLocation.trim();
-                  if (!value) {
-                    return;
-                  }
-                  setCustomLocations(current =>
-                    current.includes(value) || PRESET_OPTIONS.includes(value as never)
-                      ? current
-                      : [...current, value],
-                  );
-                  setIsOtherModalVisible(false);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Ok"
-                style={styles.okButton}
-              >
-                <Text style={styles.okButtonText}>Ok</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </Pressable>
+      {isOtherModalVisible ? (
+        <OtherLocationModal
+          previousLocations={PREVIOUS_LOCATIONS}
+          onCancel={() => setIsOtherModalVisible(false)}
+          onSave={value => {
+            setCustomLocations(current =>
+              current.includes(value) || PRESET_OPTIONS.includes(value as never)
+                ? current
+                : [...current, value],
+            );
+            setIsOtherModalVisible(false);
+          }}
+        />
+      ) : null}
+    </TrackerQuestionScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: scaleWidth(22),
-    paddingTop: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(9),
-    marginBottom: scaleHeight(18),
-  },
-  modalBackdrop: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    padding: scaleWidth(24),
-  },
-  modalContent: {
-    width: '100%',
-    maxWidth: scaleWidth(386),
-    height: scaleHeight(242),
-    borderRadius: scaleWidth(12),
-    backgroundColor: '#FFFFFF',
-    paddingTop: scaleHeight(12),
-    paddingHorizontal: scaleWidth(16),
-    paddingBottom: scaleHeight(8),
-  },
-  modalLabel: {
-    color: '#49454F',
-    fontSize: scaleFont(12),
-    fontWeight: '400',
-    lineHeight: scaleHeight(16),
-    marginLeft: scaleWidth(16),
-  },
-  input: {
-    height: scaleHeight(40),
-    backgroundColor: '#E6E0E9',
-    borderRadius: scaleWidth(2),
-    paddingHorizontal: scaleWidth(4),
-    paddingVertical: 0,
-    color: '#1D1B20',
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
-  },
-  previousLabel: {
-    color: '#49454F',
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-    marginTop: scaleHeight(8),
-    marginLeft: scaleWidth(16),
-  },
-  previousLocations: {
-    gap: scaleHeight(7),
-    marginTop: scaleHeight(2),
-  },
-  previousLocation: {
-    height: scaleHeight(30),
-    justifyContent: 'center',
-    backgroundColor: '#CCC2DC',
-    borderRadius: scaleWidth(2),
-    paddingHorizontal: scaleWidth(4),
-  },
-  previousLocationText: {
-    color: '#1D1B20',
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: scaleWidth(8),
-    marginTop: 'auto',
-    paddingHorizontal: scaleWidth(8),
-  },
-  cancelButton: {
-    height: scaleHeight(48),
-    justifyContent: 'center',
-    paddingHorizontal: scaleWidth(16),
-  },
-  cancelButtonText: {
-    color: '#6750A4',
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-  },
-  okButton: {
-    width: scaleWidth(105),
-    height: scaleHeight(30),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#CAC4D0',
-    borderRadius: scaleWidth(16),
-    backgroundColor: '#6750A4',
-  },
-  okButtonText: {
-    color: '#FEF7FF',
-    fontSize: scaleFont(14),
-    fontWeight: '500',
-  },
-});

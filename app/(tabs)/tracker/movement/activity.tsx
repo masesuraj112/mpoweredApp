@@ -1,25 +1,19 @@
+import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { TrackerPageTitle } from '@/components/tracker/TrackerQuestionScreen';
+import { AppText } from '@/components/ui/AppText';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import {
-  InputAccessoryView,
-  Keyboard,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
-const ACCESSORY_ID = 'activityDone';
 const MAX_HOURS = 24;
 
 export default function ActivityScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
+  const doneBar = useKeyboardDoneBar();
 
   // Keep the raw text locally so partial input like "0" or "1." isn't rewritten mid-typing.
   const [text, setText] = useState(answers.activeHours?.toString() ?? '');
@@ -34,98 +28,54 @@ export default function ActivityScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
+    // A wrapping Touchable steals taps from the TextInput (notably on web), so the keyboard closes on scroll instead.
+    <Screen edges={[]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+      <TrackerPageTitle>My Movement</TrackerPageTitle>
+      <ChoiceCard
+        title="General Movement Impacts"
+        prompt="On average, how many hours per day were you able to stay active or mobile last week?"
+        questionNumber={1}
+        totalQuestions={7}
+        onRecord={() => router.push('/tracker/movement/general')}
+        disabled={answers.activeHours === undefined || isOverMax}
+        validationMessage={isOverMax ? `Please enter ${MAX_HOURS} hours or less` : undefined}
+        variant="personalCare"
       >
-        <Text style={styles.pageTitle}>My Movement</Text>
-        <ChoiceCard
-          title="General Movement Impacts"
-          prompt="On average, how many hours per day were you able to stay active or mobile last week?"
-          questionNumber={1}
-          totalQuestions={7}
-          onRecord={() => router.push('/tracker/movement/general')}
-          disabled={answers.activeHours === undefined || isOverMax}
-          validationMessage={isOverMax ? `Please enter ${MAX_HOURS} hours or less` : undefined}
-          variant="personalCare"
-        >
-          <TextInput
-            value={text}
-            onChangeText={handleChange}
-            keyboardType="decimal-pad"
-            placeholder="Input number only"
-            placeholderTextColor="#79747E"
-            maxLength={5}
-            style={[styles.input, isOverMax && styles.inputError]}
-            accessibilityLabel="Hours active per day"
-            inputAccessoryViewID={ACCESSORY_ID}
-          />
-          <Text style={styles.helper}>
-            Stay active could mean doing your typical activities like working, driving, doing
-            house chores, meeting with people, et cetera.
-          </Text>
-        </ChoiceCard>
-      </ScrollView>
-
-      {Platform.OS === 'ios' && (
-        <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View style={styles.accessoryBar}>
-            <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
-              <Text style={styles.accessoryDone}>Done</Text>
-            </Pressable>
-          </View>
-        </InputAccessoryView>
-      )}
-    </View>
+        <TextInput
+          value={text}
+          onChangeText={handleChange}
+          keyboardType="decimal-pad"
+          placeholder="Input number only"
+          placeholderTextColor={Colors.light.textSecondary}
+          maxLength={5}
+          style={[styles.input, isOverMax && styles.inputError]}
+          accessibilityLabel="Hours active per day"
+          inputAccessoryViewID={doneBar.id}
+        />
+        {doneBar.bar}
+        <AppText variant="bodySmall" color="onSurfaceVariant" style={styles.helper}>
+          Stay active could mean doing your typical activities like working, driving, doing
+          house chores, meeting with people, et cetera.
+        </AppText>
+      </ChoiceCard>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
   input: {
-    height: scaleHeight(56),
+    ...Typography.bodyLarge,
+    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
-    borderColor: '#79747E',
-    borderRadius: scaleWidth(4),
-    paddingHorizontal: scaleWidth(16),
-    fontSize: scaleFont(16),
-    color: '#1D1B20',
+    borderColor: Colors.light.outlineMedium,
+    borderRadius: Radius.small,
+    color: Colors.light.onSurface,
   },
   inputError: {
-    borderColor: '#B3261E',
+    borderColor: Colors.light.error,
   },
   helper: {
-    marginTop: scaleHeight(16),
-    fontSize: scaleFont(12),
-    lineHeight: scaleHeight(16),
-    letterSpacing: 0.4,
-    color: '#49454F',
-  },
-  accessoryBar: {
-    alignItems: 'flex-end',
-    backgroundColor: '#E8DEF8',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
-  },
-  accessoryDone: {
-    color: '#6750A4',
-    fontSize: scaleFont(16),
-    fontWeight: '600',
+    marginTop: Spacing.three,
   },
 });

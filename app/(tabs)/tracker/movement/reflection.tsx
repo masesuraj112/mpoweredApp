@@ -1,6 +1,10 @@
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
+import { ChoiceTextInput } from '@/components/tracker/ChoiceTextInput';
+import { ReflectionWordCounter } from '@/components/tracker/ReflectionWordCounter';
+import { TrackerPageTitle } from '@/components/tracker/TrackerQuestionScreen';
+import { Screen } from '@/components/ui/Screen';
+import { MinTapTarget, Spacing } from '@/constants/theme';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { router } from 'expo-router';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
@@ -8,24 +12,15 @@ import { useReminders } from '@/features/notifications/RemindersContext';
 import { saveMovementEntry } from '@/services/assessments';
 import { useRef, useState } from 'react';
 import { countWords, isReflectionTooLong, MAX_REFLECTION_WORDS } from '@/features/assessments/reflection';
-import {
-  InputAccessoryView,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-
-const ACCESSORY_ID = 'reflectionDone';
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = useMovementAssessment();
   const reminders = useReminders();
+  const insets = useSafeAreaInsets();
+  // The space the keyboard has to leave for the navigation header: status bar, back button and padding.
+  const headerHeight = insets.top + Spacing.two + MinTapTarget + Spacing.two;
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const wordCount = countWords(answers.reflection);
@@ -59,106 +54,39 @@ export default function ReflectionScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <KeyboardAvoidingView
-        style={styles.screen}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={scaleHeight(109)}
-      >
-        {/* A wrapping Touchable steals taps from the TextInput (notably on web), so dismiss via ScrollView instead. */}
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
+    <KeyboardAvoidingView
+      style={styles.fill}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={headerHeight}
+    >
+      {/* A wrapping Touchable steals taps from the TextInput (notably on web), so the keyboard closes on scroll instead. */}
+      <Screen edges={[]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+        <TrackerPageTitle>My Movement</TrackerPageTitle>
+        <ChoiceCard
+          title="Reflection on your movement"
+          prompt="Write any reflections of pain impacts on your mobility."
+          questionNumber={7}
+          totalQuestions={7}
+          onPrevious={() => router.push('/tracker/movement/standing')}
+          onRecord={handleRecord}
+          disabled={saving || overLimit}
+          validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
+          variant="personalCare"
         >
-          <Text style={styles.pageTitle}>My Movement</Text>
-          <ChoiceCard
-            title="Reflection on your movement"
-            prompt="Write any reflections of pain impacts on your mobility."
-            questionNumber={7}
-            totalQuestions={7}
-            onPrevious={() => router.push('/tracker/movement/standing')}
-            onRecord={handleRecord}
-            disabled={saving || overLimit}
-            validationMessage={overLimit ? limitMessage : (errorMessage ?? undefined)}
-            variant="personalCare"
-          >
-            <TextInput
-              value={answers.reflection ?? ''}
-              onChangeText={text => updateAnswer('reflection', text)}
-              placeholder="For instance, when pain occurred, you lie down for the whole day"
-              placeholderTextColor="#79747E"
-              multiline
-              textAlignVertical="top"
-              style={styles.input}
-              accessibilityLabel="Reflection on your movement"
-              inputAccessoryViewID={ACCESSORY_ID}
-            />
-            <Text style={[styles.counter, overLimit && styles.counterOver]} accessibilityLiveRegion="polite">
-              {wordCount}/{MAX_REFLECTION_WORDS} words
-            </Text>
-          </ChoiceCard>
-        </ScrollView>
-      </KeyboardAvoidingView>
-
-      {Platform.OS === 'ios' && (
-        <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View style={styles.accessoryBar}>
-            <Pressable onPress={Keyboard.dismiss} accessibilityRole="button" accessibilityLabel="Done">
-              <Text style={styles.accessoryDone}>Done</Text>
-            </Pressable>
-          </View>
-        </InputAccessoryView>
-      )}
-    </View>
+          <ChoiceTextInput
+            fill
+            accessibilityLabel="Reflection on your movement"
+            value={answers.reflection ?? ''}
+            onChangeText={text => updateAnswer('reflection', text)}
+            placeholder="For instance, when pain occurred, you lie down for the whole day"
+          />
+          <ReflectionWordCounter wordCount={wordCount} overLimit={overLimit} />
+        </ChoiceCard>
+      </Screen>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(16),
-    paddingBottom: scaleHeight(16),
-  },
-  pageTitle: {
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: scaleWidth(7),
-    marginBottom: scaleHeight(18),
-  },
-  input: {
-    flex: 1,
-    minHeight: scaleHeight(120),
-    borderWidth: 1,
-    borderColor: '#79747E',
-    borderRadius: scaleWidth(4),
-    padding: scaleWidth(16),
-    fontSize: scaleFont(14),
-    lineHeight: scaleHeight(20),
-    color: '#1D1B20',
-  },
-  accessoryBar: {
-    alignItems: 'flex-end',
-    backgroundColor: '#E8DEF8',
-    paddingHorizontal: scaleWidth(16),
-    paddingVertical: scaleHeight(10),
-  },
-  accessoryDone: {
-    color: '#6750A4',
-    fontSize: scaleFont(16),
-    fontWeight: '600',
-  },
-  counter: { 
-    alignSelf: 'flex-end',
-    marginTop: scaleHeight(6),
-    fontSize: scaleFont(12),
-    color: '#49454F',
-  },
-  counterOver: { 
-    color: '#B3261E', 
-    fontWeight: '600', 
-  },
+  fill: { flex: 1 },
 });

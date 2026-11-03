@@ -1,21 +1,15 @@
 import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
 import { ChoiceTextInput } from '@/components/tracker/ChoiceTextInput';
-import { AppText } from '@/components/ui/AppText';
-import { Spacing } from '@/constants/theme';
+import { ReflectionWordCounter } from '@/components/tracker/ReflectionWordCounter';
 import { assessmentSaveMessage } from '@/features/assessments/messages';
 import { usePersonalCareAssessment } from '@/features/assessments/personal-care/context';
-import {
-  countWords,
-  isReflectionTooLong,
-  MAX_REFLECTION_WORDS,
-} from '@/features/assessments/reflection';
+import { countWords, isReflectionTooLong } from '@/features/assessments/reflection';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { useReminders } from '@/features/notifications/RemindersContext';
 import { savePersonalCareEntry } from '@/services/assessments';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
 
 export default function ReflectionScreen() {
   const { answers, updateAnswer } = usePersonalCareAssessment();
@@ -70,21 +64,8 @@ export default function ReflectionScreen() {
           onChangeText={value => updateAnswer('reflection', value)}
           placeholder="For instance, this week, I felt that I could not everything at all, I felt hopeless, even doing the laundry felt miserable"
         />
-        <AppText
-          accessibilityLiveRegion="polite"
-          variant={overLimit ? 'labelMedium' : 'bodySmall'}
-          color={overLimit ? 'error' : 'onSurfaceVariant'}
-          style={styles.counter}>
-          {wordCount} / {MAX_REFLECTION_WORDS} words
-        </AppText>
+        <ReflectionWordCounter wordCount={wordCount} overLimit={overLimit} />
       </ChoiceCard>
     </TrackerQuestionScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  counter: {
-    marginTop: Spacing.two,
-    textAlign: 'right',
-  },
-});

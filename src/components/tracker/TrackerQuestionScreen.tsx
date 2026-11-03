@@ -25,12 +25,19 @@ export function TrackerQuestionScreen({ title, children }: TrackerQuestionScreen
     // Not exposed to screen readers: it's a convenience, not a control.
     <Pressable onPress={Keyboard.dismiss} accessible={false} style={styles.dismissArea}>
       <Screen scroll={false} edges={[]}>
-        <AppText accessibilityRole="header" variant="headlineSmall" style={styles.title}>
-          {title}
-        </AppText>
+        <TrackerPageTitle>{title}</TrackerPageTitle>
         {children}
       </Screen>
     </Pressable>
+  );
+}
+
+/** The tracker's name above the question card, for the screens that build their own shell. */
+export function TrackerPageTitle({ children }: { children: string }) {
+  return (
+    <AppText accessibilityRole="header" variant="headlineSmall" style={styles.title}>
+      {children}
+    </AppText>
   );
 }
 
