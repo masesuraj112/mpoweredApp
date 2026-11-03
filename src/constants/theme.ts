@@ -44,6 +44,10 @@ export const Colors = {
     errorContainer: '#F9DEDC',
     onErrorContainer: '#410E0B',
     successStrong: '#2E7D32',
+    successContainer: '#C5E9C5',
+    onSuccessContainer: '#1B5E20',
+    warningContainer: '#FFF3CD',
+    onWarningContainer: '#92400E',
   },
   dark: {
     text: '#ffffff',
@@ -82,6 +86,10 @@ export const Colors = {
     errorContainer: '#8C1D18',
     onErrorContainer: '#F9DEDC',
     successStrong: '#8BD97A',
+    successContainer: '#1B5E20',
+    onSuccessContainer: '#C5E9C5',
+    warningContainer: '#5C4400',
+    onWarningContainer: '#FFE08A',
   },
 } as const;
 

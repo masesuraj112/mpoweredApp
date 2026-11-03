@@ -21,6 +21,7 @@ Audience: developers working on the UI. This page is the reference for the UI re
 | `Colors.sliderTrack`, `sliderFillStart`, `sliderFillEnd` | `#E4DFF5`, `#8B7BC7`, `#1A1330` | the 0 to 10 slider track and its fill gradient |
 | `Colors.errorContainer`, `onErrorContainer` | `#F9DEDC`, `#410E0B` | the "Incomplete" badge |
 | `Colors.successStrong` | `#2E7D32` | green text on white (`success` is too pale for small text) |
+| `Colors.successContainer`, `onSuccessContainer`, `warningContainer`, `onWarningContainer` | `#C5E9C5`, `#1B5E20`, `#FFF3CD`, `#92400E` | the "No scheduled appointments" and "Appointment upcoming" badges |
 | `Spacing.mid` | 12 | the 12dp gap used between `two` (8) and `three` (16) |
 | `Radius.small / medium / large / extraLarge` | 4 / 8 / 16 / 24 | literal radii |
 | `Elevation.level1` | shadow + elevation 2 | the raised-button shadow |
