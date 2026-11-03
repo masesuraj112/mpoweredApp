@@ -5,18 +5,20 @@ import { HeaderTitleFonts, useThemeColors } from '@/constants/theme';
 
 /**
  * The platform's own header and back button (as on the Settings pages), for every stack in the app: the
- * brand tint, Sulphur Point titles and the page's own background. Spread into a Stack's `screenOptions`
+ * brand tint and Sulphur Point titles. Spread into a Stack's `screenOptions`
  * and give `headerBackTitle` the screen it returns to (iOS shows it; Android shows the arrow).
  */
 export function useNativeHeaderOptions() {
   const colors = useThemeColors();
+  // No custom header background or shadow (the navigation theme supplies them, as the Settings pages
+  // always had): on iOS a set background leaves the large title invisible until the page is scrolled.
+  // Both titles get the text colour explicitly so they show in light and dark mode.
   return {
     headerShown: true,
     title: '',
-    ...HeaderTitleFonts,
+    headerTitleStyle: { ...HeaderTitleFonts.headerTitleStyle, color: colors.text },
+    headerLargeTitleStyle: { ...HeaderTitleFonts.headerLargeTitleStyle, color: colors.text },
     headerTintColor: colors.primary,
-    headerShadowVisible: false,
-    headerStyle: { backgroundColor: colors.background },
   } as const;
 }
 
