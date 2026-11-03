@@ -178,10 +178,12 @@ const useStyles = makeStyles((colors) => ({
   heading: {
     gap: Spacing.two,
   },
+  // The brand purple, softened: the usual divider colour is too close to the card's lavender to see.
   divider: {
     height: 2,
     borderRadius: 1,
-    backgroundColor: colors.divider,
+    backgroundColor: colors.primary,
+    opacity: 0.35,
   },
   prompt: {
     gap: Spacing.one,
