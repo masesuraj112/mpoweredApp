@@ -290,7 +290,8 @@ export function SettingsModalInlineRow({ label, children }: { label: string; chi
   return (
     <View style={styles.inlineRow}>
       <Text style={styles.inlineLabel}>{label}</Text>
-      {children}
+      {/* Each picker gets an equal share of the row, so none can push the others out of the popup. */}
+      {Children.map(children, (child) => (child ? <View style={styles.inlineItem}>{child}</View> : null))}
     </View>
   );
 }
@@ -468,6 +469,10 @@ const useStyles = makeStyles((colors) => ({
     gap: Spacing.three,
     marginBottom: Spacing.three,
     zIndex: 2,
+  },
+  inlineItem: {
+    flex: 1,
+    minWidth: 0,
   },
   inlineLabel: {
     color: colors.text,

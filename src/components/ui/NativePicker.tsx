@@ -1,5 +1,5 @@
 import { Host, Picker } from '@expo/ui';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { Platform, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useThemeColors } from '@/constants/theme';
 
@@ -21,7 +21,13 @@ type NativePickerProps<T extends string> = {
 export function NativePicker<T extends string>({ value, options, onChange, accessibilityLabel, style }: NativePickerProps<T>) {
   const colors = useThemeColors();
   return (
-    <Host matchContents seedColor={colors.primary} accessibilityLabel={accessibilityLabel} style={style}>
+    // A Material dropdown fills whatever width it is given, so on Android the picker only takes its height
+    // from its contents and its width from the layout (it fills its parent). iOS menus size themselves.
+    <Host
+      matchContents={Platform.OS === 'android' ? { vertical: true } : true}
+      seedColor={colors.primary}
+      accessibilityLabel={accessibilityLabel}
+      style={[Platform.OS === 'android' && { alignSelf: 'stretch' }, style]}>
       <Picker selectedValue={value} onValueChange={(next) => onChange(next as T)} appearance="menu">
         {options.map((option) => (
           <Picker.Item key={option.value} label={option.label} value={option.value} />
