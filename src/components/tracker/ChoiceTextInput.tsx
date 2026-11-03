@@ -9,15 +9,13 @@ type ChoiceTextInputProps = {
   value: string;
   onChangeText: (value: string) => void;
   placeholder: string;
-  /** Grow to fill the room left in the card, instead of a fixed minimum height. */
-  fill?: boolean;
 };
 
 /**
  * The multi-line box for a written answer inside a `ChoiceCard`. A multiline box has no return-to-close,
  * so on iOS it brings its own Done bar above the keyboard.
  */
-export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, placeholder, fill = false }: ChoiceTextInputProps) {
+export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, placeholder }: ChoiceTextInputProps) {
   const doneBar = useKeyboardDoneBar();
 
   return (
@@ -31,7 +29,7 @@ export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, place
         placeholder={placeholder}
         placeholderTextColor={Colors.light.textDisabled}
         textAlignVertical="top"
-        style={[styles.input, fill && styles.fill]}
+        style={styles.input}
       />
       {doneBar.bar}
     </>
@@ -41,7 +39,9 @@ export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, place
 const styles = StyleSheet.create({
   input: {
     ...Typography.bodyMediumRegular,
-    minHeight: 120,
+    // Fills the room the card has. The small minimum lets it shrink when the keyboard is open.
+    flex: 1,
+    minHeight: 80,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.mid,
     borderWidth: 1,
@@ -49,8 +49,5 @@ const styles = StyleSheet.create({
     borderRadius: Radius.medium,
     backgroundColor: Colors.light.background,
     color: Colors.light.onSurface,
-  },
-  fill: {
-    flex: 1,
   },
 });

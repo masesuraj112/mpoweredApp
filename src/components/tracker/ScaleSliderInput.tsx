@@ -1,7 +1,7 @@
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { AppText } from '@/components/ui/AppText';
@@ -113,8 +113,10 @@ export function ScaleSliderInput({
   const fillWidth = (value / 10) * sliderWidth;
 
   const prompt = isPainTracker ? (
-    <Text style={styles.painLevelText}>
-      My <Text style={styles.underlined}>{underLinedText}</Text> is
+    <View style={styles.painLevelRow}>
+      <AppText variant="titleLarge" color="text">
+        My <AppText variant="titleLarge" color="text" style={styles.underlined}>{underLinedText}</AppText> is
+      </AppText>
       <TextInput
         style={styles.painLevelInput}
         keyboardType="number-pad"
@@ -123,7 +125,7 @@ export function ScaleSliderInput({
         value={hasValue ? String(value) : ''}
         onChangeText={changeNumber}
       />
-    </Text>
+    </View>
   ) : (
     <View>
       {questionText ? (
@@ -213,18 +215,20 @@ export function ScaleSliderInput({
 }
 
 const styles = StyleSheet.create({
-  painLevelText: {
-    ...Typography.titleLarge,
-    color: Colors.light.text,
+  painLevelRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: Spacing.two,
   },
   underlined: {
     textDecorationLine: 'underline',
   },
   painLevelInput: {
     ...Typography.titleLarge,
-    minWidth: Spacing.five,
-    marginLeft: Spacing.two,
-    paddingBottom: Spacing.one,
+    minWidth: MinTapTarget,
+    minHeight: MinTapTarget,
+    paddingVertical: 0,
     borderBottomWidth: 2,
     borderBottomColor: Colors.light.text,
     textAlign: 'center',

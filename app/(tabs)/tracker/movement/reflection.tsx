@@ -74,7 +74,6 @@ export default function ReflectionScreen() {
           variant="personalCare"
         >
           <ChoiceTextInput
-            fill
             accessibilityLabel="Reflection on your movement"
             value={answers.reflection ?? ''}
             onChangeText={text => updateAnswer('reflection', text)}
