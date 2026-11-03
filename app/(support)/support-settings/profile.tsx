@@ -4,8 +4,8 @@ import {
   SettingsModalGroup,
   SettingsModalInfoRow,
   SettingsModalText,
-} from '@/components/mpowered/SettingsModal';
-import { SettingsOption, SettingsSubpage } from '@/components/mpowered/SettingsSubpage';
+} from '@/components/settings/SettingsModal';
+import { SettingsOption, SettingsSubpage } from '@/components/settings/SettingsSubpage';
 import { Colors } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { formatForDisplay } from '@/features/auth/phone';

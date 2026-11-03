@@ -1,8 +1,8 @@
 // Text size and dark mode only changed local state (nothing reads them), so they're commented out
 // until they work, and the Settings home hides the Display row (see docs/settings-backend.md).
-// import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/mpowered/SettingsSubpage';
+// import { SettingsOption, SettingsSelect, SettingsSubpage, SettingsToggle } from '@/components/settings/SettingsSubpage';
 // import { useState } from 'react';
-import { SettingsSubpage, settingsSubpageStyles } from '@/components/mpowered/SettingsSubpage';
+import { SettingsSubpage, settingsSubpageStyles } from '@/components/settings/SettingsSubpage';
 import { Text } from 'react-native';
 
 // const textSizeIcon = require('../../../assets/images/settings/textsize.svg');

@@ -1,9 +1,25 @@
-import { SettingsToggle } from '@/components/mpowered/SettingsSubpage';
 import { Image } from 'expo-image';
-import { Children, Fragment, ReactNode, useState } from 'react';
-import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { Children, Fragment, useState, type ReactNode } from 'react';
+import {
+  Keyboard,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+  type TextInputProps,
+} from 'react-native';
+
+import { SettingsToggle } from '@/components/settings/SettingsSubpage';
+import { AppText } from '@/components/ui/AppText';
+import { Button } from '@/components/ui/Button';
+import { Divider } from '@/components/ui/Divider';
+import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 
 const pencilIcon = require('../../../assets/images/settings/pencil.svg');
+
+const ICON_SIZE = 24;
 
 /* -------------------------------------------------------------------------- */
 /*  Shell                                                                      */
@@ -62,7 +78,9 @@ export function SettingsModal({
       <View style={styles.overlay}>
         {/* Tapping the card closes the keyboard: number pads have no key for it (see SettingsModalField). */}
         <Pressable style={styles.card} onPress={Keyboard.dismiss} accessible={false}>
-          <Text style={styles.title}>{title}</Text>
+          <AppText accessibilityRole="header" variant="labelLargeBold" color="text" style={styles.title}>
+            {title}
+          </AppText>
           {scrollable ? (
             <ScrollView
               style={styles.scroll}
@@ -75,9 +93,15 @@ export function SettingsModal({
             children
           )}
           {!!errorMessage && (
-            <Text style={styles.errorText} accessibilityRole="alert" accessibilityLiveRegion="polite">
+            <AppText
+              accessibilityRole="alert"
+              accessibilityLiveRegion="polite"
+              variant="bodySmall"
+              color="error"
+              style={styles.errorText}
+            >
               {errorMessage}
-            </Text>
+            </AppText>
           )}
           <View style={styles.actions}>
             {!hideCancel && (
@@ -87,19 +111,18 @@ export function SettingsModal({
                 accessibilityLabel={cancelLabel}
                 style={styles.cancelButton}
               >
-                <Text style={styles.cancelText}>{cancelLabel}</Text>
+                <AppText variant="labelLargeBold" color="primary">
+                  {cancelLabel}
+                </AppText>
               </Pressable>
             )}
-            <Pressable
-              onPress={onConfirm ?? onClose}
+            <Button
+              label={confirmLabel}
+              variant="primary"
               disabled={confirmDisabled}
-              accessibilityRole="button"
-              accessibilityLabel={confirmLabel}
-              accessibilityState={{ disabled: confirmDisabled }}
-              style={[styles.confirmButton, confirmDisabled && styles.confirmButtonDisabled]}
-            >
-              <Text style={styles.confirmText}>{confirmLabel}</Text>
-            </Pressable>
+              onPress={onConfirm ?? onClose}
+              style={confirmDisabled && styles.confirmDisabled}
+            />
           </View>
         </Pressable>
       </View>
@@ -109,7 +132,11 @@ export function SettingsModal({
 
 /** Plain body copy for message-style popups (e.g. "Your password has been changed."). */
 export function SettingsModalText({ children }: { children: ReactNode }) {
-  return <Text style={styles.bodyText}>{children}</Text>;
+  return (
+    <AppText variant="bodyLarge" color="onSurface" style={styles.bodyText}>
+      {children}
+    </AppText>
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -153,35 +180,46 @@ export function SettingsModalField({
 
   return (
     <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      {/* Caller props come after the password defaults, so they can still override them. */}
-      {/* No keyboard Done bar (inputAccessoryViewID) here: in testing on iPhone, inside a Modal no
-          keyboard opened with it. Text keyboards close with their Done key; number pads close
-          by tapping the popup card (SettingsModal). */}
-      <TextInput
-        returnKeyType="done"
-        {...passwordProps}
-        {...inputProps}
-        value={value}
-        onChangeText={onChangeText}
-        style={styles.fieldInput}
-        accessibilityLabel={label}
-      />
-      {password ? (
-        <Pressable
-          onPress={() => setRevealed(current => !current)}
-          accessibilityRole="button"
-          accessibilityLabel={`${revealed ? 'Hide' : 'Show'} ${label}`}
-          hitSlop={8}
-          style={styles.revealButton}
-        >
-          <Text style={styles.revealText}>{revealed ? 'Hide' : 'Show'}</Text>
-        </Pressable>
-      ) : (
-        showEditIcon && (
-          <Image source={pencilIcon} style={styles.editIcon} contentFit="contain" accessibilityLabel="" pointerEvents="none" />
-        )
-      )}
+      <AppText variant="bodySmall" color="onSurfaceVariant">
+        {label}
+      </AppText>
+      <View style={styles.fieldRow}>
+        {/* Caller props come after the password defaults, so they can still override them. */}
+        {/* No keyboard Done bar (inputAccessoryViewID) here: in testing on iPhone, inside a Modal no
+            keyboard opened with it. Text keyboards close with their Done key; number pads close
+            by tapping the popup card (SettingsModal). */}
+        <TextInput
+          returnKeyType="done"
+          {...passwordProps}
+          {...inputProps}
+          value={value}
+          onChangeText={onChangeText}
+          style={styles.fieldInput}
+          accessibilityLabel={label}
+        />
+        {password ? (
+          <Pressable
+            onPress={() => setRevealed((current) => !current)}
+            accessibilityRole="button"
+            accessibilityLabel={`${revealed ? 'Hide' : 'Show'} ${label}`}
+            style={styles.revealButton}
+          >
+            <AppText variant="labelLargeBold" color="primary">
+              {revealed ? 'Hide' : 'Show'}
+            </AppText>
+          </Pressable>
+        ) : (
+          showEditIcon && (
+            <Image
+              source={pencilIcon}
+              style={styles.editIcon}
+              contentFit="contain"
+              accessibilityLabel=""
+              pointerEvents="none"
+            />
+          )
+        )}
+      </View>
     </View>
   );
 }
@@ -194,7 +232,9 @@ export function SettingsModalField({
 export function SettingsModalSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <AppText accessibilityRole="header" variant="labelLargeBold" color="text" style={styles.sectionTitle}>
+        {title}
+      </AppText>
       {children}
     </View>
   );
@@ -207,7 +247,7 @@ export function SettingsModalGroup({ children }: { children: ReactNode }) {
     <View style={styles.group}>
       {rows.map((row, index) => (
         <Fragment key={index}>
-          {index > 0 && <View style={styles.divider} />}
+          {index > 0 && <Divider style={styles.divider} />}
           {row}
         </Fragment>
       ))}
@@ -227,7 +267,9 @@ export function SettingsModalToggleRow({
 }) {
   return (
     <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
+      <AppText variant="bodyLarge" color="onSurface" style={styles.rowLabel}>
+        {label}
+      </AppText>
       <SettingsToggle value={value} onValueChange={onValueChange} accessibilityLabel={label} />
     </View>
   );
@@ -237,8 +279,12 @@ export function SettingsModalToggleRow({
 export function SettingsModalInfoRow({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.row} accessible accessibilityLabel={`${label}: ${value}`}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={styles.rowValue}>{value}</Text>
+      <AppText variant="bodyLarge" color="onSurface" style={styles.rowLabel}>
+        {label}
+      </AppText>
+      <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
+        {value}
+      </AppText>
     </View>
   );
 }
@@ -266,7 +312,9 @@ export function SettingsModalActionRow({
       accessibilityLabel={label}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
-      <Text style={[styles.rowLabel, destructive && styles.destructiveText]}>{label}</Text>
+      <AppText variant="bodyLarge" color={destructive ? 'error' : 'onSurface'} style={styles.rowLabel}>
+        {label}
+      </AppText>
       {icon && <Image source={icon} style={styles.rowIcon} contentFit="contain" accessibilityLabel="" />}
     </Pressable>
   );
@@ -280,7 +328,9 @@ export function SettingsModalActionRow({
 export function SettingsModalInlineRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <View style={styles.inlineRow}>
-      <Text style={styles.inlineLabel}>{label}</Text>
+      <AppText variant="bodyLarge" color="onSurface">
+        {label}
+      </AppText>
       {children}
     </View>
   );
@@ -295,175 +345,123 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 13,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    padding: Spacing.mid,
+    backgroundColor: Colors.light.backdrop,
   },
   card: {
     width: '100%',
-    maxWidth: 386,
+    maxWidth: 400,
     maxHeight: '90%',
-    paddingHorizontal: 24,
-    paddingTop: 28,
-    paddingBottom: 8,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.two,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.light.background,
   },
   scroll: {
     flexGrow: 0,
   },
   title: {
-    marginBottom: 18,
-    color: '#000000',
-    fontSize: 14,
-    fontWeight: '600',
+    marginBottom: Spacing.three,
   },
   errorText: {
-    marginBottom: 4,
-    color: '#D32F2F',
-    fontSize: 12,
-    lineHeight: 16,
+    marginBottom: Spacing.one,
   },
   bodyText: {
-    marginBottom: 16,
-    color: '#1D1B20',
-    fontSize: 16,
-    lineHeight: 24,
+    marginBottom: Spacing.three,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 24,
-    marginTop: 4,
+    gap: Spacing.three,
+    marginTop: Spacing.one,
   },
   cancelButton: {
-    minWidth: 54,
-    height: 40,
+    minWidth: MinTapTarget,
+    minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelText: {
-    color: '#6750A4',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  confirmButton: {
-    width: 105,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 18,
-    backgroundColor: '#6750A4',
-  },
-  confirmButtonDisabled: {
+  confirmDisabled: {
     opacity: 0.5,
-  },
-  confirmText: {
-    color: '#FEF7FF',
-    fontSize: 14,
-    fontWeight: '600',
   },
 
   // Text field
   field: {
-    height: 58,
-    marginBottom: 16,
+    minHeight: MinTapTarget + Spacing.mid,
+    marginBottom: Spacing.three,
     justifyContent: 'center',
-    borderRadius: 4,
-    backgroundColor: '#E6E0E9',
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.small,
+    backgroundColor: Colors.light.surfaceContainer,
   },
-  fieldLabel: {
-    color: '#49454F',
-    fontSize: 12,
-    lineHeight: 16,
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   fieldInput: {
-    height: 26,
+    ...Typography.bodyLarge,
+    flex: 1,
+    minHeight: Spacing.five,
     padding: 0,
-    paddingRight: 44,
-    color: '#1D1B20',
-    fontSize: 16,
+    color: Colors.light.onSurface,
   },
   editIcon: {
-    position: 'absolute',
-    right: 16,
-    top: 17,
-    width: 24,
-    height: 24,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
   },
   revealButton: {
-    position: 'absolute',
-    right: 16,
-    bottom: 16,
-  },
-  revealText: {
-    color: '#6750A4',
-    fontSize: 14,
-    fontWeight: '600',
+    minWidth: MinTapTarget,
+    minHeight: MinTapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // The field already has padding around it; pull the target in so the field does not grow.
+    marginVertical: -Spacing.two,
   },
 
   // Sections, groups, rows
   section: {
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: Spacing.two,
+    marginBottom: Spacing.three,
   },
   sectionTitle: {
-    marginBottom: 12,
-    color: '#000000',
-    fontSize: 14,
-    fontWeight: '600',
+    marginBottom: Spacing.mid,
   },
   group: {
     borderWidth: 1,
-    borderColor: '#AEAEB2',
-    borderRadius: 12,
+    borderColor: Colors.light.outlineStrong,
+    borderRadius: Radius.card,
     overflow: 'hidden',
   },
   divider: {
-    height: 1,
-    marginHorizontal: 12,
-    backgroundColor: '#CAC4D0',
+    marginHorizontal: Spacing.mid,
   },
   row: {
-    minHeight: 56,
-    paddingHorizontal: 16,
+    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: Spacing.mid,
   },
   rowPressed: {
     opacity: 0.7,
   },
   rowLabel: {
     flex: 1,
-    color: '#1D1B20',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  rowValue: {
-    color: '#49454F',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  destructiveText: {
-    color: '#D32F2F',
   },
   rowIcon: {
-    width: 24,
-    height: 24,
+    width: ICON_SIZE,
+    height: ICON_SIZE,
   },
   inlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 16,
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
     zIndex: 2,
-  },
-  inlineLabel: {
-    color: '#1D1B20',
-    fontSize: 20,
-    lineHeight: 24,
   },
 });

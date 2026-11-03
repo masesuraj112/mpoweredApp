@@ -1,37 +1,38 @@
-import { scaleFont, scaleHeight, scaleWidth } from '@/services/scale';
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ReactNode, useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { AppText } from '@/components/ui/AppText';
+import { ChevronDownIcon } from '@/components/ui/icons';
+import { Screen } from '@/components/ui/Screen';
+import { Colors, Elevation, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+/** A settings page: its title, then the content. The whole page scrolls, so nothing is cut off on a small phone or with large text. */
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      {/* The whole page scrolls, so nothing is cut off on a small phone or with large text. */}
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>{title}</Text>
-        {children}
-      </ScrollView>
-    </SafeAreaView>
+    <Screen keyboardShouldPersistTaps="handled">
+      <AppText accessibilityRole="header" variant="headlineSmall" style={styles.title}>
+        {title}
+      </AppText>
+      {children}
+    </Screen>
   );
 }
 
 export const settingsSubpageStyles = StyleSheet.create({
   placeholder: {
-    color: '#49454F',
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
+    color: Colors.light.onSurfaceVariant,
   },
   link: {
-    minHeight: scaleHeight(48),
+    minHeight: MinTapTarget,
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#CAC4D0',
+    borderBottomColor: Colors.light.outline,
   },
   linkText: {
-    color: '#6750A4',
-    fontSize: scaleFont(16),
-    lineHeight: scaleHeight(24),
+    ...Typography.bodyLarge,
+    color: Colors.light.primary,
   },
 });
 
@@ -61,8 +62,20 @@ export function SettingsOption({
       style={({ pressed }) => [styles.option, elevated && styles.optionElevated, pressed && styles.optionPressed]}
     >
       {icon && <Image source={icon} style={styles.optionIcon} contentFit="contain" accessibilityLabel="" />}
-      <Text style={[styles.optionLabel, destructive && styles.destructiveText]}>{label}</Text>
-      {trailing ?? (onPress && <Text style={[styles.optionArrow, destructive && styles.destructiveText]}>→</Text>)}
+      <AppText variant="bodyLarge" color={destructive ? 'error' : 'onSurface'} style={styles.optionLabel}>
+        {label}
+      </AppText>
+      {trailing ??
+        (onPress && (
+          <AppText
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+            variant="headlineSmall"
+            color={destructive ? 'error' : 'text'}
+          >
+            →
+          </AppText>
+        ))}
     </Pressable>
   );
 }
@@ -82,6 +95,8 @@ export function SettingsToggle({
       accessibilityRole="switch"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked: value }}
+      // The track is 40dp tall; the extra hit area makes the tap target 48dp.
+      hitSlop={Spacing.one}
       style={[styles.toggle, value && styles.toggleOn]}
     >
       <View style={[styles.toggleThumb, value && styles.toggleThumbOn]} />
@@ -105,18 +120,20 @@ export function SettingsSelect({
   return (
     <View style={styles.selectWrapper}>
       <Pressable
-        onPress={() => setIsOpen(current => !current)}
+        onPress={() => setIsOpen((current) => !current)}
         accessibilityRole="button"
         accessibilityLabel={`${accessibilityLabel}, ${value}`}
         accessibilityState={{ expanded: isOpen }}
         style={styles.select}
       >
-        <Text style={styles.selectText}>{value}</Text>
-        <Text style={styles.selectArrow}>⌄</Text>
+        <AppText variant="bodyLarge" color="onSurfaceVariant">
+          {value}
+        </AppText>
+        <ChevronDownIcon color={Colors.light.onSurfaceVariant} />
       </Pressable>
       {isOpen && (
         <View style={styles.selectMenu}>
-          {options.map(option => (
+          {options.map((option) => (
             <Pressable
               key={option}
               onPress={() => {
@@ -127,7 +144,9 @@ export function SettingsSelect({
               accessibilityState={{ selected: option === value }}
               style={styles.selectOption}
             >
-              <Text style={styles.selectOptionText}>{option}</Text>
+              <AppText variant="bodyLarge" color="onSurfaceVariant">
+                {option}
+              </AppText>
             </Pressable>
           ))}
         </View>
@@ -136,34 +155,23 @@ export function SettingsSelect({
   );
 }
 
+const ICON_SIZE = 24;
+const TOGGLE_THUMB = 28;
+
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
   title: {
-    marginBottom: scaleHeight(24),
-    color: '#000000',
-    fontSize: scaleFont(24),
-    fontWeight: '600',
-    lineHeight: scaleHeight(29),
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: scaleWidth(24),
-    paddingTop: scaleHeight(24),
-    paddingBottom: scaleHeight(24),
+    marginBottom: Spacing.four,
   },
   option: {
-    minHeight: scaleHeight(56),
-    paddingHorizontal: scaleWidth(20),
+    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: scaleWidth(16),
+    gap: Spacing.three,
     borderWidth: 1,
-    borderColor: '#AEAEB2',
-    borderRadius: scaleWidth(12),
-    marginBottom: scaleHeight(16),
+    borderColor: Colors.light.outlineStrong,
+    borderRadius: Radius.card,
+    marginBottom: Spacing.three,
   },
   optionPressed: {
     opacity: 0.7,
@@ -173,91 +181,66 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   optionIcon: {
-    width: scaleWidth(24),
-    height: scaleWidth(24),
+    width: ICON_SIZE,
+    height: ICON_SIZE,
   },
   optionLabel: {
     flex: 1,
-    color: '#1D1B20',
-    fontSize: scaleFont(20),
-    lineHeight: scaleHeight(24),
-  },
-  optionArrow: {
-    color: '#000000',
-    fontSize: scaleFont(26),
-    lineHeight: scaleFont(26),
-  },
-  destructiveText: {
-    color: '#D32F2F',
   },
   toggle: {
-    width: scaleWidth(72),
-    height: scaleHeight(40),
-    padding: scaleWidth(4),
+    width: 72,
+    height: 40,
+    padding: Spacing.one,
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#AEAEB2',
-    borderRadius: scaleWidth(20),
-    backgroundColor: '#F3EDF7',
+    borderColor: Colors.light.outlineStrong,
+    borderRadius: Radius.extraLarge,
+    backgroundColor: Colors.light.surfaceContainer,
   },
   toggleOn: {
-    backgroundColor: '#E8DEF8',
+    backgroundColor: Colors.light.secondaryContainer,
   },
   toggleThumb: {
-    width: scaleWidth(28),
-    height: scaleWidth(28),
-    borderRadius: scaleWidth(14),
-    backgroundColor: '#CCC2DC',
+    width: TOGGLE_THUMB,
+    height: TOGGLE_THUMB,
+    borderRadius: TOGGLE_THUMB / 2,
+    backgroundColor: Colors.light.secondary,
   },
   toggleThumbOn: {
     alignSelf: 'flex-end',
-    backgroundColor: '#6750A4',
+    backgroundColor: Colors.light.primary,
   },
   select: {
-    minWidth: scaleWidth(106),
-    height: scaleHeight(38),
-    paddingHorizontal: scaleWidth(8),
+    minWidth: 112,
+    minHeight: MinTapTarget,
+    paddingHorizontal: Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: Spacing.two,
     borderWidth: 1,
-    borderColor: '#AEAEB2',
-    borderRadius: scaleWidth(4),
+    borderColor: Colors.light.outlineStrong,
+    borderRadius: Radius.small,
   },
+  // The menu floats over the content below the select, so it is positioned over it.
   selectWrapper: {
     position: 'relative',
     zIndex: 2,
   },
   selectMenu: {
     position: 'absolute',
-    top: scaleHeight(42),
+    top: MinTapTarget + Spacing.one,
     right: 0,
-    minWidth: scaleWidth(106),
+    minWidth: 112,
     borderWidth: 1,
-    borderColor: '#AEAEB2',
-    borderRadius: scaleWidth(4),
-    backgroundColor: '#FFFFFF',
-    elevation: 4,
-    shadowColor: '#000000',
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: Colors.light.outlineStrong,
+    borderRadius: Radius.small,
+    backgroundColor: Colors.light.background,
+    ...Elevation.level1,
   },
   selectOption: {
-    minHeight: scaleHeight(40),
+    minHeight: MinTapTarget,
     justifyContent: 'center',
-    paddingHorizontal: scaleWidth(12),
-  },
-  selectOptionText: {
-    color: '#49454F',
-    fontSize: scaleFont(16),
-  },
-  selectText: {
-    color: '#49454F',
-    fontSize: scaleFont(16),
-  },
-  selectArrow: {
-    color: '#49454F',
-    fontSize: scaleFont(20),
+    paddingHorizontal: Spacing.mid,
   },
 });
