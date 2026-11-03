@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
+import { ChipButton } from '@/components/ui/ChipButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
 
 export type TrackingTab = 'chart' | 'history';
 
@@ -20,6 +21,8 @@ const TABS: readonly { id: TrackingTab; label: string; href: '/health/tracking/c
   { id: 'history', label: 'History', href: '/health/tracking/history' },
 ];
 
+const noop = () => {};
+
 /** The tracking records header: Back, the title with a Print PDF action, and the Chart / History tabs. */
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
   const printDisabled = !onPrintPdf || printing;
@@ -33,25 +36,13 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
         <AppText accessibilityRole="header" variant="titleLarge" style={styles.title}>
           My Health Tracking Records
         </AppText>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Print PDF"
-          accessibilityState={{ disabled: printDisabled, busy: printing }}
+        <ChipButton
+          label="Print PDF"
+          busy={printing}
+          busyLabel="Creating PDF"
           disabled={printDisabled}
-          onPress={onPrintPdf}
-          style={[styles.chip, !onPrintPdf && styles.chipDisabled]}>
-          {printing ? (
-            <ActivityIndicator
-              size="small"
-              color={Colors.light.onSurfaceVariant}
-              accessibilityLabel="Creating PDF"
-            />
-          ) : (
-            <AppText variant="labelMedium" color="onSurfaceVariant">
-              Print PDF
-            </AppText>
-          )}
-        </Pressable>
+          onPress={onPrintPdf ?? noop}
+        />
       </View>
 
       <View accessibilityRole="tablist" style={styles.tabs}>
@@ -87,19 +78,6 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-  },
-  chip: {
-    minHeight: MinTapTarget,
-    minWidth: MinTapTarget,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.mid,
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: Radius.large,
-  },
-  chipDisabled: {
-    opacity: 0.5,
   },
   tabs: {
     flexDirection: 'row',
