@@ -20,7 +20,7 @@ export default function SummaryScreen() {
     toSummary: toSocialHealthSummary,
     errorMessage: socialHealthSaveMessage,
   });
-  const close = () => router.replace('/home');
+  const close = () => router.dismissTo('/home');
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 

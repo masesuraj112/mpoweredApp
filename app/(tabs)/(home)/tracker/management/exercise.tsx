@@ -28,7 +28,7 @@ export default function ExerciseScreen() {
         }
         questionNumber={3}
         totalQuestions={4}
-        onPrevious={() => router.push('/tracker/management/otc')}
+        onPrevious={() => router.dismissTo('/tracker/management/otc')}
         onRecord={handleNext}
         disabled={!answers.exerciseDays}
         variant="management"

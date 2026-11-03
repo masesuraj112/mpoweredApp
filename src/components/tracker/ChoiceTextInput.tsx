@@ -1,7 +1,9 @@
-import { StyleSheet, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { useThemeColors } from '@/constants/theme';
+
+import { useInputStyles } from './inputStyles';
 
 type ChoiceTextInputProps = {
   /** Spoken name of the box. */
@@ -12,10 +14,12 @@ type ChoiceTextInputProps = {
 };
 
 /**
- * The multi-line box for a written answer inside a `ChoiceCard`. A multiline box has no return-to-close,
- * so on iOS it brings its own Done bar above the keyboard.
+ * The multi-line box for a written answer inside a `ChoiceCard`, in the same field as the other text
+ * inputs. A multiline box has no return-to-close, so on iOS it brings its own Done bar above the keyboard.
  */
 export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, placeholder }: ChoiceTextInputProps) {
+  const inputStyles = useInputStyles();
+  const colors = useThemeColors();
   const doneBar = useKeyboardDoneBar();
 
   return (
@@ -27,27 +31,11 @@ export function ChoiceTextInput({ accessibilityLabel, value, onChangeText, place
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Colors.light.textDisabled}
+        placeholderTextColor={colors.textSubtle}
         textAlignVertical="top"
-        style={styles.input}
+        style={[inputStyles.input, inputStyles.multiline]}
       />
       {doneBar.bar}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    ...Typography.bodyMediumRegular,
-    // Fills the room the card has. The small minimum lets it shrink when the keyboard is open.
-    flex: 1,
-    minHeight: 56,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.mid,
-    borderWidth: 1,
-    borderColor: Colors.light.divider,
-    borderRadius: Radius.medium,
-    backgroundColor: Colors.light.background,
-    color: Colors.light.onSurface,
-  },
-});

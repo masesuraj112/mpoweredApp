@@ -37,7 +37,7 @@ export default function WalkingScreen() {
         }
         questionNumber={3}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/movement/general')}
+        onPrevious={() => router.dismissTo('/tracker/movement/general')}
         onRecord={handleNext}
         disabled={!answers.walkingImpact}
         variant="management"

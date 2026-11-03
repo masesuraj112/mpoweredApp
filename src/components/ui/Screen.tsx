@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import { ScrollView, View, type ScrollViewProps } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { makeStyles, MaxContentWidth, Spacing } from '@/constants/theme';
 
 type ScreenProps = {
   children: ReactNode;
@@ -31,12 +31,15 @@ export function Screen({
   keyboardShouldPersistTaps,
   keyboardDismissMode,
 }: ScreenProps) {
+  const styles = useStyles();
   return (
     <SafeAreaView style={styles.safeArea} edges={edges}>
       {scroll ? (
         <ScrollView
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           keyboardDismissMode={keyboardDismissMode}
+          // Starts below a native header on iOS, which is see-through, and ends above the tab bar.
+          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[styles.content, styles.scrollContent]}>
           {children}
         </ScrollView>
@@ -48,10 +51,10 @@ export function Screen({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     width: '100%',
@@ -67,4 +70,4 @@ const styles = StyleSheet.create({
   fill: {
     flex: 1,
   },
-});
+}));

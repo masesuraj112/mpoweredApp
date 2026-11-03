@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
 import { ChipButton } from '@/components/ui/ChipButton';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Spacing } from '@/constants/theme';
 
 export type TrackingTab = 'chart' | 'history';
 
@@ -23,19 +23,14 @@ const TABS: readonly { id: TrackingTab; label: string; href: '/health/tracking/c
 
 const noop = () => {};
 
-/** The tracking records header: Back, the title with a Print PDF action, and the Chart / History tabs. */
+/** The tracking records header: the title in the native header bar, a Print PDF action, and the Chart / History tabs. */
 export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }: TrackingScreenHeaderProps) {
+  const styles = useStyles();
   const printDisabled = !onPrintPdf || printing;
 
   return (
-    <ScreenHeader
-      padForStatusBar={false}
-      // Back always returns to the start of My Health, however deep in the stack we are.
-      onBack={() => router.dismissTo('/health')}>
+    <ScreenHeader title="My Health Tracking Records">
       <View style={styles.titleRow}>
-        <AppText accessibilityRole="header" variant="titleLarge" style={styles.title}>
-          My Health Tracking Records
-        </AppText>
         <ChipButton
           label="Print PDF"
           busy={printing}
@@ -66,24 +61,21 @@ export function TrackingScreenHeader({ activeTab, onPrintPdf, printing = false }
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     gap: Spacing.two,
     paddingHorizontal: Spacing.four,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.mid,
   },
-  title: {
-    flex: 1,
-  },
   tabs: {
     flexDirection: 'row',
     marginHorizontal: Spacing.four,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.outline,
+    borderBottomColor: colors.outline,
   },
   tab: {
     flex: 1,
@@ -94,6 +86,6 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomColor: Colors.light.primary,
+    borderBottomColor: colors.primary,
   },
-});
+}));

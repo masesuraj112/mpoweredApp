@@ -5,6 +5,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SummaryReport } from './SummaryReport';
 import { SummaryStatus } from './SummaryStatus';
 
+const mockUseTrackerTitle = jest.fn();
+jest.mock('@/components/ui/nativeHeader', () => ({
+  useTrackerTitle: (title: string) => mockUseTrackerTitle(title),
+}));
+
 const metrics = {
   frame: { x: 0, y: 0, width: 360, height: 780 },
   insets: { top: 24, left: 0, right: 0, bottom: 0 },
@@ -28,7 +33,7 @@ describe('SummaryReport', () => {
   it('shows the page heading, report title, period and saved note', async () => {
     await render(inProvider(<SummaryReport {...baseProps} />));
 
-    expect(screen.getByRole('header', { name: 'My Pain Summary' })).toBeTruthy();
+    expect(mockUseTrackerTitle).toHaveBeenCalledWith('My Pain Summary');
     expect(screen.getByText('My Movement')).toBeTruthy();
     expect(screen.getByText('Period: 2 Nov to 8 Nov')).toBeTruthy();
     expect(screen.getByText('This helps guide your treatment.')).toBeTruthy();

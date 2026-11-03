@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
 
 import { ReportSection } from '@/components/tracker/ReportSection';
 import { ResultSection } from '@/components/tracker/ResultSection';
-import { AppText } from '@/components/ui/AppText';
-import { Button } from '@/components/ui/Button';
-import { Divider } from '@/components/ui/Divider';
-import { Screen } from '@/components/ui/Screen';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { ArrowGlyph } from '@/components/ui/icons';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+
+import { TrackerQuestionScreen } from './TrackerQuestionScreen';
 
 type SummaryReportProps = {
   /** The report's name, for example "My Movement". */
@@ -15,7 +14,7 @@ type SummaryReportProps = {
   period: string;
   /** One line under the page heading. */
   intro: string;
-  /** The short written summary, shown in the grey panel. Can hold nested text for emphasis. */
+  /** The short written summary, shown in its own panel. Can hold nested text for emphasis. */
   guidance?: ReactNode;
   /** A link to advice, shown at the bottom of the panel. */
   tips?: { label: string; url: string };
@@ -29,9 +28,9 @@ type SummaryReportProps = {
 };
 
 /**
- * The report every tracker summary screen shows after a save: a titled card with the period, a
- * summary panel, the answers and any extra sections, and a footer with the Close button. The card
- * scrolls; the heading and footer stay put.
+ * The report every tracker summary screen shows after a save: the report's name and period, a summary
+ * panel, the answers and any extra sections, and Close at its foot. Every summary has this layout; only the
+ * words differ. The report is as tall as its answers and the page scrolls as one.
  */
 export function SummaryReport({
   title,
@@ -44,163 +43,154 @@ export function SummaryReport({
   savedText,
   onClose,
 }: SummaryReportProps) {
+  const styles = useStyles();
   return (
-    <Screen scroll={false}>
-      <AppText accessibilityRole="header" variant="headlineSmall">
-        My Pain Summary
-      </AppText>
-      <AppText variant="bodySmall" color="onSurface" style={styles.intro}>
-        {intro}
-      </AppText>
+    <TrackerQuestionScreen title="My Pain Summary">
+      <Text style={styles.intro}>{intro}</Text>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <AppText variant="titleLarge" style={styles.cardTitle}>
+      <View style={styles.report}>
+        <View style={styles.reportHeader}>
+          <Text accessibilityRole="header" style={styles.reportTitle}>
             {title}
-          </AppText>
-          <AppText variant="labelSmall" color="onSurface" style={styles.period}>
-            Period: {period}
-          </AppText>
+          </Text>
+          <Text style={styles.period}>Period: {period}</Text>
         </View>
-        <Divider style={styles.rule} />
+        <View style={styles.divider} />
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}>
-          {guidance ? (
-            <>
-              <AppText variant="labelLargeBold" color="onSurface" style={styles.panelHeading}>
-                Summary
-              </AppText>
-              <View style={styles.panel}>
-                <AppText variant="bodyMediumRegular" style={styles.panelText}>
-                  {guidance}
-                </AppText>
-                {tips ? <TipsLink label={tips.label} url={tips.url} /> : null}
-              </View>
-            </>
-          ) : null}
+        {guidance ? (
+          <ReportSection heading="Summary">
+            <View style={styles.guidance}>
+              <Text style={styles.text}>{guidance}</Text>
+              {tips ? <TipsLink label={tips.label} url={tips.url} /> : null}
+            </View>
+          </ReportSection>
+        ) : null}
 
-          {results ? (
-            <ReportSection heading="My results:">
-              {results.map((result) => (
-                <ResultSection key={result.heading} heading={result.heading} value={result.value} />
-              ))}
-            </ReportSection>
-          ) : null}
+        {results ? (
+          <ReportSection heading="My results:">
+            {results.map((result) => (
+              <ResultSection key={result.heading} heading={result.heading} value={result.value} />
+            ))}
+          </ReportSection>
+        ) : null}
 
-          {children}
-        </ScrollView>
+        {children}
 
-        <Divider style={styles.rule} />
         <View style={styles.footer}>
-          <AppText variant="bodySmall" color="textTertiary" style={styles.savedText}>
-            {savedText}
-          </AppText>
-          <Button
-            label="Close"
-            variant="outlined"
-            accessibilityLabel="Close summary"
-            onPress={onClose}
-          />
+          <Text style={styles.saved}>{savedText}</Text>
+          <SummaryCloseButton onPress={onClose} />
         </View>
       </View>
-    </Screen>
+    </TrackerQuestionScreen>
   );
 }
 
 function TipsLink({ label, url }: { label: string; url: string }) {
+  const styles = useStyles();
   return (
     <Pressable
       accessibilityRole="link"
       accessibilityLabel={label}
       onPress={() => Linking.openURL(url)}
       style={({ pressed }) => [styles.tips, pressed && styles.pressed]}>
-      <AppText
-        accessibilityElementsHidden
-        importantForAccessibility="no"
-        variant="titleLarge"
-        color="onSurface">
-        ⌕
-      </AppText>
-      <AppText variant="bodyMedium" color="onSurface">
-        {label}
-      </AppText>
+      <Text style={styles.tipsText}>{label}</Text>
+      <ArrowGlyph style={styles.tipsText} />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+/** The summary's Close button, also used while the summary loads or when it could not be shown. */
+export function SummaryCloseButton({ onPress }: { onPress: () => void }) {
+  const styles = useStyles();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Close summary"
+      style={({ pressed }) => [styles.close, pressed && styles.pressed]}>
+      <Text style={styles.closeText}>Close</Text>
+    </Pressable>
+  );
+}
+
+const useStyles = makeStyles((colors) => ({
   intro: {
-    marginTop: Spacing.two,
+    ...Typography.bodyLarge,
+    color: colors.textSecondary,
     marginBottom: Spacing.three,
   },
-  card: {
-    flex: 1,
-    minHeight: 0,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.mid,
-    paddingBottom: Spacing.two,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
+  report: {
+    gap: Spacing.three,
+    padding: Spacing.three,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.surfaceContainer,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.two,
+  reportHeader: {
+    gap: Spacing.half,
   },
-  cardTitle: {
-    flexShrink: 1,
+  reportTitle: {
+    ...Typography.titleSmall,
+    color: colors.text,
   },
   period: {
-    textAlign: 'right',
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
   },
-  rule: {
-    marginVertical: Spacing.mid,
+  divider: {
+    height: 1,
+    backgroundColor: colors.divider,
   },
-  scroll: {
-    flex: 1,
-    minHeight: 0,
-  },
-  scrollContent: {
-    paddingBottom: Spacing.mid,
-  },
-  panelHeading: {
-    marginBottom: Spacing.mid,
-  },
-  panel: {
-    overflow: 'hidden',
+  guidance: {
+    gap: Spacing.two,
+    padding: Spacing.three,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.surfaceGrouped,
+    backgroundColor: colors.surface,
   },
-  panelText: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.mid,
-    textAlign: 'center',
+  text: {
+    ...Typography.bodyLarge,
+    color: colors.text,
   },
   tips: {
     minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.two,
-    paddingHorizontal: Spacing.mid,
-    backgroundColor: Colors.light.outlineStrong,
+    gap: Spacing.one,
+    alignSelf: 'flex-start',
   },
-  pressed: {
-    opacity: 0.8,
+  tipsText: {
+    ...Typography.bodyLarge,
+    fontWeight: '600',
+    color: colors.primary,
+    textDecorationLine: 'underline',
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: Spacing.mid,
+    gap: Spacing.two,
+    paddingTop: Spacing.three,
+    borderTopWidth: 1,
+    borderTopColor: colors.divider,
   },
-  savedText: {
-    flexShrink: 1,
+  saved: {
+    flex: 1,
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
   },
-});
+  close: {
+    minHeight: MinTapTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Radius.pill,
+    backgroundColor: colors.primary,
+  },
+  closeText: {
+    ...Typography.labelLargeBold,
+    color: colors.onPrimary,
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+}));

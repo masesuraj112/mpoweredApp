@@ -1,17 +1,20 @@
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { ChoiceCard } from '@/components/tracker/ChoiceCard';
-import { TrackerPageTitle } from '@/components/tracker/TrackerQuestionScreen';
-import { AppText } from '@/components/ui/AppText';
-import { Screen } from '@/components/ui/Screen';
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { useInputStyles } from '@/components/tracker/inputStyles';
+import { QuestionHint } from '@/components/tracker/ChoicePrompt';
+import { TrackerQuestionScreen } from '@/components/tracker/TrackerQuestionScreen';
+import { makeStyles, useThemeColors } from '@/constants/theme';
 import { useMovementAssessment } from '@/features/assessments/movement/context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 const MAX_HOURS = 24;
 
 export default function ActivityScreen() {
+  const styles = useStyles();
+  const inputStyles = useInputStyles();
+  const colors = useThemeColors();
   const { answers, updateAnswer } = useMovementAssessment();
   const doneBar = useKeyboardDoneBar();
 
@@ -28,9 +31,7 @@ export default function ActivityScreen() {
   };
 
   return (
-    // A wrapping Touchable steals taps from the TextInput (notably on web), so the keyboard closes on scroll instead.
-    <Screen edges={[]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-      <TrackerPageTitle>My Movement</TrackerPageTitle>
+    <TrackerQuestionScreen title="My Movement">
       <ChoiceCard
         title="General Movement Impacts"
         prompt="On average, how many hours per day were you able to stay active or mobile last week?"
@@ -46,36 +47,24 @@ export default function ActivityScreen() {
           onChangeText={handleChange}
           keyboardType="decimal-pad"
           placeholder="Input number only"
-          placeholderTextColor={Colors.light.textSecondary}
+          placeholderTextColor={colors.textSubtle}
           maxLength={5}
-          style={[styles.input, isOverMax && styles.inputError]}
+          style={[inputStyles.input, isOverMax && styles.inputError]}
           accessibilityLabel="Hours active per day"
           inputAccessoryViewID={doneBar.id}
         />
         {doneBar.bar}
-        <AppText variant="bodySmall" color="onSurfaceVariant" style={styles.helper}>
+        <QuestionHint>
           Stay active could mean doing your typical activities like working, driving, doing
           house chores, meeting with people, et cetera.
-        </AppText>
+        </QuestionHint>
       </ChoiceCard>
-    </Screen>
+    </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
-  input: {
-    ...Typography.bodyLarge,
-    minHeight: MinTapTarget + Spacing.two,
-    paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineMedium,
-    borderRadius: Radius.small,
-    color: Colors.light.onSurface,
-  },
+const useStyles = makeStyles((colors) => ({
   inputError: {
-    borderColor: Colors.light.error,
+    borderBottomColor: colors.error,
   },
-  helper: {
-    marginTop: Spacing.three,
-  },
-});
+}));

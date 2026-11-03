@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 
 import { CheckboxOptionRow } from './CheckboxOptionRow';
 import { ChoiceCard, type ChoiceCardVariant } from './ChoiceCard';
 import { ChoiceOptionList } from './ChoiceOptionList';
+import { QuestionHint, QuestionPrompt } from './ChoicePrompt';
 import { SearchBar } from './SearchBar';
 
 type MultiChoiceListProps = {
@@ -37,7 +38,7 @@ type MultiChoiceListProps = {
   selectedChipsEnabled?: boolean;
 };
 
-/** A pick-any question: a card with a scrolling list of checkbox options. */
+/** A pick-any question: a card with a list of checkbox options. */
 export function MultiChoiceList({
   title,
   prompt,
@@ -58,6 +59,7 @@ export function MultiChoiceList({
   searchPlaceholder = 'Search',
   selectedChipsEnabled,
 }: MultiChoiceListProps) {
+  const styles = useStyles();
   const [internalSelected, setInternalSelected] = useState<number[]>([]);
   const isControlled = selectedIndices !== undefined;
   const selected = isControlled ? selectedIndices : internalSelected;
@@ -83,16 +85,12 @@ export function MultiChoiceList({
     onSelectionChange?.(next);
   };
 
-  // ChoiceCard puts a non-string prompt straight into a View, and React Native throws on a bare
-  // string there (the "\n"), so the pieces share one wrapping Text.
+  // The question, then its sub-line, styled like every other question.
   const fullPrompt = subPrompt ? (
-    <AppText variant="labelLargeBold" color="onSurface">
-      {prompt}
-      {'\n'}
-      <AppText variant="bodySmall" color="textSecondary" style={styles.subPrompt}>
-        {subPrompt}
-      </AppText>
-    </AppText>
+    <>
+      {typeof prompt === 'string' ? <QuestionPrompt>{prompt}</QuestionPrompt> : prompt}
+      <QuestionHint>{subPrompt}</QuestionHint>
+    </>
   ) : (
     prompt
   );
@@ -109,12 +107,7 @@ export function MultiChoiceList({
       disabled={disabled}
       variant={variant}>
       {showSearch ? (
-        <SearchBar
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder={searchPlaceholder}
-          style={styles.search}
-        />
+        <SearchBar value={searchText} onChangeText={setSearchText} placeholder={searchPlaceholder} />
       ) : null}
       {showSelectedChips && selected.length > 0 ? (
         <View style={styles.chips}>
@@ -125,10 +118,10 @@ export function MultiChoiceList({
               accessibilityRole="button"
               accessibilityLabel={`Remove ${options[index]}`}
               style={styles.chip}>
-              <AppText variant="labelLarge" color="onSurfaceVariant">
+              <AppText variant="labelLarge" color="onSecondaryContainer">
                 {options[index]}
               </AppText>
-              <AppText accessibilityElementsHidden importantForAccessibility="no" variant="titleLarge" color="onSurfaceVariant">
+              <AppText accessibilityElementsHidden importantForAccessibility="no" variant="subtitle" color="onSecondaryContainer">
                 ×
               </AppText>
             </Pressable>
@@ -151,28 +144,20 @@ export function MultiChoiceList({
   );
 }
 
-const styles = StyleSheet.create({
-  subPrompt: {
-    fontStyle: 'italic',
-  },
-  search: {
-    marginBottom: Spacing.three,
-  },
+const useStyles = makeStyles((colors) => ({
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.two,
-    marginBottom: Spacing.mid,
   },
+  // A solid fill, like the app's other selected chips.
   chip: {
     minHeight: MinTapTarget,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
     paddingHorizontal: Spacing.three,
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: Radius.large,
-    backgroundColor: Colors.light.primaryContainer,
+    borderRadius: Radius.pill,
+    backgroundColor: colors.secondaryContainer,
   },
-});
+}));

@@ -26,7 +26,7 @@ export default function CareScreen() {
         options={PERSONAL_CARE_OPTIONS}
         selectedIndex={selectedIndex}
         onSelectionChange={index => updateAnswer('personalCareLevel', PERSONAL_CARE_OPTIONS[index])}
-        onPrevious={() => router.push('/tracker/personal-care/general')}
+        onPrevious={() => router.dismissTo('/tracker/personal-care/general')}
         onRecord={handleNext}
         variant="personalCare"
       />

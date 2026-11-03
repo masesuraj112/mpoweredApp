@@ -1,17 +1,27 @@
-import { AppText } from '@/components/ui/AppText';
-import { Screen } from '@/components/ui/Screen';
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { getLocalToday, getWeekStart } from '@/features/assessments/week';
 import { getWeeklyReflection, saveWeeklyReflection } from '@/services/home';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useNavigation, usePreventRemove } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { useTrackerTitle } from '@/components/ui/nativeHeader';
 export default function ReflectionScreen() {
+  const styles = useStyles();
+  const navigation = useNavigation();
+  const colors = useThemeColors();
   const [reflection, setReflection] = useState('');
   // The text as last saved, so leaving without changes does not save again.
   const [savedText, setSavedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
+  useTrackerTitle(isComplete ? 'Edit this week’s reflection' : 'This week’s reflection');
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,7 +59,7 @@ export default function ReflectionScreen() {
     setError(null);
     const result = await saveWeeklyReflection(reflection, { isComplete: complete });
     if (result.ok) {
-      router.replace('/home');
+      router.dismissTo('/home');
       return;
     }
     setError(
@@ -65,132 +75,124 @@ export default function ReflectionScreen() {
     void saveAndLeave(true);
   };
 
-  const goBack = () => {
-    // Nothing new to keep (or the saved text never loaded, so it must not be overwritten).
-    if (isLoading || loadFailed || !reflection.trim() || reflection.trim() === savedText.trim()) {
-      router.replace('/home');
-      return;
-    }
-    void saveAndLeave(false);
-  };
-
-  const saveDisabled = isLoading || isSaving || !reflection.trim();
-  const saveLabel = isComplete ? 'Save changes' : 'Save reflection';
+  // Leaving with the platform's back button (or gesture) keeps new text as an unfinished draft. Nothing
+  // new to keep, or text that never loaded (so it must not be overwritten), leaves straight away.
+  const hasUnsavedText =
+    !isLoading && !loadFailed && reflection.trim() !== '' && reflection.trim() !== savedText.trim();
+  usePreventRemove(hasUnsavedText && !isSaving, ({ data }) => {
+    void (async () => {
+      setIsSaving(true);
+      const result = await saveWeeklyReflection(reflection, { isComplete: false });
+      if (!result.ok) {
+        setIsSaving(false);
+        setError('Your reflection could not be saved. Please try again.');
+        return;
+      }
+      navigation.dispatch(data.action);
+    })();
+  });
 
   return (
-    <Screen keyboardShouldPersistTaps="handled">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Back to Home"
-        disabled={isSaving}
-        onPress={goBack}
-        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
-      >
-        <AppText
-          accessibilityElementsHidden
-          importantForAccessibility="no"
-          variant="headlineSmall"
-          color="onSurfaceVariant"
+    <SafeAreaView style={styles.screen} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="automatic">
+        <Text style={styles.description}>
+          Write down anything you would like to remember or discuss with your care team.
+          Going back to Home keeps your draft for this week.
+        </Text>
+
+        {isLoading ? (
+          <ActivityIndicator accessibilityLabel="Loading your reflection" style={styles.loader} />
+        ) : (
+          <TextInput
+            accessibilityLabel="Weekly reflection"
+            editable={!isSaving}
+            multiline
+            onChangeText={setReflection}
+            placeholder="Write your reflection here..."
+            placeholderTextColor={colors.textSubtle}
+            style={styles.input}
+            textAlignVertical="top"
+            value={reflection}
+          />
+        )}
+
+        {error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={isComplete ? 'Save changes' : 'Save reflection'}
+          disabled={isLoading || isSaving || !reflection.trim()}
+          onPress={save}
+          style={({ pressed }) => [
+            styles.saveButton,
+            (isLoading || isSaving || !reflection.trim()) && styles.saveButtonDisabled,
+            pressed && styles.pressed,
+          ]}
         >
-          ‹
-        </AppText>
-        <AppText variant="bodyLarge" color="onSurfaceVariant">
-          Back to Home
-        </AppText>
-      </Pressable>
-
-      <AppText accessibilityRole="header" variant="headlineSmall" color="onSurface" style={styles.heading}>
-        {isComplete ? 'Edit this week’s reflection' : 'This week’s reflection'}
-      </AppText>
-      <AppText variant="bodyMediumRegular" color="onSurfaceVariant" style={styles.description}>
-        Write down anything you would like to remember or discuss with your care team.
-        Going back to Home keeps your draft for this week.
-      </AppText>
-
-      {isLoading ? (
-        <ActivityIndicator accessibilityLabel="Loading your reflection" style={styles.loader} />
-      ) : (
-        <TextInput
-          accessibilityLabel="Weekly reflection"
-          editable={!isSaving}
-          multiline
-          onChangeText={setReflection}
-          placeholder="Write your reflection here..."
-          placeholderTextColor={Colors.light.textSecondary}
-          style={styles.input}
-          textAlignVertical="top"
-          value={reflection}
-        />
-      )}
-
-      {error && (
-        <AppText accessibilityRole="alert" variant="bodySmall" color="error" style={styles.error}>
-          {error}
-        </AppText>
-      )}
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={saveLabel}
-        accessibilityState={{ disabled: saveDisabled }}
-        disabled={saveDisabled}
-        onPress={save}
-        style={({ pressed }) => [
-          styles.saveButton,
-          saveDisabled && styles.saveButtonDisabled,
-          pressed && styles.pressed,
-        ]}
-      >
-        <AppText variant="labelLargeBold" color="onPrimary">
-          {isSaving ? 'Saving…' : saveLabel}
-        </AppText>
-      </Pressable>
-    </Screen>
+          <Text style={styles.saveButtonText}>
+            {isSaving ? 'Saving…' : isComplete ? 'Save changes' : 'Save reflection'}
+          </Text>
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  backButton: {
-    alignSelf: 'flex-start',
-    minHeight: MinTapTarget,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-    marginBottom: Spacing.four,
+const useStyles = makeStyles((colors) => ({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.surface,
   },
-  heading: {
-    marginBottom: Spacing.two,
+  content: {
+    ...ContentColumn,
+    flexGrow: 1,
+    paddingHorizontal: Spacing.four,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.four,
   },
   description: {
     marginBottom: Spacing.three,
+    color: colors.textSecondary,
+    ...Typography.bodySmall,
   },
   input: {
-    ...Typography.bodyLarge,
     minHeight: 220,
     padding: Spacing.three,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineMedium,
     borderRadius: Radius.card,
-    color: Colors.light.onSurface,
+    color: colors.text,
+    ...Typography.bodyLarge,
+    backgroundColor: colors.surfaceContainer,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.outline,
   },
   loader: {
     marginTop: Spacing.five,
   },
   error: {
-    marginTop: Spacing.mid,
+    marginTop: Spacing.two,
+    color: colors.error,
+    ...Typography.caption,
   },
   saveButton: {
     minHeight: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.three,
+    backgroundColor: colors.primary,
     borderRadius: Radius.pill,
-    backgroundColor: Colors.light.primary,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
   },
   saveButtonDisabled: {
     opacity: 0.5,
   },
+  saveButtonText: {
+    color: colors.onPrimary,
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
   pressed: {
     opacity: 0.8,
   },
-});
+}));

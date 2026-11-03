@@ -53,7 +53,7 @@ export default function CurrePainLevel() {
         totalQuestions={6}
         initialValue={answers.averagePain ?? 0}
         onValueChange={value => updateAnswer('averagePain', value)}
-        onPrevious={() => router.push('/tracker/pain/worst')}
+        onPrevious={() => router.dismissTo('/tracker/pain/worst')}
         onRecord={handleFinish}
         disabled={saving}
         validationMessage={errorMessage ?? undefined}

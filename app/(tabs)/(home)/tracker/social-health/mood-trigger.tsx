@@ -47,7 +47,7 @@ export default function MoodTriggerScreen() {
         prompt="What triggered that mood?"
         questionNumber={7}
         totalQuestions={7}
-        onPrevious={() => router.push('/tracker/social-health/mood-emotion')}
+        onPrevious={() => router.dismissTo('/tracker/social-health/mood-emotion')}
         onRecord={handleRecord}
         disabled={saving}
         validationMessage={errorMessage ?? undefined}

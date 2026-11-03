@@ -19,7 +19,7 @@ export default function OtcScreen() {
         }
         questionNumber={2}
         totalQuestions={4}
-        onPrevious={() => router.push('/tracker/management/medication')}
+        onPrevious={() => router.dismissTo('/tracker/management/medication')}
         onRecord={() => router.push('/tracker/management/exercise')}
         variant="management"
       >

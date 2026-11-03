@@ -1,6 +1,6 @@
 import { Text, type TextProps } from 'react-native';
 
-import { Colors, Typography, type ThemeColor } from '@/constants/theme';
+import { Typography, useThemeColors, type ThemeColor } from '@/constants/theme';
 
 type AppTextProps = TextProps & {
   /** A text style from the type scale in `Typography`. */
@@ -14,5 +14,6 @@ type AppTextProps = TextProps & {
  * Font scaling stays on. Pass `style` for layout (margins, alignment) only.
  */
 export function AppText({ variant = 'bodyLarge', color = 'text', style, ...rest }: AppTextProps) {
-  return <Text style={[Typography[variant], { color: Colors.light[color] }, style]} {...rest} />;
+  const colors = useThemeColors();
+  return <Text style={[Typography[variant], { color: colors[color] }, style]} {...rest} />;
 }

@@ -17,7 +17,7 @@ export default function CurrePainLevel() {
         totalQuestions={6}
         initialValue={answers.currentPain ?? 0}
         onValueChange={value => updateAnswer('currentPain', value)}
-        onPrevious={() => router.push('/tracker/pain/characteristics')}
+        onPrevious={() => router.dismissTo('/tracker/pain/characteristics')}
         onRecord={() => {
           // an untouched slider never writes an answer, so write the value shown
           updateAnswer('currentPain', answers.currentPain ?? 0);

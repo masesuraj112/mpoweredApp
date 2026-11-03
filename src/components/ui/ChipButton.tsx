@@ -1,7 +1,7 @@
-import { ActivityIndicator, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, type StyleProp, type ViewStyle } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, useThemeColors } from '@/constants/theme';
 
 type ChipButtonProps = {
   label: string;
@@ -15,7 +15,7 @@ type ChipButtonProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** A small outlined action next to a title, such as Print PDF or Share. At least 48dp to tap. */
+/** A small filled action next to a title, such as Print PDF or Share. At least 48dp to tap. */
 export function ChipButton({
   label,
   onPress,
@@ -25,6 +25,8 @@ export function ChipButton({
   accessibilityLabel,
   style,
 }: ChipButtonProps) {
+  const styles = useStyles();
+  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -39,9 +41,9 @@ export function ChipButton({
         style,
       ]}>
       {busy ? (
-        <ActivityIndicator size="small" color={Colors.light.onSurfaceVariant} accessibilityLabel={busyLabel} />
+        <ActivityIndicator size="small" color={colors.onSecondaryContainer} accessibilityLabel={busyLabel} />
       ) : (
-        <AppText variant="labelMedium" color="onSurfaceVariant">
+        <AppText variant="labelLargeBold" color="onSecondaryContainer">
           {label}
         </AppText>
       )}
@@ -49,16 +51,16 @@ export function ChipButton({
   );
 }
 
-const styles = StyleSheet.create({
+// A solid fill rather than an outline, like the app's other secondary buttons.
+const useStyles = makeStyles((colors) => ({
   chip: {
     minHeight: MinTapTarget,
     minWidth: MinTapTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.mid,
-    borderWidth: 1,
-    borderColor: Colors.light.outline,
-    borderRadius: Radius.large,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.pill,
+    backgroundColor: colors.secondaryContainer,
   },
   dimmed: {
     opacity: 0.5,
@@ -66,4 +68,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
   },
-});
+}));

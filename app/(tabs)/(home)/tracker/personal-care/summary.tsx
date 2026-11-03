@@ -20,7 +20,7 @@ export default function SummaryScreen() {
     toSummary: toPersonalCareSummary,
     errorMessage: (error) => assessmentSaveMessage(error, 'personal care'),
   });
-  const close = () => router.replace('/home');
+  const close = () => router.dismissTo('/home');
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 

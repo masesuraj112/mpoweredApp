@@ -1,24 +1,29 @@
-import { StyleSheet, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
-import { Spacing } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
-/** One labelled answer in a summary: a small heading with the answer under it. */
+/** One labelled answer in a summary: what was asked, then what the person said. */
 export function ResultSection({ heading, value }: { heading: string; value: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
-      <AppText variant="bodySmall" color="onSurfaceVariant">
-        {heading}
-      </AppText>
-      <AppText variant="bodyMediumRegular" color="onSurface">
-        {value}
-      </AppText>
+      <Text style={styles.heading}>{heading}</Text>
+      <Text style={styles.value}>{value}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   section: {
     gap: Spacing.half,
   },
-});
+  heading: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  value: {
+    ...Typography.bodyLarge,
+    color: colors.text,
+  },
+}));

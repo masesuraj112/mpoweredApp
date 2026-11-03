@@ -1,9 +1,9 @@
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
-import { Button } from '@/components/ui/Button';
-import { Screen } from '@/components/ui/Screen';
-import { Spacing } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
+
+import { SummaryCloseButton } from './SummaryReport';
+import { TrackerQuestionScreen } from './TrackerQuestionScreen';
 
 type SummaryStatusProps = {
   state: { status: 'loading' } | { status: 'error'; message: string };
@@ -12,41 +12,35 @@ type SummaryStatusProps = {
 
 /** What a tracker summary screen shows while its entry loads, or when it could not be shown. */
 export function SummaryStatus({ state, onClose }: SummaryStatusProps) {
+  const styles = useStyles();
   return (
-    <Screen scroll={false}>
+    <TrackerQuestionScreen title="My Pain Summary">
       <View style={styles.centered}>
         {state.status === 'loading' ? (
           <ActivityIndicator accessibilityLabel="Loading your summary" />
         ) : (
           <>
-            <AppText
-              accessibilityRole="alert"
-              variant="bodyMediumRegular"
-              color="onSurface"
-              style={styles.message}>
+            <Text accessibilityRole="alert" style={styles.message}>
               {state.message}
-            </AppText>
-            <Button
-              label="Close"
-              variant="outlined"
-              accessibilityLabel="Close summary"
-              onPress={onClose}
-            />
+            </Text>
+            <SummaryCloseButton onPress={onClose} />
           </>
         )}
       </View>
-    </Screen>
+    </TrackerQuestionScreen>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   centered: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.three,
   },
   message: {
+    ...Typography.bodyLarge,
+    color: colors.text,
     textAlign: 'center',
   },
-});
+}));

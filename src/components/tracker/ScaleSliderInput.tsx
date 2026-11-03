@@ -5,7 +5,7 @@ import { NativeSlider } from '@/components/ui/NativeSlider';
 
 import { ChoiceCard, type ChoiceCardVariant } from './ChoiceCard';
 import { QuestionPrompt } from './ChoicePrompt';
-import { useInputStyles } from '@/components/mpowered/inputStyles';
+import { useInputStyles } from './inputStyles';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 
 import { makeStyles, Spacing, Typography, useThemeColors } from '@/constants/theme';

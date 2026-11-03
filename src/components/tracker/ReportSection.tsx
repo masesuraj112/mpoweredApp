@@ -1,28 +1,31 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
-import { Spacing } from '@/constants/theme';
+import { makeStyles, Spacing, Typography } from '@/constants/theme';
 
 /** A titled block inside a summary report, such as "My results:" or "My reflections:". */
 export function ReportSection({ heading, children }: { heading: string; children: ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
-      <AppText accessibilityRole="header" variant="labelMedium" color="onSurface">
+      <Text accessibilityRole="header" style={styles.heading}>
         {heading}
-      </AppText>
+      </Text>
       <View style={styles.body}>{children}</View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   section: {
-    marginTop: Spacing.four,
-    gap: Spacing.mid,
+    gap: Spacing.two,
+  },
+  heading: {
+    ...Typography.bodyLarge,
+    fontWeight: '600',
+    color: colors.text,
   },
   body: {
-    gap: Spacing.mid,
-    paddingHorizontal: Spacing.mid,
+    gap: Spacing.three,
   },
-});
+}));

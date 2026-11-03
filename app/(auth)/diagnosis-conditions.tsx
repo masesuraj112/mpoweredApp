@@ -6,7 +6,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { useAuthStyles } from '@/components/auth/authStyles';
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
-import { SearchBar } from '@/components/mpowered/SearchBar';
+import { SearchBar } from '@/components/tracker/SearchBar';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';

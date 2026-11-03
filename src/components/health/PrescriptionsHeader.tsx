@@ -1,48 +1,34 @@
-import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Spacing } from '@/constants/theme';
+import { makeStyles, Spacing } from '@/constants/theme';
 
 type PrescriptionsHeaderProps = {
   title: string;
-  /** Optional label shown on the right of the top bar, for example "Homescreen". */
+  /** Accepted for main's callers; the native header shows only the page title. */
   topBarLabel?: string;
-  /** Optional content rendered to the right of the title, for example action chips. */
+  /** Optional content under the header, for example action chips. */
   titleAccessory?: ReactNode;
 };
 
-/** The My Health sub-page header: Back to My Health, then the page title with optional actions. */
-export function PrescriptionsHeader({ title, topBarLabel, titleAccessory }: PrescriptionsHeaderProps) {
+/** A My Health sub-page header: the title in the native header bar, with optional actions under it. */
+export function PrescriptionsHeader({ title, titleAccessory }: PrescriptionsHeaderProps) {
+  const styles = useStyles();
   return (
-    <ScreenHeader
-      backLabel="Back to My Health"
-      title={topBarLabel}
-      padForStatusBar={false}
-      // Back always returns to the start of My Health, however deep in the stack we are.
-      onBack={() => router.dismissTo('/health')}>
-      <View style={styles.titleRow}>
-        <AppText accessibilityRole="header" variant="titleLarge" style={styles.title}>
-          {title}
-        </AppText>
-        {titleAccessory}
-      </View>
+    <ScreenHeader title={title}>
+      {titleAccessory ? <View style={styles.titleRow}>{titleAccessory}</View> : null}
     </ScreenHeader>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     gap: Spacing.two,
     marginTop: Spacing.three,
     marginHorizontal: Spacing.four,
   },
-  title: {
-    flexShrink: 1,
-  },
-});
+}));

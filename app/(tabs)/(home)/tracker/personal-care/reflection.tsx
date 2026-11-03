@@ -52,7 +52,7 @@ export default function ReflectionScreen() {
         prompt="Write any reflections of pain impacts on your daily life:"
         questionNumber={4}
         totalQuestions={4}
-        onPrevious={() => router.push('/tracker/personal-care/sleeping')}
+        onPrevious={() => router.dismissTo('/tracker/personal-care/sleeping')}
         onRecord={handleRecord}
         disabled={saving || overLimit}
         validationMessage={errorMessage ?? undefined}

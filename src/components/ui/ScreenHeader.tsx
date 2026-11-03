@@ -1,100 +1,32 @@
+import { Stack } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { AppText } from '@/components/ui/AppText';
-import { Colors, MinTapTarget, Spacing } from '@/constants/theme';
 
 type ScreenHeaderProps = {
-  onBack: () => void;
-  /** The back control's text; it is also the spoken label. */
+  /** Accepted for main's callers; the platform's back button goes back. */
+  onBack?: () => void;
+  /** The text beside the platform's back arrow (iOS). */
   backLabel?: string;
-  /** Shown on the right, as the page title. */
+  /** The page title, shown in the platform's header bar. */
   title?: string;
-  /**
-   * Pad the top by the status bar height (the default), for a header that sits in a navigation header
-   * slot. Pass `false` when the screen already pads that edge, for example inside a `SafeAreaView`.
-   */
+  /** Accepted for main's callers; the platform's header pads for the status bar itself. */
   padForStatusBar?: boolean;
-  /** Extra content under the bar, such as a title row. */
+  /** Extra content under the bar, such as a title row or tabs. It sits at the top of the page. */
   children?: ReactNode;
 };
 
 /**
- * The lilac top bar: a back control on the left and the page title on the right. It pads for the status
- * bar from the safe-area inset, so it needs no fixed height. What Back does is up to the caller.
+ * A page's header: its title goes in the platform's own header bar (set up in the section's layout), and
+ * anything else (actions, tabs) sits at the top of the page under it.
  */
-export function ScreenHeader({
-  onBack,
-  backLabel = 'Back',
-  title,
-  padForStatusBar = true,
-  children,
-}: ScreenHeaderProps) {
-  const insets = useSafeAreaInsets();
-  const topInset = padForStatusBar ? insets.top : 0;
-
+export function ScreenHeader({ backLabel, title, children }: ScreenHeaderProps) {
+  const options = {
+    ...(title !== undefined && { title }),
+    ...(backLabel !== undefined && { headerBackTitle: backLabel }),
+  };
   return (
-    <View>
-      <View style={[styles.bar, { paddingTop: topInset + Spacing.two }]}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={backLabel}
-          hitSlop={Spacing.two}
-          onPress={onBack}
-          style={({ pressed }) => [styles.back, pressed && styles.pressed]}>
-          <AppText
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-            variant="headlineSmall"
-            color="onSurfaceVariant"
-            style={styles.chevron}>
-            ‹
-          </AppText>
-          <AppText variant="bodyLarge" color="onSurfaceVariant">
-            {backLabel}
-          </AppText>
-        </Pressable>
-        {title ? (
-          <AppText
-            accessibilityRole="header"
-            numberOfLines={1}
-            variant="titleMedium"
-            style={styles.title}>
-            {title}
-          </AppText>
-        ) : null}
-      </View>
+    <>
+      {Object.keys(options).length > 0 && <Stack.Screen options={options} />}
       {children}
-    </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.three,
-    paddingHorizontal: Spacing.four,
-    paddingBottom: Spacing.two,
-    backgroundColor: Colors.light.secondaryContainer,
-  },
-  back: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
-    minHeight: MinTapTarget,
-  },
-  chevron: {
-    // The glyph sits low in its line box; nudge it to line up with the label.
-    marginTop: -Spacing.one,
-  },
-  title: {
-    flexShrink: 1,
-    textAlign: 'right',
-  },
-  pressed: {
-    opacity: 0.6,
-  },
-});

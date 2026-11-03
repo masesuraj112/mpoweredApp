@@ -5,7 +5,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PrescriptionsHeader } from './PrescriptionsHeader';
 import { TrackingScreenHeader } from './TrackingScreenHeader';
 
-jest.mock('expo-router', () => ({ router: { dismissTo: jest.fn(), replace: jest.fn() } }));
+const mockScreenOptions = jest.fn();
+jest.mock('expo-router', () => ({
+  router: { dismissTo: jest.fn(), replace: jest.fn() },
+  Stack: { Screen: ({ options }: { options: object }) => (mockScreenOptions(options), null) },
+}));
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { router } = require('expo-router') as { router: { dismissTo: jest.Mock; replace: jest.Mock } };
 
@@ -21,28 +25,11 @@ function inProvider(node: React.ReactNode) {
 beforeEach(() => jest.clearAllMocks());
 
 describe('PrescriptionsHeader', () => {
-  it('shows the page title as a heading and the optional top bar label and actions', async () => {
-    await render(
-      inProvider(
-        <PrescriptionsHeader
-          title="My Pain Profiles"
-          topBarLabel="Homescreen"
-          titleAccessory={<Text>Edit</Text>}
-        />,
-      ),
-    );
+  it('puts the page title in the native header and shows the actions under it', async () => {
+    await render(inProvider(<PrescriptionsHeader title="My Pain Profiles" titleAccessory={<Text>Edit</Text>} />));
 
-    expect(screen.getByRole('header', { name: 'My Pain Profiles' })).toBeTruthy();
-    expect(screen.getByRole('header', { name: 'Homescreen' })).toBeTruthy();
+    expect(mockScreenOptions).toHaveBeenLastCalledWith({ title: 'My Pain Profiles' });
     expect(screen.getByText('Edit')).toBeTruthy();
-  });
-
-  it('goes back to the start of My Health, however deep the stack is', async () => {
-    await render(inProvider(<PrescriptionsHeader title="My Prescriptions" />));
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Back to My Health' }));
-
-    expect(router.dismissTo).toHaveBeenCalledWith('/health');
   });
 });
 
@@ -82,11 +69,9 @@ describe('TrackingScreenHeader', () => {
     expect(screen.getByLabelText('Creating PDF')).toBeTruthy();
   });
 
-  it('goes back to the start of My Health', async () => {
+  it('puts the title in the native header', async () => {
     await render(inProvider(<TrackingScreenHeader activeTab="chart" />));
 
-    await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
-
-    expect(router.dismissTo).toHaveBeenCalledWith('/health');
+    expect(mockScreenOptions).toHaveBeenLastCalledWith({ title: 'My Health Tracking Records' });
   });
 });

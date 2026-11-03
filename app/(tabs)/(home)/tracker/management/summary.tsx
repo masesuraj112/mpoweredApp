@@ -17,7 +17,7 @@ export default function SummaryScreen() {
     toSummary: toManagementSummary,
     errorMessage: managementSaveMessage,
   });
-  const close = () => router.replace('/home');
+  const close = () => router.dismissTo('/home');
 
   if (state.status !== 'ready') return <SummaryStatus state={state} onClose={close} />;
 
