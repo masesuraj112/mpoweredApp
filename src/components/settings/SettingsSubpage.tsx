@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 
 import { NativePicker } from '@/components/ui/NativePicker';
 import { NativeSwitch } from '@/components/ui/NativeSwitch';
-import { ContentColumn, makeStyles, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { ArrowGlyph } from '@/components/ui/icons';
 export function SettingsSubpage({ title, children }: { title: string; children: ReactNode }) {
   const styles = useStyles();
@@ -134,15 +134,18 @@ const useStyles = makeStyles((colors) => ({
     paddingTop: Spacing.four,
     paddingBottom: Spacing.four,
   },
+  // An outlined row, as on main.
   option: {
-    minHeight: 56,
-    paddingHorizontal: Spacing.four,
+    minHeight: MinTapTarget + Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
+    borderWidth: 1,
+    borderColor: colors.outline,
     borderRadius: Radius.card,
     marginBottom: Spacing.three,
-    backgroundColor: colors.surfaceContainer,
   },
   optionPressed: {
     opacity: 0.7,
@@ -157,13 +160,12 @@ const useStyles = makeStyles((colors) => ({
   },
   optionLabel: {
     flex: 1,
-    color: colors.text,
-    ...Typography.titleSmall,
-    fontWeight: '400',
+    color: colors.onSurface,
+    ...Typography.bodyLarge,
   },
   optionArrow: {
     color: colors.text,
-    ...Typography.headline,
+    ...Typography.headlineSmall,
     fontWeight: '400',
   },
   destructiveText: {

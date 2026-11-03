@@ -444,10 +444,12 @@ const useStyles = makeStyles((colors) => ({
     ...Typography.bodySmall,
     fontWeight: '600',
   },
+  // An outlined group of rows, as on main.
   group: {
+    borderWidth: 1,
+    borderColor: colors.outline,
     borderRadius: Radius.card,
     overflow: 'hidden',
-    backgroundColor: colors.surfaceContainer,
   },
   divider: {
     height: 1,

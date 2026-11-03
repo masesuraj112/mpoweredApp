@@ -14,7 +14,7 @@ export type SettingsRowProps = {
 };
 
 /**
- * Settings home: title, a list of rows that open subpages, and Sign out (Figma 3896-21559).
+ * Settings home: title, a card of rows that open subpages, and Sign out (Figma 3896-21559).
  * Shared by the patient app and the support person app, which pass different rows.
  */
 export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
@@ -40,9 +40,9 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
         <Text accessibilityRole="header" style={styles.title}>Settings</Text>
         <View style={styles.titleDivider} />
 
-        <View style={styles.rows}>
-          {rows.map((row) => (
-            <SettingsRow key={row.label} {...row} />
+        <View style={styles.rowsCard}>
+          {rows.map((row, index) => (
+            <SettingsRow key={row.label} {...row} isLast={index === rows.length - 1} />
           ))}
         </View>
 
@@ -51,7 +51,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
           disabled={isSigningOut}
           accessibilityRole="button"
           accessibilityLabel="Sign out"
-          accessibilityState={{ disabled: isSigningOut }}
+          accessibilityState={{ disabled: isSigningOut, busy: isSigningOut }}
           style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutPressed]}
         >
           {isSigningOut ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.signOutText}>Sign out</Text>}
@@ -61,7 +61,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
   );
 }
 
-function SettingsRow({ icon, asset, label, onPress }: SettingsRowProps) {
+function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps & { isLast: boolean }) {
   const styles = useStyles();
   const colors = useThemeColors();
   return (
@@ -71,7 +71,7 @@ function SettingsRow({ icon, asset, label, onPress }: SettingsRowProps) {
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !onPress }}
-      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      style={({ pressed }) => [styles.row, !isLast && styles.rowDivider, pressed && styles.rowPressed]}
     >
       {asset ? (
         // The icons are drawn in one colour, so tint them to the theme (they'd vanish in dark mode otherwise).
@@ -92,7 +92,7 @@ const useStyles = makeStyles((colors) => ({
   },
   content: {
     ...ContentColumn,
-    paddingHorizontal: Spacing.five,
+    paddingHorizontal: Spacing.four,
     paddingTop: Spacing.five,
     paddingBottom: Spacing.four,
   },
@@ -106,19 +106,24 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.four,
     backgroundColor: colors.divider,
   },
-  // Each row is its own card with space between, like the rows on the Settings subpages.
-  rows: {
-    gap: Spacing.three,
+  // One outlined card of rows with lines between them, as on main.
+  rowsCard: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.outline,
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.three,
   },
   row: {
-    minHeight: 56,
-    paddingHorizontal: Spacing.four,
+    minHeight: MinTapTarget + Spacing.four,
     paddingVertical: Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    borderRadius: Radius.card,
-    backgroundColor: colors.surfaceContainer,
+  },
+  rowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
   },
   rowPressed: {
     opacity: 0.65,
@@ -134,31 +139,27 @@ const useStyles = makeStyles((colors) => ({
   rowLabel: {
     flex: 1,
     color: colors.onSurface,
-    ...Typography.titleSmall,
-    fontWeight: '400',
+    ...Typography.bodyLarge,
   },
   chevron: {
     color: colors.text,
-    ...Typography.headline,
+    ...Typography.headlineSmall,
     fontWeight: '400',
   },
+  // Full width with small corners, as on main, in the app's vibrant purple.
   signOutButton: {
+    minHeight: MinTapTarget + Spacing.two,
     marginTop: Spacing.four,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: Radius.medium,
     backgroundColor: colors.primary,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    alignSelf: 'center',
   },
   signOutPressed: {
     opacity: 0.8,
   },
   signOutText: {
     color: colors.onPrimary,
-    ...Typography.titleSmall,
-    fontWeight: '400',
+    ...Typography.titleMedium,
   },
 }));

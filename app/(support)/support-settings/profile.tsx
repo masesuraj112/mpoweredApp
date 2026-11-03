@@ -102,20 +102,17 @@ export default function SupportAccountScreen() {
 
 // Same as the Sign out button on the patient's Account page.
 const useStyles = makeStyles((colors) => ({
+  // Full width with small corners, as on main, in the app's vibrant purple (the same as the Settings home).
   signOutButton: {
+    minHeight: MinTapTarget + Spacing.two,
     marginTop: Spacing.two,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: Radius.medium,
     backgroundColor: colors.primary,
-    minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    alignSelf: 'center',
   },
   signOutText: {
     color: colors.onPrimary,
-    ...Typography.titleSmall,
-    fontWeight: '400',
+    ...Typography.titleMedium,
   },
 }));
