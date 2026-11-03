@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Modal, Pressable, TextInput, View } from 'react-native';
 
 import { useKeyboardDoneBar } from '@/components/mpowered/KeyboardDoneBar';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
-import { Colors, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, useThemeColors } from '@/constants/theme';
+
+import { useInputStyles } from './inputStyles';
 
 type OtherLocationModalProps = {
   /** Locations the person entered before, offered as one-tap suggestions. */
@@ -19,6 +21,9 @@ type OtherLocationModalProps = {
  * each mount starts with an empty box.
  */
 export function OtherLocationModal({ previousLocations, onCancel, onSave }: OtherLocationModalProps) {
+  const styles = useStyles();
+  const inputStyles = useInputStyles();
+  const colors = useThemeColors();
   const [draft, setDraft] = useState('');
   const doneBar = useKeyboardDoneBar();
 
@@ -40,8 +45,8 @@ export function OtherLocationModal({ previousLocations, onCancel, onSave }: Othe
             value={draft}
             onChangeText={setDraft}
             placeholder="Knee"
-            placeholderTextColor={Colors.light.textSecondary}
-            style={styles.input}
+            placeholderTextColor={colors.textSubtle}
+            style={[inputStyles.input, styles.field]}
             accessibilityLabel="Other pain location"
             inputAccessoryViewID={doneBar.id}
           />
@@ -61,7 +66,7 @@ export function OtherLocationModal({ previousLocations, onCancel, onSave }: Othe
                     accessibilityRole="button"
                     accessibilityLabel={`Use ${location}`}
                     style={styles.previousLocation}>
-                    <AppText variant="bodyLarge" color="onSurface">
+                    <AppText variant="bodyLarge" color="onSecondaryContainer">
                       {location}
                     </AppText>
                   </Pressable>
@@ -71,7 +76,7 @@ export function OtherLocationModal({ previousLocations, onCancel, onSave }: Othe
           ) : null}
 
           <View style={styles.actions}>
-            <Button label="Cancel" variant="outlined" onPress={onCancel} />
+            <Button label="Cancel" variant="tonal" onPress={onCancel} />
             <Button label="Ok" variant="primary" onPress={save} />
           </View>
         </View>
@@ -80,32 +85,28 @@ export function OtherLocationModal({ previousLocations, onCancel, onSave }: Othe
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   backdrop: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.four,
-    backgroundColor: Colors.light.backdrop,
+    backgroundColor: colors.backdrop,
   },
+  // Like the Settings pop-ups: a plain sheet with lavender fields on it.
   sheet: {
     width: '100%',
     maxWidth: 400,
     gap: Spacing.two,
     padding: Spacing.three,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.surface,
+  },
+  field: {
+    backgroundColor: colors.surfaceContainer,
   },
   label: {
-    marginLeft: Spacing.three,
-  },
-  input: {
-    ...Typography.bodyLarge,
-    minHeight: MinTapTarget,
-    paddingHorizontal: Spacing.two,
-    borderRadius: Radius.small,
-    backgroundColor: Colors.light.surfaceContainer,
-    color: Colors.light.onSurface,
+    marginLeft: Spacing.one,
   },
   previous: {
     gap: Spacing.two,
@@ -113,9 +114,9 @@ const styles = StyleSheet.create({
   previousLocation: {
     minHeight: MinTapTarget,
     justifyContent: 'center',
-    paddingHorizontal: Spacing.two,
-    borderRadius: Radius.small,
-    backgroundColor: Colors.light.secondaryContainer,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.control,
+    backgroundColor: colors.secondaryContainer,
   },
   actions: {
     flexDirection: 'row',
@@ -123,4 +124,4 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     marginTop: Spacing.two,
   },
-});
+}));

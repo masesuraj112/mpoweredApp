@@ -1,16 +1,9 @@
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
-
-import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
 import { ProfileSectionCard } from '@/components/health/ProfileSectionCard';
-import { AppText } from '@/components/ui/AppText';
-import { Button } from '@/components/ui/Button';
-import { ChipButton } from '@/components/ui/ChipButton';
-import { Divider } from '@/components/ui/Divider';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Spacing } from '@/constants/theme';
 import { getLocalToday } from '@/features/assessments/week';
 import { healthLoadMessage } from '@/features/health-profile/messages';
 import { buildProfileHtml } from '@/features/health-profile/pdf-export';
@@ -20,9 +13,12 @@ import { usePdfExport } from '@/hooks/usePdfExport';
 import type { PdfAction } from '@/services/pdf';
 import { getHealthProfile } from '@/services/health';
 
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const loadProfile = () => getHealthProfile();
 
 export default function PainProfileScreen() {
+  const colors = useThemeColors();
+  const styles = useStyles();
   const { state, reload } = useFocusedQuery(loadProfile);
   const pdf = usePdfExport();
 
@@ -42,13 +38,20 @@ export default function PainProfileScreen() {
     );
 
   const chip = (action: PdfAction, label: string) => (
-    <ChipButton
-      label={label}
-      busy={pdf.busy === action}
-      busyLabel="Creating PDF"
+    <Pressable
+      style={styles.chip}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !profile || pdf.busy !== null, busy: pdf.busy === action }}
       disabled={!profile || pdf.busy !== null}
       onPress={() => exportProfile(action)}
-    />
+    >
+      {pdf.busy === action ? (
+        <ActivityIndicator size="small" color={colors.text} accessibilityLabel="Creating PDF" />
+      ) : (
+        <Text style={styles.chipText}>{label}</Text>
+      )}
+    </Pressable>
   );
 
   const actionChips = (
@@ -59,49 +62,97 @@ export default function PainProfileScreen() {
   );
 
   return (
-    <HealthSubpage
-      header={
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
         <PrescriptionsHeader
           title="My Pain Profiles"
           topBarLabel="Homescreen"
           titleAccessory={actionChips}
         />
-      }
-    >
-      {profile && (
-        <AppText variant="bodySmall" color="textSecondary">
-          {updatedText}
-        </AppText>
-      )}
-      <Divider style={styles.divider} />
+        {profile && <Text style={styles.updatedText}>{updatedText}</Text>}
+        <View style={styles.headerDivider} />
 
-      {state.status === 'loading' && <LoadingState label="Loading your pain profile" />}
-      {state.status === 'error' && (
-        <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
-      )}
+        {state.status === 'loading' && <LoadingState label="Loading your pain profile" />}
+        {state.status === 'error' && (
+          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+        )}
 
-      {sections.map((section) => (
-        <ProfileSectionCard key={section.id} section={section} showPeriod />
-      ))}
+        {sections.map((section) => (
+          <ProfileSectionCard key={section.id} section={section} showPeriod />
+        ))}
 
-      {profile && (
-        <Button
-          label="Check my health tracking records"
-          variant="primary"
-          onPress={() => router.push('/health/tracking/chart')}
-        />
-      )}
-    </HealthSubpage>
+        {profile && (
+          <Pressable
+            style={styles.recordsButton}
+            onPress={() => router.push('/health/tracking/chart')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.recordsButtonText}>Check my health tracking records</Text>
+          </Pressable>
+        )}
+      </ScrollView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((colors) => ({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.surface,
+  },
+  content: {
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
+  },
   chipRow: {
     flexDirection: 'row',
-    gap: Spacing.one,
+    gap: Spacing.half,
   },
-  divider: {
+  chip: {
+    minWidth: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.two,
+    backgroundColor: colors.surfaceContainer,
+  },
+  chipText: {
+    ...Typography.caption,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    color: colors.text,
+  },
+  updatedText: {
+    ...Typography.caption,
+    color: colors.textSubtle,
+    marginTop: Spacing.half,
+    marginHorizontal: Spacing.five,
+  },
+  headerDivider: {
+    height: 1,
+    backgroundColor: colors.outline,
+    marginHorizontal: Spacing.three,
     marginTop: Spacing.two,
     marginBottom: Spacing.four,
   },
-});
+  recordsButton: {
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  recordsButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    color: colors.onPrimary,
+  },
+}));

@@ -1,17 +1,16 @@
-import { Alert, Platform, StyleSheet, View } from 'react-native';
-
 import { NotificationBell } from '@/components/support-person/NotificationBell';
 import { SupportRequestCard } from '@/components/support-person/SupportRequestCard';
-import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Screen } from '@/components/ui/Screen';
-import { Spacing } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { useSupportPerson } from '@/features/support-person/context';
 import type { SupportRequest } from '@/features/support-person/types';
+import { Alert, Platform, ScrollView, Text } from 'react-native';
+import { Stack } from 'expo-router';
 
 /** Pending requests from patients to add this user as their support person (Figma 3911-24738). */
 export default function SupportRequestsScreen() {
+  const styles = useStyles();
   const { status, reload, requests, acceptRequest, rejectRequest } = useSupportPerson();
 
   // Alert.alert is a no-op on react-native-web, so fall back to the browser dialog there
@@ -47,15 +46,18 @@ export default function SupportRequestsScreen() {
   };
 
   return (
-    <Screen>
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <AppText accessibilityRole="header" variant="headlineSmall" style={styles.title}>
-            Support person requests
-          </AppText>
-          {/* Already on the requests screen, so the bell only shows the count here. */}
-          <NotificationBell count={requests.length} />
-        </View>
+    <>
+      {/* Already on the requests screen, so the bell only shows the count, at the header's end. */}
+      <Stack.Screen
+        options={{
+          title: 'Support person requests',
+          headerRight: () => <NotificationBell count={requests.length} />,
+        }}
+      />
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
 
         {status === 'loading' ? (
           <LoadingState label="Loading support person requests" />
@@ -63,11 +65,9 @@ export default function SupportRequestsScreen() {
           <ErrorState message="We could not load your support person requests." onRetry={reload} />
         ) : requests.length === 0 ? (
           // Not in the designs: wording to confirm with the designer.
-          <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
-            You don’t have any support person requests right now.
-          </AppText>
+          <Text style={styles.empty}>You don’t have any support person requests right now.</Text>
         ) : (
-          requests.map((request) => (
+          requests.map(request => (
             <SupportRequestCard
               key={request.id}
               patientName={request.patient.name}
@@ -76,22 +76,26 @@ export default function SupportRequestsScreen() {
             />
           ))
         )}
-      </View>
-    </Screen>
+      </ScrollView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  content: {
-    gap: Spacing.three,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.two,
-  },
-  title: {
+const useStyles = makeStyles((colors) => ({
+  screen: {
     flex: 1,
+    backgroundColor: colors.background,
   },
-});
+  content: {
+    ...ContentColumn,
+    gap: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.four,
+  },
+  empty: {
+    color: colors.onSurfaceVariant,
+    ...Typography.bodySmall,
+    letterSpacing: 0.25,
+  },
+}));

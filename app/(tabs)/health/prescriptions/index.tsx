@@ -1,16 +1,10 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, StyleSheet, View } from 'react-native';
-
-import { HealthSubpage } from '@/components/health/HealthSubpage';
+import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { PrescriptionsHeader } from '@/components/health/PrescriptionsHeader';
-import { AppText } from '@/components/ui/AppText';
-import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { IconButton } from '@/components/ui/IconButton';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Colors, MinTapTarget, Radius, Spacing } from '@/constants/theme';
 import { healthLoadMessage } from '@/features/health-profile/messages';
 import {
   formatFrequency,
@@ -21,6 +15,7 @@ import {
 import { useFocusedQuery } from '@/hooks/useFocusedQuery';
 import { deletePrescription, getPrescriptions } from '@/services/health';
 
+import { ContentColumn, makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 const pillIcon = require('../../../../assets/images/health/prescription-pill.svg');
 const editIcon = require('../../../../assets/images/health/prescription-edit.svg');
 const deleteIcon = require('../../../../assets/images/health/prescription-delete.svg');
@@ -34,6 +29,8 @@ function showMessage(title: string, message: string) {
 const loadPrescriptions = () => getPrescriptions();
 
 export default function PrescriptionsScreen() {
+  const styles = useStyles();
+  const colors = useThemeColors();
   const { state, setState, reload } = useFocusedQuery(loadPrescriptions);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const prescriptions = state.status === 'ready' ? state.data : [];
@@ -75,88 +72,103 @@ export default function PrescriptionsScreen() {
   };
 
   return (
-    <HealthSubpage header={<PrescriptionsHeader title="My Prescriptions" />}>
-      {state.status === 'loading' && <LoadingState label="Loading your prescriptions" />}
-      {state.status === 'error' && (
-        <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
-      )}
+    <>
+      <ScrollView
+        style={styles.safeArea}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
+        <PrescriptionsHeader title="My Prescriptions" />
 
-      {state.status !== 'ready' ? null : isEmpty ? (
-        <View style={styles.emptyState}>
-          <View style={styles.pillIconFrame}>
-            <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" />
-          </View>
-          <AppText variant="bodyLarge" color="textSecondary" style={styles.emptyText}>
-            Prescriptions list is empty
-          </AppText>
-          <Button
-            label="Add prescription"
-            variant="tonal"
-            onPress={() => router.push('/health/prescriptions/add')}
-          />
-        </View>
-      ) : (
-        <>
-          <View style={styles.listFrame}>
-            <View style={styles.list}>
-              {prescriptions.map((prescription) => (
-                <View
-                  key={prescription.id}
-                  style={[styles.listItem, deletingId === prescription.id && styles.listItemDeleting]}
-                >
-                  <View style={styles.listItemTextColumn}>
-                    <AppText variant="bodyMedium" color="onSurface">
-                      {formatPrescriptionName(prescription)}
-                    </AppText>
-                    <AppText variant="bodySmall" color="onSurface">
-                      {formatFrequency(prescription)}
-                    </AppText>
-                  </View>
-                  <IconButton
-                    icon={editIcon}
-                    iconSize={ICON_SIZE}
-                    accessibilityLabel={`Edit ${formatPrescriptionName(prescription)}`}
-                    onPress={() => handleEdit(prescription)}
-                  />
-                  <IconButton
-                    icon={deleteIcon}
-                    iconSize={ICON_SIZE}
-                    accessibilityLabel={`Delete ${formatPrescriptionName(prescription)}`}
-                    disabled={deletingId !== null}
-                    onPress={() => handleDelete(prescription)}
-                  />
-                </View>
-              ))}
+        {state.status === 'loading' && <LoadingState label="Loading your prescriptions" />}
+        {state.status === 'error' && (
+          <ErrorState message={healthLoadMessage(state.error)} onRetry={reload} />
+        )}
+
+        {state.status !== 'ready' ? null : isEmpty ? (
+          <View style={styles.emptyState}>
+            <View style={styles.pillIconFrame}>
+              <Image source={pillIcon} style={styles.pillIcon} contentFit="contain" tintColor={colors.textSubtle} />
             </View>
+            <Text style={styles.emptyText}>Prescriptions list is empty</Text>
+            <Pressable
+              style={styles.addButton}
+              onPress={() => router.push('/health/prescriptions/add')}
+            >
+              <Text style={styles.addButtonText}>Add prescription</Text>
+            </Pressable>
           </View>
+        ) : (
+          <>
+            <View style={styles.listFrame}>
+              <View style={styles.list}>
+                {prescriptions.map((prescription) => (
+                  <View
+                    key={prescription.id}
+                    style={[styles.listItem, deletingId === prescription.id && styles.listItemDeleting]}
+                  >
+                    <View style={styles.listItemTextColumn}>
+                      <Text style={styles.name}>{formatPrescriptionName(prescription)}</Text>
+                      <Text style={styles.frequency}>{formatFrequency(prescription)}</Text>
+                    </View>
+                    <Pressable
+                      style={styles.iconButton}
+                      onPress={() => handleEdit(prescription)}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Edit ${formatPrescriptionName(prescription)}`}
+                    >
+                      {/* One-colour icons, tinted to the theme so they show in dark mode. */}
+                      <Image source={editIcon} style={styles.icon} contentFit="contain" tintColor={colors.onSurfaceVariant} />
+                    </Pressable>
+                    <Pressable
+                      style={styles.iconButton}
+                      onPress={() => handleDelete(prescription)}
+                      disabled={deletingId !== null}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Delete ${formatPrescriptionName(prescription)}`}
+                    >
+                      <Image source={deleteIcon} style={styles.icon} contentFit="contain" tintColor={colors.onSurfaceVariant} />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            </View>
 
-          <Button
-            label="Add prescriptions"
-            variant="primary"
-            onPress={() => router.push('/health/prescriptions/add')}
-          />
-        </>
-      )}
-    </HealthSubpage>
+            <Pressable
+              style={styles.addPrescriptionsButton}
+              onPress={() => router.push('/health/prescriptions/add')}
+            >
+              <Text style={styles.addPrescriptionsButtonText}>Add prescriptions</Text>
+            </Pressable>
+          </>
+        )}
+      </ScrollView>
+    </>
   );
 }
 
-const ICON_SIZE = 24;
-// Bounding box of the 42x70 pill once rotated 42.22deg, as laid out in Figma.
-const PILL_FRAME_WIDTH = 78;
-const PILL_FRAME_HEIGHT = 80;
-
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.surface,
+  },
+  content: {
+    ...ContentColumn,
+    paddingBottom: Spacing.five,
+  },
   emptyState: {
     alignItems: 'center',
     marginTop: Spacing.six,
-    gap: Spacing.three,
+    paddingHorizontal: Spacing.four,
   },
+  // Bounding box of the 42x70 pill once rotated 42.22deg, as laid out in Figma.
   pillIconFrame: {
-    width: PILL_FRAME_WIDTH,
-    height: PILL_FRAME_HEIGHT,
+    width: 78,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: Spacing.four,
   },
   pillIcon: {
     width: 42,
@@ -164,29 +176,48 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '42.22deg' }],
   },
   emptyText: {
+    ...Typography.bodyLarge,
+    color: colors.textSubtle,
     textAlign: 'center',
+    marginBottom: Spacing.four,
+  },
+  addButton: {
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    alignSelf: 'center',
+  },
+  addButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    letterSpacing: 0.1,
+    color: colors.text,
   },
   listFrame: {
-    marginBottom: Spacing.three,
-    padding: Spacing.mid,
-    borderWidth: 1,
-    borderColor: Colors.light.outlineStrong,
+    marginHorizontal: Spacing.four,
+    marginTop: Spacing.four,
     borderRadius: Radius.card,
+    padding: Spacing.three,
+    backgroundColor: colors.surfaceContainer,
   },
   list: {
-    overflow: 'hidden',
+    backgroundColor: colors.surfaceContainer,
     borderRadius: Radius.card,
-    backgroundColor: Colors.light.background,
+    overflow: 'hidden',
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.two,
-    minHeight: MinTapTarget + Spacing.two,
-    paddingLeft: Spacing.three,
-    paddingVertical: Spacing.one,
+    gap: Spacing.three,
+    minHeight: 56,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.outline,
+    borderBottomColor: colors.outline,
   },
   listItemDeleting: {
     opacity: 0.4,
@@ -194,4 +225,39 @@ const styles = StyleSheet.create({
   listItemTextColumn: {
     flex: 1,
   },
-});
+  name: {
+    ...Typography.bodySmall,
+    fontWeight: '500',
+    letterSpacing: 0.25,
+    color: colors.text,
+  },
+  frequency: {
+    ...Typography.caption,
+    letterSpacing: 0.4,
+    color: colors.text,
+  },
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 24,
+    height: 24,
+  },
+  addPrescriptionsButton: {
+    marginTop: Spacing.three,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    minHeight: MinTapTarget,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  addPrescriptionsButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    color: colors.onPrimary,
+  },
+}));

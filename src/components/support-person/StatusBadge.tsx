@@ -1,39 +1,35 @@
-import { StyleSheet, View } from 'react-native';
+import { Radius, Spacing, type ThemeColors, Typography, useThemeColors } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
-import { Colors, Radius, Spacing, type ThemeColor } from '@/constants/theme';
-
-const VARIANTS: Record<'upcoming' | 'none', { label: string; background: string; text: ThemeColor }> = {
-  upcoming: {
-    label: 'Appointment upcoming',
-    background: Colors.light.warningContainer,
-    text: 'onWarningContainer',
-  },
-  none: {
-    label: 'No scheduled appointments',
-    background: Colors.light.successContainer,
-    text: 'onSuccessContainer',
-  },
-};
+const VARIANTS = {
+  upcoming: { label: 'Appointment upcoming', background: 'warningContainer', text: 'warning' },
+  none: { label: 'No scheduled appointments', background: 'successContainer', text: 'success' },
+} as const satisfies Record<string, { label: string; background: keyof ThemeColors; text: keyof ThemeColors }>;
 
 /** Yellow "Appointment upcoming" or green "No scheduled appointments" pill (Figma 3911-24657, 3911-24634). */
 export function StatusBadge({ hasUpcoming }: { hasUpcoming: boolean }) {
+  const colors = useThemeColors();
   const variant = VARIANTS[hasUpcoming ? 'upcoming' : 'none'];
 
   return (
-    <View style={[styles.badge, { backgroundColor: variant.background }]}>
-      <AppText variant="labelSmall" color={variant.text} numberOfLines={1}>
+    <View style={[styles.badge, { backgroundColor: colors[variant.background] }]}>
+      <Text style={[styles.label, { color: colors[variant.text] }]} numberOfLines={1}>
         {variant.label}
-      </AppText>
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   badge: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.mid,
+    height: 27,
+    paddingHorizontal: Spacing.two,
     justifyContent: 'center',
     borderRadius: Radius.pill,
+  },
+  label: {
+    ...Typography.caption,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });

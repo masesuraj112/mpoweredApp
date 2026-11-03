@@ -1,18 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { Text } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ChipButton } from '@/components/ui/ChipButton';
 import type { ProfileSection } from '@/features/health-profile/profile';
 
 import { Dropdown } from './Dropdown';
-import { HealthSubpage } from './HealthSubpage';
 import { ProfileSectionCard } from './ProfileSectionCard';
-
-const metrics = {
-  frame: { x: 0, y: 0, width: 360, height: 780 },
-  insets: { top: 24, left: 0, right: 0, bottom: 0 },
-};
 
 describe('Dropdown', () => {
   const options = [
@@ -91,20 +83,5 @@ describe('ProfileSectionCard', () => {
     expect(screen.getByText('Incomplete')).toBeTruthy();
     expect(screen.getByText('Not completed yet.')).toBeTruthy();
     expect(screen.queryByText('Worst pain')).toBeNull();
-  });
-});
-
-describe('HealthSubpage', () => {
-  it('shows the header above the content', async () => {
-    await render(
-      <SafeAreaProvider initialMetrics={metrics}>
-        <HealthSubpage header={<Text>The header</Text>}>
-          <Text>The content</Text>
-        </HealthSubpage>
-      </SafeAreaProvider>,
-    );
-
-    expect(screen.getByText('The header')).toBeTruthy();
-    expect(screen.getByText('The content')).toBeTruthy();
   });
 });

@@ -1,60 +1,54 @@
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
-
 import { AppointmentCard } from '@/components/support-person/AppointmentCard';
 import { PermissionChips } from '@/components/support-person/PermissionChips';
 import { SectionLabel } from '@/components/support-person/SectionLabel';
-import { AppText } from '@/components/ui/AppText';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Screen } from '@/components/ui/Screen';
-import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { Spacing } from '@/constants/theme';
+import { ContentColumn, makeStyles, Spacing, Typography } from '@/constants/theme';
 import { splitAppointments } from '@/features/support-person/appointments';
 import { useSupportPerson } from '@/features/support-person/context';
 import { openAppointmentAction } from '@/features/support-person/navigation';
 import { APPOINTMENT_ACTION_LABELS, getAppointmentActions } from '@/features/support-person/permissions';
 import type { Appointment, SupportedPatient } from '@/features/support-person/types';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { ScrollView, Text, View } from 'react-native';
 
 /** One patient's upcoming and past appointments, as seen by their support person (Figma 3911-25095, 3911-24852). */
 export default function PatientAppointmentsScreen() {
+  const styles = useStyles();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const { status, reload, getPatient } = useSupportPerson();
   const patient = getPatient(patientId);
 
+  // The header itself comes from the layout; only the patient's name is known here.
   const header = (
     <Stack.Screen
       options={{
-        headerShown: true,
-        header: () => (
-          <ScreenHeader title={patient ? `${patient.name}’s Appointments` : 'Appointments'} onBack={() => router.back()} />
-        ),
+        title: patient ? `${patient.name}’s Appointments` : 'Appointments',
+        headerBackTitle: 'Care Planner',
       }}
     />
   );
 
   if (status !== 'ready') {
     return (
-      <Screen edges={[]}>
+      <View style={styles.screen}>
         {header}
         {status === 'loading' ? (
           <LoadingState label="Loading appointments" />
         ) : (
           <ErrorState message="We could not load this person's appointments." onRetry={reload} />
         )}
-      </Screen>
+      </View>
     );
   }
 
   // e.g. the support person unpaired from this patient in Settings, or followed an old link.
   if (!patient) {
     return (
-      <Screen edges={[]}>
+      <View style={styles.screen}>
         {header}
-        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
-          You no longer support this person.
-        </AppText>
-      </Screen>
+        <Text style={[styles.empty, styles.notFound]}>You no longer support this person.</Text>
+      </View>
     );
   }
 
@@ -64,20 +58,22 @@ export default function PatientAppointmentsScreen() {
   const firstName = patient.name.split(' ')[0];
 
   return (
-    <Screen edges={[]}>
+    <>
       {header}
-      <View style={styles.content}>
-        <View style={styles.patientRow}>
-          <View style={styles.patientText}>
-            <AppText accessibilityRole="header" variant="headlineSmall" numberOfLines={1}>
-              {patient.name}
-            </AppText>
-            {patient.condition ? (
-              <AppText variant="labelLargeBold" color="textTertiary" numberOfLines={1}>
-                {patient.condition}
-              </AppText>
-            ) : null}
-          </View>
+      {/* The scroll view is the screen's root so iOS starts it below the header and ends it above the tabs. */}
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.patientText}>
+          <Text accessibilityRole="header" style={styles.name} numberOfLines={1}>
+            {patient.name}
+          </Text>
+          {patient.condition ? (
+            <Text style={styles.condition} numberOfLines={1}>
+              {patient.condition}
+            </Text>
+          ) : null}
         </View>
 
         <PermissionChips canAddQuestions={patient.canAddQuestions} canAddAnswers={patient.canAddAnswers} />
@@ -96,8 +92,8 @@ export default function PatientAppointmentsScreen() {
           patient={patient}
           isUpcoming={false}
         />
-      </View>
-    </Screen>
+      </ScrollView>
+    </>
   );
 }
 
@@ -110,21 +106,20 @@ type AppointmentSectionProps = {
 };
 
 function AppointmentSection({ title, emptyText, appointments, patient, isUpcoming }: AppointmentSectionProps) {
+  const styles = useStyles();
   const actionTypes = getAppointmentActions(patient, isUpcoming);
 
   return (
     <View style={styles.section}>
       <SectionLabel>{title}</SectionLabel>
       {appointments.length === 0 ? (
-        <AppText variant="bodyMediumRegular" color="onSurfaceVariant">
-          {emptyText}
-        </AppText>
+        <Text style={styles.empty}>{emptyText}</Text>
       ) : (
-        appointments.map((appointment) => (
+        appointments.map(appointment => (
           <AppointmentCard
             key={appointment.appointmentId}
             appointment={appointment}
-            actions={actionTypes.map((action) => ({
+            actions={actionTypes.map(action => ({
               label: APPOINTMENT_ACTION_LABELS[action],
               onPress: () => openAppointmentAction(action, patient.id, appointment.appointmentId),
             }))}
@@ -135,19 +130,41 @@ function AppointmentSection({ title, emptyText, appointments, patient, isUpcomin
   );
 }
 
-const styles = StyleSheet.create({
-  content: {
-    gap: Spacing.three,
+const useStyles = makeStyles((colors) => ({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
-  patientRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.mid,
+  content: {
+    ...ContentColumn,
+    gap: Spacing.three,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.five,
+    paddingHorizontal: Spacing.four,
   },
   patientText: {
-    flex: 1,
+    gap: Spacing.half,
+  },
+  name: {
+    color: colors.text,
+    ...Typography.title,
+    letterSpacing: -0.48,
+  },
+  condition: {
+    color: colors.textSecondary,
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    letterSpacing: 0.1,
   },
   section: {
     gap: Spacing.two,
   },
-});
+  empty: {
+    color: colors.onSurfaceVariant,
+    ...Typography.bodySmall,
+    letterSpacing: 0.25,
+  },
+  notFound: {
+    padding: Spacing.four,
+  },
+}));
