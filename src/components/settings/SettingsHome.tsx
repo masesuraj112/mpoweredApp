@@ -14,7 +14,7 @@ export type SettingsRowProps = {
 };
 
 /**
- * Settings home: title, a card of rows that open subpages, and Sign out (Figma 3896-21559).
+ * Settings home: title, a list of rows that open subpages, and Sign out (Figma 3896-21559).
  * Shared by the patient app and the support person app, which pass different rows.
  */
 export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
@@ -40,13 +40,9 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
         <Text accessibilityRole="header" style={styles.title}>Settings</Text>
         <View style={styles.titleDivider} />
 
-        <View style={styles.rowsCard}>
-          {rows.map((row, index) => (
-            <SettingsRow
-              key={row.label}
-              {...row}
-              isLast={index === rows.length - 1}
-            />
+        <View style={styles.rows}>
+          {rows.map((row) => (
+            <SettingsRow key={row.label} {...row} />
           ))}
         </View>
 
@@ -65,7 +61,7 @@ export function SettingsHome({ rows }: { rows: SettingsRowProps[] }) {
   );
 }
 
-function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps & { isLast: boolean }) {
+function SettingsRow({ icon, asset, label, onPress }: SettingsRowProps) {
   const styles = useStyles();
   const colors = useThemeColors();
   return (
@@ -75,7 +71,7 @@ function SettingsRow({ icon, asset, label, onPress, isLast }: SettingsRowProps &
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !onPress }}
-      style={({ pressed }) => [styles.row, !isLast && styles.rowDivider, pressed && styles.rowPressed]}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       {asset ? (
         // The icons are drawn in one colour, so tint them to the theme (they'd vanish in dark mode otherwise).
@@ -110,21 +106,19 @@ const useStyles = makeStyles((colors) => ({
     marginBottom: Spacing.four,
     backgroundColor: colors.divider,
   },
-  rowsCard: {
-    overflow: 'hidden',
-    borderRadius: Radius.card,
-    paddingHorizontal: Spacing.three,
-    backgroundColor: colors.surfaceContainer,
+  // Each row is its own card with space between, like the rows on the Settings subpages.
+  rows: {
+    gap: Spacing.three,
   },
   row: {
-    minHeight: 76,
+    minHeight: 56,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-  },
-  rowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+    borderRadius: Radius.card,
+    backgroundColor: colors.surfaceContainer,
   },
   rowPressed: {
     opacity: 0.65,
