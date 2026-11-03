@@ -3,20 +3,13 @@ import type { WeeklyAssessmentId } from '@/features/assessments/homeProgress';
 import { useWeeklyHomeProgress } from '@/features/assessments/useWeeklyHomeProgress';
 import { formatDayMonth, formatWeekDays, getLocalToday } from '@/features/assessments/week';
 import { getGreeting } from '@/features/support-person/greeting';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router, useFocusEffect } from 'expo-router';
-import { setStatusBarStyle } from 'expo-status-bar';
-import { useCallback, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
-import { ContentColumn, Gradients, makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
 import { BrandText } from '@/components/brand/BrandText';
+import { BrandScreen } from '@/components/mpowered/BrandScreen';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -38,7 +31,6 @@ const ASSESSMENTS: Assessment[] = [
 
 export default function HomeScreen() {
   const styles = useStyles();
-  const insets = useSafeAreaInsets();
   const name = useAuth().profile?.name ?? '';
   const {
     recorded: recordedAssessments,
@@ -55,31 +47,11 @@ export default function HomeScreen() {
     router.push(assessment.route);
   };
 
-  // White status bar text over the gradient while this screen shows; the app's default everywhere else.
-  useFocusEffect(
-    useCallback(() => {
-      setStatusBarStyle('light');
-      return () => setStatusBarStyle('auto');
-    }, []),
-  );
-
   return (
-    // The hero runs under the status bar, so only the bottom edge is kept clear here.
-    <SafeAreaView style={styles.screen} edges={['bottom']}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        contentInsetAdjustmentBehavior="never"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Pulling down past the top shows the gradient's own colour, not the page, above the hero. */}
-        <View style={styles.overscroll} />
-        {/* The week at a glance, on the brand gradient, from the top of the screen to both edges. */}
-        <LinearGradient
-          colors={Gradients.brand}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.hero, { paddingTop: insets.top + Spacing.four }]}>
-          <View style={styles.heroContent}>
+    <BrandScreen
+      hero={
+        // The week at a glance.
+        <>
             <View style={styles.intro}>
               <Text style={styles.greeting}>{getGreeting(name)}</Text>
               <BrandText style={styles.heading}>{'Let’s build your MPowered plan.'}</BrandText>
@@ -111,86 +83,80 @@ export default function HomeScreen() {
               </View>
               {progressError && <Text style={styles.progressError}>{progressError}</Text>}
             </View>
-          </View>
-        </LinearGradient>
-
-        <View style={styles.body}>
-          <Text accessibilityRole="header" style={styles.sectionHeading}>
-            This week’s assessments
-          </Text>
-          {/* The Monday to Sunday being tracked. */}
-          <Text style={styles.weekDates}>{formatWeekDays(getLocalToday())}</Text>
-          <View style={styles.assessmentList}>
-            {ASSESSMENTS.map((assessment) => {
-              const recordedDate = recordedAssessments.get(assessment.id);
-              const isRecorded = recordedDate !== undefined;
-              return (
-                <View key={assessment.id} style={styles.assessmentRow}>
-                  <View style={styles.assessmentCopy}>
-                    <Text style={styles.assessmentTitle}>{assessment.title}</Text>
-                    {isRecorded && (
-                      <Text style={styles.updatedText}>Recorded {formatDayMonth(recordedDate)}</Text>
-                    )}
-                  </View>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
-                    disabled={!isProgressLoaded}
-                    // The pill is 40 high; the slop makes the touch area the full 48.
-                    hitSlop={(MinTapTarget - ASSESSMENT_BUTTON_HEIGHT) / 2}
-                    onPress={() => openAssessment(assessment)}
-                    style={({ pressed }) => [
-                      styles.assessmentButton,
-                      isRecorded ? styles.editButton : styles.recordButton,
-                      pressed && styles.buttonPressed,
+        </>
+      }>
+        <Text accessibilityRole="header" style={styles.sectionHeading}>
+          This week’s assessments
+        </Text>
+        {/* The Monday to Sunday being tracked. */}
+        <Text style={styles.weekDates}>{formatWeekDays(getLocalToday())}</Text>
+        <View style={styles.assessmentList}>
+          {ASSESSMENTS.map((assessment) => {
+            const recordedDate = recordedAssessments.get(assessment.id);
+            const isRecorded = recordedDate !== undefined;
+            return (
+              <View key={assessment.id} style={styles.assessmentRow}>
+                <View style={styles.assessmentCopy}>
+                  <Text style={styles.assessmentTitle}>{assessment.title}</Text>
+                  {isRecorded && (
+                    <Text style={styles.updatedText}>Recorded {formatDayMonth(recordedDate)}</Text>
+                  )}
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${isRecorded ? 'Edit' : 'Record'} ${assessment.title}`}
+                  disabled={!isProgressLoaded}
+                  // The pill is 40 high; the slop makes the touch area the full 48.
+                  hitSlop={(MinTapTarget - ASSESSMENT_BUTTON_HEIGHT) / 2}
+                  onPress={() => openAssessment(assessment)}
+                  style={({ pressed }) => [
+                    styles.assessmentButton,
+                    isRecorded ? styles.editButton : styles.recordButton,
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.assessmentButtonText,
+                      isRecorded ? styles.editButtonText : styles.recordButtonText,
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.assessmentButtonText,
-                        isRecorded ? styles.editButtonText : styles.recordButtonText,
-                      ]}
-                    >
-                      {isRecorded ? 'Edit' : 'Record'}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.arrow,
-                        isRecorded ? styles.editButtonText : styles.recordButtonText,
-                      ]}
-                    >
-                      →
-                    </Text>
-                  </Pressable>
-                </View>
-              );
-            })}
-          </View>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
-            onPress={() => router.push('/tracker/reflection')}
-            style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
-          >
-            <Text style={[styles.plus, hasReflection && styles.reflectionCompleteIcon]}>
-              {hasReflection ? '✓' : '+'}
-            </Text>
-            <View style={styles.reflectionCopy}>
-              <Text style={styles.reflectionText}>
-                {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
-              </Text>
-              {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
-            </View>
-            {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
-          </Pressable>
-
-          <Text style={styles.supported}>Supported by ABBVIE</Text>
+                    {isRecorded ? 'Edit' : 'Record'}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.arrow,
+                      isRecorded ? styles.editButtonText : styles.recordButtonText,
+                    ]}
+                  >
+                    →
+                  </Text>
+                </Pressable>
+              </View>
+            );
+          })}
         </View>
-      </ScrollView>
-      {/* The status bar always sits on the gradient's colour, however iOS insets the scroll view. */}
-      <View style={[styles.statusBarFill, { height: insets.top }]} />
-    </SafeAreaView>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={hasReflection ? 'Edit this week’s reflection' : 'Add a reflection for this week'}
+          onPress={() => router.push('/tracker/reflection')}
+          style={({ pressed }) => [styles.reflection, pressed && styles.buttonPressed]}
+        >
+          <Text style={[styles.plus, hasReflection && styles.reflectionCompleteIcon]}>
+            {hasReflection ? '✓' : '+'}
+          </Text>
+          <View style={styles.reflectionCopy}>
+            <Text style={styles.reflectionText}>
+              {hasReflection ? 'Reflection added for this week' : 'Add a reflection for this week'}
+            </Text>
+            {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
+          </View>
+          {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
+        </Pressable>
+
+        <Text style={styles.supported}>Supported by ABBVIE</Text>
+    </BrandScreen>
   );
 }
 
@@ -200,41 +166,6 @@ const ASSESSMENT_BUTTON_WIDTH = 104;
 const ROW_MIN_HEIGHT = ASSESSMENT_BUTTON_HEIGHT + 2 * Spacing.two;
 
 const useStyles = makeStyles((colors) => ({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  hero: {
-    paddingHorizontal: Spacing.five,
-    paddingBottom: Spacing.four,
-  },
-  statusBarFill: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Gradients.brand[0],
-  },
-  overscroll: {
-    position: 'absolute',
-    top: -1000,
-    left: 0,
-    right: 0,
-    height: 1000,
-    backgroundColor: Gradients.brand[0],
-  },
-  heroContent: {
-    ...ContentColumn,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: Spacing.three,
-  },
-  body: {
-    ...ContentColumn,
-    paddingHorizontal: Spacing.five,
-    paddingTop: Spacing.four,
-  },
   intro: {
     marginBottom: Spacing.three,
   },

@@ -1,4 +1,4 @@
-import { makeStyles, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, Radius, Spacing, useThemeColors } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
@@ -8,16 +8,25 @@ type NotificationBellProps = {
   count: number;
   /** Leave out to show the bell as a plain indicator, e.g. on the requests screen itself. */
   onPress?: () => void;
+  /** `onBrand`: a white bell, for the brand gradient. */
+  tone?: 'default' | 'onBrand';
 };
 
 /** Bell with a red count badge, hidden when there's nothing new (Figma 3911-24703). */
-export function NotificationBell({ count, onPress }: NotificationBellProps) {
+export function NotificationBell({ count, onPress, tone = 'default' }: NotificationBellProps) {
   const styles = useStyles();
+  const colors = useThemeColors();
   const label = count > 0 ? `Support person requests, ${count} new` : 'Support person requests';
   const content = (
     <>
       <View style={styles.iconBox}>
-        <Image source={bellIcon} style={styles.bell} contentFit="contain" accessibilityLabel="" />
+        <Image
+          source={bellIcon}
+          style={styles.bell}
+          contentFit="contain"
+          tintColor={tone === 'onBrand' ? colors.onBrand : undefined}
+          accessibilityLabel=""
+        />
       </View>
       {count > 0 && (
         <View style={styles.badge}>
@@ -74,16 +83,17 @@ const useStyles = makeStyles((colors) => ({
     left: 14,
     top: 0,
     minWidth: 17,
-    paddingHorizontal: Spacing.three,
+    height: 17,
+    paddingHorizontal: Spacing.one,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.pill,
     backgroundColor: colors.error,
-    paddingVertical: Spacing.two,
   },
   badgeText: {
-    color: colors.background,
-    ...Typography.caption,
+    color: colors.onPrimary,
+    fontSize: 11,
+    lineHeight: 13,
     fontWeight: '700',
   },
 }));

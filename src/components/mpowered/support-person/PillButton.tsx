@@ -1,4 +1,4 @@
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { Pressable, Text } from 'react-native';
 
@@ -11,9 +11,13 @@ type PillButtonProps = {
   size?: 'small' | 'large';
 };
 
-/** Purple rounded button with a white arrow (Figma 3911-24700, 3911-24669). */
+/**
+ * Purple rounded button with a white arrow (Figma 3911-24700, 3911-24669). Both sizes share one label size
+ * and a 48dp height, with extra touch room around them; they differ only in where they sit.
+ */
 export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) {
   const styles = useStyles();
+  const colors = useThemeColors();
   const large = size === 'large';
 
   return (
@@ -21,13 +25,13 @@ export function PillButton({ label, onPress, size = 'small' }: PillButtonProps) 
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      hitSlop={large ? 0 : 6}
+      hitSlop={Spacing.one}
       style={({ pressed }) => [styles.button, large ? styles.large : styles.small, pressed && styles.pressed]}
     >
-      <Text style={[styles.label, large ? styles.labelLarge : styles.labelSmall]} numberOfLines={1}>
+      <Text style={styles.label} numberOfLines={1}>
         {label}
       </Text>
-      <Image source={arrowIcon} style={styles.arrow} contentFit="contain" accessibilityLabel="" />
+      <Image source={arrowIcon} style={styles.arrow} contentFit="contain" tintColor={colors.onPrimary} accessibilityLabel="" />
     </Pressable>
   );
 }
@@ -37,43 +41,32 @@ const useStyles = makeStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
+    gap: Spacing.two,
     minHeight: MinTapTarget,
-    borderRadius: Radius.pill,
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    alignSelf: 'center',
+    borderRadius: Radius.pill,
+    backgroundColor: colors.primary,
   },
+  // On an appointment, at its trailing edge.
   small: {
     alignSelf: 'flex-end',
-    gap: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.one,
   },
+  // At the foot of a card, centred.
   large: {
-    alignSelf: 'stretch',
-    gap: Spacing.four,
-    height: 39,
+    alignSelf: 'center',
   },
   pressed: {
     opacity: 0.8,
   },
   label: {
+    flexShrink: 1,
+    ...Typography.bodyLarge,
+    fontWeight: '600',
     color: colors.onPrimary,
-    fontWeight: '500',
-  },
-  labelSmall: {
-    color: colors.text,
-    ...Typography.caption,
-    letterSpacing: 0.5,
-  },
-  labelLarge: {
-    color: colors.text,
-    ...Typography.bodySmall,
-    letterSpacing: 0.1,
   },
   arrow: {
-    width: 15,
-    height: 15,
+    width: 18,
+    height: 18,
   },
 }));
