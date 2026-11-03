@@ -38,6 +38,9 @@ export const Colors = {
     textTertiary: 'rgba(60, 60, 67, 0.6)',
     outlineMedium: '#79747E',
     divider: '#E7E0EC',
+    sliderTrack: '#E4DFF5',
+    sliderFillStart: '#8B7BC7',
+    sliderFillEnd: '#1A1330',
   },
   dark: {
     text: '#ffffff',
@@ -70,6 +73,9 @@ export const Colors = {
     textTertiary: 'rgba(235, 235, 245, 0.6)',
     outlineMedium: '#938F99',
     divider: '#49454F',
+    sliderTrack: '#4A4458',
+    sliderFillStart: '#D0BCFF',
+    sliderFillEnd: '#EADDFF',
   },
 } as const;
 

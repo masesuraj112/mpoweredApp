@@ -18,6 +18,7 @@ Audience: developers working on the UI. This page is the reference for the UI re
 | `Colors.textTertiary` | `rgba(60, 60, 67, 0.6)` | "saved" captions and helper text |
 | `Colors.outlineMedium` | `#79747E` | mid-grey borders |
 | `Colors.divider` | `#E7E0EC` | hairline rules and light borders |
+| `Colors.sliderTrack`, `sliderFillStart`, `sliderFillEnd` | `#E4DFF5`, `#8B7BC7`, `#1A1330` | the 0 to 10 slider track and its fill gradient |
 | `Spacing.mid` | 12 | the 12dp gap used between `two` (8) and `three` (16) |
 | `Radius.small / medium / large / extraLarge` | 4 / 8 / 16 / 24 | literal radii |
 | `Elevation.level1` | shadow + elevation 2 | the raised-button shadow |
