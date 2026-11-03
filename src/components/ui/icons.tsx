@@ -40,3 +40,17 @@ export function PhoneIcon({ size = 20, color }: IconProps) {
     </Svg>
   );
 }
+
+/**
+ * A right arrow drawn as a shape, for "Edit →" style buttons. The "→" character sits low in Android's
+ * font, so next to a label it never lines up; this centres on the label in a row.
+ */
+export function ArrowRightIcon({ size = 16, color }: IconProps) {
+  const colors = useThemeColors();
+  const stroke = color ?? colors.text;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...hidden}>
+      <Path d="M4 12h15M13 6l6 6-6 6" stroke={stroke} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}

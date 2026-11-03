@@ -7,8 +7,9 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { makeStyles, MinTapTarget, Radius, Spacing, Typography } from '@/constants/theme';
+import { makeStyles, MinTapTarget, Radius, Spacing, Typography, useThemeColors } from '@/constants/theme';
 import { BrandScreen, HeroGreeting, HeroLead, HeroTitle } from '@/components/mpowered/BrandScreen';
+import { ArrowRightIcon } from '@/components/ui/icons';
 type Assessment = {
   id: WeeklyAssessmentId;
   title: string;
@@ -30,6 +31,7 @@ const ASSESSMENTS: Assessment[] = [
 
 export default function HomeScreen() {
   const styles = useStyles();
+  const colors = useThemeColors();
   const name = useAuth().profile?.name ?? '';
   const {
     recorded: recordedAssessments,
@@ -116,10 +118,10 @@ export default function HomeScreen() {
                       isRecorded ? styles.editButtonText : styles.recordButtonText,
                     ]}
                   >
-                    {/* One text, so the arrow shares the label's size and baseline (as separate texts of different
-                        sizes it sat low on Android). */}
-                    {isRecorded ? 'Edit →' : 'Record →'}
+                    {isRecorded ? 'Edit' : 'Record'}
                   </Text>
+                  {/* A drawn arrow: the "→" character sits low on Android and never centres on the label. */}
+                  <ArrowRightIcon color={isRecorded ? colors.onPrimaryContainer : colors.onPrimary} />
                 </Pressable>
               </View>
             );
@@ -141,7 +143,12 @@ export default function HomeScreen() {
             </Text>
             {reflection === 'draft' && <Text style={styles.reflectionStatus}>Draft saved</Text>}
           </View>
-          {hasReflection && <Text style={styles.reflectionEdit}>Edit →</Text>}
+          {hasReflection && (
+            <View style={styles.reflectionEditRow}>
+              <Text style={styles.reflectionEdit}>Edit</Text>
+              <ArrowRightIcon size={14} color={colors.textSecondary} />
+            </View>
+          )}
         </Pressable>
 
         <Text style={styles.supported}>Supported by ABBVIE</Text>
@@ -294,6 +301,11 @@ const useStyles = makeStyles((colors) => ({
   reflectionCompleteIcon: {
     color: colors.text,
     ...Typography.title,
+  },
+  reflectionEditRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
   },
   reflectionEdit: {
     color: colors.textSecondary,
