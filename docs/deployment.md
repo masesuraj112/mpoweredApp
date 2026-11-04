@@ -126,10 +126,10 @@ Why the workflow is manual: [deploy-db.yml](../.github/workflows/deploy-db.yml) 
 - **iPhone is untested on a physical device.** The iOS-only behaviour (swipe-back "Discard?" prompt, header appearance, share sheet) is unverified.
 - **The client has not agreed the delivery method** (who installs, which devices, who approves). See [client-signoff.md](deployment/client-signoff.md).
 - **Database changes are applied by hand.** If a migration is merged and not applied to the hosted project, the app and the database disagree.
-- **The app, splash and favicon images are Expo's placeholders.** Real MPowered branding is needed before it is shared widely.
+- **The app, splash and favicon images are interim.** They were made from the MPowered logo, and final branding is needed before it is shared widely.
 
 ### Lower priority
 - Whether a tester needs an Expo account, or membership of the `mpowered-mha` organisation, to open a QR code is unverified.
 - The production Supabase project (`mpoweredAppProd`) exists but is blank and not connected; all EAS environments use the test project.
-- `npm audit` reports 6 high findings inside Expo's own build tooling (`node-forge`, `zod`). The only offered fix downgrades Expo, so they are left in place.
+- `npm audit` reports 36 findings (1 high, 34 moderate, 1 low), almost all inside Expo, Jest and ESLint packages and their dependencies. The high one is `node-forge`. A non-breaking fix exists for it and three moderate ones but has not been tried. The fixes npm offers for the rest would downgrade Expo, Jest or ESLint to old major versions, so they are left in place.
 - No crash or error monitoring.

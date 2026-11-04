@@ -74,9 +74,9 @@ Resume point for a new session. Plan: `login-backend-build-plan.md`. Status key:
 
 ## CI/CD
 - [x] Migration-immutability check (`migrations-immutable` job)
-- [x] Auto-deploy migrations to the `test` project after merge (`deploy-db.yml`)
+- [x] `deploy-db.yml` applies migrations to the `test` project (manual run only now, because GitHub's runners cannot reach the direct database host; see `docs/deployment.md`)
 - [ ] GitHub: `test` environment secrets and branch protection on `main` (done by hand in GitHub)
-- [ ] `production` deploy job (blocked: no production project yet)
+- [ ] `production` deploy job (blocked: the production project `mpoweredAppProd` exists but is blank and not connected)
 
 ## Open decisions
 | ID | Decision | Status |
