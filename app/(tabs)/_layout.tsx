@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Image } from 'expo-image';
 import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { TabIcon } from '@/components/navigation/TabIcon';
@@ -49,6 +50,7 @@ function TabBarIcon({ name, focused }: { name: TabIconName; focused: boolean }) 
 export default function TabsLayout() {
   // Only patients reach the tabs, so only they get reminders (support persons have none).
   useOpenTappedReminder();
+  const insets = useSafeAreaInsets();
   return (
     <RemindersProvider>
       <Tabs
@@ -57,7 +59,12 @@ export default function TabsLayout() {
           tabBarActiveTintColor: Colors.light.onSurfaceVariant,
           tabBarInactiveTintColor: Colors.light.onSurfaceVariant,
           tabBarLabelStyle: styles.tabLabel,
-          tabBarStyle: styles.tabBar,
+          // The bar sits inside the safe area, so it must add the system navigation bar (three-button
+          // Android, home indicator) to its own height and bottom padding, or the buttons cover the tabs.
+          tabBarStyle: [
+            styles.tabBar,
+            { height: TAB_BAR_HEIGHT + insets.bottom, paddingBottom: TAB_BAR_PADDING_BOTTOM + insets.bottom },
+          ],
         }}
       >
         <Tabs.Screen
@@ -95,11 +102,13 @@ export default function TabsLayout() {
   );
 }
 
+// The bar's own height and bottom padding, not counting the phone's navigation bar or home indicator.
+const TAB_BAR_HEIGHT = 76;
+const TAB_BAR_PADDING_BOTTOM = 6;
+
 const styles = StyleSheet.create({
   tabBar: {
-    height: 76,
     paddingTop: 5,
-    paddingBottom: 6,
     borderTopWidth: 0,
     backgroundColor: Colors.light.surfaceContainer,
   },
