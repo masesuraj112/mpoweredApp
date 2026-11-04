@@ -2,8 +2,8 @@
 
 This file lists the open-source packages the MPowered app depends on, with the licence each one declares. The app's own licence is in [LICENSE](LICENSE).
 
-- **Generated:** 2 November 2026, from `npm ls --omit=dev --all` on the installed packages (Windows). It covers every package that npm treats as a production dependency, including their dependencies.
-- **Packages:** 734 (name and version are unique rows).
+- **Generated:** 5 November 2026, from `npm ls --omit=dev --all` on the installed packages (Windows). It covers every package that npm treats as a production dependency, including their dependencies.
+- **Packages:** 738 (name and version are unique rows).
 - **Over-inclusive on purpose.** Some entries are build or test tools that reach the list through `expo` or `expo-router` and are not shipped inside the app.
 - **Platform-specific packages** (for example native binaries) differ by operating system, so a Mac or Linux install lists different binaries.
 - **Declared licences, not legal advice.** The licence comes from each package's `package.json`. Anyone relying on this for a legal purpose should check the packages themselves.
@@ -13,7 +13,7 @@ This file lists the open-source packages the MPowered app depends on, with the l
 
 | Licence | Packages |
 | ------- | -------- |
-| MIT | 643 |
+| MIT | 647 |
 | ISC | 34 |
 | BSD-3-Clause | 16 |
 | BSD-2-Clause | 11 |
@@ -134,39 +134,39 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | @babel/types | 7.29.11 | MIT | Copyright (c) 2014-present Sebastian McKenzie and other contributors | https://github.com/babel/babel |
 | @bcoe/v8-coverage | 0.2.3 | MIT | Copyright © 2015-2017 Charles Samborski | git://github.com/demurgos/v8-coverage |
 | @expo-google-fonts/material-symbols | 0.4.51 | MIT AND Apache-2.0 | Copyright (c) 2020 Expo | https://github.com/expo/google-fonts |
-| @expo/cli | 58.1.15 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/cli | 58.1.18 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/code-signing-certificates | 0.0.7 | MIT | Copyright (c) 2020-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/code-signing-certificates |
-| @expo/config | 58.0.8 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/config-plugins | 58.0.10 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/config | 58.0.10 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/config-plugins | 58.0.11 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/config-types | 58.0.3 | MIT | Copyright (c) 2020-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/devcert | 1.2.2 | MIT | Copyright (c) 2017 Dave Wasmer | https://github.com/expo/devcert |
 | @expo/devtools | 58.0.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/dom-webview | 58.0.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/env | 2.5.3 | MIT | Copyright (c) 2023-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/fingerprint | 0.21.6 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/image-utils | 0.12.5 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/inline-modules | 0.2.7 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/fingerprint | 0.21.8 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/image-utils | 0.12.6 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/inline-modules | 0.2.8 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/json-file | 11.2.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/local-build-cache-provider | 58.0.8 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/log-box | 58.0.13 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/local-build-cache-provider | 58.0.10 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/log-box | 58.0.14 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/log-box-utils | 58.0.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/metro | 58.0.0 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/expo/expo-metro |
-| @expo/metro-config | 58.0.17 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/metro-config | 58.0.20 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/metro-file-map | 58.0.5 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/metro-runtime | 58.0.15 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/modules-macros-win32-x64 | 0.22.0 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo-modules-macros |
+| @expo/metro-runtime | 58.0.16 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/modules-macros-win32-x64 | 0.27.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo-modules-macros |
 | @expo/osascript | 2.8.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/package-manager | 1.14.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/platforms | 58.0.1 | MIT | Copyright (c) 2023-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/plist | 0.10.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/prebuild-config | 58.0.16 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/require-utils | 58.0.4 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/router-server | 58.0.17 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| @expo/schema-utils | 58.0.2 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/prebuild-config | 58.0.18 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/require-utils | 58.0.5 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/router-server | 58.0.20 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| @expo/schema-utils | 58.0.3 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | @expo/sdk-runtime-versions | 1.0.1 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) |  |
 | @expo/spawn-async | 1.8.0 | MIT | Copyright (c) 2015 650 Industries | https://github.com/expo/spawn-async |
 | @expo/sudo-prompt | 9.3.2 | MIT | Copyright (c) 2015 Joran Dirk Greef | https://github.com/expo/sudo-prompt |
-| @expo/ui | 58.0.23 | MIT |  | https://github.com/expo/expo |
+| @expo/ui | 58.0.26 | MIT |  | https://github.com/expo/expo |
 | @expo/ws-tunnel | 2.0.1 | MIT | Copyright (c) 2025-present 650 Industries, Inc. (aka Expo) |  |
 | @expo/xcpretty | 4.4.7 | MIT | Copyright (c) 2013-2016 Marin Usalj | https://github.com/expo/expo |
 | @isaacs/cliui | 8.0.2 | ISC | Copyright (c) 2015, Contributors | yargs/cliui |
@@ -199,7 +199,7 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | @jridgewell/source-map | 0.3.11 | MIT | Copyright 2024 Justin Ridgewell <justin@ridgewell.name> | https://github.com/jridgewell/sourcemaps |
 | @jridgewell/sourcemap-codec | 1.6.0 | MIT | Copyright 2024 Justin Ridgewell <justin@ridgewell.name> | https://github.com/jridgewell/sourcemaps |
 | @jridgewell/trace-mapping | 0.3.31 | MIT | Copyright 2024 Justin Ridgewell <justin@ridgewell.name> | https://github.com/jridgewell/sourcemaps |
-| @noxcturnal/noxcturnal-win32-x64-msvc | 0.1.9 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/expo/noxcturnal |
+| @noxcturnal/noxcturnal-win32-x64-msvc | 0.1.11 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/expo/noxcturnal |
 | @oxc-project/types | 0.154.0 | MIT | Copyright (c) 2024-present VoidZero Inc. & Contributors | https://github.com/oxc-project/oxc |
 | @parcel/watcher | 2.6.0 | MIT | Copyright (c) 2017-present Devon Govett | https://github.com/parcel-bundler/watcher |
 | @parcel/watcher-win32-x64 | 2.6.0 | MIT | Copyright (c) 2017-present Devon Govett | https://github.com/parcel-bundler/watcher |
@@ -224,21 +224,21 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | @react-native-async-storage/async-storage | 2.2.0 | MIT | Copyright (c) 2015-present, Facebook, Inc. | https://github.com/react-native-async-storage/async-storage |
 | @react-native-community/slider | 5.2.1 | MIT |  | https://github.com/callstack/react-native-slider |
 | @react-native-masked-view/masked-view | 0.3.2 | MIT | Copyright (c) 2015-present, Facebook, Inc. | https://github.com/react-native-masked-view/masked-view |
-| @react-native/asset-utils | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/babel-plugin-codegen | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/babel-preset | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/codegen | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/community-cli-plugin | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/debugger-frontend | 0.88.0 | BSD-3-Clause |  | https://github.com/react/react-native |
-| @react-native/debugger-shell | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/dev-middleware | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/gradle-plugin | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/js-polyfills | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/metro-babel-transformer | 0.88.0 | MIT |  | ssh://git@github.com/react/react-native |
-| @react-native/metro-config | 0.88.0 | MIT |  | https://github.com/react/react-native |
+| @react-native/asset-utils | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/babel-plugin-codegen | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/babel-preset | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/codegen | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/community-cli-plugin | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/debugger-frontend | 0.88.1 | BSD-3-Clause |  | https://github.com/react/react-native |
+| @react-native/debugger-shell | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/dev-middleware | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/gradle-plugin | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/js-polyfills | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/metro-babel-transformer | 0.88.1 | MIT |  | ssh://git@github.com/react/react-native |
+| @react-native/metro-config | 0.88.1 | MIT |  | https://github.com/react/react-native |
 | @react-native/normalize-colors | 0.74.89 | MIT |  | https://github.com/facebook/react-native |
-| @react-native/normalize-colors | 0.88.0 | MIT |  | https://github.com/react/react-native |
-| @react-native/virtualized-lists | 0.88.0 | MIT |  | https://github.com/react/react-native |
+| @react-native/normalize-colors | 0.88.1 | MIT |  | https://github.com/react/react-native |
+| @react-native/virtualized-lists | 0.88.1 | MIT |  | https://github.com/react/react-native |
 | @sinclair/typebox | 0.27.12 | MIT | Copyright (c) 2017-2023 Haydn Paterson (sinclair) <haydn.developer@gmail.com> | https://github.com/sinclairzx81/sinclair-typebox |
 | @sinclair/typebox | 0.34.52 | MIT | Copyright (c) 2017-2026 Haydn Paterson | https://github.com/sinclairzx81/sinclair-typebox |
 | @sinonjs/commons | 3.0.1 | BSD-3-Clause | Copyright (c) 2018, Sinon.JS | https://github.com/sinonjs/commons |
@@ -270,6 +270,7 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | @xmldom/xmldom | 0.8.15 | MIT | Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors | git://github.com/xmldom/xmldom |
 | @xmldom/xmldom | 0.9.12 | MIT | Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors | git://github.com/xmldom/xmldom |
 | 2g | 1.0.1 | MIT | Copyright (c) Phil Pluckthun, | https://github.com/kitten/2g |
+| abort-controller | 3.0.0 | MIT | Copyright (c) 2017 Toru Nagashima | https://github.com/mysticatea/abort-controller |
 | accepts | 1.3.8 | MIT | Copyright (c) 2014 Jonathan Ong <me@jongleberry.com> | jshttp/accepts |
 | accepts | 2.0.0 | MIT | Copyright (c) 2014 Jonathan Ong <me@jongleberry.com> | jshttp/accepts |
 | acorn | 8.19.0 | MIT | Copyright (C) 2012-2022 by various contributors (see AUTHORS) | https://github.com/acornjs/acorn |
@@ -302,8 +303,9 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | babel-plugin-syntax-hermes-parser | 0.36.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | git@github.com:facebook/hermes |
 | babel-plugin-transform-flow-enums | 0.0.2 | MIT | Copyright (c) Facebook, Inc. and its affiliates. | https://github.com/facebook/flow |
 | babel-preset-current-node-syntax | 1.2.0 | MIT | Copyright (c) 2020 Nicolò Ribaudo and other contributors | https://github.com/nicolo-ribaudo/babel-preset-current-node-syntax |
-| babel-preset-expo | 58.0.20 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| babel-preset-expo | 58.0.23 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | babel-preset-jest | 30.5.0 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/jestjs/jest |
+| badgin | 1.2.3 | MIT |  | https://github.com/jaulz/badgin |
 | balanced-match | 1.0.2 | MIT | Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt; | git://github.com/juliangruber/balanced-match |
 | balanced-match | 4.0.4 | MIT | Original code Copyright Julian Gruber <julian@juliangruber.com> | git://github.com/juliangruber/balanced-match |
 | base64-js | 1.5.1 | MIT | Copyright (c) 2014 Jameson Little | git://github.com/beatgammit/base64-js |
@@ -394,42 +396,45 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | escape-string-regexp | 4.0.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | sindresorhus/escape-string-regexp |
 | esprima | 4.0.1 | BSD-2-Clause | Copyright JS Foundation and other contributors, https://js.foundation/ | https://github.com/jquery/esprima |
 | etag | 1.8.1 | MIT | Copyright (c) 2014-2016 Douglas Christopher Wilson | jshttp/etag |
+| event-target-shim | 5.0.1 | MIT | Copyright (c) 2015 Toru Nagashima | https://github.com/mysticatea/event-target-shim |
 | execa | 5.1.1 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | sindresorhus/execa |
 | exit-x | 0.2.2 | MIT | Copyright (c) 2013 "Cowboy" Ben Alman | git://github.com/gruntjs/node-exit-x |
 | expect | 30.5.2 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/jestjs/jest |
-| expo | 58.0.19 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-asset | 58.0.18 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-constants | 58.0.13 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo | 58.0.22 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-application | 58.1.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-asset | 58.0.19 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-constants | 58.0.14 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-device | 58.0.5 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-eas-client | 58.0.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-file-system | 58.0.11 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-font | 58.0.10 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-file-system | 58.0.13 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-font | 58.0.11 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-glass-effect | 58.0.5 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-image | 58.0.17 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-image | 58.0.18 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-json-utils | 58.0.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-keep-awake | 58.0.3 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-linear-gradient | 58.0.3 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-linking | 58.0.14 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-linking | 58.0.15 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-manifests | 58.0.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-modules-autolinking | 58.0.15 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-modules-cli | 0.3.2 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-modules-core | 58.0.26 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-modules-jsi | 58.0.19 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-modules-macros | 0.22.0 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo-modules-macros |
-| expo-print | 58.0.7 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-router | 58.0.26 | MIT |  | https://github.com/expo/expo |
+| expo-modules-autolinking | 58.0.16 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-modules-cli | 0.4.0 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-modules-core | 58.0.29 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-modules-jsi | 58.0.21 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-modules-macros | 0.27.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo-modules-macros |
+| expo-notifications | 58.1.7 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-print | 58.0.8 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-router | 58.0.29 | MIT |  | https://github.com/expo/expo |
 | expo-server | 58.0.6 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-sharing | 58.0.20 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-sharing | 58.0.21 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-speech-recognition | 58.0.0 | MIT | Copyright (c) 2024 jamsch | https://github.com/jamsch/expo-speech-recognition |
-| expo-splash-screen | 58.0.11 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-sqlite | 58.0.14 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-splash-screen | 58.0.12 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-sqlite | 58.0.15 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-status-bar | 58.0.4 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | expo-structured-headers | 58.0.1 | MIT |  | https://github.com/expo/expo |
 | expo-symbols | 58.0.4 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-system-ui | 58.0.6 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-updates | 58.0.18 | MIT |  | https://github.com/expo/expo |
+| expo-system-ui | 58.0.7 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-updates | 58.0.20 | MIT |  | https://github.com/expo/expo |
 | expo-updates-interface | 58.0.1 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
-| expo-web-browser | 58.0.6 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
+| expo-web-browser | 58.0.7 | MIT | Copyright (c) 2015-present 650 Industries, Inc. (aka Expo) | https://github.com/expo/expo |
 | exponential-backoff | 3.1.3 | Apache-2.0 | "Licensor" shall mean the copyright owner or entity authorized by | https://github.com/coveooss/exponential-backoff |
 | fast-json-stable-stringify | 2.1.0 | MIT | Copyright (c) 2017 Evgeny Poberezkin | git://github.com/epoberezkin/fast-json-stable-stringify |
 | fb-dotslash | 0.5.8 | (MIT OR Apache-2.0) |  | https://github.com/facebook/dotslash |
@@ -460,7 +465,7 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | has-flag | 3.0.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com) | sindresorhus/has-flag |
 | has-flag | 4.0.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com) | sindresorhus/has-flag |
 | hasown | 2.0.4 | MIT | Copyright (c) Jordan Harband and contributors | https://github.com/inspect-js/hasOwn |
-| hermes-compiler | 260318099.0.4 | MIT |  | ssh://git@github.com/facebook/hermes |
+| hermes-compiler | 260318099.0.5 | MIT |  | ssh://git@github.com/facebook/hermes |
 | hermes-estree | 0.36.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | git@github.com:facebook/hermes |
 | hermes-parser | 0.36.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | git@github.com:facebook/hermes |
 | hosted-git-info | 7.0.2 | ISC | Copyright (c) 2015, Rebecca Turner | https://github.com/npm/hosted-git-info |
@@ -594,7 +599,7 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | node-int64 | 0.4.0 | MIT | Copyright (c) 2014 Robert Kieffer | https://github.com/broofa/node-int64 |
 | node-releases | 2.0.60 | MIT | Copyright (c) 2017 Sergey Rubanov (https://github.com/chicoxyzzy) | https://github.com/chicoxyzzy/node-releases |
 | normalize-path | 3.0.0 | MIT | Copyright (c) 2014-2018, Jon Schlinkert. | jonschlinkert/normalize-path |
-| noxcturnal | 0.1.9 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/expo/noxcturnal |
+| noxcturnal | 0.1.11 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/expo/noxcturnal |
 | npm-package-arg | 11.0.3 | ISC | Copyright (c) npm, Inc. | https://github.com/npm/npm-package-arg |
 | npm-run-path | 4.0.1 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com) | sindresorhus/npm-run-path |
 | nth-check | 2.1.1 | BSD-2-Clause | Copyright (c) Felix Böhm | https://github.com/fb55/nth-check |
@@ -628,7 +633,7 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | pkg-dir | 4.2.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com) | sindresorhus/pkg-dir |
 | plist | 3.1.1 | MIT | Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net> | git://github.com/TooTallNate/node-plist |
 | pngjs | 3.4.0 | MIT | pngjs2 original work Copyright (c) 2015 Luke Page & Original Contributors | git://github.com/lukeapage/pngjs2 |
-| postcss | 8.5.31 | MIT | Copyright 2013 Andrey Sitnik <andrey@sitnik.es> | postcss/postcss |
+| postcss | 8.5.32 | MIT | Copyright 2013 Andrey Sitnik <andrey@sitnik.es> | postcss/postcss |
 | postcss-value-parser | 4.2.0 | MIT | Copyright (c) Bogdan Chadkin <trysound@yandex.ru> | https://github.com/TrySound/postcss-value-parser |
 | pretty-format | 29.7.0 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/jestjs/jest |
 | pretty-format | 30.5.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/jestjs/jest |
@@ -646,13 +651,13 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | react-freeze | 1.0.4 | MIT | Copyright (c) 2021 Software Mansion | software-mansion/react-freeze |
 | react-is | 18.3.1 | MIT | Copyright (c) Facebook, Inc. and its affiliates. | https://github.com/facebook/react |
 | react-is | 19.3.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react |
-| react-native | 0.88.0 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react-native |
+| react-native | 0.88.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react-native |
 | react-native-drawer-layout | 4.2.12 | MIT | Copyright (c) 2017 React Native Community | https://github.com/react-navigation/react-navigation |
 | react-native-gesture-handler | 3.3.0 | MIT | Copyright (c) 2016 Software Mansion <swmansion.com> | https://github.com/software-mansion/react-native-gesture-handler |
 | react-native-is-edge-to-edge | 1.3.1 | MIT | Copyright (c) 2024 Mathieu Acthernoene | https://github.com/zoontek/react-native-edge-to-edge |
 | react-native-reanimated | 4.7.1 | MIT | Copyright (c) 2016 Software Mansion <swmansion.com> | https://github.com/software-mansion/react-native-reanimated |
 | react-native-safe-area-context | 5.10.1 | MIT | Copyright (c) 2019 Th3rd Wave | https://github.com/appandflow/react-native-safe-area-context |
-| react-native-screens | 4.30.0 | MIT | Copyright (c) 2018 Software Mansion <swmansion.com> | https://github.com/software-mansion/react-native-screens |
+| react-native-screens | 4.30.1 | MIT | Copyright (c) 2018 Software Mansion <swmansion.com> | https://github.com/software-mansion/react-native-screens |
 | react-native-svg | 15.16.0 | MIT | Copyright (c) [2015-2016] [Horcrux] | https://github.com/software-mansion/react-native-svg |
 | react-native-url-polyfill | 4.0.0 | MIT | Copyright (c) 2019 Nicolas Charpentier | https://github.com/charpeni/react-native-url-polyfill |
 | react-native-web | 0.21.4 | MIT | Copyright (c) Nicolas Gallagher. | https://github.com/necolas/react-native-web |
@@ -780,4 +785,3 @@ No package in the list declares GPL, AGPL or LGPL as its only licence.
 | yargs | 17.7.3 | MIT | Copyright 2010 James Halliday (mail@substack.net); Modified work Copyright 2014 Contributors (ben@npmjs.com) | https://github.com/yargs/yargs |
 | yargs-parser | 21.1.1 | ISC | Copyright (c) 2016, Contributors | https://github.com/yargs/yargs-parser |
 | yocto-queue | 0.1.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | sindresorhus/yocto-queue |
-| zod | 3.25.76 | MIT | Copyright (c) 2025 Colin McDonnell | https://github.com/colinhacks/zod |
